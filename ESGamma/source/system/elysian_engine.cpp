@@ -10,7 +10,7 @@
 #include "elysian_timer_system_base.hpp"
 #include "elysian_warp_system.hpp"
 #include "elysian_collision_system.hpp"
-#include "elysian_gui_system.hpp"
+#include "elysian_gui_system_base.hpp"
 #include "elysian_audio_system.hpp"
 #include "elysian_lua_singleton.hpp"
 #include "elysian_lua_manager.hpp"

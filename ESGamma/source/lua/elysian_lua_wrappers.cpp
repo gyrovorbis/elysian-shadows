@@ -96,6 +96,7 @@ namespace elysian {
         _mainState->register_class<RigidBody>();
         RigidBody::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<MenuEntity>();
+        MenuEntity::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ParticleEmitterAttrib>();
         ParticleEmitterAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ParticleEmitter>();

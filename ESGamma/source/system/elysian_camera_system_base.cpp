@@ -1,6 +1,6 @@
 #include <crtp/elysian_camera_system.hpp>
 #include <crtp/elysian_entity.hpp>
-#include "elysian_gui_system.hpp"
+#include "elysian_gui_system_base.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_level.hpp>

@@ -166,7 +166,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(VirtualDPad,
     controller = Engine.getInputSys():getController(0) --fetches controller connected to port 0
     \endcode
 
-    \e NOTE: {Since controllers can be disconnected and reconnected in the middle of the game, NEVER cache a controller object
+    \e{NOTE: Since controllers can be disconnected and reconnected in the middle of the game, NEVER cache a controller object
     between frames within a Lua script. Always fetch the controller by port again each frame, to ensure that you are
     using the current controller connected to the port.}
 

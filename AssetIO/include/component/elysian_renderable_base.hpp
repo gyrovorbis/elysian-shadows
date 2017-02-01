@@ -19,7 +19,7 @@ namespace elysian {
     friend Entity;
 
     protected:
-    GYTexCoord2			_texCoord[4];
+        GYTexCoord2			_texCoord[4];
         SpriteAttrib*		_spriteAttrib	= nullptr;      //Prefab-able attributes
         int					_frame			= 0;			//for animation
         GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)

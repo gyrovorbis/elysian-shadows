@@ -3,7 +3,7 @@
 
 #include <oolua.h>
 #include <utility/elysian_event_monitor.hpp>
-#include <system/elysian_gui_system.hpp>
+#include <system/elysian_gui_system_base.hpp>
 #include <lua/elysian_lua_singleton.hpp>
 #include <crtp/elysian_collidable.hpp>
 #include <crtp/elysian_entity.hpp>

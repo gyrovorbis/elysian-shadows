@@ -14,7 +14,7 @@
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_skeleton.hpp>
 #include <behavior/elysian_playable_behavior.hpp>
-#include <system/elysian_gui_system.hpp>
+#include <system/elysian_gui_system_base.hpp>
 
 namespace elysian {
 

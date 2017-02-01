@@ -6,7 +6,7 @@
 #include <asset/tk_area.h>
 #include "elysian_debug.hpp"
 #include "tk_property_standard_item.h"
-#include <tk_checkered_alpha_rect_graphics_item.h>
+//#include <tk_checkered_alpha_rect_graphics_item.h>
 #include <tk_source_view.h>
 #include "tk_map_view_depth_buffer_graphics_item.h"
 #include <tk_file_utilities.h>
@@ -555,4 +555,88 @@ void TkArea::initializeDelegates(void) {
 
 }
 
+void TkArea::initializeVirtualTableDelegates(QString key) {
+#if 0
+    if(key == "bgm" || key == "aux") {
+
+        unsigned arraySize;
+        if(key == "bgm") {
+            arraySize = sizeof(elysian::AreaBase::_bgmOggTracks);
+
+        } else {
+            arraySize = sizeof(elysian::AreaBase::_auxTracks);
+
+        }
+
+#endif
+#if 0
+
+        LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
+            TkAnimation* self = t["__ud"]->getValue<TkArea*>();
+            if(self && k.getType() == LUA_TNUMBER) {
+                unsigned index = k.getValue<unsigned>();
+                if(index <= arraySize) {
+                    DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            auto parent
+                            if(anim) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                elysian::AnimationTrack* track = anim->getTrack(index);
+                                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+                                option.text = QString(track->getName());
+                            }
+                        }
+                    });
+
+                    delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                            if(anim) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+
+                                MenuStack stack("AnimationTrack");
+                                stack.insertAction("Delete", [=](bool) {
+                                    anim->setTrack(index, nullptr);
+
+                                    auto* parentItem = luaFieldItem->getAncestorSiblingLuaItem({"tracks", "*"}, 1);
+                                    if(parentItem) parentItem->setDirty();
+
+                                });
+
+                                return stack.first();
+                            }
+                        }
+                        return nullptr;
+
+                    });
+
+                    delegate->setDeleteCallback([](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                            if(anim) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                anim->setTrack(index, nullptr);
+
+                                auto* parentItem = luaFieldItem->getAncestorSiblingLuaItem({"tracks", "*"}, 1);
+                                if(parentItem) parentItem->setDirty();
+                            }
+                        }
+                    });
+
+                    return delegate;
+                }
+            }
+            return nullptr;
+        };
+        delegateFunc.push();
+        lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+    } else if(key == "aux") {
+
+    }
+#endif
+}
 

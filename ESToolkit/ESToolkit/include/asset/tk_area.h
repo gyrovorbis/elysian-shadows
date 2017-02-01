@@ -152,6 +152,7 @@ public:
     virtual QAbstractItemModel* getModel(void) const override;
 
     static void         initializeDelegates(void);
+    static void         initializeVirtualTableDelegates(QString key);
 
     bool                open(void);
     bool                close(void);

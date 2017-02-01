@@ -221,7 +221,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
         }
     }
 
-    return menu.first();
+    return menu.takeTopLevel();
 }
 
 

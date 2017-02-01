@@ -9,7 +9,7 @@
 #include <primitive/elysian_instance_transform.hpp>
 #include <crtp/elysian_entity.hpp>
 #include "elysian_collision_system.hpp"
-#include "elysian_gui_system.hpp"
+#include "elysian_gui_system_base.hpp"
 #include <level/elysian_zcoords.hpp>
 #include <crtp/elysian_area.hpp>
 

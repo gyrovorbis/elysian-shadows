@@ -133,13 +133,17 @@ void InputSystemBase::_mapKeyboardToController(const int port) {
     if(_keyboard.isPressed(GY_KEY_E)) _controllers[port].setPressed(GY_CONTROLLER_BUT_RSHOULDER,    true);
     else if(_keyboard.getButtonState(GY_KEY_E) == GY_BUT_STATE_RELEASED) _controllers[port].setPressed(GY_CONTROLLER_BUT_RSHOULDER, false);
 
-
     if(_keyboard.isPressed(GY_KEY_Q)) _controllers[port].setPressed(GY_CONTROLLER_BUT_LANALOG,      true);
     else if(_keyboard.getButtonState(GY_KEY_Q) == GY_BUT_STATE_RELEASED) _controllers[port].setPressed(GY_CONTROLLER_BUT_LANALOG, false);
 
-
     if(_keyboard.isPressed(GY_KEY_R)) _controllers[port].setPressed(GY_CONTROLLER_BUT_RANALOG,      true);
     else if(_keyboard.getButtonState(GY_KEY_R) == GY_BUT_STATE_RELEASED) _controllers[port].setPressed(GY_CONTROLLER_BUT_RANALOG, false);
+
+    if(_keyboard.isPressed(GY_KEY_RETURN)) _controllers[port].setPressed(GY_CONTROLLER_BUT_START,      true);
+    else if(_keyboard.getButtonState(GY_KEY_RETURN) == GY_BUT_STATE_RELEASED) _controllers[port].setPressed(GY_CONTROLLER_BUT_START, false);
+
+    if(_keyboard.isPressed(GY_KEY_RSHIFT)) _controllers[port].setPressed(GY_CONTROLLER_BUT_SELECT,      true);
+    else if(_keyboard.getButtonState(GY_KEY_RSHIFT) == GY_BUT_STATE_RELEASED) _controllers[port].setPressed(GY_CONTROLLER_BUT_SELECT, false);
 
     if(_keyboard.getButtonState(GY_KEY_DPAD_U) == GY_BUT_STATE_RELEASED)        lanalog.y = 0.0f;
     else if(_keyboard.getButtonState(GY_KEY_DPAD_D) == GY_BUT_STATE_RELEASED)   lanalog.y = 0.0f;

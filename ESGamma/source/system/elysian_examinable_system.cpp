@@ -6,7 +6,7 @@
 #include <crtp/elysian_character.hpp>
 #include "elysian_behavior_system.hpp"
 #include <crtp/elysian_entity.hpp>
-#include "elysian_gui_system.hpp"
+#include "elysian_gui_system_base.hpp"
 #include <crtp/elysian_input_system.hpp>
 
 namespace elysian {

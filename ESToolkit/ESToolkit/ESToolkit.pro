@@ -142,7 +142,6 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_dialog_system.cpp \
     ../../ESGamma/source/system/elysian_engine.cpp \
     ../../ESGamma/source/system/elysian_examinable_system.cpp \
-    ../../ESGamma/source/system/elysian_gui_system.cpp \
     ../../ESGamma/source/system/elysian_light_system.cpp \
     ../../ESGamma/source/system/elysian_map_system_base.cpp \
     ../../ESGamma/source/system/elysian_particle_system.cpp \
@@ -206,7 +205,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
+    ../../ESGamma/source/system/elysian_gui_system_base.cpp
 
 
 !ios: !dreamcast: !android {
@@ -365,7 +365,6 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_dialog_system.hpp \
     ../../ESGamma/include/system/elysian_engine.hpp \
     ../../ESGamma/include/system/elysian_examinable_system.hpp \
-    ../../ESGamma/include/system/elysian_gui_system.hpp \
     ../../ESGamma/include/system/elysian_light_system.hpp \
     ../../ESGamma/include/system/elysian_map_system_base.hpp \
     ../../ESGamma/include/system/elysian_particle_system.hpp \
@@ -463,7 +462,10 @@ HEADERS += \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp
+    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
+    ../../ESGamma/include/system/elysian_gui_system_base.hpp \
+    ../../ESGamma/include/crtp/elysian_gui_system.hpp \
+    include/estk/tk_gui_system.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

@@ -1,5 +1,5 @@
-#ifndef ELYSIAN_GUI_SYSTEM_HPP
-#define ELYSIAN_GUI_SYSTEM_HPP
+#ifndef ELYSIAN_GUI_SYSTEM_BASE_HPP
+#define ELYSIAN_GUI_SYSTEM_BASE_HPP
 
 #include "elysian_system.hpp"
 #include "elysian_font.hpp"
@@ -38,6 +38,7 @@
 #define ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES      2
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
+ELYSIAN_ASSET_TYPEDEF(MenuEntity)
 
 namespace elysian {
 
@@ -70,7 +71,11 @@ namespace elysian {
         virtual void    recursiveRender(const float alpha) override;
 	};
 
-	class MenuEntity: public MenuWidget, public Entity {
+    class MenuEntityBase:
+            public LuaTableProxy<MenuEntityBase, MenuEntity, Entity>,
+            public MenuWidget,
+            public Entity
+    {
 	public:
 		enum SIZE_TYPE { SIZE_RELATIVE, SIZE_ABSOLUTE };
 	private:
@@ -80,8 +85,12 @@ namespace elysian {
         SIZE_TYPE _sizeType				= SIZE_RELATIVE;
 
 	public:
-                        MenuEntity(void);
-        virtual         ~MenuEntity(void);
+                        MenuEntityBase(void);
+        virtual         ~MenuEntityBase(void);
+
+        using           LuaTableProxy<MenuEntityBase, MenuEntity, Entity>::registerProxyMetaTable;
+        using           LuaTableProxy<MenuEntityBase, MenuEntity, Entity>::fromTable;
+        using           LuaTableProxy<MenuEntityBase, MenuEntity, Entity>::lua_downCast;
 
         void            addChildWidget(MenuWidget*const widget);
         void            removeChildWidget(MenuWidget*const widget);
@@ -216,10 +225,10 @@ namespace elysian {
 	inline void MenuText::setAlignment(const Font::ALIGNMENT align) { _align = align; }
 	inline void MenuText::setText(const char * const text) { strcpy(_text, text); }
 
-    inline MenuEntity::MenuEntity(void) { setPlaneType(GY_RECT_PLANE_BOTTOM); }
-	inline void MenuEntity::addChildWidget(MenuWidget*const widget) { _childWidgets.claimFreeEntry() = widget; }
-	inline void MenuEntity::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
-    inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
+    inline MenuEntityBase::MenuEntityBase(void) { setPlaneType(GY_RECT_PLANE_BOTTOM); }
+    inline void MenuEntityBase::addChildWidget(MenuWidget*const widget) { _childWidgets.claimFreeEntry() = widget; }
+    inline void MenuEntityBase::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
+    inline void MenuEntityBase::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
 
     inline void GuiSystem::setExamineEntity(const Entity * const entity) { _examineEntity = entity; }
     inline const Entity* GuiSystem::getExamineEntity(void) const { return _examineEntity; }

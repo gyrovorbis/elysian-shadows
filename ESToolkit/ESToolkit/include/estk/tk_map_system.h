@@ -3,7 +3,7 @@
 
 #include <elysian_map_system_base.hpp>
 #include <tk_map_view_tile_graphics_item.h>
-#include <elysian_gui_system.hpp>
+#include <elysian_gui_system_base.hpp>
 #include <tk_assets.h>
 
 class TkMapSystem:  public MapViewTileGraphicsItem,

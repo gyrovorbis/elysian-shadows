@@ -1,4 +1,4 @@
-#include "elysian_gui_system.hpp"
+#include <crtp/elysian_gui_system.hpp>
 #include "elysian_adventure_log.hpp"
 #include "elysian_font.hpp"
 #include "elysian_debug.hpp"
@@ -82,12 +82,12 @@ void MenuText::recursiveRender(const float fadeAlpha) {
     _color.a = baseAlpha;
 }
 
-MenuEntity::~MenuEntity(void) {
+MenuEntityBase::~MenuEntityBase(void) {
     //recursively delete children
 //    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
 }
 
-void MenuEntity::recursiveRender(const float fadeAlpha) {
+void MenuEntityBase::recursiveRender(const float fadeAlpha) {
     GYVector4 localVert = { _transform._pos.x, _transform._pos.y, _transform._pos.z, 1.0f };
     GYVector4 worldVert;
     float baseAlpha[4];

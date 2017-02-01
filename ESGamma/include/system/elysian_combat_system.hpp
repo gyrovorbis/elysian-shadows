@@ -6,7 +6,7 @@
 #include "elysian_lua_manager.hpp"
 #include <utility/elysian_mem_pool.hpp>
 #include "elysian_collision_system.hpp"
-#include "elysian_gui_system.hpp"
+#include "elysian_gui_system_base.hpp"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Combat)
