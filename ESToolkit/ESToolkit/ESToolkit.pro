@@ -206,7 +206,9 @@ SOURCES += \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
-    ../../ESGamma/source/system/elysian_gui_system_base.cpp
+    ../../ESGamma/source/system/elysian_gui_system_base.cpp \
+    ../../ESGamma/source/gui/elysian_widget.cpp \
+    ../../ESGamma/source/gui/elysian_layout.cpp
 
 
 !ios: !dreamcast: !android {
@@ -465,7 +467,9 @@ HEADERS += \
     ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
     ../../ESGamma/include/system/elysian_gui_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_gui_system.hpp \
-    include/estk/tk_gui_system.h
+    include/estk/tk_gui_system.h \
+    ../../ESGamma/include/gui/elysian_widget.hpp \
+    ../../ESGamma/include/gui/elysian_layout.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

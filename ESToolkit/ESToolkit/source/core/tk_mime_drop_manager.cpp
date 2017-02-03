@@ -5,6 +5,8 @@
 
 MimeDropManager::MimeDropManager(QVector<Handler>&& handlers): _handlers(handlers) {}
 
+MimeDropManager::MimeDropManager(QVector<Handler>& handlers): handlers(handlers) {}
+
 void MimeDropManager::addHandler(int type, DropCbType dropCallback, CanDropCbType canDropCallback, Qt::DropActions actions) {
     _handlers.push_back(Handler(
                             type,

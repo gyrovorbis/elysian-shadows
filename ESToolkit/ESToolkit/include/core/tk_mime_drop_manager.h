@@ -37,6 +37,7 @@ public:
 
                         MimeDropManager(void) = default;
                         MimeDropManager(QVector<Handler>&& handlers);
+                        MimeDropManager(QVector<Handler>& handlers);
 
     bool                isMimeArraySupported(void) const;
     void                setMimeArraySupported(bool v);
