@@ -33,11 +33,11 @@ static inline const char* _openALError(const int err) {
     }
 }
 
-static inline int _checkALError(void) {
+static inline int _checkALError(const char* context) {
     int error = alGetError();
 
     if(error != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "OpenAL Error raised: %s", _openALError(error));
+        _gyLog(GY_DEBUG_WARNING, "OpenAL Error raised from [%s]: %s", context, _openALError(error));
         return 1;
     }
     return 0;
