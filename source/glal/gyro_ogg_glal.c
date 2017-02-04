@@ -380,6 +380,7 @@ void gyAudOggStreamStop(struct GYAudioSource*src) {
 
     gyAudOggStreamPause(src);
     ov_pcm_seek(&payload->oggStream, 0);
+    stream->ogg = NULL;
 
     mtx_unlock(&stream->streamMutex);
 #endif
