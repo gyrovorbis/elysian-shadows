@@ -726,6 +726,8 @@ namespace elysian {
 
     //Todo: this is fucking reested for DC to be doing every frame
     void AudioSystem::updateAreaTracks(void) {
+        return;
+
         auto isValid = [](const char* path) {
             return (path && strcmp(path, "") != 0);
         };
