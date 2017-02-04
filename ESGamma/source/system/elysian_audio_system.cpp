@@ -744,14 +744,24 @@ namespace elysian {
             if(isValid(path)) {
                 if(!_bgmTracks[i] || strcmp(_bgmTracks[i]->path, path) != 0) {
                     if(_streamChannels[StreamChannel::BGM].track == i) {
+#if 1
                         stopBgmTrack();
                         loadBgmTrack(i, path);
                         fadeInBgmTrack(1.0);
+                        //playBgmTrack();
+#else
+                        fadeIntoNewBgmTrack(i, 2.0, path);
+#endif
                     }
                     else loadBgmTrack(i, path);
                 }
             } else if(_streamChannels[StreamChannel::BGM].track == i) {
-                fadeOutBgmTrack(1.0);
+#if 1
+                stopBgmTrack();
+                loadBgmTrack(i, nullptr);
+#else
+                fadeIntoNewBgmTrack(i, 2.0, nullptr);
+#endif
             }
         }
 
@@ -769,8 +779,11 @@ namespace elysian {
                     stopAuxTrack(i);
                     loadAuxTrack(i, path);
                     fadeInAuxTrack(i, 1.0);
+                    //playAuxTrack(i);
                 }
             } else {
+                //stopAuxTrack(i);
+                loadAuxTrack(i, nullptr);
                 fadeOutAuxTrack(i, 1.0);
             }
         }
