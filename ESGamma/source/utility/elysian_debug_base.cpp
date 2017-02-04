@@ -230,7 +230,7 @@ static EventCallback callback;
 
 void DebugBase::processInput(Keyboard*const input) {
 	static float theta = 0.0f;
-	static unsigned size = 3;
+//	static unsigned size = 3;
 //	static unsigned intensity = 200;
     static bool freeCam = false;
 

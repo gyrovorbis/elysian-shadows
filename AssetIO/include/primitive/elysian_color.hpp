@@ -141,7 +141,17 @@ namespace elysian {
         Color4&         operator+=(const GYColor4& rhs);
         Color4&         operator-=(const GYColor4& rhs);
 
-
+        static const Color4 white;
+        static const Color4 black;
+        static const Color4 blue;
+        static const Color4 green;
+        static const Color4 red;
+        static const Color4 yellow;
+        static const Color4 orange;
+        static const Color4 gray;
+        static const Color4 aqua;
+        static const Color4 brown;
+        static const Color4 purple;
     };
 
 

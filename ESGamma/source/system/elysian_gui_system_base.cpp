@@ -14,6 +14,7 @@
 #include <crtp/elysian_examinable.hpp>
 #include <crtp/elysian_combat.hpp>
 #include <crtp/elysian_renderable.hpp>
+#include "gui/elysian_label_widget.hpp"
 
 namespace elysian {
 
@@ -156,6 +157,8 @@ bool GuiSystem::loadAssets(void) {
     success &= pragmata18.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA18, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA18);
     success &= pragmata22.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA22, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA22);
     success &= pragmata26.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA26, 512, 512, 32, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA26);
+
+    LabelWidget::setDefaultFont(&pragmata18);
 
     MenuText::_fonts[0] = &twcen;
     MenuText::_fonts[1] = &verdana;

@@ -87,7 +87,8 @@ namespace elysian {
 		Renderable*			addRenderable(void);
 		Collidable*			addCollidable(void);
 		RigidBody*			addRigidBody(void);
-		Character*			addCharacter(void);		Warp*				addWarp(void);
+        Character*			addCharacter(void);
+        Warp*				addWarp(void);
 		Examinable*			addExaminable(void);
 		AudioSource*		addAudioSource(void);
 		LightSource*		addLightSource(void);

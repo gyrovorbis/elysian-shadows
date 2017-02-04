@@ -81,8 +81,8 @@ namespace elysian {
 	private:
         Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(45);
         //Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(10);
-        //SIZE_TYPE _sizeType				= SIZE_ABSOLUTE;
-        SIZE_TYPE _sizeType				= SIZE_RELATIVE;
+        SIZE_TYPE _sizeType				= SIZE_ABSOLUTE;
+        //SIZE_TYPE _sizeType				= SIZE_RELATIVE;
 
 	public:
                         MenuEntityBase(void);

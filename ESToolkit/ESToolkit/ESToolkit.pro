@@ -208,7 +208,8 @@ SOURCES += \
     ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
     ../../ESGamma/source/system/elysian_gui_system_base.cpp \
     ../../ESGamma/source/gui/elysian_widget.cpp \
-    ../../ESGamma/source/gui/elysian_layout.cpp
+    ../../ESGamma/source/gui/elysian_layout.cpp \
+    ../../ESGamma/source/gui/elysian_label_widget.cpp
 
 
 !ios: !dreamcast: !android {
@@ -469,7 +470,9 @@ HEADERS += \
     ../../ESGamma/include/crtp/elysian_gui_system.hpp \
     include/estk/tk_gui_system.h \
     ../../ESGamma/include/gui/elysian_widget.hpp \
-    ../../ESGamma/include/gui/elysian_layout.hpp
+    ../../ESGamma/include/gui/elysian_layout.hpp \
+    ../../ESGamma/include/gui/elysian_entity_widget.hpp \
+    ../../ESGamma/include/gui/elysian_label_widget.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

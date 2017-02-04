@@ -17,11 +17,11 @@ namespace elysian {
 	public:
 
 		enum ALIGNMENT	{ C_ALIGN, L_ALIGN, R_ALIGN };
-		        bool            loadTextData(const char* const imgFile, const int sheetWidth, const int sheetHeight, const int spriteWidth, const int spriteHeight, const char* const widthFile);
+        bool            loadTextData(const char* const imgFile, const int sheetWidth, const int sheetHeight, const int spriteWidth, const int spriteHeight, const char* const widthFile);
         void            drawString(const ALIGNMENT align, const char *str);
 
         unsigned        getStringPixelWidth(const char *string);
-        unsigned        stringLengthWithinWidth(const char*string, const unsigned int width);
+        unsigned        stringLengthWithinWidth(const char*string, const unsigned int width, const char* postfix=nullptr);
 		
         void            drawStringf(const ALIGNMENT align, const char *str, ...);
 
@@ -30,6 +30,8 @@ namespace elysian {
 
         static GYColor4 getColorPaletteEntry(const unsigned index);
         static void     setColorPaletteEntry(const unsigned index, const GYColor4 color);
+
+        int             getCharacterHeight(void) const;
 
 	private:
 
@@ -67,7 +69,7 @@ namespace elysian {
 		gyVidQuadListEnd();
 	}
 
-    inline unsigned int Font::stringLengthWithinWidth(const char *const string, const unsigned int width) {
+    inline unsigned int Font::stringLengthWithinWidth(const char *const string, const unsigned int width, const char* postfix) {
         unsigned curWidth = 0;
         unsigned curIndex = 0;
         unsigned length = strlen(string);
@@ -98,6 +100,10 @@ namespace elysian {
         if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
         else gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidQuadListBegin(&_color);
+    }
+
+    inline int Font::getCharacterHeight(void) const {
+        return _transform.getSizeX();
     }
 }
 
