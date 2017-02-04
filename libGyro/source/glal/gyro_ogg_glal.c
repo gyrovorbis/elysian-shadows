@@ -150,7 +150,7 @@ void gyAudOggDestroy(GYOgg*const ogg) {
     //Homeboy only deleted one, but I think that's a memory leak!
     alDeleteBuffers(2, payload->buffers);
     if((errorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "! - Could not delete OpenAL buffers from OGG stream: %s", _openALError(errorCode));
+        _gyLog(GY_DEBUG_WARNING, "Could not delete OpenAL buffers from OGG stream [%s]: %s", ogg->path, _openALError(errorCode));
     }
 
     ov_clear(&payload->oggStream);
