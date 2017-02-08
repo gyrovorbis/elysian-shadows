@@ -74,7 +74,7 @@ void glalAudSourceAlloc(GYAudioSource*const src) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     alGenSources(1, (ALuint*)src);
     alSourcei(*(ALuint*)src, AL_REFERENCE_DISTANCE, _refDist);
-    _checkALError();
+    _checkALError("glalAudSourceAlloc(): alSourcei(AL_REFERENCE_DISTANCE)");
 #endif
 }
 
@@ -90,7 +90,7 @@ void gyAudSourceDestroy(struct GYAudioSource*const src) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     if(!src) return;
     alDeleteSources(1, (ALuint*)src);
-    _checkALError();
+    _checkALError("gyAudSourceDestroy(): alDeleteSources()");
     free(src);
 #endif
 }
@@ -233,7 +233,7 @@ void gyAudBufferDestroy(GYAudBuffer* buff) {
 
     ALuint id = (ALuint)buff->_data;
     alDeleteBuffers(1, &id);
-    _checkALError();
+    _checkALError("gyAudBufferDestroy(): alDeleteBuffers()");
     free(buff);
 
     _gyPop(1);
