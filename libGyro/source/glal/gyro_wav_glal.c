@@ -220,7 +220,7 @@ int _gyAudWavFree(GYWav *const wav) {
     GYAudWavPayload *payload = wav->_data;
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     alDeleteBuffers(1, &payload->buffer);
-    _checkALError();
+    _checkALError("_gyAudWavFree(): alDeleteBuffers()");
 #endif
     free(payload);
     return 1;

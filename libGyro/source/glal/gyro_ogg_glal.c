@@ -191,7 +191,7 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
 
     if(size != 0) {
         alBufferData(buffer, payload->format, pcm, size, payload->vorbisInfo->rate);
-        _checkALError();
+        _checkALError("_streamOgg(): alBufferData()");
         return 1;
     }
 #endif
@@ -239,7 +239,7 @@ static int _gyAudOggStreamUpdate(void* data) {
         if(gyAudSourceIsPlaying((GYAudioSource*)stream)) {
 
             alGetSourcei(stream->src, AL_BUFFERS_PROCESSED, &processed);
-            _checkALError();
+            _checkALError("_gyAudOggStreamUpdate(): alGetSourceI(AL_BUFFERS_PROCESSED)");
 
             while(processed--) {
                 ALuint buffer;
@@ -251,7 +251,7 @@ static int _gyAudOggStreamUpdate(void* data) {
                 }
 
                 alSourceQueueBuffers(stream->src, 1, &buffer);
-                _checkALError();
+                _checkALError("_gyAudOggStreamUpdate(): alSourceQueueBuffers()");
             }
         } else done = 1;	//otherwise we're done
 
@@ -334,7 +334,7 @@ void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
     if(validBuffers) {
         alSourceQueueBuffers(*(ALuint*)src, validBuffers, payload->buffers);
         alSourcePlay(*(ALuint*)src);
-        _checkALError();
+        _checkALError("gyAudOggStreamPlay(): alSourcePlay()");
 
         stream->ogg = ogg;
         stream->ogg->looping = stream->looping;
@@ -361,7 +361,7 @@ void gyAudOggStreamPause(struct GYAudioSource*src) {
         ALuint buffer;
 
         alSourceUnqueueBuffers(stream->src, 1, &buffer);
-        _checkALError();
+        _checkALError("gyAudOggStreamPause(): alSourceUnqueueBuffers()");
     }
 
     stream->stillStreaming = 0;
