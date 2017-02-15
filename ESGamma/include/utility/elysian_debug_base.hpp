@@ -121,6 +121,8 @@ namespace elysian {
         bool                    getNextFrame(void) const;
 
         const CmdLineArgs&      getCmdLineArgs(void) const;
+
+        void                    _guiWidgetsTest(void);
 	};
 
 

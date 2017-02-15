@@ -69,7 +69,7 @@ namespace elysian {
         void        setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical);
 
         void        update(void);
-        void        render(void) const;
+        void        render(void);
     };
 
 

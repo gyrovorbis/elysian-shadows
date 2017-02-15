@@ -33,6 +33,9 @@
 #include "elysian_debug_base.hpp"
 #include <crtp/elysian_renderable.hpp>
 #include <system/elysian_input_system_base.hpp>
+#include <gui/elysian_layout.hpp>
+#include <gui/elysian_label_widget.hpp>
+#include <gui/elysian_entity_widget.hpp>
 
 namespace elysian {
 
@@ -42,13 +45,63 @@ FILE*                       DebugBase::_dbgFile;
 FILE*                       DebugBase::_luaDbgFile;
 Engine*                     DebugBase::_engine          = nullptr;
 unsigned int                DebugBase::_stackDepth      = 0;
-Debug::SEVERITY                DebugBase::_level           = ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT;
+Debug::SEVERITY             DebugBase::_level           = ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT;
 Debug::ADV_LOG_WRAP         DebugBase::_advLogWrap      = Debug::ADV_LOG_LOG_OFF;
 const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
-                                &libGyroPrintf,
-                                &Debug::push,
-                                &Debug::pop
-                            };
+    &libGyroPrintf,
+    &Debug::push,
+    &Debug::pop
+};
+
+void DebugBase::_guiWidgetsTest(void) {
+    static bool initialized = false;
+    HorizontalLayout* hLayout =  nullptr;
+    EntityWidget* mainWidget = nullptr;
+    LabelWidget* labelWidget = nullptr;
+    Entity* entity = nullptr;
+    EntityWidget* subWidget = nullptr;
+    VerticalLayout* vLayout = nullptr;
+
+    if(!initialized) {
+        mainWidget = new EntityWidget();
+        hLayout = new HorizontalLayout;
+        mainWidget->setLayout(hLayout);
+        labelWidget = new LabelWidget("lolzer");
+        _engine->getGuiSys()->setFgWidget(mainWidget);
+        entity = new Entity();
+        entity->getTransform().setPos(400, 200, 51);
+        entity->getTransform().setSizeX(300);
+        auto* render = entity->addRenderable();
+        SpriteAttrib* attrib = new SpriteAttrib;
+        attrib->setColor(100, 100, 100, 100);
+        render->setSpriteAttrib(attrib);
+        mainWidget->setEntity(entity);
+
+        subWidget = new EntityWidget();
+        Entity* entity2 = new Entity();
+        entity2->getTransform().setPos(100, 100, 52);
+        entity2->getTransform().setSizeX(150);
+        //entity2->getTransform().setSizeY(50);
+        auto* render2 = entity2->addRenderable();
+        SpriteAttrib* attrib2 = new SpriteAttrib;
+        attrib2->setColor(0, 200, 100, 100);
+        render2->setSpriteAttrib(attrib2);
+        subWidget->setEntity(entity2);
+        hLayout->addWidget(subWidget);
+        hLayout->addWidget(labelWidget);
+
+        auto* text2 = new LabelWidget("A");
+        auto* text3 = new LabelWidget("B");
+        vLayout = new VerticalLayout();
+        vLayout->addWidget(text2);
+        vLayout->addWidget(text3);
+        subWidget->setLayout(vLayout);
+
+        initialized = true;
+    }
+
+}
+
 
 Debug& DebugBase::getInstance(void) {
     static Debug instance;
@@ -346,6 +399,7 @@ void DebugBase::processInput(Keyboard*const input) {
 
     if(input->isTapped(GY_KEY_Z)) { //Reset Transform
 		_engine->_cameraSystem->setStaticScale(1.0f);
+        _guiWidgetsTest();
         //_engine->_cameraSystem->setOrientZ(0.0f);
         //_engine->_cameraSystem->setOrientX(0.0f);
 	}

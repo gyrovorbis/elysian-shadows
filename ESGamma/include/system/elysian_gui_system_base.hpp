@@ -43,6 +43,7 @@ ELYSIAN_ASSET_TYPEDEF(MenuEntity)
 namespace elysian {
 
 	class GuiSystem;
+    class Widget;
 
 	class MenuWidget {
 	public:
@@ -151,6 +152,7 @@ namespace elysian {
 
         MenuWidget*                 _fgMenuWidget           = nullptr;
         MenuWidget*                 _bgMenuWidget           = nullptr;
+        Widget*                     _fgWidget               = nullptr;
         const Entity*               _examineEntity          = nullptr;
 
 
@@ -182,6 +184,7 @@ namespace elysian {
         int             getDebugOverlayPage(void) const;
         void            nextDebugOverlayPage(void);
         void            setFgMenuWidget(MenuWidget*const widget);
+        void            setFgWidget(Widget*const widget);
         void            clearFgMenuWidget(void);
         void            setBgMenuWidget(MenuWidget*const widget);
         void            clearBgMenuWidget(void);
@@ -238,6 +241,7 @@ namespace elysian {
         if(++_debugOverlayPage >= ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES) _debugOverlayPage = -1;
     }
 	inline void GuiSystem::setFgMenuWidget(MenuWidget * const widget) { _fgMenuWidget = widget; }
+    inline void GuiSystem::setFgWidget(Widget * const widget) { _fgWidget = widget; }
 	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
 	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }
 	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }

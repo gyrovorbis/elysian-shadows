@@ -40,7 +40,8 @@ namespace elysian {
         }
     }
 
-    void Layout::render(void) const {
+    void Layout::render(void) {
+        update();
         for(auto&& widget: _widgets) widget->render();
     }
 
@@ -145,7 +146,7 @@ namespace elysian {
 
             for(auto&& widget : _widgets) {
                 endPos = startPos + widget->getSize(axis);
-                widget->setPosition(axis, (endPos-startPos)*0.5f);
+                widget->setPosition(axis, (endPos+startPos)*0.5f);
                 startPos = endPos;
             }
 

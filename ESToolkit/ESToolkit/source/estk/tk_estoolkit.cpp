@@ -792,7 +792,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
         _engineGLView->update();
         _engineGLView->show();
         _engineGLView->updateGL();
-                _ui->mapView->setViewport(viewport);
+        _ui->mapView->setViewport(viewport);
 
 
     GYInputInitParams inputParams = {

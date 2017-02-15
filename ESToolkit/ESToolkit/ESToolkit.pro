@@ -209,7 +209,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_gui_system_base.cpp \
     ../../ESGamma/source/gui/elysian_widget.cpp \
     ../../ESGamma/source/gui/elysian_layout.cpp \
-    ../../ESGamma/source/gui/elysian_label_widget.cpp
+    ../../ESGamma/source/gui/elysian_label_widget.cpp \
+    ../../ESGamma/source/gui/elysian_entity_widget.cpp
 
 
 !ios: !dreamcast: !android {

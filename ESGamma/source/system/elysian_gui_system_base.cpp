@@ -251,6 +251,7 @@ void GuiSystem::renderForeground(void) {
     //if(!_debugOverlayEnabled) return;
     adventureLog.render();
     _renderMenuWidget(_fgMenuWidget);
+    if(_fgWidget) _fgWidget->render();
 }
 
 void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
