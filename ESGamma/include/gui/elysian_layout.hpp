@@ -41,7 +41,7 @@ namespace elysian {
                     ~Layout(void);
 
         void        addWidget(Widget* widget);
-        void        removeWidget(Widget* widget);
+        Widget*     removeWidget(Widget* widget);   //Returns widget if found, nullptr otherwise (for Lua API).
         void        setWidgets(std::vector<Widget*> widgets);
         auto        getWidgets(void) const -> const std::vector<Widget*>&;
         auto        getWidgets(void) -> std::vector<Widget*>&;

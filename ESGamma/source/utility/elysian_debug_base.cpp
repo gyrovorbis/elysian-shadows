@@ -66,7 +66,7 @@ void DebugBase::_guiWidgetsTest(void) {
         mainWidget = new EntityWidget();
         hLayout = new HorizontalLayout;
         mainWidget->setLayout(hLayout);
-        labelWidget = new LabelWidget("lolzer");
+        labelWidget = new LabelWidget("WISCONSin");
         _engine->getGuiSys()->setFgWidget(mainWidget);
         entity = new Entity();
         entity->getTransform().setPos(400, 200, 51);
@@ -92,8 +92,17 @@ void DebugBase::_guiWidgetsTest(void) {
 
         auto* text2 = new LabelWidget("A");
         auto* text3 = new LabelWidget("B");
+        Entity* entity3 = new Entity();
+        entity3->getTransform().setPos(100, 100, 52);
+        entity3->getTransform().setSizeX(40);
+        entity3->getTransform().setSizeY(40);
+        auto* render3 = entity3->addRenderable();
+        SpriteAttrib* attrib3 = new SpriteAttrib;
+        attrib3->setColor(0, 0, 255, 100);
+        render3->setSpriteAttrib(attrib3);
         vLayout = new VerticalLayout();
         vLayout->addWidget(text2);
+        vLayout->addWidget(new EntityWidget(entity3));
         vLayout->addWidget(text3);
         subWidget->setLayout(vLayout);
 

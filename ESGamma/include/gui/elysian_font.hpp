@@ -32,11 +32,13 @@ namespace elysian {
         static void     setColorPaletteEntry(const unsigned index, const GYColor4 color);
 
         int             getCharacterHeight(void) const;
+        void            setCharacterHeight(unsigned short height);
 
 	private:
 
         static GYColor4 _colorPalette[ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE];
         unsigned short  _charWidth[128];
+        unsigned short  _charHeight = 32;
         unsigned short  _spacing = ELYSIAN_FONT_SPACING_DEFAULT;
         bool            _batching = false;
 
@@ -69,7 +71,7 @@ namespace elysian {
 		gyVidQuadListEnd();
 	}
 
-    inline unsigned int Font::stringLengthWithinWidth(const char *const string, const unsigned int width, const char* postfix) {
+    inline unsigned int Font::stringLengthWithinWidth(const char *const string, const unsigned int width, const char* /*postfix*/) {
         unsigned curWidth = 0;
         unsigned curIndex = 0;
         unsigned length = strlen(string);
@@ -102,8 +104,10 @@ namespace elysian {
         gyVidQuadListBegin(&_color);
     }
 
+    inline void Font::setCharacterHeight(unsigned short height) { _charHeight = height; }
+
     inline int Font::getCharacterHeight(void) const {
-        return _transform.getSizeX();
+        return _transform.getSizeY();
     }
 }
 

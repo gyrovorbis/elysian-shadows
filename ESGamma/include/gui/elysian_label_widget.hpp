@@ -22,7 +22,7 @@ namespace elysian {
         char            _text[ELYSIAN_LABEL_WIDGET_TEXT_SIZE]   = { 0 };
         int             _position[AXIS_COUNT]                   = { 100 };
         Color4          _color                                  = Color4::white;
-        ALIGNMENT       _alignment                              = LEFT;
+        ALIGNMENT       _alignment                              = CENTER;
         int             _width                                  = 0;
         int             _strlen                                 = 0;
         Font*           _font                                   = _defaultFont;

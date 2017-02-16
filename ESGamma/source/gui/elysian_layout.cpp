@@ -30,14 +30,15 @@ namespace elysian {
         widget->setParentLayout(this);
     }
 
-    void Layout::removeWidget(Widget* widget) {
+    Widget* Layout::removeWidget(Widget* widget) {
         for(auto it = _widgets.begin(); it != _widgets.end(); ++it) {
             if(*it == widget) {
                 _widgets.erase(it);
                 widget->setParentLayout(nullptr);
-                break;
+                return widget;
             }
         }
+        return nullptr;
     }
 
     void Layout::render(void) {

@@ -46,7 +46,6 @@ OOLUA_PROXY(AdventureLog)
     OOLUA_MEM_FUNC(void, clear)
 OOLUA_PROXY_END
 
-
 OOLUA_PROXY(GuiSystem)
     OOLUA_TAGS (
         No_public_constructors,

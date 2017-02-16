@@ -53,7 +53,7 @@ namespace elysian {
         //_fonts[_type]->_transform.setPosZ(worldVert.z);
         _font->_transform.setScale(1.0f, 1.0f);
         _font->setColor(_color);
-        _font->drawString((Font::ALIGNMENT)_alignment, _text);
+        _font->drawString(Font::C_ALIGN, _text);
 
         gyMatPop();
 

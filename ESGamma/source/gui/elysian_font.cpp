@@ -18,6 +18,8 @@ bool Font::loadTextData(const char*const imgFile, const int sheetWidth, const in
 
     //_transform.setSize(16.0f, 32.0f);
     _transform.setSize((float)spriteWidth, (float)spriteHeight);
+    _spriteWidth = spriteWidth;
+    _spriteHeight = spriteHeight;
 
 	//CHECK IF TEXTURE IS EVER LOADED
     if(!(_tex = gyVidTexCreateSheetUniform(imgFile, sheetWidth, sheetHeight, spriteWidth, spriteHeight))) {
@@ -76,7 +78,7 @@ void Font::drawString(const ALIGNMENT align, const char *const buffer) {
 	int i;
     float currentX = _transform._pos.x;
     float currentY = _transform._pos.y;
-	int temp = 0;
+    float temp = 0.0f;
 
     auto getFirstIndex = [&]() {
         unsigned index = 0;
@@ -98,12 +100,15 @@ void Font::drawString(const ALIGNMENT align, const char *const buffer) {
 
 	if(align == C_ALIGN) {
         temp = getStringPixelWidth(buffer);
-        currentX = (_transform._pos.x - (int)(temp/2.0f)) + 0.5f*_charWidth[(int)getFirstIndex()];
+        currentX = (_transform._pos.x - (temp/2.0f)) + 0.5f*_spriteWidth;//_charWidth[(int)getFirstIndex()];
+      //  currentY += 0.5f*getCharacterHeight();
     }
     else if(align == R_ALIGN) {
         temp = getStringPixelWidth(buffer);
         currentX = (_transform._pos.x - temp) + 0.5f*_charWidth[(int)getFirstIndex()];
-	}
+    } else if(align == L_ALIGN) {
+    //    currentX += 0.5f*_charWidth[(int)getFirstIndex()];
+    }
 
 	i = 0;
 
@@ -185,7 +190,8 @@ unsigned int Font::getStringPixelWidth(const char *string) {
                 add = true;
             default: break;
             }
-        } else if(string[i] == ' ') {
+        //Don't pad spaces OR the last character in the string.
+        } else if(string[i] == ' ' || i == length-1) {
             pixels += _charWidth[(int)string[i]];
             add = false;
         }

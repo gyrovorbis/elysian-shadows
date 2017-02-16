@@ -161,7 +161,7 @@ namespace elysian {
             break;
         case PrimAttrib::SPRITE:
             if(_spriteAttrib->_color.a == 0.0f) return;
-            gyVidAlphaLevel(GY_ALPHA_NONE);
+            gyVidAlphaLevel((_spriteAttrib->_color.a < 255)? GY_ALPHA_FULL : GY_ALPHA_NONE);
 
            // newZFactor = glalOrientNormalMapZFactor(_texOrient);
             //glalVidNormalMapZFactorUpdateUniform(newZFactor);

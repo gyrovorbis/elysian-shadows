@@ -210,7 +210,9 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_widget.cpp \
     ../../ESGamma/source/gui/elysian_layout.cpp \
     ../../ESGamma/source/gui/elysian_label_widget.cpp \
-    ../../ESGamma/source/gui/elysian_entity_widget.cpp
+    ../../ESGamma/source/gui/elysian_entity_widget.cpp \
+    ../../ESGamma/source/proxy/elysian_widget_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_layout_proxy.cpp
 
 
 !ios: !dreamcast: !android {
@@ -473,7 +475,9 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_widget.hpp \
     ../../ESGamma/include/gui/elysian_layout.hpp \
     ../../ESGamma/include/gui/elysian_entity_widget.hpp \
-    ../../ESGamma/include/gui/elysian_label_widget.hpp
+    ../../ESGamma/include/gui/elysian_label_widget.hpp \
+    ../../ESGamma/include/proxy/elysian_widget_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_layout_proxy.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

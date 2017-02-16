@@ -155,6 +155,7 @@ bool GuiSystem::loadAssets(void) {
     success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
     success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
     success &= pragmata18.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA18, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA18);
+    pragmata18.setCharacterHeight(16);
     success &= pragmata22.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA22, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA22);
     success &= pragmata26.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA26, 512, 512, 32, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA26);
 
@@ -249,9 +250,9 @@ void GuiSystem::renderForeground(void) {
     _renderDebugOverlay();
     if(_fgFadeAlpha == 0.0f) return;
     //if(!_debugOverlayEnabled) return;
+    if(_fgWidget) _fgWidget->render();
     adventureLog.render();
     _renderMenuWidget(_fgMenuWidget);
-    if(_fgWidget) _fgWidget->render();
 }
 
 void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
