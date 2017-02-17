@@ -8,38 +8,10 @@ namespace OOLUA {
     typedef elysian::Layout             Layout;
     typedef elysian::HorizontalLayout   HorizontalLayout;
     typedef elysian::VerticalLayout     VerticalLayout;
+    typedef elysian::Widget             Widget;
+
+    template<> class Proxy_class<elysian::Widget>;
 }
-
-#if 0
-
-void        addWidget(Widget* widget);
-void        removeWidget(Widget* widget);
-void        setWidgets(std::vector<Widget*> widgets);
-auto        getWidgets(void) const -> const std::vector<Widget*>&;
-auto        getWidgets(void) -> std::vector<Widget*>&;
-unsigned    getWidgetCount(void) const;
-Widget*     getWidget(unsigned index) const;
-
-AXIS        getGroupingAxis(void) const;
-Widget*     getParent(void) const;
-void        setParent(Widget* parent);
-
-int         getSpacing(AXIS axis) const;
-void        setSpacing(AXIS axis, int spacing);
-int         getHorizontalSpacing(void) const;
-int         getVerticalSpacing(void) const;
-void        setHorizontalSpacing(int spacing);
-void        setVerticalSpacing(int spacing);
-void        setSpacing(int horizontal, int vertical);
-
-ALIGNMENT   getAlignment(AXIS axis) const;
-void        setAlignment(AXIS axis, ALIGNMENT align);
-ALIGNMENT   getHorizontalAlignment(void) const;
-ALIGNMENT   getVerticalAlignment(void) const;
-void        setHorizontalAlignment(ALIGNMENT align);
-void        setVerticalAlignnment(ALIGNMENT align);
-void        setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical);
-#endif
 
 OOLUA_PROXY(Layout)
     OOLUA_TAGS (
@@ -48,7 +20,28 @@ OOLUA_PROXY(Layout)
         Abstract
     )
     OOLUA_MEM_FUNC(void, addWidget, cpp_in_p<Widget*>)
-    OOLUA_MEM_FUNC(maybe_null<lua_out_p<Widget*>>, removeWidget, Widget*)
+    OOLUA_MEM_FUNC(Widget*, removeWidget, Widget*)
+    OOLUA_MEM_FUNC_RENAME(setWidgets, void, setWidgetsLua, LuaVariant)
+    OOLUA_MEM_FUNC_CONST_RENAME(getWidgets, LuaVariant, getWidgetsLua)
+    OOLUA_MEM_FUNC_CONST(unsigned, getWidgetCount)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Widget*>, getWidget, unsigned)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Widget*>, getParent)
+    OOLUA_MEM_FUNC(void, setHorizontalSpacing, int)
+    OOLUA_MEM_FUNC_CONST(int, getHorizontalSpacing)
+    OOLUA_MEM_FUNC(void, setVerticalSpacing, int)
+    OOLUA_MEM_FUNC_CONST(int, getVerticalSpacing)
+    OOLUA_MEM_FUNC(void, setSpacing, int, int)
+    OOLUA_MEM_FUNC_CONST(Layout::ALIGNMENT, getHorizontalAlignment)
+    OOLUA_MEM_FUNC(void, setHorizontalAlignment, Layout::ALIGNMENT)
+    OOLUA_MEM_FUNC_CONST(Layout::ALIGNMENT, getVerticalAlignment)
+    OOLUA_MEM_FUNC(void, setVerticalAlignment, Layout::ALIGNMENT)
+    OOLUA_MEM_FUNC(void, setAlignment, Layout::ALIGNMENT, Layout::ALIGNMENT)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(HorizontalLayout, Layout)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(VerticalLayout, Layout)
 OOLUA_PROXY_END
 
 

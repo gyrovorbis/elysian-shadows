@@ -58,84 +58,6 @@ inline void GuiSystem::CombatStatusIndicator::render(void) {
     _healthMeter[1].render();
 }
 
-void MenuText::recursiveRender(const float fadeAlpha) {
-    GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
-    GYVector4 worldVert;
-
-    const float baseAlpha = _color.a;
-    //_fonts[_type]->setAlpha(baseAlpha*fadeAlpha);
-    _color.a = baseAlpha*fadeAlpha;
-
-    gyMatMultVec(&localVert, &worldVert, 1);
-
-    gyMatPush();
-    gyMatLoadIdentity();
-
-    _fonts[_type]->_transform.setPos(worldVert.x, worldVert.y);
-    _fonts[_type]->_transform.setPosZ(worldVert.z);
-    _fonts[_type]->_transform.setScale(1.0f, 1.0f);
-    _fonts[_type]->setColor(_color);
-    _fonts[_type]->drawString(_align, _text);
-
-    gyMatPop();
-
-    //_fonts[_type]->setAlpha(baseAlpha);
-    _color.a = baseAlpha;
-}
-
-MenuEntityBase::~MenuEntityBase(void) {
-    //recursively delete children
-//    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
-}
-
-void MenuEntityBase::recursiveRender(const float fadeAlpha) {
-    GYVector4 localVert = { _transform._pos.x, _transform._pos.y, _transform._pos.z, 1.0f };
-    GYVector4 worldVert;
-    float baseAlpha[4];
-    QuadSpriteAttrib* quadSprite= nullptr;
-    unsigned attribType = 0;
-
-    if(_sizeType == SIZE_ABSOLUTE) {
-        gyMatMultVec(&localVert, &worldVert, 1);
-        gyMatPush();
-        gyMatLoadIdentity();
-        gyMatTranslate(worldVert.x-_transform._pos.x, worldVert.y-_transform._pos.y, worldVert.z-_transform._pos.z);
-    }
-
-    //Update alpha for fade
-    if(fadeAlpha != 1.0f && getRenderable()) {
-        quadSprite = getRenderable()->getQuadSpriteAttrib();
-        if(quadSprite->getType() == PrimAttrib::QUAD_SPRITE) {
-            for(unsigned i = 0; i < 4; ++i) {
-                baseAlpha[i] = quadSprite->getVertexAlpha(i);
-                quadSprite->setVertexAlpha(i, baseAlpha[i]*fadeAlpha);
-            }
-            attribType = 2;
-        } else {
-            baseAlpha[0] = quadSprite->getAlpha();
-            quadSprite->setAlpha(baseAlpha[0]*fadeAlpha);
-            attribType = 1;
-        }
-    }
-
-    Entity::render();
-
-    gyMatPush();
-    Entity::_transform.apply();
-    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) (*it)->recursiveRender(fadeAlpha);
-    gyMatPop();
-
-    if(_sizeType == SIZE_ABSOLUTE) gyMatPop();
-
-    //set alpha back to base
-    if(attribType == 1) {
-        quadSprite->setAlpha(baseAlpha[0]);
-    } else if(attribType == 2) {
-        for(unsigned i = 0; i < 4; ++i) quadSprite->setVertexAlpha(i, baseAlpha[i]);
-    }
-
-}
-
 const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY;
 
 GuiSystem::GuiSystem(void):
@@ -239,7 +161,7 @@ void GuiSystem::update(void) {
 
 void GuiSystem::renderBackground(void) {
     //if(!_debugOverlayEnabled) return;
-    _renderMenuWidget(_bgMenuWidget);
+    if(_bgWidget) _bgWidget->render();
 }
 
 void GuiSystem::renderForeground(void) {
@@ -252,7 +174,6 @@ void GuiSystem::renderForeground(void) {
     //if(!_debugOverlayEnabled) return;
     if(_fgWidget) _fgWidget->render();
     adventureLog.render();
-    _renderMenuWidget(_fgMenuWidget);
 }
 
 void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {

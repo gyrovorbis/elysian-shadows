@@ -1,6 +1,9 @@
 #include <cstdlib>
-#include "gui/elysian_layout.hpp"
-#include "gui/elysian_widget.hpp"
+#include <gui/elysian_widget.hpp>
+#include <gui/elysian_layout.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_layout_proxy.hpp>
+#include <proxy/elysian_widget_proxy.hpp>
 
 namespace elysian {
 
@@ -35,10 +38,10 @@ namespace elysian {
             if(*it == widget) {
                 _widgets.erase(it);
                 widget->setParentLayout(nullptr);
-                return widget;
+                break;
             }
         }
-        return nullptr;
+        return widget;
     }
 
     void Layout::render(void) {
@@ -158,5 +161,19 @@ namespace elysian {
 
     }
 
+    void Layout::setWidgetsLua(LuaVariant array) {
+        _widgets.clear();
+        for(int i = 1; i <= array.getLength(); ++i) {
+            _widgets.push_back(array[i]->getValue<Widget*>());
+        }
+    }
+
+    LuaVariant Layout::getWidgetsLua(void) const {
+        LuaVariant array = {};
+        for(size_t i = 0; i < _widgets.size(); ++i) {
+            array[(int)i+1].setVariant(_widgets[i]);
+        }
+        return array;
+    }
 
 }

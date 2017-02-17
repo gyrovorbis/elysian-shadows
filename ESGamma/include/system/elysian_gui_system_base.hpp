@@ -38,68 +38,11 @@
 #define ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES      2
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
-ELYSIAN_ASSET_TYPEDEF(MenuEntity)
 
 namespace elysian {
 
 	class GuiSystem;
     class Widget;
-
-	class MenuWidget {
-	public:
-		virtual			~MenuWidget(void)		= default;
-        virtual void	recursiveRender(const float alpha)	= 0;
-	};
-
-	class MenuText: public MenuWidget {
-		friend class GuiSystem;
-	private:
-        static Font*	_fonts[5];
-		char			_text[100];
-		GYVector2		_relPos		= { 0.0f, 0.0f };
-		unsigned		_type		= 0;
-		GYColor4		_color		= { 255, 255, 255, 255 };
-		Font::ALIGNMENT _align		= Font::L_ALIGN;
-	public:
-        virtual         ~MenuText(void)	override = default;
-
-        void            setRelPos(const float x, const float y);
-        void            setFontType(const unsigned type);
-        void            setColor(const GYColor4 color);
-        void            setAlignment(const Font::ALIGNMENT align);
-        void            setText(const char*const text);
-
-        virtual void    recursiveRender(const float alpha) override;
-	};
-
-    class MenuEntityBase:
-            public LuaTableProxy<MenuEntityBase, MenuEntity, Entity>,
-            public MenuWidget,
-            public Entity
-    {
-	public:
-		enum SIZE_TYPE { SIZE_RELATIVE, SIZE_ABSOLUTE };
-	private:
-        Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(45);
-        //Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(10);
-        SIZE_TYPE _sizeType				= SIZE_ABSOLUTE;
-        //SIZE_TYPE _sizeType				= SIZE_RELATIVE;
-
-	public:
-                        MenuEntityBase(void);
-        virtual         ~MenuEntityBase(void);
-
-        using           LuaTableProxy<MenuEntityBase, MenuEntity, Entity>::registerProxyMetaTable;
-        using           LuaTableProxy<MenuEntityBase, MenuEntity, Entity>::fromTable;
-        using           LuaTableProxy<MenuEntityBase, MenuEntity, Entity>::lua_downCast;
-
-        void            addChildWidget(MenuWidget*const widget);
-        void            removeChildWidget(MenuWidget*const widget);
-        void            setSizeType(const SIZE_TYPE type);
-        virtual void    recursiveRender(const float alpha) override;
-
-	};
-
 
     class GuiSystem: public System {
 	private:
@@ -150,8 +93,7 @@ namespace elysian {
         unsigned int                _projWidth;
         unsigned int                _projHeight;
 
-        MenuWidget*                 _fgMenuWidget           = nullptr;
-        MenuWidget*                 _bgMenuWidget           = nullptr;
+        Widget*                     _bgWidget               = nullptr;
         Widget*                     _fgWidget               = nullptr;
         const Entity*               _examineEntity          = nullptr;
 
@@ -185,8 +127,9 @@ namespace elysian {
         void            nextDebugOverlayPage(void);
         void            setFgMenuWidget(MenuWidget*const widget);
         void            setFgWidget(Widget*const widget);
-        void            clearFgMenuWidget(void);
-        void            setBgMenuWidget(MenuWidget*const widget);
+        void            setBgWidget(Widget*const widget);
+        Widget*         getFgWidget(void) const;
+        Widget*         getBgWidget(void) const;
         void            clearBgMenuWidget(void);
         void            setExamineEntity(const Entity* const entity);
         const Entity*   getExamineEntity(void) const;
@@ -222,17 +165,6 @@ namespace elysian {
 
 	// ====== INLINEZ ======
 
-	inline void MenuText::setRelPos(const float x, const float y) { _relPos.x = x; _relPos.y = y; }
-	inline void MenuText::setFontType(const unsigned type) { _type = type; }
-	inline void MenuText::setColor(const GYColor4 color) { _color = color; }
-	inline void MenuText::setAlignment(const Font::ALIGNMENT align) { _align = align; }
-	inline void MenuText::setText(const char * const text) { strcpy(_text, text); }
-
-    inline MenuEntityBase::MenuEntityBase(void) { setPlaneType(GY_RECT_PLANE_BOTTOM); }
-    inline void MenuEntityBase::addChildWidget(MenuWidget*const widget) { _childWidgets.claimFreeEntry() = widget; }
-    inline void MenuEntityBase::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
-    inline void MenuEntityBase::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
-
     inline void GuiSystem::setExamineEntity(const Entity * const entity) { _examineEntity = entity; }
     inline const Entity* GuiSystem::getExamineEntity(void) const { return _examineEntity; }
     inline void GuiSystem::setDebugOverlayPage(const int page) { _debugOverlayPage = page; }
@@ -240,11 +172,12 @@ namespace elysian {
     inline void GuiSystem::nextDebugOverlayPage(void) {
         if(++_debugOverlayPage >= ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES) _debugOverlayPage = -1;
     }
-	inline void GuiSystem::setFgMenuWidget(MenuWidget * const widget) { _fgMenuWidget = widget; }
     inline void GuiSystem::setFgWidget(Widget * const widget) { _fgWidget = widget; }
-	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
-	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }
-	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }
+    inline void GuiSystem::setBgWidget(Widget * const widget) { _bgWidget = widget; }
+    inline Widget* GuiSystem::getFgWidget(void) const { return _fgWidget; }
+    inline Widget* GuiSystem::getBgWidget(void) const { return _bgWidget; }
+    inline void GuiSystem::clearFgWidget(void) { _fgWidget = nullptr; }
+    inline void GuiSystem::clearBgWidget(void) { _bgWidget = nullptr; }
 	inline void GuiSystem::setClearColor(const GYColor4 color) { gyVidClearColor(color); }
     inline void GuiSystem::setAdvLogEnabled(const bool val) {
         adventureLog.fade(2.0f, val);

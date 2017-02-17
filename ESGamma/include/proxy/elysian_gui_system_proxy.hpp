@@ -5,8 +5,6 @@
 #include <oolua.h>
 
 namespace OOLUA {
-    typedef elysian::MenuWidget     MenuWidget;
-    typedef elysian::MenuText       MenuText;
     typedef elysian::MenuEntity     MenuEntity;
     typedef elysian::GuiSystem      GuiSystem;
     typedef elysian::AdventureLog   AdventureLog;

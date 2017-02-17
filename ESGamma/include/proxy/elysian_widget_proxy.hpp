@@ -10,6 +10,8 @@ namespace OOLUA {
     typedef elysian::Widget         Widget;
     typedef elysian::EntityWidget   EntityWidget;
     typedef elysian::LabelWidget    LabelWidget;
+    typedef elysian::Layout         Layout;
+    typedef elysian::Color4         Color4;
 }
 
 OOLUA_PROXY(Widget)
@@ -24,20 +26,20 @@ OOLUA_PROXY(Widget)
     OOLUA_MEM_FUNC(void, setMaxWidth, int)
     OOLUA_MEM_FUNC(void, setMaxHeight, int)
     OOLUA_MEM_FUNC(void, setMaxSize, int, int)
-    OOLUA_MEM_FUNC(void, setHorizontalSizePolicy, SIZE_POLICY)
-    OOLUA_MEM_FUNC(void, setVerticalSizePolicy, SIZE_POLICY)
-    OOLUA_MEM_FUNC(void, setSizePolicy, SIZE_POLICY, SIZE_POLICY)
+    OOLUA_MEM_FUNC(void, setHorizontalSizePolicy, Widget::SIZE_POLICY)
+    OOLUA_MEM_FUNC(void, setVerticalSizePolicy, Widget::SIZE_POLICY)
+    OOLUA_MEM_FUNC(void, setSizePolicy, Widget::SIZE_POLICY, Widget::SIZE_POLICY)
     OOLUA_MEM_FUNC(void, setMarginWidth, int)
     OOLUA_MEM_FUNC(void, setMarginHeight, int)
     OOLUA_MEM_FUNC(void, setMarginSize, int, int)
-    OOLUA_MEM_FUNC(void, setLayout, cpp_in_p<Layout*>)
+    OOLUA_MEM_FUNC(void, setLayout, Layout*)
     OOLUA_MEM_FUNC(void, setActive, bool)
     OOLUA_MEM_FUNC_CONST(int, getMinWidth)
     OOLUA_MEM_FUNC_CONST(int, getMinHeight)
     OOLUA_MEM_FUNC_CONST(int, getMaxWidth)
     OOLUA_MEM_FUNC_CONST(int, getMaxHeight)
-    OOLUA_MEM_FUNC_CONST(SIZE_POLICY, getHorizontalSizePolicy)
-    OOLUA_MEM_FUNC_CONST(SIZE_POLICY, getVerticalSizePolicy)
+    OOLUA_MEM_FUNC_CONST(Widget::SIZE_POLICY, getHorizontalSizePolicy)
+    OOLUA_MEM_FUNC_CONST(Widget::SIZE_POLICY, getVerticalSizePolicy)
     OOLUA_MEM_FUNC_CONST(int, getMarginWidth)
     OOLUA_MEM_FUNC_CONST(int, getMarginHeight)
     OOLUA_MEM_FUNC_CONST(Layout*, getLayout)
@@ -55,26 +57,5 @@ OOLUA_PROXY(LabelWidget, Widget)
     OOLUA_MEM_FUNC_CONST(const char*, getText)
     OOLUA_MEM_FUNC_CONST(Color4, getColor)
 OOLUA_PROXY_END
-
-
-LabelWidget(const char* str=nullptr, Color4 color=Color4::white, ALIGNMENT align=LEFT);
-
-const char*     getText(void) const;
-void            setText(const char* str);
-
-Color4          getColor(void) const;
-void            setColor(Color4 color);
-unsigned char   getAlpha(void) const;
-void            setAlpha(unsigned char alpha);
-
-
-ALIGNMENT       getAlignment(void) const;
-void            setAlignment(ALIGNMENT align);
-
-Font*           getFont(void) const;
-void            setFont(Font* font);
-
-int             getStrlen(void) const;
-
 
 #endif // ELYSIAN_WIDGET_PROXY_HPP

@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <initializer_list>
+#include <crtp/elysian_lua_variant.hpp>
+
 
 namespace elysian {
 
@@ -41,10 +43,13 @@ namespace elysian {
                     ~Layout(void);
 
         void        addWidget(Widget* widget);
-        Widget*     removeWidget(Widget* widget);   //Returns widget if found, nullptr otherwise (for Lua API).
+        Widget*     removeWidget(Widget* widget);   //Returns widget given as argument (for owernship change in Lua API).
+        void        setWidget(unsigned index, Widget* widget);
         void        setWidgets(std::vector<Widget*> widgets);
+        void        setWidgetsLua(LuaVariant array);
         auto        getWidgets(void) const -> const std::vector<Widget*>&;
         auto        getWidgets(void) -> std::vector<Widget*>&;
+        LuaVariant  getWidgetsLua(void) const;
         unsigned    getWidgetCount(void) const;
         Widget*     getWidget(unsigned index) const;
 
@@ -65,7 +70,7 @@ namespace elysian {
         ALIGNMENT   getHorizontalAlignment(void) const;
         ALIGNMENT   getVerticalAlignment(void) const;
         void        setHorizontalAlignment(ALIGNMENT align);
-        void        setVerticalAlignnment(ALIGNMENT align);
+        void        setVerticalAlignment(ALIGNMENT align);
         void        setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical);
 
         void        update(void);
@@ -105,7 +110,6 @@ namespace elysian {
     inline Widget* Layout::getWidget(unsigned index) const {
         return _widgets[index];
     }
-
     inline unsigned Layout::getWidgetCount(void) const { return (unsigned)_widgets.size();}
     inline auto Layout::getGroupingAxis(void) const -> AXIS { return _groupingAxis; }
     inline Widget* Layout::getParent(void) const { return _parent; }
@@ -125,7 +129,7 @@ namespace elysian {
     inline auto Layout::getHorizontalAlignment(void) const -> ALIGNMENT { return _alignment[X]; }
     inline auto Layout::getVerticalAlignment(void) const -> ALIGNMENT { return _alignment[Y]; }
     inline void Layout::setHorizontalAlignment(ALIGNMENT align) { _alignment[X] = align; }
-    inline void Layout::setVerticalAlignnment(ALIGNMENT align) { _alignment[Y] = align; }
+    inline void Layout::setVerticalAlignment(ALIGNMENT align) { _alignment[Y] = align; }
     inline void Layout::setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical) { _alignment[X] = horizontal; _alignment[Y] = vertical; }
     inline void Layout::_updatePositions(void) { _updatePositions(X); _updatePositions(Y); }
     inline void Layout::_updateSizes(void) { _updateSizes(X); _updateSizes(Y); }
