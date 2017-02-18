@@ -18,7 +18,6 @@
 
 namespace elysian {
 
-Font* MenuText::_fonts[5];
 constexpr const float GuiSystem::VictoryText::stateTime[GuiSystem::VictoryText::STATE_MAX];
 
 GuiSystem::CombatStatusIndicator::CombatStatusIndicator(void) {
@@ -82,12 +81,6 @@ bool GuiSystem::loadAssets(void) {
     success &= pragmata26.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA26, 512, 512, 32, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA26);
 
     LabelWidget::setDefaultFont(&pragmata18);
-
-    MenuText::_fonts[0] = &twcen;
-    MenuText::_fonts[1] = &verdana;
-    MenuText::_fonts[2] = &pragmata18;
-    MenuText::_fonts[3] = &pragmata22;
-    MenuText::_fonts[4] = &pragmata26;
 
     gyVidResolution(&_projWidth, &_projHeight);
 
@@ -326,20 +319,6 @@ void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const
     combat->pos = pos;
     combat->vel = vel;
     combat->timer = 0.0f;
-
-}
-
-void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
-    if(!widget) return;
-
-    gyMatPush();
-    gyMatLoadIdentity();
-    gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 20.0f);
-    gyMatScale(_projWidth, _projHeight, 1.0f);
-
-    widget->recursiveRender(_fgFadeAlpha);
-
-    gyMatPop();
 
 }
 

@@ -108,7 +108,6 @@ namespace elysian {
         void            _renderDebugOverlay(void);
         void            _renderCombatText(void);
         void            _renderExamineEntity(void);
-        void            _renderMenuWidget(MenuWidget* widget);
 	public:
 
                         GuiSystem(void);
@@ -125,12 +124,12 @@ namespace elysian {
         void            setDebugOverlayPage(const int page);
         int             getDebugOverlayPage(void) const;
         void            nextDebugOverlayPage(void);
-        void            setFgMenuWidget(MenuWidget*const widget);
-        void            setFgWidget(Widget*const widget);
-        void            setBgWidget(Widget*const widget);
+        void            setFgWidget(Widget* widget);
+        void            setBgWidget(Widget* widget);
         Widget*         getFgWidget(void) const;
         Widget*         getBgWidget(void) const;
-        void            clearBgMenuWidget(void);
+        void            clearBgWidget(void);
+        void            clearFgWidget(void);
         void            setExamineEntity(const Entity* const entity);
         const Entity*   getExamineEntity(void) const;
         AdventureLog&   getAdvLog(void);
@@ -172,8 +171,8 @@ namespace elysian {
     inline void GuiSystem::nextDebugOverlayPage(void) {
         if(++_debugOverlayPage >= ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES) _debugOverlayPage = -1;
     }
-    inline void GuiSystem::setFgWidget(Widget * const widget) { _fgWidget = widget; }
-    inline void GuiSystem::setBgWidget(Widget * const widget) { _bgWidget = widget; }
+    inline void GuiSystem::setFgWidget(Widget* widget) { _fgWidget = widget; }
+    inline void GuiSystem::setBgWidget(Widget* widget) { _bgWidget = widget; }
     inline Widget* GuiSystem::getFgWidget(void) const { return _fgWidget; }
     inline Widget* GuiSystem::getBgWidget(void) const { return _bgWidget; }
     inline void GuiSystem::clearFgWidget(void) { _fgWidget = nullptr; }

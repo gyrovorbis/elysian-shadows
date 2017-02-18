@@ -240,10 +240,70 @@ namespace elysian {
     }
 
 
+    template<typename T, typename I, typename V>
+    class SubscriptWriteProxy {
+    private:
+        T*  _parent;
+        V   _value;
+        I   _index;
 
+    public:
+            SubscriptWriteProxy(T* parent, I index, V value);
+            SubscriptWriteProxy(SubscriptWriteProxy<T, V, I>& rhs);
+            SubscriptWriteProxy(SubscriptWriteProxy<T, V, I>&& rhs);
 
+            operator const V&(void);
+        V   operator=(V&& rhs);
 
+    };
 
+    template<typename T, typename I, typename V>
+    SubscriptWriteProxy<T, I, V>::SubscriptWriteProxy(T *parent, I&& index, V&& value):
+        _parent(parent),
+        _value(std::forward(value)),
+        _index(std::forward(index)) {}
+
+    template<typename T, typename I, typename V>
+    SubscriptWriteProxy<T, I, V>::SubscriptWriteProxy(SubscriptWriteProxy<T, V, I>& rhs):
+        _parent(rhs._parent),
+        _value(rhs._value) {}
+
+    template<typename T, typename I, typename V>
+    SubscriptWriteProxy<T, I, V>::SubscriptWriteProxy(SubscriptWriteProxy<T, V, I>&& rhs):
+        _parent(rhs._parent),
+        _value(std::move(rhs._value)) {}
+
+    template<typename T, typename I, typename V>
+    SubscriptWriteProxy<T, I, V>::operator const V& (void) {
+        return _parent->getValueByIndex(_index);
+    }
+
+    template<typename T, typename I, typename V>
+    V SubscriptWriteProxy::operator=(const V&& rhs) {
+        _value = std::forward(rhs);
+        _parent->setValueByIndex(_index, _value);
+        return rhs;
+    }
+
+    template<typename T, typename I, typename V>
+    class VirtualArray {
+        using WriteProxy = SubscriptWriteProxy<T, I, V>;
+    public:
+        WriteProxy  operator[](I&& index);
+        V           operator[](I&& index);
+
+    };
+
+    template<typename T, typename I, typename V>
+    V VirtualArray::operator[](I&& index) const {
+        return static_cast<T*>(this)->getValueByIndex(std::forward(index));
+    }
+
+    template<typename T, typename I, typename V>
+    auto VirtualArray::operator[](I&& index) -> WriteProxy {
+        V&& value = static_cast<T*>(this)->getValueByIndex(index);
+        return WriteProxy(static_cast<T*>(this), std::forward(index), std::forward(value));
+    }
 
 
 

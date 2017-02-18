@@ -1,4 +1,6 @@
 #include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_widget_proxy.hpp>
+#include <proxy/elysian_layout_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_gui_system_proxy.hpp>
@@ -17,7 +19,6 @@
 #include <proxy/elysian_bit_mask_proxy.hpp>
 
 #include <crtp/elysian_lua_manager.hpp>
-
 #include <lua/elysian_lua_wrappers.hpp>
 
 namespace elysian {
@@ -88,15 +89,12 @@ namespace elysian {
         CombatAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<Combat>();
         Combat::registerProxyMetaTable(*_mainState);
-		OOLUA::register_class<MenuText>(*_mainState);
         _mainState->register_class<RigidBodyAttrib>();
         RigidBodyAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<ForceTarget>();
         ForceTarget::registerProxyMetaTable(*_mainState);
         _mainState->register_class<RigidBody>();
         RigidBody::registerProxyMetaTable(*_mainState);
-		_mainState->register_class<MenuEntity>();
-        MenuEntity::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ParticleEmitterAttrib>();
         ParticleEmitterAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ParticleEmitter>();
@@ -129,6 +127,10 @@ namespace elysian {
 		_mainState->register_class<DialogSystem>();
 		_mainState->register_class<RigidBodySystem>();
         _mainState->register_class<AdventureLog>();
+        OOLUA::register_class<HorizontalLayout>(*_mainState);
+        _mainState->register_class<VerticalLayout>();
+        OOLUA::register_class<EntityWidget>(*_mainState);
+        _mainState->register_class<LabelWidget>();
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
         _mainState->register_class<Controller>();

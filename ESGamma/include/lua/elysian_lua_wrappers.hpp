@@ -15,6 +15,7 @@
 #include <crtp/elysian_behavior.hpp>
 #include <level/elysian_map_depth_buffer.hpp>
 #include <proxy/elysian_input_system_proxy.hpp>
+#include <gui/elysian_layout.hpp>
 #include <gyro_shader_api.h>
 
 
@@ -313,16 +314,10 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Character>("STATE_DEATH", Character::STATE_DEATH);
     s->register_class_static<Character>("STATE_LUA", Character::STATE_LUA);
 
-	//Font Alignment
-    typedef elysian::MenuText MenuText;
-	s->register_class_static<MenuText>("L_ALIGN", elysian::Font::L_ALIGN);
-	s->register_class_static<MenuText>("R_ALIGN", elysian::Font::R_ALIGN);
-	s->register_class_static<MenuText>("C_ALIGN", elysian::Font::C_ALIGN);
-
-	//MenuEntity Size Type
-    typedef elysian::MenuEntity MenuEntity;
-	s->register_class_static<MenuEntity>("SIZE_ABSOLUTE", MenuEntity::SIZE_ABSOLUTE);
-	s->register_class_static<MenuEntity>("SIZE_RELATIVE", MenuEntity::SIZE_RELATIVE);
+    typedef elysian::Layout Layout;
+    s->register_class_static<Layout>("ALIGN_NEGATIVE", Layout::ALIGN_NEGATIVE);
+    s->register_class_static<Layout>("ALIGN_CENTER", Layout::ALIGN_CENTER);
+    s->register_class_static<Layout>("ALIGN_POSITIVE", Layout::ALIGN_POSITIVE);
 }
 
 

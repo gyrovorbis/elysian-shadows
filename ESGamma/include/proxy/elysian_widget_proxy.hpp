@@ -8,10 +8,13 @@
 
 namespace OOLUA {
     typedef elysian::Widget         Widget;
+    typedef elysian::GroupWidget    GroupWidget;
     typedef elysian::EntityWidget   EntityWidget;
     typedef elysian::LabelWidget    LabelWidget;
     typedef elysian::Layout         Layout;
     typedef elysian::Color4         Color4;
+
+    template<> class Proxy_class<elysian::Layout>;
 }
 
 OOLUA_PROXY(Widget)
@@ -46,12 +49,21 @@ OOLUA_PROXY(Widget)
     OOLUA_MEM_FUNC_CONST(bool, isActive)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(GroupWidget, Widget)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(EntityWidget, Widget)
+    OOLUA_CTORS(
+        OOLUA_CTOR(Entity*)
+    )
     OOLUA_MEM_FUNC(void, setEntity, Entity*)
     OOLUA_MEM_FUNC_CONST(Entity*, getEntity)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LabelWidget, Widget)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const char*)
+    )
     OOLUA_MEM_FUNC(void, setText, const char*)
     OOLUA_MEM_FUNC(void, setColor, Color4)
     OOLUA_MEM_FUNC_CONST(const char*, getText)
