@@ -81,10 +81,10 @@ namespace elysian {
         void            renderLayout(void) const;
 
         //Must be implemented by each widget
-        virtual int     getPosition(AXIS axis) const        = 0;
+        virtual float   getPosition(AXIS axis) const        = 0;
         virtual void    setPosition(AXIS axis, float pos)   = 0;
 
-        virtual int     getSize(AXIS axis) const            = 0;
+        virtual float   getSize(AXIS axis) const            = 0;
         virtual void    setSize(AXIS axis, float size)      = 0;
 
         virtual void    render(void) const                  = 0;
@@ -96,14 +96,14 @@ namespace elysian {
     //A completely blank, nongraphic widget just used for grouping other widgets with its layout
     class GroupWidget: public Widget {
     private:
-        float             _pos[AXIS_COUNT]    = { 0 };
-        float             _size[AXIS_COUNT]   = { 0 };
+        Vector2         _pos;
+        Vector2         _size;
     public:
-        virtual int     getPosition(AXIS axis) const override;
-        virtual void    setPosition(AXIS axis, int pos) override;
+        virtual float   getPosition(AXIS axis) const override;
+        virtual void    setPosition(AXIS axis, float pos) override;
 
-        virtual int     getSize(AXIS axis) const override;
-        virtual void    setSize(AXIS axis, int size) override;
+        virtual float   getSize(AXIS axis) const override;
+        virtual void    setSize(AXIS axis, float size) override;
 
         virtual void    render(void) const override;
 
@@ -122,12 +122,12 @@ namespace elysian {
     inline void Widget::setSize(Vector2 size) { setSize(X, size.x); setSize(Y, size.y); }
     inline Vector2 Widget::getMaxSize(void) const { return _maxSize; }
     inline Vector2 Widget::getMaxSize(void) { return Vector2(&_maxSize); }
+    inline void Widget::setMaxSize(Vector2 size) { _maxSize = size; }
     inline float Widget::getMaxSize(AXIS axis) const { return (axis == X)? _maxSize.x : _maxSize.y; }
     inline void Widget::setMinSize(Vector2 size) { _minSize = size; }
     inline Vector2 Widget::getMinSize(void) const { return _minSize; }
     inline Vector2 Widget::getMinSize(void) { return Vector2(&_minSize); }
     inline float Widget::getMinSize(AXIS axis) const { return (axis == X)? _minSize.x : _minSize.y; }
-    inline void Widget::setMinSize(Vector2 size) { _minSize = size; }
     inline Vector2 Widget::getMarginSize(void) const { return _margins; }
     inline Vector2 Widget::getMarginSize(void) { return Vector2(&_margins); }
     inline float Widget::getMarginSize(AXIS axis) const { return (axis == X)? _margins.x : _margins.y; }
@@ -144,10 +144,10 @@ namespace elysian {
     inline void Widget::maximize(void) { maximize(X); maximize(Y); }
     inline void Widget::minimize(void) { minimize(X); minimize(Y); }
 
-    inline int GroupWidget::getPosition(AXIS axis) const { return _pos[axis]; }
-    inline void GroupWidget::setPosition(AXIS axis, int pos) { _pos = pos; }
-    inline int GroupWidget::getSize(AXIS axis) const { return _size[axis]; }
-    inline void GroupWidget::setSize(AXIS axis, int size) { _size[axis] = size; }
+    inline float GroupWidget::getPosition(AXIS axis) const { return _pos[axis]; }
+    inline void GroupWidget::setPosition(AXIS axis, float pos) { _pos[axis] = pos; }
+    inline float GroupWidget::getSize(AXIS axis) const { return _size[axis]; }
+    inline void GroupWidget::setSize(AXIS axis, float size) { _size[axis] = size; }
     inline void GroupWidget::render(void) const {}
 
 }

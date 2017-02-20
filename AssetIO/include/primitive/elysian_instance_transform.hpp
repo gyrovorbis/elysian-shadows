@@ -9,7 +9,7 @@
 
 namespace elysian {
 
-    struct Vector2: public GYVector2, public LuaTableProxy<Vector2> {
+    struct Vector2: public GYVector2, public VirtualArray<Vector2, int, float>, public LuaTableProxy<Vector2> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
@@ -22,15 +22,11 @@ namespace elysian {
                     Vector2(const Vector2& other);
                     ~Vector2(void) = default;
 
-        float       operator[](int index) const;
         friend bool operator== (const Vector2& vec1, const Vector2& vec2);
         friend bool operator!= (const Vector2& vec1, const Vector2& vec2);
 
-
-        //overload for GYVector2 comparisons
-        //overload addition, subtraction, multiplication, etc. (use rvalue references, move semantics n shit)
-        //overload negation operator
-        //add dot operators and shit
+        void        setValueByIndex(int index, float val);
+        float       getValueByIndex(int index) const;
 
         float       getX(void) const;
         float       getY(void) const;
@@ -268,9 +264,14 @@ namespace elysian {
     inline float Vector2::getY(void) const { return _ptr->y; }
     inline void Vector2::setX(const float val) const { _ptr->x = val; }
     inline void Vector2::setY(const float val) const { _ptr->y = val; }
-    inline float Vector2::operator [](int index) {
-        GY_ASSERT(index >= 0 && index <= 1);
-        return (!index)? _ptr->x : _ptr->y;
+    inline float Vector2::getValueByIndex(int index) const {
+        GY_ASSERT(index == 0 || index == 1);
+        return (index)? _ptr->y : _ptr->x;
+    }
+    inline void Vector2::setValueByIndex(int index, float value) {
+        GY_ASSERT(index == 0 || index == 1);
+        if(!index) _ptr->x = value;
+        else _ptr->y = value;
     }
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
@@ -284,15 +285,6 @@ namespace elysian {
         }
     }
     inline Vector3::Vector3(GYVector3 * const vec3): _ptr(vec3) {}
-    inline float Vector3::operator [](int index) {
-        GY_ASSERT(index >= 0 && index <= 2);
-        switch(index) {
-        case 0:     return _ptr->x;
-        case 1:     return _ptr->y;
-        default:    return _ptr->z;
-
-        }
-    }
     inline float Vector3::getX(void) const { return _ptr->x; }
     inline float Vector3::getY(void) const { return _ptr->y; }
     inline float Vector3::getZ(void) const { return _ptr->z; }
@@ -319,15 +311,6 @@ namespace elysian {
     inline void Vector4::setY(const float val) const { _ptr->y = val; }
     inline void Vector4::setZ(const float val) const { _ptr->z = val; }
     inline void Vector4::setW(const float val) const { _ptr->w = val; }
-    inline float Vector4::operator [](int index) {
-        GY_ASSERT(index >= 0 && index <= 3);
-        switch(index) {
-        case 0:     return _ptr->x;
-        case 1:     return _ptr->y;
-        case 2:     return _ptr->z;
-        default:    return _ptr->w;
-        }
-    }
     inline bool InstanceTransform::getFlipX(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_X_AXIS); }
     inline bool InstanceTransform::getFlipY(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_Y_AXIS); }
     inline bool InstanceTransform::getFlipZ(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_Z_AXIS); }

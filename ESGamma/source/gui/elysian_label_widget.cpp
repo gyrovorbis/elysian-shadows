@@ -23,19 +23,19 @@ namespace elysian {
         _width = font? font->getStringPixelWidth(_text) : 0;
     }
 
-    void LabelWidget::setPosition(AXIS axis, int pos) {
+    void LabelWidget::setPosition(AXIS axis, float pos) {
         _position[axis] = pos;
     }
 
-    int LabelWidget::getPosition(AXIS axis) const {
+    float LabelWidget::getPosition(AXIS axis) const {
         return _position[axis];
     }
 
-    void LabelWidget::setSize(AXIS axis, int size) {
+    void LabelWidget::setSize(AXIS axis, float size) {
         //Uhm, fuck you.
     }
 
-    int LabelWidget::getSize(AXIS axis) const {
+    float LabelWidget::getSize(AXIS axis) const {
         if(axis == Y) {
             return _font->getCharacterHeight();
         } else {

@@ -3,7 +3,7 @@
 
 namespace elysian {
 
-int EntityWidget::getPosition(AXIS axis) const {
+float EntityWidget::getPosition(AXIS axis) const {
     if(_entity) {
         return (axis == X)? _entity->getTransform().getPosX() :
                             _entity->getTransform().getPosY();
@@ -11,14 +11,14 @@ int EntityWidget::getPosition(AXIS axis) const {
     return 0;
 }
 
-void EntityWidget::setPosition(AXIS axis, int pos) {
+void EntityWidget::setPosition(AXIS axis, float pos) {
     if(_entity) {
         if(axis == X) _entity->getTransform().setPosX(pos);
         else _entity->getTransform().setPosY(pos);
     }
 }
 
-int EntityWidget::getSize(AXIS axis) const {
+float EntityWidget::getSize(AXIS axis) const {
     if(_entity) {
         return (axis == X)? _entity->getTransform().getSizeX() :
                             _entity->getTransform().getSizeY();
@@ -26,7 +26,7 @@ int EntityWidget::getSize(AXIS axis) const {
     return 0;
 }
 
-void EntityWidget::setSize(AXIS axis, int size) {
+void EntityWidget::setSize(AXIS axis, float size) {
     if(_entity) {
         if(axis == X) _entity->getTransform().setSizeX(size);
         else _entity->getTransform().setSizeY(size);

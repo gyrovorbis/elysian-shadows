@@ -20,11 +20,11 @@ namespace elysian {
         void            setEntity(Entity* entity);
 
         //Overridden from widget
-        virtual int     getPosition(AXIS axis) const override;
-        virtual void    setPosition(AXIS axis, int pos) override;
+        virtual float   getPosition(AXIS axis) const override;
+        virtual void    setPosition(AXIS axis, float pos) override;
 
-        virtual int     getSize(AXIS axis) const override;
-        virtual void    setSize(AXIS axis, int size) override;
+        virtual float   getSize(AXIS axis) const override;
+        virtual void    setSize(AXIS axis, float size) override;
 
         virtual void    render(void) const override;
     };
