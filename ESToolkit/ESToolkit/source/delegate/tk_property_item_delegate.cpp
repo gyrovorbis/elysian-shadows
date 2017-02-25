@@ -219,7 +219,14 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
                 }
             });
         }
+
+
+        menu.insertAction("Break Prefab", [=](bool) {
+            LuaManager::callGlobalFunction<void>("separatefromparent", nullptr, fieldItem->getVariant());
+        }, !LuaManager::callGlobalFunction<LuaVariant>("getparenttable", nullptr, fieldItem->getVariant()).isNil());
+
     }
+
 
     return menu.takeTopLevel();
 }
