@@ -15,6 +15,8 @@
 #include <crtp/elysian_combat.hpp>
 #include <crtp/elysian_renderable.hpp>
 #include "gui/elysian_label_widget.hpp"
+#include <elysian_menu.hpp>
+#include <crtp/elysian_input_system.hpp>
 
 namespace elysian {
 
@@ -61,10 +63,14 @@ const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_G
 
 GuiSystem::GuiSystem(void):
     _projWidth(0),
-    _projHeight(0)
+    _projHeight(0),
+    _menuWidget(new game::MenuWidget)
 {
     gyVidResolution(&_projWidth, &_projHeight);
+}
 
+GuiSystem::~GuiSystem(void) {
+    delete _menuWidget;
 }
 
 bool GuiSystem::loadAssets(void) {
@@ -337,6 +343,13 @@ void GuiSystem::_renderExamineEntity(void) {
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
     pragmata18.drawString(Font::C_ALIGN, _examineEntity->getDispName());
 
+}
+
+void GuiSystem::processInput(void) {
+    if(getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_START)) {
+        setBgWidget(_menuActive? nullptr : _menuWidget);
+        _menuActive = !_menuActive;
+    }
 }
 
 

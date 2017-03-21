@@ -753,6 +753,15 @@ void MapView::dropEvent(QDropEvent *event) {
 }
 
 void MapView::_registerDropEventCallbacks(void) {
+    auto createBasicEntity = [&](QString filename, QDropEvent* event) {
+        QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
+        Entity* entity = new Entity;
+        entity->setName(filename.split(".")[0]);
+        entity->getTransform().setPosX(scenePos.x());
+        entity->getTransform().setPosY(scenePos.y());
+        return entity;
+    };
+
     _mimeDropManager = new MimeDropManager(QVector<MimeDropManager::Handler> {
        {
             TkMimeData::TYPE_LUA_VARIANT,
@@ -784,23 +793,18 @@ void MapView::_registerDropEventCallbacks(void) {
        }, {
             MimeDropManager::TYPE_URLS,
             [=](const QMimeData* data, Qt::DropAction /*action*/, QDropEvent* event, int, int, const QModelIndex&) {
-                QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
                 for(auto&& url : data->urls()) {
                     if(url.isLocalFile()) {
-                        QString texturePath = url.toLocalFile();
-                        QFileInfo info(texturePath);
-                        if(info.suffix() == "png" || info.suffix() == "PNG") {
-                            DbgEvent dbg("Drop Event: Instantiating Entity from image file [%s].", Q_CSTR(texturePath));
-                            Entity* entity = new Entity;
-                            entity->setName(Q_CSTR(info.fileName().split(".")[0]));
+                        QString path = url.toLocalFile();
+                        QFileInfo info(path);
+                        if(info.suffix().toLower() == "png") {
+                            DbgEvent dbg("Drop Event: Instantiating Entity from image file [%s].", Q_CSTR(path));
+                            auto* entity = createBasicEntity(info.fileName(), event);
                             Renderable* render = entity->addRenderable();
                             SpriteAttrib* attrib = new SpriteAttrib();
-                            attrib->setTexPath(Q_CSTR(FileUtilities::getAssetRelativePath(texturePath)));
+                            attrib->setTexPath(Q_CSTR(FileUtilities::getAssetRelativePath(path)));
                             GYTexture* tex = attrib->getTexture();
                             render->setSpriteAttrib(attrib);
-
-                            entity->getTransform().setPosX(scenePos.x());
-                            entity->getTransform().setPosY(scenePos.y());
 
                             if(tex) {
                                 dbgprintf("SUCCESS: Adding Entity [%s] to area.", entity->getName());
@@ -810,6 +814,43 @@ void MapView::_registerDropEventCallbacks(void) {
                             }
 
                             getAssets()->getCurrentArea()->addEntity(entity);
+
+                        } else if(info.suffix().toLower() == "json" || info.suffix().toLower() == "atlas") {
+                            DbgEvent dbg("Drop Event: Instantiating Entity from JSON/Atlas file [%s].", Q_CSTR(path));
+                            QString jsonPath    = path.split(".")[0] + QString(".json");
+                            QString atlasPath   = path.split(".")[0] + QString(".atlas");
+                            bool    jsonLoaded  = false;
+                            bool    atlasLoaded = false;
+
+                            auto* entity = createBasicEntity(info.fileName(), event);
+                            Skeleton* skeleton = entity->addSkeleton();
+                            SkeletonAttrib* attrib = new SkeletonAttrib;
+
+                            if(QFile::exists(jsonPath)) {
+                               dbgprintf("Loading .json file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
+                               attrib->setJsonPath(Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
+                               jsonLoaded = true;
+                            } else {
+                               warnprintf("No .json file found! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
+                            }
+
+                            if(QFile::exists(atlasPath)) {
+                                dbgprintf("Loading .atlas file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
+                                attrib->setAtlasPath(Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
+                                atlasLoaded = true;
+                            } else {
+                                warnprintf("No .atlas file found! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
+                            }
+
+                            skeleton->setAttrib(attrib);
+                            getAssets()->getCurrentArea()->addEntity(entity);
+
+                            if(jsonLoaded && !attrib->isJsonValid()) {
+                                errprintf("JSON file was invalid!");
+                            }
+                            if(atlasLoaded && !attrib->isAtlasValid()) {
+                               errprintf("Atlas file was invalid!");
+                            }
 
                         }
                     }
@@ -821,7 +862,8 @@ void MapView::_registerDropEventCallbacks(void) {
                     for(auto&& url : data->urls()) {
                        if(url.isLocalFile()) {
                            QFileInfo info(url.toLocalFile());
-                           if(info.suffix() == "png" || info.suffix() == "PNG") {
+                           QString ext = info.suffix().toLower();
+                           if(ext == "png" || ext == "json" || ext == "atlas") {
                                return true;
                            }
                        }

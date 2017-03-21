@@ -721,10 +721,16 @@ void EntityBase::removeSkeleton(void) {
 
 template<typename T>
 void EntityBase::_setComponent(T*& comp, LuaVariant valTable, std::vector<T*>* container) {
-    if(!comp) {
-        comp = _addComponent<T>(comp, container);
+    if(valTable.getType() == LUA_TTABLE || valTable.getType() == LUA_TUSERDATA) {
+        if(!comp) {
+            comp = _addComponent<T>(comp, container);
+        }
+        comp->fromTable(std::move(valTable));
+    } else if(valTable.isNil()) {
+        _removeComponent(comp, container);
+    } else {
+        errprintf("Entity::_setCompoonent(LuaVariant) - Invalid type provided for variant[%s]!", valTable.getTypeString());
     }
-    comp->fromTable(std::move(valTable));
 }
 
 void EntityBase::setRenderable(LuaVariant valTable) {

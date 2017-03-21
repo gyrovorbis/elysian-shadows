@@ -544,7 +544,7 @@ bool PartySystem::addCharacterToParty(Entity *entity) {
     if(getPartySlot(entity) != -1) return false;
 
     if(!entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME)) {
-        auto* behav = new PlayableBehavior(*entity);
+        auto* behav = new game::PlayableBehavior(*entity);
         entity->addBehavior(behav);
         behav->setPlayerNum(_characterParty.size());
     }

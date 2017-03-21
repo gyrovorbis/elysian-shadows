@@ -57,6 +57,7 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
     ../../ESGamma/include/utility \
+    ../../game/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic
 
@@ -81,6 +82,7 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
     ../../ESGamma/include/utility \
+    ../../game/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic \
     ../../Lua5.2/include \
@@ -201,18 +203,19 @@ SOURCES += \
     ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
     ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
+    ../../game/source/behavior/elysian_playable_behavior.cpp \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
+    ../../game/source/behavior/elysian_state_machine_behavior.cpp \
     ../../ESGamma/source/system/elysian_gui_system_base.cpp \
     ../../ESGamma/source/gui/elysian_widget.cpp \
     ../../ESGamma/source/gui/elysian_layout.cpp \
     ../../ESGamma/source/gui/elysian_label_widget.cpp \
     ../../ESGamma/source/gui/elysian_entity_widget.cpp \
     ../../ESGamma/source/proxy/elysian_widget_proxy.cpp \
-    ../../ESGamma/source/proxy/elysian_layout_proxy.cpp
+    ../../ESGamma/source/proxy/elysian_layout_proxy.cpp \
+    ../../game/source/elysian_menu.cpp
 
 
 !ios: !dreamcast: !android {
@@ -457,7 +460,7 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp \
     ../../ESGamma/include/system/elysian_input_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_input_system.hpp \
-    ../../AssetIO/include/behavior/elysian_playable_behavior.hpp \
+    ../../game/include/behavior/elysian_playable_behavior.hpp \
     include/core/tk_lua_table_selectable.h \
     ../../AssetIO/include/utility/elysian_lua_stack.hpp \
     ../../AssetIO/include/utility/elysian_functional.hpp \
@@ -467,7 +470,7 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_level_system_base.hpp \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
-    ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
+    ../../game/include/behavior/elysian_state_machine_behavior.hpp \
     ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
     ../../ESGamma/include/system/elysian_gui_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_gui_system.hpp \
@@ -477,7 +480,8 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_entity_widget.hpp \
     ../../ESGamma/include/gui/elysian_label_widget.hpp \
     ../../ESGamma/include/proxy/elysian_widget_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_layout_proxy.hpp
+    ../../ESGamma/include/proxy/elysian_layout_proxy.hpp \
+    ../../game/include/elysian_menu.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

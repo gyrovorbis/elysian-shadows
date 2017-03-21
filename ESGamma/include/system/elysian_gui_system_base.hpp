@@ -6,6 +6,7 @@
 #include "elysian_adventure_log.hpp"
 #include <utility/elysian_mem_pool.hpp>
 #include <crtp/elysian_entity.hpp>
+#include <memory>
 
 #include <gyro_video_api.h>
 
@@ -43,6 +44,10 @@ namespace elysian {
 
 	class GuiSystem;
     class Widget;
+
+    namespace game {
+        class MenuWidget;
+    }
 
     class GuiSystem: public System {
 	private:
@@ -104,6 +109,10 @@ namespace elysian {
         float                       _fgFadeAlpha            = 1.0f;
         float                       _fgFadeAlphaStart       = 1.0f;
 
+
+        bool                        _menuActive         = false;
+        game::MenuWidget*           _menuWidget         = nullptr;
+
         void            _printDebugLine(const char*title, const char*str, ...);
         void            _renderDebugOverlay(void);
         void            _renderCombatText(void);
@@ -111,6 +120,7 @@ namespace elysian {
 	public:
 
                         GuiSystem(void);
+                        ~GuiSystem(void);
 
         void            setClearColor(const GYColor4 color);
 
@@ -118,6 +128,7 @@ namespace elysian {
         void            update(void);
         void            renderBackground(void);
         void            renderForeground(void);
+        void            processInput(void);
         void            render(void);
         void            getResolution(unsigned int &width, unsigned int &height) const;
         void            addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);

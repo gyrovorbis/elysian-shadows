@@ -173,6 +173,7 @@ void Engine::processInput(void) {
             if(_processInput) _partySystem->processInput();
 
             _cameraSystem->processInput(_inputSystem->getKeyboard());
+            _guiSystem->processInput();
             _examinableSystem->processInput();
             _dialogSystem->processInput();
 

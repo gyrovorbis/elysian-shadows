@@ -136,9 +136,9 @@ namespace elysian {
     inline GYTexture* SpriteAttribBase::getTexture(void) const { return _tex; }
 
     inline SpriteAttribBase::~SpriteAttribBase(void) {
-
         gyVidTexDestroy(_tex);
-
+        gyVidTexDestroy(_normalMap);
+        gyVidTexDestroy(_specularMap);
     }
 
     inline void SpriteAttribBase::submitHeader(void) {
