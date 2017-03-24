@@ -43,14 +43,13 @@ namespace elysian {
         }
     }
 
-    void LabelWidget::render(void) const {
+    void LabelWidget::render(void) {
         if(!_width) return;
 
         gyMatPush();
         gyMatLoadIdentity();
 
         _font->_transform.setPos(_position[X], _position[Y]);
-        //_fonts[_type]->_transform.setPosZ(worldVert.z);
         _font->_transform.setScale(1.0f, 1.0f);
         _font->setColor(_color);
         _font->drawString(Font::C_ALIGN, _text);

@@ -63,8 +63,7 @@ const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_G
 
 GuiSystem::GuiSystem(void):
     _projWidth(0),
-    _projHeight(0),
-    _menuWidget(new game::MenuWidget)
+    _projHeight(0)
 {
     gyVidResolution(&_projWidth, &_projHeight);
 }
@@ -92,6 +91,8 @@ bool GuiSystem::loadAssets(void) {
 
     adventureLog.setLabelFont(&pragmata22);
     adventureLog.setTextFont(&pragmata18);
+
+    _menuWidget =new game::MenuWidget;
 
     Debug::pop();
     return success;
@@ -171,7 +172,12 @@ void GuiSystem::renderForeground(void) {
     _renderDebugOverlay();
     if(_fgFadeAlpha == 0.0f) return;
     //if(!_debugOverlayEnabled) return;
-    if(_fgWidget) _fgWidget->render();
+    if(_fgWidget) {
+        gyMatPush();
+        gyMatTranslate(0.0f, 0.0f, ELYSIAN_ZCOORD_FG_1);
+        _fgWidget->render();
+        gyMatPop();
+    }
     adventureLog.render();
 }
 
@@ -347,7 +353,7 @@ void GuiSystem::_renderExamineEntity(void) {
 
 void GuiSystem::processInput(void) {
     if(getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_START)) {
-        setBgWidget(_menuActive? nullptr : _menuWidget);
+        setFgWidget(_menuActive? nullptr : _menuWidget);
         _menuActive = !_menuActive;
     }
 }

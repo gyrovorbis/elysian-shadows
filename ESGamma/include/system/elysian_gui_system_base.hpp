@@ -40,14 +40,14 @@
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
+namespace game {
+    class MenuWidget;
+}
+
 namespace elysian {
 
 	class GuiSystem;
     class Widget;
-
-    namespace game {
-        class MenuWidget;
-    }
 
     class GuiSystem: public System {
 	private:
@@ -111,7 +111,7 @@ namespace elysian {
 
 
         bool                        _menuActive         = false;
-        game::MenuWidget*           _menuWidget         = nullptr;
+        ::game::MenuWidget*         _menuWidget         = nullptr;
 
         void            _printDebugLine(const char*title, const char*str, ...);
         void            _renderDebugOverlay(void);

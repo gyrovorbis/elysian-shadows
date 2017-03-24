@@ -1,5 +1,6 @@
 #include "gui/elysian_widget.hpp"
 #include "gui/elysian_layout.hpp"
+#include <gyro_matrix_api.h>
 
 namespace elysian {
 
@@ -17,7 +18,12 @@ namespace elysian {
     }
 
     void Widget::renderLayout(void) const {
-        if(_layout) _layout->render();
+        if(_layout) {
+            gyMatPush();
+            gyMatTranslate(0.0f, 0.0f, ELYSIAN_WIDGET_Z_OFFSET);
+            _layout->render();
+            gyMatPop();
+        }
     }
 
     void Widget::maximize(AXIS axis) {

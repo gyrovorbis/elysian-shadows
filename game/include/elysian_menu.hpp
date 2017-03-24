@@ -2,18 +2,22 @@
 #define ELYSIAN_MENU_HPP
 
 #include <elysian_entity_widget.hpp>
+#include <system/elysian_system.hpp>
 
-namespace elysian {
+namespace game {
 
-    namespace game {
+    class CharacterPane;
 
-        class MenuWidget: public EntityWidget {
-        private:
+    class MenuWidget: public elysian::EntityWidget, public elysian::System {
+    private:
+        CharacterPane*  _charPane;
 
+    public:
+                        MenuWidget(void);
+    virtual void        render(void) override;
 
-        };
+    };
 
-    }
 }
 
 

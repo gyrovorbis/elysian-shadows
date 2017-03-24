@@ -277,9 +277,8 @@ Project *Assets::loadProject(const QString directory) {
         _engine = new elysian::Engine;
         elysian::Debug::setEngine(*_engine);
 
-
-        _engine->loadAssets();
         elysian::Debug::getInstance().sandboxInit();
+        _engine->loadAssets();
         _engine->setEngineState(elysian::System::ENGINE_ESTK_STOP);
     }
 

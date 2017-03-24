@@ -215,7 +215,8 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_entity_widget.cpp \
     ../../ESGamma/source/proxy/elysian_widget_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_layout_proxy.cpp \
-    ../../game/source/elysian_menu.cpp
+    ../../game/source/elysian_menu.cpp \
+    ../../game/source/elysian_character_pane.cpp
 
 
 !ios: !dreamcast: !android {
@@ -481,7 +482,8 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_label_widget.hpp \
     ../../ESGamma/include/proxy/elysian_widget_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_layout_proxy.hpp \
-    ../../game/include/elysian_menu.hpp
+    ../../game/include/elysian_menu.hpp \
+    ../../game/include/elysian_character_pane.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

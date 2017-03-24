@@ -33,7 +33,7 @@ void EntityWidget::setSize(AXIS axis, float size) {
     }
 }
 
-void EntityWidget::render(void) const {
+void EntityWidget::render(void) {
     if(_entity) _entity->render();
     EntityWidget::renderLayout();
 }

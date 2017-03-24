@@ -37,11 +37,11 @@ OOLUA_PROXY(Widget)
     OOLUA_MEM_FUNC(void, setVerticalSizePolicy, Widget::SIZE_POLICY)
     OOLUA_MEM_FUNC(void, setSizePolicy, Widget::SIZE_POLICY, Widget::SIZE_POLICY)
     OOLUA_MEM_FUNC(void, setLayout, Layout*)
-    OOLUA_MEM_FUNC(void, setActive, bool)
+    OOLUA_MEM_FUNC(void, setEnabled, bool)
     OOLUA_MEM_FUNC_CONST(Widget::SIZE_POLICY, getHorizontalSizePolicy)
     OOLUA_MEM_FUNC_CONST(Widget::SIZE_POLICY, getVerticalSizePolicy)
     OOLUA_MEM_FUNC_CONST(Layout*, getLayout)
-    OOLUA_MEM_FUNC_CONST(bool, isActive)
+    OOLUA_MEM_FUNC_CONST(bool, isEnabled)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GroupWidget, Widget)

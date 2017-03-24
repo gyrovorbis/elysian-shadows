@@ -22,14 +22,14 @@ OOLUA_EXPORT_FUNCTIONS(Widget,
                        setVerticalSizePolicy,
                        setSizePolicy,
                        setLayout,
-                       setActive)
+                       setEnabled)
 OOLUA_EXPORT_FUNCTIONS_CONST(Widget,
                              getPosition,
                              getSize,
                              getHorizontalSizePolicy,
                              getVerticalSizePolicy,
                              getLayout,
-                             isActive)
+                             isEnabled)
 
 /*!
     \qmltype EntityWidget

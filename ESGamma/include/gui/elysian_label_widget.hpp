@@ -51,11 +51,11 @@ namespace elysian {
         int             getStrlen(void) const;
 
         //Overridden from Widget
-        virtual float     getPosition(AXIS axis) const override;
+        virtual float   getPosition(AXIS axis) const override;
         virtual void    setPosition(AXIS axis, float pos) override;
-        virtual float     getSize(AXIS axis) const override;
+        virtual float   getSize(AXIS axis) const override;
         virtual void    setSize(AXIS axis, float size) override;
-        virtual void    render(void) const override;
+        virtual void    render(void) override;
 
         //static
         static void     setDefaultFont(Font* font);

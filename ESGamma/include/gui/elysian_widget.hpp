@@ -3,6 +3,8 @@
 
 #include <primitive/elysian_instance_transform.hpp>
 
+#define ELYSIAN_WIDGET_Z_OFFSET    0.1f
+
 namespace elysian {
 
     class Layout;
@@ -25,7 +27,7 @@ namespace elysian {
         SIZE_POLICY     _sizePolicy[AXIS_COUNT] = { FIXED };
         Layout*         _layout                 = nullptr;
         Layout*         _parentLayout           = nullptr;
-        bool            _active                 = true;
+        bool            _enabled                = true;
 
     public:
 
@@ -65,8 +67,10 @@ namespace elysian {
         Layout*         getParentLayout(void) const;
         void            setParentLayout(Layout* layout);
 
-        bool            isActive(void) const;
-        void            setActive(bool active);
+        bool            isEnabled(void) const;
+        void            setEnabled(bool enabled=true);
+        void            enable(void);
+        void            disable(void);
 
         int             getMaximizeDelta(AXIS axis) const;
         int             getMinimizeDelta(AXIS axis) const;
@@ -87,7 +91,7 @@ namespace elysian {
         virtual float   getSize(AXIS axis) const            = 0;
         virtual void    setSize(AXIS axis, float size)      = 0;
 
-        virtual void    render(void) const                  = 0;
+        virtual void    render(void)                        = 0;
 
     };
 
@@ -105,7 +109,7 @@ namespace elysian {
         virtual float   getSize(AXIS axis) const override;
         virtual void    setSize(AXIS axis, float size) override;
 
-        virtual void    render(void) const override;
+        virtual void    render(void) override;
 
     };
 
@@ -139,8 +143,10 @@ namespace elysian {
     inline void Widget::setHorizontalSizePolicy(SIZE_POLICY policy) { _sizePolicy[X] = policy; }
     inline void Widget::setVerticalSizePolicy(SIZE_POLICY policy) { _sizePolicy[Y] = policy; }
     inline void Widget::setSizePolicy(SIZE_POLICY horizontal, SIZE_POLICY vertical) { _sizePolicy[X] = horizontal; _sizePolicy[Y] = vertical; }
-    inline bool Widget::isActive(void) const { return _active; }
-    inline void Widget::setActive(bool active) { _active = active; }
+    inline bool Widget::isEnabled(void) const { return _enabled; }
+    inline void Widget::setEnabled(bool enabled) { _enabled = enabled; }
+    inline void Widget::disable(void) { _enabled = false; }
+    inline void Widget::enable(void) { _enabled = true; }
     inline void Widget::maximize(void) { maximize(X); maximize(Y); }
     inline void Widget::minimize(void) { minimize(X); minimize(Y); }
 
@@ -148,7 +154,7 @@ namespace elysian {
     inline void GroupWidget::setPosition(AXIS axis, float pos) { _pos[axis] = pos; }
     inline float GroupWidget::getSize(AXIS axis) const { return _size[axis]; }
     inline void GroupWidget::setSize(AXIS axis, float size) { _size[axis] = size; }
-    inline void GroupWidget::render(void) const {}
+    inline void GroupWidget::render(void) { renderLayout(); }
 
 }
 
