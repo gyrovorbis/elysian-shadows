@@ -27,6 +27,14 @@ namespace elysian {
         _position[axis] = pos;
     }
 
+    void LabelWidget::setPositionZ(float pos) {
+        _position.z = pos;
+    }
+
+    float LabelWidget::getPositionZ(void) const {
+        return _position.z;
+    }
+
     float LabelWidget::getPosition(AXIS axis) const {
         return _position[axis];
     }
@@ -49,7 +57,7 @@ namespace elysian {
         gyMatPush();
         gyMatLoadIdentity();
 
-        _font->_transform.setPos(_position[X], _position[Y]);
+        _font->_transform.setPos(_positon);
         _font->_transform.setScale(1.0f, 1.0f);
         _font->setColor(_color);
         _font->drawString(Font::C_ALIGN, _text);

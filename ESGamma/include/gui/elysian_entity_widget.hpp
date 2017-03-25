@@ -22,6 +22,8 @@ namespace elysian {
         //Overridden from widget
         virtual float   getPosition(AXIS axis) const override;
         virtual void    setPosition(AXIS axis, float pos) override;
+        virtual float   getPositionZ(void) const override;
+        virtual void    setPositionZ(float pos);
 
         virtual float   getSize(AXIS axis) const override;
         virtual void    setSize(AXIS axis, float size) override;

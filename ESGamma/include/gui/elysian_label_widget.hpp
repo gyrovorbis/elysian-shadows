@@ -20,7 +20,7 @@ namespace elysian {
 
     private:
         char            _text[ELYSIAN_LABEL_WIDGET_TEXT_SIZE]   = { 0 };
-        int             _position[AXIS_COUNT]                   = { 100 };
+        Vector3         _position;
         Color4          _color                                  = Color4::white;
         ALIGNMENT       _alignment                              = CENTER;
         int             _width                                  = 0;
@@ -53,6 +53,8 @@ namespace elysian {
         //Overridden from Widget
         virtual float   getPosition(AXIS axis) const override;
         virtual void    setPosition(AXIS axis, float pos) override;
+        virtual float   getPositionZ(void) const override;
+        virtual void    setPositionZ(float pos);
         virtual float   getSize(AXIS axis) const override;
         virtual void    setSize(AXIS axis, float size) override;
         virtual void    render(void) override;

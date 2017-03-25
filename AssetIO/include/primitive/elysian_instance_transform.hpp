@@ -34,7 +34,7 @@ namespace elysian {
         void        setY(const float val) const;
     };
 
-    struct Vector3: public GYVector3, public LuaTableProxy<Vector3> {
+    struct Vector3: public GYVector3, public VirtualArray<Vector3, int, float>, public LuaTableProxy<Vector3> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
@@ -49,8 +49,8 @@ namespace elysian {
                     Vector3(const Vector3& other);
                     ~Vector3(void) = default;
 
-        float       operator[](int index) const;
-
+        void        setValueByIndex(int index, float val);
+        float       getValueByIndex(int index) const;
 
         float       getX(void) const;
         float       getY(void) const;
@@ -291,6 +291,29 @@ namespace elysian {
     inline void Vector3::setX(const float val) const { _ptr->x = val; }
     inline void Vector3::setY(const float val) const { _ptr->y = val; }
     inline void Vector3::setZ(const float val) const { _ptr->z = val; }
+    inline float Vector3::getValueByIndex(int index) const {
+        GY_ASSERT(index >= 0 || index <= 2);
+        switch(index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+        case 2:
+            return z;
+        }
+    }
+    inline void Vector3::setValueByIndex(int index, float value) {
+        GY_ASSERT(index >= 0 || index <= 2);
+        switch(index) {
+        case 0:
+            x = value;
+        case 1:
+            y = value;
+        case 2:
+            z = value;
+        }
+    }
 
     inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}
     inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}), _ptr(this){}

@@ -38,4 +38,12 @@ void EntityWidget::render(void) {
     EntityWidget::renderLayout();
 }
 
+void EntityWidget::getPositionZ(void) const {
+    return _entity->getTransform().getPosZ();
+}
+
+void EntityWidget::setPositionZ(float pos) {
+    _entity->getTransform().setPosZ(pos);
+}
+
 }
