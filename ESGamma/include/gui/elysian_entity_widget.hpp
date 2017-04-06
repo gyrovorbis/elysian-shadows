@@ -28,7 +28,8 @@ namespace elysian {
         virtual float   getSize(AXIS axis) const override;
         virtual void    setSize(AXIS axis, float size) override;
 
-        virtual void    render(void) override;
+        virtual void    render(void) const override;
+
     };
 
 

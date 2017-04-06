@@ -28,6 +28,22 @@ namespace elysian {
             delete w;
     }
 
+    void Layout::update(void) {
+        if(!getWidgetCount()) return;
+        for(auto&& widget: _widgets) widget->update();
+
+        _updateSizes();
+        _updatePositions();
+        _updatePositionsZ();
+    }
+
+    void Layout::_updatePositionsZ(void) {
+        float zCoord = _parent->getPositionZ() + ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET;
+        for(auto&& widget : _widgets) {
+            widget->setPositionZ(zCoord);
+        }
+    }
+
     void Layout::addWidget(Widget* widget) {
         _widgets.push_back(widget);
         widget->setParentLayout(this);
@@ -45,91 +61,134 @@ namespace elysian {
     }
 
     void Layout::render(void) {
-        update();
         for(auto&& widget: _widgets) widget->render();
+    }
+
+    void Layout::clearWidgets(void) {
+        for(auto&& widget: _widgets) widget->setParentLayout(nullptr);
+        _widgets.clear();
     }
 
     //===== PRIVATE API =======
 
     void Layout::_updateSizes(AXIS axis_) {
         const Widget::AXIS axis = (Widget::AXIS)axis_;
-        const int parentSize    = _parent->getSize(axis);
+        const float parentSize    = _parent->getSize(axis);
 
-        if(axis_ == _groupingAxis) {
-            int overflow = 0;
+        if(axis_ != _groupingAxis) {
+            float overflow = 0.0f;
+            float underflow = 0.0f;
 
             for(auto&& widget : _widgets) {
-                const int   size = widget->getSize(axis);
-                int         delta = parentSize - size;
+                float         size = widget->getSize(axis);
+                float         delta = parentSize - size;
 
-                if(delta > 0) { //Expand widget to match parent size (if expandable)
-                    int maxDelta = widget->getMaximizeDelta(axis);
-                    if(maxDelta < delta) delta = maxDelta;
-                    widget->expand(axis, delta);
+                //Check whether the difference is even big enough to give a shit or not.
+                if(fabs(delta) > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON) {
 
-                } else if(delta < 0) {
-                    //Attempt to shrink widgets to match parent size (if shrinkable)
-                    delta = std::abs(delta);
-                    int minDelta = widget->getMinimizeDelta(axis);
-                    if(minDelta < delta) delta = minDelta;
-                    widget->shrink(axis, delta);
-                    const int newSize = size - delta;
-                    //Record any leftover size that could not be shrunk
-                    if(newSize > parentSize) {
-                        if(newSize - parentSize > overflow)
-                            overflow = newSize - parentSize;
+                    if(delta > 0) { //Expand widget to match parent size (if expandable)
+                        float maxDelta = widget->getMaximizeDelta(axis);
+                        if(maxDelta < delta) delta = maxDelta;
+                        if(delta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON) {
+                            widget->expand(axis, delta);
+                            size = widget->getSize(axis);
+                        }
+                        if(parentSize > size) {
+                            if(parentSize - size > underflow)
+                                underflow = parentSize - size;
+                        }
+
+
+                    } else if(delta < 0) {
+                        //Attempt to shrink widgets to match parent size (if shrinkable)
+                        delta = fabs(delta);
+                        float minDelta = widget->getMinimizeDelta(axis);
+                        if(minDelta < delta) delta = minDelta;
+                        if(delta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON) {
+                            widget->shrink(axis, delta);
+                            size = widget->getSize(axis);
+                        }
+                        //Record any leftover size that could not be shrunk
+                        if(size > parentSize) {
+                            if(size - parentSize > overflow)
+                                overflow = size - parentSize;
+                        }
+
                     }
+
                 }
             }
 
+            float finalDelta = overflow - underflow;
+
             //Resize parent to accomodate child widgets (which cannot be shrunk any further)
-            if(overflow) {
-                const int maxDelta = _parent->getMaximizeDelta(axis);
-                if(maxDelta < overflow) overflow = maxDelta; //We're basically fucked. Can't fit widget. Don't try.
-                _parent->expand(axis, overflow);
+            if(finalDelta > 0.0f) {
+                const float maxDelta = _parent->getMaximizeDelta(axis);
+                if(maxDelta < finalDelta) finalDelta = maxDelta; //We're basically fucked. Can't fit widget. Don't try.
+                if(finalDelta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON)
+                    _parent->expand(axis, finalDelta);
+            } else if(finalDelta < 0.0f) {
+                finalDelta = fabs(finalDelta);
+                const float minDelta = _parent->getMinimizeDelta(axis);
+                if(minDelta < finalDelta) finalDelta = minDelta;
+                if(finalDelta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON)
+                    _parent->shrink(axis, finalDelta);
             }
 
         } else {
-            int curSize = 0;
+            float curSize = 0.0f;
 
             for(auto&& widget: _widgets) curSize += widget->getSize(axis);
 
-            //Check if layout size is smaller than parent
-            if(curSize < parentSize) {
-                int delta = parentSize - curSize;
+            float delta = fabs(parentSize - curSize);
 
-                //Try to evenly distribute the difference to expandable widgets
-                while(delta) {
-                    bool didExpand = false;
+            //Do we give a shit about the size discrepency...
+            if(delta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON) {
 
-                    for(auto&& widget: _widgets) {
-                        if(widget->getSizePolicy(axis) == Widget::EXPANDING ||
-                           widget->getSizePolicy(axis) == Widget::EXPANDING_MINIMIZING) {
-                            const int widgetSize = widget->getSize(axis);
+                //Check if layout size is smaller than parent
+                if(curSize < parentSize) {
 
-                            if(widgetSize < widget->getMaxSize(axis)) {
-                                widget->setSize(axis, widgetSize+1);
-                                didExpand = true;
-                                if(--delta == 0) break;
+                    //Try to evenly distribute the difference to expandable widgets
+                    int intDelta = (int)delta;
+                    while(intDelta) {
+                        bool didExpand = false;
+
+                        for(auto&& widget: _widgets) {
+                            if(widget->getSizePolicy(axis) & Widget::growFlag) {
+                                const float widgetSize = widget->getSize(axis);
+
+                                if(widgetSize+1.0f <= widget->getMaxSize(axis)) {
+                                    widget->setSize(axis, widgetSize+1.0f);
+                                    didExpand = true;
+                                    if(--intDelta == 0) break;
+                                }
                             }
                         }
+                        if(!didExpand) break;
                     }
-                    if(!didExpand) break;
+#if 0
+                    //Try to shrink parent instead
+                    if(intDelta) {
+                        float minDelta = _parent->getMinimizeDelta(axis);
+                        if((float)intDelta < minDelta) minDelta = (float)intDelta;
+                        if(minDelta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON)
+                            _parent->shrink(axis, minDelta);
+                    }
+#endif
+
+                //Check if layout size is larger than parent
+                } else if(curSize > parentSize) {
+                    //Make widgets smaller first?
+                    //Make parent bigger
+                    const float parentMaxDelta = _parent->getMaximizeDelta(axis);
+                    if(parentMaxDelta < delta) delta = parentMaxDelta;
+                    if(delta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON)
+                        _parent->expand(axis, delta);
+
+                    //Request for the parent widget to expand to accomodate the child widgets
+
+
                 }
-
-            //Check if layout size is larger than parent
-            } else if(curSize > parentSize) {
-                //Make widgets smaller first?
-
-                //Make parent bigger
-                int delta = curSize - parentSize;
-                const int parentMaxDelta = _parent->getMaximizeDelta(axis);
-                if(parentMaxDelta < delta) delta = parentMaxDelta;
-                _parent->expand(axis, delta);
-
-                //Request for the parent widget to expand to accomodate the child widgets
-
-
             }
         }
 
@@ -137,7 +196,7 @@ namespace elysian {
 
     void Layout::_updatePositions(AXIS axis_) {
         const Widget::AXIS axis = (Widget::AXIS)axis_;
-        const int parentPos     = _parent->getPosition(axis);
+        const float parentPos     = _parent->getPosition(axis);
 
         if(_groupingAxis != axis_) {
             for(auto&& widget : _widgets) {
@@ -145,8 +204,8 @@ namespace elysian {
             }
         } else {
 
-            int startPos = parentPos - 0.5f*_parent->getSize(axis);
-            int endPos;
+            float startPos = parentPos - 0.5f*_parent->getSize(axis);
+            float endPos;
 
             for(auto&& widget : _widgets) {
                 endPos = startPos + widget->getSize(axis);

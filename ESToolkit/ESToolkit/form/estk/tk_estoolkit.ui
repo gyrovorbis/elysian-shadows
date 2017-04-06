@@ -298,6 +298,19 @@
     <addaction name="actionPerformance_Monitor"/>
     <addaction name="actionDocumentation"/>
    </widget>
+   <widget class="QMenu" name="menuGame">
+    <property name="title">
+     <string>Game</string>
+    </property>
+    <widget class="QMenu" name="menuParty">
+     <property name="title">
+      <string>Party</string>
+     </property>
+     <addaction name="actionAdd"/>
+     <addaction name="actionRemove"/>
+    </widget>
+    <addaction name="menuParty"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
@@ -306,6 +319,7 @@
    <addaction name="menuEngine"/>
    <addaction name="menuConsole"/>
    <addaction name="menuTools"/>
+   <addaction name="menuGame"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -1557,12 +1571,12 @@
   </action>
   <action name="actionAdd_Player">
    <property name="text">
-    <string>Add Player</string>
+    <string>Add Party Member</string>
    </property>
   </action>
   <action name="actionRemove_Player">
    <property name="text">
-    <string>Remove Player</string>
+    <string>Remove Party Member</string>
    </property>
   </action>
   <action name="actionLua_Manager_Dump">
@@ -1611,6 +1625,16 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </action>
+  <action name="actionRemove">
+   <property name="text">
+    <string>Remove</string>
    </property>
   </action>
  </widget>

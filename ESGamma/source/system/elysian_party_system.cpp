@@ -13,7 +13,7 @@
 #include "elysian_audio_system.hpp"
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_skeleton.hpp>
-#include <elysian_playable_behavior.hpp>
+#include <behavior/elysian_playable_behavior.hpp>
 #include <system/elysian_gui_system_base.hpp>
 
 namespace elysian {
@@ -25,20 +25,16 @@ PartySystem::PartySystem(void) {
 }
 
 PartySystem::~PartySystem(void) {
-    //for(unsigned int i = 0; i < _playableAmount; ++i) {
-        //delete _playable[i];
-    //}
-
-//	delete[] _playable;
+    for(auto&& entity : _playables) {
+        delete entity;
+    }
 }
 
 void PartySystem::update(void) {//VOIDICATE
-#if 0
-  _tapTimer += getTimerSys()->getDeltaTime();
-    _dashPartTimer += getTimerSys()->getDeltaTime();
-  //if(_playableParty.size() < 1) return;
+//  _tapTimer += getTimerSys()->getDeltaTime();
+  //  _dashPartTimer += getTimerSys()->getDeltaTime();
+ // if(_playableParty.size() < 1) return;
   updatePartyPaths();
-#endif
 }
 
 int PartySystem::getPartySlot(const Entity *entity) const {
@@ -50,7 +46,29 @@ int PartySystem::getPartySlot(const Entity *entity) const {
     return -1;
 }
 
-void PartySystem::render(void) {}
+void PartySystem::addPlayable(Entity* entity) {
+    dbgprintf("PartySystem - Adding playable character [%s].", entity->getName());
+    _playables.push_back(entity);
+}
+
+void PartySystem::addPlayableToParty(const char* name) {
+    Entity* playable = getPlayable(name);
+
+    if(!playable) {
+        errprintf("Could not add [%s] to the party! Entity not found!", name);
+        return;
+    }
+
+    addCharacterToParty(playable);
+}
+
+Entity* PartySystem::getPlayable(const char* name) const {
+    for(auto&& entity : _playables)
+        if(strcmp(name, entity->getName()) == 0)
+            return entity;
+    return nullptr;
+}
+
 
 void PartySystem::setPartyLeader(Entity *entity) {
     //make sure fucker is in teh party
@@ -65,248 +83,6 @@ void PartySystem::setPartyLeader(Entity *entity) {
     _characterParty[slot] = prevLeader;
 }
 
-void PartySystem::processInput(void) {
-#if 0
-    for(unsigned i = 0; i < _characterParty.size(); ++i) {
-        _players[i].processInput(getInputSys()->getController(i), this);
-    }
-#endif
-#if 0
-    return;
-    auto* cont = getInputSys()->getController(0);
-
-  Entity*entity = getPartyLeader();
-  if(!entity) return;
-
-    GYVector2 moveDist = cont->getAnalogStick(GY_CONTROLLER_ANALOG_LEFT);
-    bool moved = false;
-
-
-    if(cont->getAnalogMag(GY_CONTROLLER_ANALOG_LEFT) >= 0.3f) {
-        moved = true;
-    }
-
-
-
-  //if(_playableParty.size() < 1) return;
-
-/*	if(input.getTapped(GameInput::BUT_I)) {
-    for(unsigned int i = 0; i < _partyPathPoint.size(); ++i) {
-      Debug::Print(Debug::NORMAL, "%d - <%f, %f>\n", i, _partyPathPoint[i].x, _partyPathPoint[i].y);
-    }
-    Debug::Print(Debug::NORMAL, "Dist1 - %f,%f\nDist2 - %f,%f\n", _playableParty[0]->transform.getPosition().x-_playableParty[1]->transform.getPosition().x, _playableParty[0]->transform.getPosition().y-_playableParty[1]->transform.getPosition().y, _characterParty[0]->transform.getPosition().x-_characterParty[1]->transform.getPosition().x, _characterParty[0]->transform.getPosition().y-_characterParty[1]->transform.getPosition().y);
-  }*/
-
-  /*if(input.getTapped(GameInput::BUT_O)) {
-    RemoveCharacterFromParty(0u);
-  }
-
-  if(input.getTapped(GameInput::BUT_P)) {
-    RemovePlayableFromParty(0u);
-    return;
-  }*/
-    auto endDash = [&](void) {
-        getPartyLeader()->getCharacter()->setSpeedMultiplier(1.0f);
-        getAudioSys()->setSfxChannelPitch(0, 1.0f);
-        getPartyLeader()->getCharacter()->setDashing(false);
-        _tapTimer = 0.0f;
-        _lastDpadTapped = GY_CONTROLLER_BUT_COUNT;
-    };
-
-    auto emitDashParticles = [&](void) {
-    getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
-        getPartSys()->getAttrib(0)->setForceMask(0);
-        getPartSys()->getAttrib(0)->setEndColor(GYColor4 { 255, 255, 255, 0});
-        getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
-        getPartSys()->getAttrib(0)->setMaxLife(30);
-        getPartSys()->getAttrib(0)->setStick(false);
-        GYVector3 pos = getPartyLeader()->_transform._pos;
-        pos.z += 5.0f;
-        pos.y = getPartyLeader()->getDepthBaseY();
-        getPartSys()->emitFromPoint(0, pos, _dashPartAngle, 500);
-        _dashPartTimer = 0.0f;
-    };
-
-    auto updateDash = [&](const GY_CONTROLLER_BUTTON but) {
-    bool updateTappedButton = true;
-
-    if(_dashing) {
-      bool stop = false;
-      switch(_lastDpadTapped) {
-                case GY_CONTROLLER_BUT_DPAD_UP:
-                  if(but == GY_CONTROLLER_BUT_DPAD_DOWN) stop = true;
-          break;
-                case GY_CONTROLLER_BUT_DPAD_DOWN:
-                    if(but == GY_CONTROLLER_BUT_DPAD_UP) stop = true;
-           break;
-
-                case GY_CONTROLLER_BUT_DPAD_LEFT:
-                    if(but == GY_CONTROLLER_BUT_DPAD_RIGHT) stop = true;
-          break;
-
-                case GY_CONTROLLER_BUT_DPAD_RIGHT:
-                    if(but == GY_CONTROLLER_BUT_DPAD_LEFT) stop = true;
-            break;
-                default: break;
-      }
-
-            if(stop || _tapTimer > _dashTapTimeWindow) {
-                endDash();
-                _lastDpadTapped = GY_CONTROLLER_BUT_COUNT;
-                updateTappedButton = false;
-            } //else {
-                //updateTappedButton = false;
-        //	}
-    } else {
-      if(but == _lastDpadTapped && _tapTimer <= _dashTapTimeWindow) {
-                //float angle;
-
-        switch(_lastDpadTapped) {
-                    case GY_CONTROLLER_BUT_DPAD_UP:
-                      _dashPartAngle = M_PI*0.5f;
-            break;
-                    case GY_CONTROLLER_BUT_DPAD_DOWN:
-                        _dashPartAngle = -M_PI*0.5f;
-             break;
-
-                    case GY_CONTROLLER_BUT_DPAD_LEFT:
-                        _dashPartAngle = 0.0f;
-            break;
-
-                    case GY_CONTROLLER_BUT_DPAD_RIGHT:
-                        _dashPartAngle = -M_PI;
-              break;
-
-          default: break;
-
-        }
-
-                getPartyLeader()->getCharacter()->setDashing(true);
-        getAudioSys()->setSfxChannelPitch(0, 2.0f);
-//				getPartSys()->getAttrib(0)->setSize(3);
-//				getPartSys()->getAttrib(0)->setFadeOut(true);
-                emitDashParticles();
-        //Debug::printf(Debug::LOG_VERBOSE, "DASHING!!!");
-      }
-    }
-
-    if(updateTappedButton) _lastDpadTapped = but;
-    _tapTimer = 0.0f;
-  };
-
-    if(_dashDuration != 0.0f && _tapTimer > _dashDuration) {
-        endDash();
-    } else if(_dashing && _dashPartTimer >= _dashPartInterval) {
-        emitDashParticles();
-    }
-
-    if(_lastDpadTapped != GY_CONTROLLER_BUT_COUNT) {
-        //if(!input.getDown(_lastDpadTapped)) endDash();
-    }
-
-    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_UP)){
-        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_UP)) updateDash(GY_CONTROLLER_BUT_DPAD_UP);
-//		gyVec2AddAccum(&moveDist, &upMove);
-    moved = true;
-  }
-    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_DOWN)){
-        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_DOWN))  updateDash(GY_CONTROLLER_BUT_DPAD_DOWN);
-        //gyVec2AddAccum(&moveDist, &downMove);
-    moved = true;
-  }
-
-    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_LEFT)){
-        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_LEFT))  updateDash(GY_CONTROLLER_BUT_DPAD_LEFT);
-        //gyVec2AddAccum(&moveDist, &leftMove);
-    moved = true;
-  }
-
-    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_RIGHT)){
-        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_RIGHT)) updateDash(GY_CONTROLLER_BUT_DPAD_RIGHT);
-        //gyVec2AddAccum(&moveDist, &rightMove);
-    moved = true;
-  }
-#if 0
-  //examine
-  if(input.getTapped(GameInput::BUT_M)) {
-    if(_playableParty.size() != 0) _checkExamine(_playableParty[0]);
-    if(_characterParty.size() != 0) _checkExamine(_characterParty[0]);
-  }
-
-
-
-#endif
-
-    if(cont->isTapped(GY_CONTROLLER_BUT_X)) {
-        if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->jump();
-
-    }
-
-  _footStepTimer += getTimerSys()->getDeltaTime();
-  if(_wasOnGround) {
-        if(!entity->getCollidable()->getRestingOnBody()) {
-      getAudioSys()->setSfxChannelGain(0, 0.0f);
-      _wasOnGround = false;
-    }
-  } else {
-        if(entity->getCollidable()->getRestingOnBody()) {
-      getAudioSys()->setSfxChannelGain(0, 1.0f);
-      _wasOnGround = true;
-    }
-  }
-
-  if(moved) {
-
-    //if(!_footStepSfxLooping) {
-      GYVector3 worldPos = entity->getCollidable()->getWorldPos();
-      GYWav* walkSfx = nullptr;
-      for(unsigned i = 0; i < 3; ++i) {
-                TileEntry tileEntry = getCurrentArea()->getTileEntry(i, (worldPos.x+16.0f)/32.0f, (worldPos.y+16.0f)/32.0f);
-        if(tileEntry.getElev() == entity->getElev()) {
-                    auto* sfx = getCurrentLevel()->getTile(tileEntry.getIndex())->walkSfx;
-          if(sfx) walkSfx = sfx;
-        }
-      }
-
-      if(walkSfx) {
-        if(walkSfx != _curWalkSfx) {
-          getAudioSys()->setSfxChannelLooping(0, true);
-          getAudioSys()->stopSfxChannel(0);
-          getAudioSys()->setSfxChannelGain(0, 1.0f);
-          getAudioSys()->playSfxChannel(0, *walkSfx);
-          _footStepSfxLooping = true;
-          _curWalkSfx = walkSfx;
-        } else if(!_footStepSfxLooping) {
-          getAudioSys()->setSfxChannelGain(0, 1.0f);
-          _footStepSfxLooping = true;
-        }
-      }
-
-      _footStepTimer = 0.0f;
-    //}
-
-
-        entity->getCharacter()->walk(moveDist);
-  } else {
-    if(_footStepSfxLooping && _footStepTimer >= ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME) {
-      getAudioSys()->setSfxChannelGain(0, 0.0f);
-      _footStepSfxLooping = false;
-    }
-        if(getPartyLeader()->getCharacter()->isDashing()) {
-      getAudioSys()->setSfxChannelPitch(0, 1.0f);
-    }
-
-        getPartyLeader()->getCharacter()->setDashing(false);
-  }
-#if 0
-    if(input.getTapped(GameInput::BUT_N)) {
-        if(_characterParty.size() != 0) _checkPickup(_characterParty[0]);
-    }
-#endif
-#endif
-
-
-}
 
 void PartySystem::checkPickup(Entity * const entity) const {
 
@@ -356,163 +132,6 @@ void PartySystem::checkPickup(Entity * const entity) const {
     }
 
 
-
-
-
-#if 0
-
-  if(leader->getCharacter()->getHeldEntity()) {
-    leader->getCharacter()->throwHeldEntity();
-  } else {
-    if(leader->getCollidable()->getContactCount() > 0) {
-      auto& rigidBodies = _curArea->rigidBodies;
-      for(auto it = rigidBodies.begin();
-        it != rigidBodies.end();
-        ++it)
-      {
-        if(getCollisionSys()->checkCollision(*leader, *(*it)->getEntity())) {
-                    if((*it)->getEntity()->getRigidBody()->getAttrib()->getCanHold()) {
-                        leader->getCharacter()->setHeldEntity((*it)->getEntity());
-                        break;
-                    }
-        }
-      }
-        }
-  }
-
-#endif
-
-}
-
-bool PartySystem::loadPlayables(void) {
-#if 0
-  std::ifstream stream(gyFilePath(ELYSIAN_PARTY_PATH));
-  Debug::printf(Debug::LOG_VERBOSE, "PartySystem::LoadPlayable(%s)", ELYSIAN_PARTY_PATH);
-    Debug::push();
-
-  if(!stream.is_open()) {
-    Debug::printf(Debug::LOG_WARNING, "Could not open %s", ELYSIAN_PARTY_PATH);
-        Debug::pop();
-    return false;
-  }
-
-  stream >> _playableAmount;
-  Debug::printf(Debug::LOG_VERBOSE, "_playableAmount - %d", _playableAmount);
-  _playable = new Entity*[_playableAmount];
-
-  for(unsigned i = 0; i < _playableAmount; ++i) {
-    if(!stream.is_open()) {
-      Debug::printf(Debug::LOG_WARNING, "\tCould not read %s.", ELYSIAN_PARTY_PATH);
-            Debug::pop();
-      return false;
-    }
-
-    _playable[i] = new Entity();
-    _playable[i]->load(stream);
-  }
-
-    Debug::pop();
-  return true;
-#endif
-  return true;
-}
-
-//bool PartySystem::loadParty(std::ifstream &/*stream*/) { return true; }
-//bool PartySystem::saveParty(std::ofstream &/*stream*/) { return true; }
-
-bool PartySystem::addPlayableToParty(const char *name) {
-  for(unsigned int i = 0; i < _playableAmount; ++i) {
-    if(strcmp(_playable[i]->getName(), name) == 0) {
-      if(getPlayablePartyMember(name)) {
-        Debug::printf(Debug::LOG_WARNING, "PartySystem::AddPlayableToParty(%s): Already in the party!", name);
-        return false;
-      }
-      Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", name);
-      _playableParty.push_back(_playable[i]);
-      _curArea->addEntity(_playable[i]);
-      //_playable[i]->activate();
-      if(_playableParty.size() == 1) getCameraSys()->setFollowEntity(_playable[i]);
-      //else _playable[i]->transform.setPosition(_playableParty[_playableParty.size()-2]->transform.getPosition());
-      _resizePartyPathPoints();
-      return true;
-    }
-  }
-  Debug::printf(Debug::LOG_WARNING, "PartySystem::AddPlayableToParty(%s): Not a loaded playable!", name);
-  return false;
-}
-
-bool PartySystem::addPlayableToParty(const Entity &entity) {
-  for(unsigned int i = 0; i < _playableAmount; ++i) { //check if entity is in _playable
-    if(_playable[i] == &entity) {
-      for(unsigned int j = 0; j < _playableParty.size(); ++j) { //check if entity is already in _playableParty
-        if(_playableParty[j] == &entity) {
-          Debug::printf(Debug::LOG_WARNING, "PartySystem::AddPlayableToParty(Entity&): %s is already in the party!", entity.getName());
-          return false;
-        }
-      }
-      Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity.getName());
-      _playableParty.push_back(_playable[i]);
-      //_playable[i]->activate();
-      _curArea->addEntity(_playable[i]);
-      if(_playableParty.size() == 1) getCameraSys()->setFollowEntity(_playable[i]);
-      //else _playable[i]->transform.setPosition(_playableParty[_playableParty.size()-2]->transform.getPosition());
-      _resizePartyPathPoints();
-      return true;
-    }
-  }
-  Debug::printf(Debug::LOG_WARNING, "! - PartySystem::AddPlayableToParty(Entity&): Entity is not a loaded playable!");
-  return false;
-}
-
-
-
-bool PartySystem::removePlayableFromParty(const char *name) {
-  for(unsigned int i = 0; i < _playableParty.size(); ++i) {
-    if(strcmp(_playableParty[i]->getName(), name) == 0) { //determine slot from name
-      removePlayableFromParty(i);//invoke slot
-      return true;
-    }
-  }
-  Debug::printf(Debug::LOG_WARNING, "! - PartySystem::RemovePlayableFromParty(const char[]): %s is not in the party!", name);
-  return false;
-}
-
-bool PartySystem::removePlayableFromParty(const Entity &entity) {
-  for(unsigned int i = 0; i < _playableParty.size(); ++i) {
-    if(_playableParty[i] == &entity) { //determine slot from memory address
-      removePlayableFromParty(i); //invoke slot
-      return true;
-    }
-  }
-  Debug::printf(Debug::LOG_WARNING, "! - PartySystem::RemovePlayableFromParty(Entity&): Entity is not in party!");
-  return false;
-}
-
-bool PartySystem::removePlayableFromParty(const unsigned int slot) {
-  if(slot >= _playableParty.size()) {
-    Debug::printf(Debug::LOG_WARNING, "! PartySystem::RemovePlayableFromParty(const uint): Invalid slot!");
-    return false;
-  }
-  Debug::printf(Debug::LOG_VERBOSE, "%s has left the party!", _playableParty[slot]->getName());
-  _playableParty[slot]->deactivate();
-
-
-  //update character positions
-  if(_characterParty.size() > 0) {
-        for(unsigned int i = _characterParty.size()-1; i > 0; --i) _characterParty[i]->_transform._pos = _characterParty[i-1]->_transform._pos;
-        _characterParty[0]->_transform._pos = _playableParty[_playableParty.size()-1]->_transform._pos;
-  }
-  //update playable positions
-    for(unsigned int i = _playableParty.size()-1; i > slot; --i) _playableParty[i]->_transform._pos = _playableParty[i-1]->_transform._pos;
-
-
-  _playableParty.erase(_playableParty.begin() + slot);
-  if(slot == 0) {
-    if(_playableParty.size() > 0) getCameraSys()->setFollowEntity(_playableParty[0]);
-        else getCameraSys()->setFollowEntity(nullptr);
-  }
-  _resizePartyPathPoints();
-  return true;
 }
 
 Entity *PartySystem::getPlayablePartyMember(const char *name) const {
@@ -540,8 +159,12 @@ Entity *PartySystem::getPartyLeader(void) const {
     _playableParty.front();
 }
 
-bool PartySystem::addCharacterToParty(Entity *entity) {
-    if(getPartySlot(entity) != -1) return false;
+void PartySystem::addCharacterToParty(Entity* entity) {
+    if(getPartySlot(entity) != -1) {
+        warnprintf("Failed to add entity [%s] to party: Already in the party!", entity->getName());
+    }
+
+    if(_partyActive && !entity->isActive()) _curArea->addEntity(entity);
 
     if(!entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME)) {
         auto* behav = new game::PlayableBehavior(*entity);
@@ -560,7 +183,7 @@ bool PartySystem::addCharacterToParty(Entity *entity) {
     }
 
     _resizePartyPathPoints();
-    return true;
+    return;
 }
 
 bool PartySystem::removeCharacterFromParty(const char *name) {
@@ -606,7 +229,7 @@ Entity *PartySystem::getCharacterPartyMember(const char *name) const {
     }
   }
     //Debug::printf(Debug::LOG_WARNING, "PartySystem::getCharacterPartyMember(const char[]): %s is not in the party!", name);
-    return NULL;
+    return nullptr;
 }
 
 Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
@@ -675,8 +298,8 @@ void PartySystem::updatePartyPaths(void) {
         //Debug::Print(Debug::NORMAL, "%d\n", currentIndex);
     //Debug::Print(Debug::NORMAL, "x - %d, y - %d\n", currentIndex, currentIndex);
     gyVec2Sub(&dist, &_partyPathPoint[currentIndex-2], &_partyPathPoint[currentIndex-1]);
-        _playableParty[i]->getCharacter()->animateWalk(dist);
-        _playableParty[i]->_transform.setPos(_partyPathPoint[currentIndex-1]);
+        _playableParty[i]->getCharacter()->moveByDist(dist);
+      //  _playableParty[i]->_transform.setPos(_partyPathPoint[currentIndex-1]);
   }
   //update characters
   //--currentIndex;
@@ -687,8 +310,9 @@ void PartySystem::updatePartyPaths(void) {
     currentIndex += _pointsPerCharacter-1;
     //Debug::Print(Debug::NORMAL, "%d\n", currentIndex);
     gyVec2Sub(&dist, &_partyPathPoint[currentIndex-2], &_partyPathPoint[currentIndex-1]);
-        _characterParty[i]->getCharacter()->animateWalk(dist);
-        _characterParty[i]->_transform.setPos(_partyPathPoint[currentIndex-1]);
+       // _characterParty[i]->getCharacter()->animateWalk(dist);
+    _characterParty[i]->getCharacter()->moveByDist(dist);
+       _characterParty[i]->_transform.setPos(_partyPathPoint[currentIndex-1]);
   }
 }
 

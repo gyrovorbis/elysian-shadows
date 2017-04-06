@@ -3,18 +3,19 @@
 
 #include <elysian_entity_widget.hpp>
 #include <system/elysian_system.hpp>
+#include <system/elysian_party_system.hpp>
 
 namespace game {
 
-    class CharacterPane;
+    class PlayablePane;
 
     class MenuWidget: public elysian::EntityWidget, public elysian::System {
     private:
-        CharacterPane*  _charPane;
+        PlayablePane*  _playablePane[ELYSIAN_PARTY_SLOTS_MAX];
 
     public:
                         MenuWidget(void);
-    virtual void        render(void) override;
+    virtual void        update(void) override;
 
     };
 

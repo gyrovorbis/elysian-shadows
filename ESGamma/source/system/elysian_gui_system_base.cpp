@@ -92,7 +92,7 @@ bool GuiSystem::loadAssets(void) {
     adventureLog.setLabelFont(&pragmata22);
     adventureLog.setTextFont(&pragmata18);
 
-    _menuWidget =new game::MenuWidget;
+    _menuWidget = new game::MenuWidget;
 
     Debug::pop();
     return success;
@@ -173,10 +173,11 @@ void GuiSystem::renderForeground(void) {
     if(_fgFadeAlpha == 0.0f) return;
     //if(!_debugOverlayEnabled) return;
     if(_fgWidget) {
-        gyMatPush();
-        gyMatTranslate(0.0f, 0.0f, ELYSIAN_ZCOORD_FG_1);
+        //gyMatPush();
+        //gyMatTranslate(0.0f, 0.0f, ELYSIAN_ZCOORD_FG_1);
+        _fgWidget->update();
         _fgWidget->render();
-        gyMatPop();
+        //gyMatPop();
     }
     adventureLog.render();
 }

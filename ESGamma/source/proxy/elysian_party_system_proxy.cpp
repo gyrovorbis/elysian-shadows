@@ -5,9 +5,11 @@
 OOLUA_EXPORT_FUNCTIONS(PartySystem,
                         addCharacterToParty,
                         removeCharacterFromParty,
-                        setPartyLeader)
+                        setPartyLeader,
+                        addPlayable)
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
                                 getPartyLeader,
                                 getCharacterPartyMember,
                                 getPartySize,
-                                getPartySlot)
+                                getPartySlot,
+                                getPlayable)

@@ -51,19 +51,20 @@ namespace elysian {
         }
     }
 
-    void LabelWidget::render(void) {
-        if(!_width) return;
+    void LabelWidget::render(void) const {
+        if(_width) {
 
-        gyMatPush();
-        gyMatLoadIdentity();
+            gyMatPush();
+            gyMatLoadIdentity();
 
-        _font->_transform.setPos(_positon);
-        _font->_transform.setScale(1.0f, 1.0f);
-        _font->setColor(_color);
-        _font->drawString(Font::C_ALIGN, _text);
+            _font->_transform.setPos(_position);
+            _font->_transform.setScale(1.0f, 1.0f);
+            _font->setColor(_color);
+            _font->drawString(Font::C_ALIGN, _text);
 
-        gyMatPop();
-
+            gyMatPop();
+        }
+        Widget::render();
     }
 
 

@@ -10,9 +10,7 @@
 */
 
 OOLUA_EXPORT_FUNCTIONS(Widget,
-                       getMinSize,
                        setMinSize,
-                       getMaxSize,
                        setMaxSize,
                        setPosition,
                        setSize,

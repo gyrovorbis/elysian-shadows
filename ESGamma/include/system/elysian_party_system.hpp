@@ -9,7 +9,7 @@
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f
-#define ELYSIAN_PARTY_SLOTS_MAX             4
+#define ELYSIAN_PARTY_SLOTS_MAX             5
 #define ELYSIAN_PARTY_GUEST_SLOTS_MAX       10
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
@@ -62,13 +62,12 @@ namespace elysian {
     private:
         Player _players[ELYSIAN_PARTY_SLOTS_MAX];
 
-
 		unsigned int _activePlayablePartySize	= 3;
 //		unsigned int _characterPartySize		= 3;
 		unsigned int _playableAmount			= 0;
 		
 		//Array holding every potential playable character
-		Entity **_playable;
+        std::vector<Entity*> _playables;
 
 		//< _activePartySize is active
         std::vector<Entity*> _playableParty;
@@ -93,23 +92,19 @@ namespace elysian {
             ~PartySystem(void);
 		
 		void update(void);
-		void render(void);
-        void processInput(void);
 		void updatePartyPaths(void);
         void checkExamine(Entity* const leader) const;
         void checkPickup(Entity* const leader) const;
 		
-		bool loadPlayables();
+        void addPlayable(Entity* entity);
+        unsigned getPlayableCount(void) const;
+        Entity* getPlayable(const char* name) const;
 		//bool loadParty(std::ifstream &stream);
 		//bool saveParty(std::ofstream &stream);
 		
-		bool addPlayableToParty(const char *name);
-		bool addPlayableToParty(const Entity &entity);
-		bool addCharacterToParty(Entity *entity);
+        void addPlayableToParty(const char *name);
+        void addCharacterToParty(Entity *entity);
 		
-		bool removePlayableFromParty(const char *name);
-		bool removePlayableFromParty(const Entity &entity);
-		bool removePlayableFromParty(const unsigned int slot);
 		bool removeCharacterFromParty(const char *name);
 		bool removeCharacterFromParty(const Entity *entity);
 		bool removeCharacterFromParty(const unsigned int slot);
@@ -146,12 +141,13 @@ namespace elysian {
     //============= INLINEZ ===============
 
      inline unsigned PartySystem::getPartySize(void) const { return _characterParty.size(); }
-
+    inline unsigned PartySystem::getPlayableCount(void) const { return _playables.size(); }
 
 
 
      inline unsigned Player::getPlayerNum(void) const { return _playerNum; }
      inline void Player::setPlayerNum(const unsigned num) { _playerNum = num; }
+
 }
 
 #endif

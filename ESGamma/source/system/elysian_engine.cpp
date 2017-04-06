@@ -170,7 +170,7 @@ void Engine::processInput(void) {
     switch(System::_engineState){
         case System::ENGINE_NORMAL:
         case System::ENGINE_CONVERSATION:
-            if(_processInput) _partySystem->processInput();
+            //if(_processInput) _partySystem->processInput();
 
             _cameraSystem->processInput(_inputSystem->getKeyboard());
             _guiSystem->processInput();

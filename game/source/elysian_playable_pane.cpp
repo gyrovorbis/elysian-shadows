@@ -1,4 +1,4 @@
-#include <elysian_character_pane.hpp>
+#include <elysian_playable_pane.hpp>
 #include <gui/elysian_layout.hpp>
 #include <gui/elysian_label_widget.hpp>
 #include <crtp/elysian_entity.hpp>
@@ -9,15 +9,26 @@
 
 namespace game {
 
-CharacterPane::CharacterPane(void) {
-    _portrait       = new EntityWidget(LuaManager::getPrefab("menu_partyMemberPane_portrait").getValue<Entity*>());
+PlayablePane::PlayablePane(void) {
+    auto newFromPrefab = [](const char* name) {
+        LuaVariant pref = LuaManager::getPrefab(name);
+        Entity* en1 = pref.getValue<Entity*>();
+        GY_ASSERT(!pref.isNil());
+        Entity* entity = (*pref["new"])(pref).getValue<Entity*>();
+        GY_ASSERT(entity);
+        GY_ASSERT(en1 != entity);
+        dbgprintf("NEW ENTITY: %x", entity);
+        return entity;
+    };
+
+    _portrait       = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_PORTRAIT_PREFAB));
 
     _levelText      = new LabelWidget();
     _nameText       = new LabelWidget();
     _hpText         = new LabelWidget();
     _hpMaxText      = new LabelWidget();
-    _hpBg           = new EntityWidget(LuaManager::getPrefab("menu_partyMemberPane_hpBg").getValue<Entity*>());
-    _hpFg           = new EntityWidget(LuaManager::getPrefab("menu_partyMemberPane_hpFg").getValue<Entity*>());
+    _hpBg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_BG_PREFAB));
+    _hpFg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_FG_PREFAB));
 
     _vLayoutLeft    = new VerticalLayout(std::vector<Widget*> {
         _levelText,
@@ -26,17 +37,26 @@ CharacterPane::CharacterPane(void) {
         _hpBg
     });
 
-    _groupLeft      = new GroupWidget();
+    Entity* entity2 = new Entity;
+   entity2->getTransform().setSize(0, 0, 0);
+    Renderable* renderable2 = entity2->addRenderable();
+    SpriteAttrib* attrib2 = new SpriteAttrib;
+    attrib2->setColor(0, 255, 0, 100);
+    renderable2->setSpriteAttrib(attrib2);
+
+    _groupLeft      = new EntityWidget(entity2);
     _groupLeft->setLayout(_vLayoutLeft);
-    _groupLeft->setSize(X, 30);
+   // _groupLeft->setSize(X, 30);
 
     _echoLevelText  = new LabelWidget();
-    _echoIcon       = new EntityWidget(LuaManager::getPrefab("menu_partyMemberPane_echoIcon").getValue<Entity*>());
+    _echoIcon       = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_ECHO_ICON_PREFAB));
     _echoNameText   = new LabelWidget();
     _mpText         = new LabelWidget();
     _mpMaxText      = new LabelWidget();
-    _mpBg           = new EntityWidget(LuaManager::getPrefab("menu_partyMemberPane_hpBg").getValue<Entity*>());
-    _mpFg           = new EntityWidget(LuaManager::getPrefab("menu_partyMemberPane_mpFg").getValue<Entity*>());
+    _mpBg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_BG_PREFAB));
+    _mpFg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_MP_FG_PREFAB));
+
+    _echoIcon->setSizePolicy(Widget::FIXED, Widget::FIXED);
 
     _hLayoutEcho    = new HorizontalLayout(std::vector<Widget*> {
         _echoIcon,
@@ -50,12 +70,12 @@ CharacterPane::CharacterPane(void) {
         _echoLevelText,
         _groupEcho,
         _mpText,
-        _hpBg
+        _mpFg
     });
 
-    _groupRight     = new GroupWidget();
+    _groupRight     = new GroupWidget;
     _groupRight->setLayout(_vLayoutRight);
-    _groupRight->setSize(X, 30);
+   // _groupRight->setSize(X, 30);
 
     HorizontalLayout* mainLayout = new HorizontalLayout(std::vector<Widget*> {
         _portrait,
@@ -64,8 +84,8 @@ CharacterPane::CharacterPane(void) {
     });
 
     Entity* entity = new Entity;
-    entity->getTransform().setSize(300, 200, 400);
-    entity->getTransform().setPos(400, 400, 51);
+    //entity->getTransform().setSize(10, 10, 10);
+    //entity->getTransform().setPos(400, 400);
     Renderable* renderable = entity->addRenderable();
     SpriteAttrib* attrib = new SpriteAttrib;
     attrib->setColor(0, 0, 200, 100);
@@ -76,9 +96,9 @@ CharacterPane::CharacterPane(void) {
 }
 
 
-void CharacterPane::render(void) {
+void PlayablePane::update(void) {
     char buff[50];
-    elysian::EntityWidget::render();
+    EntityWidget::update();
     if(_playable) {
         CombatStatus& stats = _playable->getCombat()->getStatus();
 
@@ -103,7 +123,7 @@ void CharacterPane::render(void) {
     }
 }
 
-void CharacterPane::setCharacter(Entity* entity) {
+void PlayablePane::setPartyMember(Entity* entity) {
     if(_playable == entity) return;
 
     _playable = entity;
@@ -111,7 +131,7 @@ void CharacterPane::setCharacter(Entity* entity) {
     if(_playable) {
         _nameText->enable();
         _nameText->setText(_playable->getName());
-        _combatTable = entity->getLuaBehavior(ELYSIAN_CHARACTER_PANE_COMBAT_BEHAV)->getSelfTable();
+        _combatTable = _playable->getLuaBehavior(ELYSIAN_PLAYABLE_PANE_COMBAT_BEHAV)->getSelfTable();
         _portrait->enable();
         _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setTexPath(_combatTable["playable"]["portrait"].getVariant().getValue<const char*>());
     } else {

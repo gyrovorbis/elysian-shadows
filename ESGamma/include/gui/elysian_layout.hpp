@@ -5,6 +5,8 @@
 #include <initializer_list>
 #include <crtp/elysian_lua_variant.hpp>
 
+#define ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET   0.1f
+#define ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON 0.1f
 
 namespace elysian {
 
@@ -33,6 +35,7 @@ namespace elysian {
         void        _updateSizes(void);
         void        _updatePositions(AXIS axis);
         void        _updatePositions(void);
+        void        _updatePositionsZ(void);
 
     public:
 
@@ -44,6 +47,7 @@ namespace elysian {
 
         void        addWidget(Widget* widget);
         Widget*     removeWidget(Widget* widget);   //Returns widget given as argument (for owernship change in Lua API).
+        void        clearWidgets(void);
         void        setWidget(unsigned index, Widget* widget);
         void        setWidgets(std::vector<Widget*> widgets);
         void        setWidgetsLua(LuaVariant array);
@@ -133,12 +137,6 @@ namespace elysian {
     inline void Layout::setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical) { _alignment[X] = horizontal; _alignment[Y] = vertical; }
     inline void Layout::_updatePositions(void) { _updatePositions(X); _updatePositions(Y); }
     inline void Layout::_updateSizes(void) { _updateSizes(X); _updateSizes(Y); }
-
-    inline void Layout::update(void) {
-        if(!getWidgetCount()) return;
-        _updateSizes();
-        _updatePositions();
-    }
 
     inline HorizontalLayout::HorizontalLayout(Widget* parent):
         Layout(X, parent) {}

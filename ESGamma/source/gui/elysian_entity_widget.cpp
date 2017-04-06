@@ -33,12 +33,12 @@ void EntityWidget::setSize(AXIS axis, float size) {
     }
 }
 
-void EntityWidget::render(void) {
+void EntityWidget::render(void) const {
     if(_entity) _entity->render();
-    EntityWidget::renderLayout();
+    Widget::render();
 }
 
-void EntityWidget::getPositionZ(void) const {
+float EntityWidget::getPositionZ(void) const {
     return _entity->getTransform().getPosZ();
 }
 
