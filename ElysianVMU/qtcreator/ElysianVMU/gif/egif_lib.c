@@ -19,11 +19,14 @@ two modules will be linked.  Preserve this property!
 #else
 #include <sys/types.h>
 #include <unistd.h>
-#ifdef __linux__
-#  include <sys/stat.h>
-#endif
 #endif /* _WIN32 */
 #include <sys/stat.h>
+
+#if !defined(S_IREAD) && defined(S_IRUSR)
+#  define S_IREAD  S_IRUSR
+#  define S_IWRITE S_IRUSR
+#endif
+
 
 #include "gif_lib.h"
 #include "gif_lib_private.h"
