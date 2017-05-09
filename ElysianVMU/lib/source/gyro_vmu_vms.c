@@ -65,7 +65,14 @@ void gyVmuPrintVMSFileInfo(const VMSFileInfo* vms) {
 
 void gyVmuVmsHeaderVmuDescGet(const VMSFileInfo* vms, char* string) {
     memcpy(string, vms->vmuDesc, sizeof(vms->vmuDesc));
-    string[sizeof(vms->vmuDesc)] = 0;
+    string[sizeof(vms->vmuDesc)] = '\0';
+    //These strings aren't NULL terminated, so scoot NULL terminator over to get rid of padding.
+    for(int i = sizeof(vms->vmuDesc)-1; i >= 0; --i) {
+        if(string[i] != ' ') {
+            string[i+1] = '\0';
+            break;
+        }
+    }
 }
 
 uint16_t** gyVmuVMSFileInfoCreateIconsARGB444(const VMSFileInfo* vms) {

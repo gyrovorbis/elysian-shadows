@@ -49,7 +49,15 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_port7.c \
     ../../lib/source/gyro_vmu_lcd.c \
     gyro_vmu_main_window.cpp \
-    gyro_vmu_tcp_dialog.cpp
+    gyro_vmu_tcp_dialog.cpp \
+    gif/qgifimage.cpp \
+    gif/dgif_lib.c \
+    gif/egif_lib.c \
+    gif/gif_err.c \
+    gif/gif_font.c \
+    gif/gif_hash.c \
+    gif/gifalloc.c \
+    gif/quantize.c
 
 !raspberrypi {
     SOURCES += gyro_vmu_com_dialog.cpp
@@ -82,18 +90,27 @@ HEADERS += \
     ../../lib/source/gyro_vmu_port7.h \
     ../../lib/source/gyro_vmu_lcd.h \
     gyro_vmu_main_window.hpp \
-    gyro_vmu_tcp_dialog.hpp
+    gyro_vmu_tcp_dialog.hpp \
+    gif/gif_hash.h \
+    gif/gif_lib.h \
+    gif/gif_lib_private.h \
+    gif/qgifglobal.h \
+    gif/qgifimage.h \
+    gif/qgifimage_p.h \
+
 
 !raspberrypi {
     HEADERS += gyro_vmu_com_dialog.hpp
 }
 
 INCLUDEPATH += ../../../libGyro/include \
-    ../../lib/source
+    ../../lib/source \
+    gif
 
 DEPENDPATH += ../../../libGyro/include \
     ../../lib/source \
-    ../../lib/include
+    ../../lib/include \
+    gif
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/ -llibGyro

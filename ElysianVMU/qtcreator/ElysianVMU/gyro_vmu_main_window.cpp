@@ -7,6 +7,7 @@
 #include <QMimeData>
 #include <QTextCodec>
 #include <QDesktopServices>
+#include <qgifimage.h>
 
 #include "gyro_vmu_version.h"
 #include "gyro_vmu_vms.h"
@@ -53,6 +54,8 @@
 #define AUDIO_SAMPLE_RATE   44100
 #define STATE_FILE "elysianVMUSaveState.bin"
 
+#define FRAME_ADVANCE_TICKS  ((1.0f/5.0f)*1000000000.0f)
+
 
 FILE* VMUMainWindow::_logFile = nullptr;
 int VMUMainWindow::_logDepth = 0;
@@ -69,18 +72,22 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconDisconnected(ICON_DISCONNECTED_PATH),
     _iconListening(ICON_LISTENING_PATH),
     _iconConnected(ICON_CONNECTED_PATH),
+    _iconRecording(ICON_RECORDING_PATH),
     _tcpDialog(new VmuTcpDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
+    _recordingLabel(new QLabel()),
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
 {
     //UI Initialization/Setup
     _ui->setupUi(this);
     setAcceptDrops(true);
     _iconLabel->setMargin(0);
+    _recordingLabel->setMargin(0);
     _ui->statusbar->layout()->setSpacing(0);
-    _ui->statusbar->insertPermanentWidget(0, _statusLabel);
-    _ui->statusbar->insertPermanentWidget(1, _iconLabel);
+    _ui->statusbar->insertPermanentWidget(0, _recordingLabel);
+    _ui->statusbar->insertPermanentWidget(1, _statusLabel);
+    _ui->statusbar->insertPermanentWidget(2, _iconLabel);
     setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
 
     //Create framebuffer label and layouts for centering and managing its size
@@ -269,11 +276,25 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 
 void VMUMainWindow::_update(void) {
     bool ranThisFrame = false;
+    int64_t deltaTicks;
 
     if(!_running && !_dev->lcdFile) return;
 
-    auto ticks = gyTimerTicks();
-    auto deltaTicks = ticks-_prevTicks;
+    if(_halt) {
+        if(!_advanceFrame) deltaTicks = 0;
+        else deltaTicks = FRAME_ADVANCE_TICKS;
+    } else {
+        if(_wasHalted) {
+
+            deltaTicks = FRAME_ADVANCE_TICKS;
+        }
+        else {
+            auto ticks = gyTimerTicks();
+            deltaTicks = ticks - _prevTicks;
+        }
+    }
+    _wasHalted = _halt;
+    _advanceFrame = false;
 
     //store socket status before update
 #if 0
@@ -289,8 +310,9 @@ void VMUMainWindow::_update(void) {
 #endif
       }
 
+   _prevTicks = gyTimerTicks();
+
     if(ranThisFrame) {
-         _prevTicks = gyTimerTicks();
 
         if(_contAttached && !_dev->gamepad.contAttached) {
             _ui->statusbar->showMessage("Controller Disconnected!", VMU_STATUS_TEMP_TIMEOUT);
@@ -330,6 +352,7 @@ void VMUMainWindow::paintEvent(QPaintEvent*) {
                     updatedFb = true;
                 }
             }
+            if(_recording) _addAnimFrame(_fb);
             _dev->display.screenChanged = 0;
         }
     }
@@ -437,7 +460,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
             //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
             char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
             gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
-            _statusLabel->setText(QString("RUNNING: ")+_japCodec->toUnicode(string));
+            _statusLabel->setText(_japCodec->toUnicode(string));
             _loadIcons();
             _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
             _running = true;
@@ -589,7 +612,7 @@ void VMUMainWindow::on_actionScreenshot_triggered(void)
     unsigned int number = 0;
 
     do {
-        sprintf(buffer, "%s%d.%s", SCREENSHOT_FILENAME, ++number, SCREENSHOT_FILENAME_EXT);
+        sprintf(buffer, "%s_%d.%s", SCREENSHOT_FILENAME, ++number, SCREENSHOT_FILENAME_EXT);
     } while(QFileInfo(buffer).exists());
 
     QFile file(buffer);
@@ -839,7 +862,7 @@ void VMUMainWindow::on_actionDump_Icons_triggered(void)
     gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
 
     for(int i = 0; i < _iconImages.size(); ++i) {
-        sprintf(filename, "%s%d.png", vmsDesc, i);
+        sprintf(filename, "%s_%d.png", vmsDesc, i);
         if(!_iconImages[i].save(_japCodec->toUnicode(filename).toStdString().c_str()))
             _gyLog(GY_DEBUG_ERROR, "Could not dump icon to file [%s]!", QDir::current().absoluteFilePath(filename).toStdString().c_str());
         else
@@ -1031,3 +1054,91 @@ void VMUMainWindow::on_actionSerial_COM_Connection_Manager_triggered()
     _comDialog->show();
 }
 #endif
+
+void VMUMainWindow::on_actionHalt_toggled(bool arg1) {
+    _halt = arg1;
+    _ui->statusbar->showMessage(arg1? "Halting Execution." : "Resuming Execution.", VMU_STATUS_TEMP_TIMEOUT);
+}
+
+void VMUMainWindow::on_actionAdvance_Frame_triggered() {
+    _advanceFrame = true;
+    _ui->statusbar->showMessage("Advancing Frame.", VMU_STATUS_TEMP_TIMEOUT/4);
+}
+
+void VMUMainWindow::_addAnimFrame(const QPixmap &pixmap) {
+    uint64_t deltaTicks;
+    if(_pendingAnimFrame.isNull()) {
+        _prevAnimFrameTicks = gyTimerTicks();
+    } else {
+        uint64_t curTicks = gyTimerTicks();
+        deltaTicks = curTicks - _prevAnimFrameTicks;
+        _prevAnimFrameTicks = curTicks;
+
+        float deltaTicksF = (float)deltaTicks/1000000.0f;
+        //_gyLog(GY_DEBUG_VERBOSE, "TICKS - %f", deltaTicksF);
+        _animGif->addFrame(_pendingAnimFrame.toImage(), deltaTicksF);
+    }
+
+    _pendingAnimFrame = pixmap;
+}
+
+void VMUMainWindow::on_actionRecordAnim_toggled(bool arg1) {
+    _recording = arg1;
+
+    if(arg1) { //Begin recording
+        delete _animGif;
+
+        _gyLog(GY_DEBUG_VERBOSE, "Video Recording: CAPTURING.");
+        _gyPush();
+
+        _ui->statusbar->showMessage("Recording.", VMU_STATUS_TEMP_TIMEOUT);
+        _recordingLabel->setPixmap(_iconRecording);
+
+        _animGif = new QGifImage(QSize(VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT));
+        _animGif->setGlobalColorTable({
+              qRgb(0, 0, 0),
+              qRgb(255, 255, 255)
+          }, Qt::white);
+        //_animGif->setDefaultTransparentColor(Qt::white);
+        _animGif->setDefaultDelay(100);
+        /* Immediately add current frame to kick-off the animation.
+         * (otherwise we're skipping the first frame). */
+        _addAnimFrame(_fb);
+
+        _ghostingWasEnabled = gyVmuDisplayGhostingEnabledGet(_dev);
+        on_actionEnable_Pixel_Ghosting_toggled(false);
+
+        _gyPop(1);
+    } else { //Stop recording and render to GIF.
+
+
+        _gyLog(GY_DEBUG_VERBOSE, "Video Recording: COMPLETE.");
+        _gyPush();
+
+        _ui->statusbar->showMessage("Recording Stopped.", VMU_STATUS_TEMP_TIMEOUT);
+        _recordingLabel->setPixmap(QPixmap());
+
+        //Flush animation queue
+        _addAnimFrame(QPixmap());
+
+        //+10 digits + 4 ext + 1 NULL byte
+        char filename[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+15];
+        char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+        int animNum = 0;
+
+        gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
+        do {
+            sprintf(filename, "%s_%d.gif", vmsDesc, ++animNum);
+        } while(QFile::exists(filename));
+
+        _gyLog(GY_DEBUG_VERBOSE, "Saving to Animated GIF: [%s]", filename);
+        _gyPush();
+
+        if(!_animGif->save(filename)) _gyLog(GY_DEBUG_ERROR, "File could not be saved!");
+        else QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
+
+        on_actionEnable_Pixel_Ghosting_toggled(_ghostingWasEnabled);
+        _gyPop(2);
+    }
+
+}

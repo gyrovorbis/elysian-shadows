@@ -12,8 +12,8 @@
 #define VMU_TEXT_CODEC                  "Shift-JIS"
 #define VMU_ROM_HISTORY_SIZE            5
 #define VMU_TRIGGER_SPEED_FACTOR        10.0f
-#define FILTER_DUPLICATE_LOG_STRINGS    1
 #define VMU_FB_DEFAULT_ZOOM_LEVEL       8
+#define FILTER_DUPLICATE_LOG_STRINGS    1
 
 #define ICON_ES_PATH                    ":/icons/images/vmu_es.png"
 #define ICON_CLOCK_PATH                 ":/icons/images/icon_clock.png"
@@ -23,14 +23,16 @@
 #define ICON_DISCONNECTED_PATH          ":/icons/images/task_bar_red.png"
 #define ICON_LISTENING_PATH             ":/icons/images/task_bar_yellow.png"
 #define ICON_CONNECTED_PATH             ":/icons/images/task_bar_green.png"
+#define ICON_RECORDING_PATH             ":/icons/images/icon_recording.png"
 
-struct  VMUDevice;
-struct  VMSFileInfo;
+class   QGifImage;
+class   QLabel;
+class   QTextCodec;
 struct  GYAudioSource;
 struct  GYAudBuffer;
-class   QLabel;
+struct  VMUDevice;
+struct  VMSFileInfo;
 class   VmuTcpDialog;
-class   QTextCodec;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 class   VmuComDialog;
 #endif
@@ -87,6 +89,9 @@ private Q_SLOTS:
     void on_action16x_triggered();
     void on_action32x_triggered();
     void on_action64x_triggered();
+    void on_actionHalt_toggled(bool arg1);
+    void on_actionAdvance_Frame_triggered();
+    void on_actionRecordAnim_toggled(bool arg1);
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     void on_actionSerial_COM_Connection_Manager_triggered();
 #endif
@@ -104,6 +109,7 @@ private:
     bool                _loadIcons(void);
     void                _updateIcon(void);
     void                _freeIcons(void);
+    void                _addAnimFrame(const QPixmap& pixmap);
 
     void                _setupAboutMsgBox(void);
     void                _saveSettings(void);
@@ -120,6 +126,8 @@ private:
     QPixmap             _iconDisconnected;
     QPixmap             _iconListening;
     QPixmap             _iconConnected;
+    QPixmap             _iconRecording;
+    QPixmap             _pendingAnimFrame;
     QTimer              _updateTimer;
     QVector<QImage>     _iconImages;
     QVector<QPixmap>    _iconPixmaps;
@@ -132,19 +140,28 @@ private:
     QLabel*             _fbLabel            = nullptr;
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;
+    QLabel*             _recordingLabel;
     VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;
     QTextCodec*         _japCodec           = nullptr;
     VMUDevice*          _dev                = nullptr;
+    QGifImage*          _animGif            = nullptr;
+    int64_t             _prevAnimFrameTicks = 0;
     int64_t             _prevTicks          = 0;
-    bool                _running            = false;
-    bool                _contAttached       = false;
     int                 _iconAnimCounter    = 0;
     int                 _iconCurIndex       = 0;
     int                 _pConRegister       = 0;
     int                 _prevFbWidth        = 0;
     int                 _prevFbHeight       = 0;
+    bool                _running            = false;
+    bool                _halt               = false;
+    bool                _wasHalted          = false;
+    bool                _advanceFrame       = false;
+    bool                _contAttached       = false;
+    bool                _recording          = false;
+    bool                _ghostingWasEnabled = false;
+
     static FILE*        _logFile;
     static int          _logDepth;
 
