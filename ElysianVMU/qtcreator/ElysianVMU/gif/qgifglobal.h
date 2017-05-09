@@ -25,7 +25,7 @@
 #ifndef QGIFGLOBAL_H
 #define QGIFGLOBAL_H
 #include <QtGlobal>
-
+#if 0
 #if !defined(QT_STATIC) && !defined(GIFIMAGE_NO_LIB)
 #  if defined(QT_BUILD_GIFIMAGE_LIB)
 #    define Q_GIFIMAGE_EXPORT Q_DECL_EXPORT
@@ -35,5 +35,8 @@
 #else
 #  define Q_GIFIMAGE_EXPORT
 #endif
+#endif
+
+#define Q_GIFIMAGE_EXPORT
 
 #endif // QGIFGLOBAL_H

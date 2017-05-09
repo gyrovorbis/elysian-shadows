@@ -632,7 +632,7 @@ bool QGifImage::save(const QString &fileName) const
    // QFile filz("fucktwats.txt");
     Q_D(const QGifImage);
     QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly));
+    if (file.open(QIODevice::WriteOnly))
     return d->save(&file);
 
     return false;

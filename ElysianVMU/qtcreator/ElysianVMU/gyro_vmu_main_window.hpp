@@ -62,9 +62,11 @@ private:
 
 protected Q_SLOTS:
     void                _update(void);
+    void                _onLoadGameAboutToShow(void);
+    void                _onLoadGameAboutToHide(void);
+    void                _onSaveGameAboutToShow(void);
+    void                _onSaveGameAboutToHide(void);
 
-
-private Q_SLOTS:
     void on_actionLoad_ROM_triggered();
     void on_actionSave_State_triggered();
     void on_actionLoad_State_triggered();
@@ -140,7 +142,9 @@ private:
     QLabel*             _fbLabel            = nullptr;
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;
-    QLabel*             _recordingLabel;
+    QLabel*             _recordingLabel     = nullptr;
+    QMenu*              _loadGameMenu       = nullptr;
+    QMenu*              _saveGameMenu       = nullptr;
     VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;

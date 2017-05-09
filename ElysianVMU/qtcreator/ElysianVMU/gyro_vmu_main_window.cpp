@@ -77,6 +77,8 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
     _recordingLabel(new QLabel()),
+    _loadGameMenu(new QMenu()),
+    _saveGameMenu(new QMenu()),
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
 {
     //UI Initialization/Setup
@@ -171,6 +173,14 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _comDialog->setVmuDevice(_dev);
 #endif
 
+    //Connect Load/Save File Menu Logic
+    _ui->actionLoad_Game->setMenu(_loadGameMenu);
+    _ui->actionSave_Game->setMenu(_saveGameMenu);
+    connect(_loadGameMenu, SIGNAL(aboutToShow()), this, SLOT(_onLoadGameAboutToShow()));
+    connect(_loadGameMenu, SIGNAL(aboutToHide()), this, SLOT(_onLoadGameAboutToHide()));
+    connect(_saveGameMenu, SIGNAL(aboutToShow()), this, SLOT(_onSaveGameAboutToShow()));
+    connect(_saveGameMenu, SIGNAL(aboutToHide()), this, SLOT(_onSaveGameAboutToHide()));
+
     //Begin running (debugging)
 #ifdef BIOS_IMAGE
      gyloadbios(_dev, BIOS_IMAGE);
@@ -250,6 +260,23 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
         QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
     });
 }
+
+void VMUMainWindow::_onLoadGameAboutToShow(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "LOAD SHOW");
+}
+
+void VMUMainWindow::_onLoadGameAboutToHide(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "LOAD HIDE");
+}
+
+void VMUMainWindow::_onSaveGameAboutToShow(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "Save SHOW");
+}
+
+void VMUMainWindow::_onSaveGameAboutToHide(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "SAVE HIDE");
+}
+
 
 bool VMUMainWindow::event(QEvent* event) {
     switch(event->type()) {

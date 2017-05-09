@@ -56,6 +56,8 @@ public:
     QAction *actionHalt;
     QAction *actionAdvance_Frame;
     QAction *actionRecordAnim;
+    QAction *actionSave_Game;
+    QAction *actionLoad_Game;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QMenuBar *menubar;
@@ -150,6 +152,10 @@ public:
         actionRecordAnim = new QAction(VMUMainWindow);
         actionRecordAnim->setObjectName(QStringLiteral("actionRecordAnim"));
         actionRecordAnim->setCheckable(true);
+        actionSave_Game = new QAction(VMUMainWindow);
+        actionSave_Game->setObjectName(QStringLiteral("actionSave_Game"));
+        actionLoad_Game = new QAction(VMUMainWindow);
+        actionLoad_Game->setObjectName(QStringLiteral("actionLoad_Game"));
         centralwidget = new QWidget(VMUMainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -194,6 +200,8 @@ public:
         menuFile->addAction(menuLoad_Recent->menuAction());
         menuFile->addAction(actionLoad_BIOS_Image);
         menuFile->addSeparator();
+        menuFile->addAction(actionSave_Game);
+        menuFile->addAction(actionLoad_Game);
         menuFile->addAction(actionSave_State);
         menuFile->addAction(actionLoad_State);
         menuFile->addSeparator();
@@ -279,6 +287,8 @@ public:
         actionRecordAnim->setToolTip(QApplication::translate("VMUMainWindow", "Record to Animated GIF", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         actionRecordAnim->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+R", Q_NULLPTR));
+        actionSave_Game->setText(QApplication::translate("VMUMainWindow", "Save Game", Q_NULLPTR));
+        actionLoad_Game->setText(QApplication::translate("VMUMainWindow", "Load Game", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("VMUMainWindow", "File", Q_NULLPTR));
         menuLoad_Recent->setTitle(QApplication::translate("VMUMainWindow", "Open Recent", Q_NULLPTR));
         menuEmulation->setTitle(QApplication::translate("VMUMainWindow", "Emulation", Q_NULLPTR));

@@ -61,6 +61,8 @@
     <addaction name="menuLoad_Recent"/>
     <addaction name="actionLoad_BIOS_Image"/>
     <addaction name="separator"/>
+    <addaction name="actionSave_Game"/>
+    <addaction name="actionLoad_Game"/>
     <addaction name="actionSave_State"/>
     <addaction name="actionLoad_State"/>
     <addaction name="separator"/>
@@ -345,6 +347,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionSave_Game">
+   <property name="text">
+    <string>Save Game</string>
+   </property>
+  </action>
+  <action name="actionLoad_Game">
+   <property name="text">
+    <string>Load Game</string>
    </property>
   </action>
  </widget>
