@@ -20,7 +20,7 @@ two modules will be linked.  Preserve this property!
 #include <sys/types.h>
 #include <unistd.h>
 #ifdef __linux__
-#  include <signal.h>
+#  include <sys/stat.h>
 #endif
 #endif /* _WIN32 */
 #include <sys/stat.h>
