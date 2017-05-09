@@ -94,9 +94,9 @@ HEADERS += \
     gif/gif_hash.h \
     gif/gif_lib.h \
     gif/gif_lib_private.h \
-    gif/qgifglobal.h \
     gif/qgifimage.h \
     gif/qgifimage_p.h \
+    gif/qgifglobal.h
 
 
 !raspberrypi {
