@@ -125,7 +125,8 @@ HEADERS += \
     ../../include/common/gyro_input_common.h \
     ../../include/common/gyro_spine_common.h \
     ../../include/glal/gyro_bloom_glal.h \
-    ../../include/gyro_net_api.h
+    ../../include/gyro_net_api.h \
+    ../../include/gyro_rumble_api.h
 
 android {
 
