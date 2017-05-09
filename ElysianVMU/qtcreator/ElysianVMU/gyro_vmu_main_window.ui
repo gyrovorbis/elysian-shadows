@@ -79,18 +79,33 @@
      <addaction name="actionQuick_Connect"/>
      <addaction name="actionTCP_Connection_Manager"/>
     </widget>
+    <widget class="QMenu" name="menuPlayback">
+     <property name="title">
+      <string>Playback</string>
+     </property>
+     <addaction name="actionHalt"/>
+     <addaction name="actionAdvance_Frame"/>
+    </widget>
+    <addaction name="menuPlayback"/>
+    <addaction name="separator"/>
     <addaction name="actionEmulate_Audio"/>
     <addaction name="actionEnable_Pixel_Ghosting"/>
     <addaction name="actionEnable_Low_Battery"/>
     <addaction name="actionConfigure_Input_Devices"/>
     <addaction name="menuSerial_Communications"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
     </property>
+    <widget class="QMenu" name="menuScreen_Capture">
+     <property name="title">
+      <string>Capture Animation</string>
+     </property>
+     <addaction name="actionRecordAnim"/>
+    </widget>
     <addaction name="actionScreenshot"/>
+    <addaction name="menuScreen_Capture"/>
     <addaction name="actionDump_Icons"/>
     <addaction name="actionDump_Eyecatch"/>
     <addaction name="actionDisassemble_ROM"/>
@@ -294,6 +309,42 @@
   <action name="actionSerial_COM_Connection_Manager">
    <property name="text">
     <string>Serial/COM Connection Manager</string>
+   </property>
+  </action>
+  <action name="actionHalt">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Halt</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionAdvance_Frame">
+   <property name="text">
+    <string>Advance Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Advance Execution by a Frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+  </action>
+  <action name="actionRecordAnim">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Record</string>
+   </property>
+   <property name="toolTip">
+    <string>Record to Animated GIF</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

@@ -52,13 +52,13 @@ int gyVmuDeviceUpdate(VMUDevice* device, float deltaTime) {
 
         if(deltaTime >= gyVmuOscSecPerCycle(device)) {
             //gyVmuSerialUpdate(device, deltaTime);
+            gyVmuGamepadPoll(device);
 
-    #if 0
     #ifdef VMU_TRIGGER_SPEED_FACTOR
             if(device->gamepad.lt) deltaTime /= VMU_TRIGGER_SPEED_FACTOR;
             if(device->gamepad.rt) deltaTime *= VMU_TRIGGER_SPEED_FACTOR;
     #endif
-    #endif
+
             gyVmuCpuTick(device, deltaTime);
 
             return 1;

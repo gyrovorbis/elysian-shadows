@@ -616,7 +616,6 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
         gyVmuCpuInstrExecuteNext(dev);
         gyVmuTimersUpdate(dev);
        // gyVmuPort1PollRecv(dev);
-        gyVmuGamepadPoll(dev);
         _serviceInterrupts(dev);
         float cpuTime = gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
         time += cpuTime;
@@ -675,7 +674,6 @@ int gyVmuCpuReset(VMUDevice* dev) {
             gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_ICN);
             gyVmuMemWrite(dev, SFR_ADDR_XRAM_ICN_GAME, 0x10);           //Enable Game Icon
 
-
             //SFR values initialized by BIOS (from Sega Documentation)
             gyVmuMemWrite(dev, SFR_ADDR_P1FCR,  0xbf);
             gyVmuMemWrite(dev, SFR_ADDR_P3INT,  0xfd);
@@ -689,6 +687,9 @@ int gyVmuCpuReset(VMUDevice* dev) {
 
             gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_LCD_TOP);
             gyVmuMemWrite(dev, SFR_ADDR_VCCR, SFR_VCCR_VCCR7_MASK);     //turn on LCD
+            gyVmuMemWrite(dev, SFR_ADDR_MCR, SFR_MCR_MCR3_MASK);        //enable LCD update
+            gyVmuMemWrite(dev, SFR_ADDR_PCON, 0);                      //Disable HALT/HOLD modes, run CPU normally.
+
         }
     }
 

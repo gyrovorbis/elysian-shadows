@@ -13,6 +13,7 @@
         <file>images/task_bar_listening.png</file>
         <file>images/task_bar_yellow.png</file>
         <file>images/task_bar_red.png</file>
+        <file>images/icon_recording.png</file>
     </qresource>
     <qresource prefix="/dialog">
         <file>images/vmu_buttons.png</file>

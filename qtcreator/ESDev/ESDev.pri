@@ -21,7 +21,8 @@ dreamcast {
 
 macx {
    # QMAKE_CFLAGS += -emit-llvm
-    QMAKE_MAC_SDK = macosx10.11
+    #QMAKE_MAC_SDK = macosx10.12
+#    QMAKE_MAC_SDK.macosx.version = 10.12
 }
 
 CONFIG -= exceptions
@@ -122,8 +123,8 @@ CONFIG -= exceptions rtti
 
 #Required to get C++11x to work on OSX
 macx {
-  QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++ -Wno-macro-redefined
-  LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
+ # QMAKE_CXXFLAGS += -stdlib=libc++ -Wno-macro-redefined
+ # LIBS += -stdlib=libc++
 }
 
 tests {
