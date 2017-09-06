@@ -36,8 +36,10 @@ typedef struct GYRumbleEffectInitParams {
 bool                gyRumbleInit(struct GYRumbleInitParams* params);
 bool                gyRumbleUninit(void);
 
+
 struct GYRumble*    gyRumblePoll(unsigned slot);
 void                gyRumbleDeviceDump(const struct GYRumble* dev);
+void                gyRumbleDeviceEffectsDump(const struct GYRumble* dev);
 
 bool                gyRumblePlay(struct GYRumble* dev, float intensity, float duration);
 bool                gyRumbleStop(struct GYRumble* dev);
@@ -45,6 +47,8 @@ bool                gyRumbleStop(struct GYRumble* dev);
 bool                gyRumbleEffectInit(struct GYRumbleEffect* effect, const GYRumbleEffectInitParams* params);
 bool                gyRumbleEffectPlay(struct GYRumble* dev, const struct GYRumbleEffect* effect);
 int                 gyRumbleEffectStatus(const struct GYRumble* dev, const struct GYRumbleEffect* effect); // <0 - error, 0 - stopped, 1 - playing
+
+
 
 
 
