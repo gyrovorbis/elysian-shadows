@@ -24,8 +24,18 @@ namespace elysian {
     }
 
     Layout::~Layout(void) {
-        for(auto&& w: _widgets)
+        for(auto& w: _widgets)
             delete w;
+    }
+
+    Widget* Layout::findWidget(const char *name) const {
+        Widget* child = nullptr;
+        for(auto& w: _widgets) {
+            if((child = w->findChildWidget(name))) {
+                return child;
+            }
+        }
+        return nullptr;
     }
 
     void Layout::update(void) {
@@ -38,6 +48,7 @@ namespace elysian {
     }
 
     void Layout::_updatePositionsZ(void) {
+        GY_ASSERT(_parent);
         float zCoord = _parent->getPositionZ() + ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET;
         for(auto&& widget : _widgets) {
             widget->setPositionZ(zCoord);
@@ -60,18 +71,47 @@ namespace elysian {
         return widget;
     }
 
-    void Layout::render(void) {
-        for(auto&& widget: _widgets) widget->render();
+    void Layout::render(void) const {
+        for(auto& widget: _widgets) widget->render();
+    }
+
+    void Layout::activate(void) const {
+        for(auto& widget: _widgets) widget->activate();
+    }
+
+    void Layout::deactivate(void) const {
+        for(auto& widget: _widgets) widget->deactivate();
+    }
+
+    void Layout::controllerEvent(const Controller &cont) {
+        for(auto& widget: _widgets) widget->controllerEvent(cont);
+    }
+
+    void Layout::keyboardEvent(const Keyboard &keybd) {
+        for(auto& widget: _widgets) widget->keyboardEvent(keybd);
+    }
+
+    void Layout::mouseEvent(const Mouse &mouse) {
+        for(auto& widget: _widgets) widget->mouseEvent(mouse);
+    }
+
+    void Layout::touchEvent(const TouchDevice &touch) {
+        for(auto& widget: _widgets) widget->touchEvent(touch);
+    }
+
+    void Layout::virtualDPadEvent(const VirtualDPad &vdpad) {
+        for(auto& widget: _widgets) widget->virtualDPadEvent(vdpad);
     }
 
     void Layout::clearWidgets(void) {
-        for(auto&& widget: _widgets) widget->setParentLayout(nullptr);
+        for(auto& widget: _widgets) widget->setParentLayout(nullptr);
         _widgets.clear();
     }
 
     //===== PRIVATE API =======
 
     void Layout::_updateSizes(AXIS axis_) {
+        GY_ASSERT(_parent);
         const Widget::AXIS axis = (Widget::AXIS)axis_;
         const float parentSize    = _parent->getSize(axis);
 
@@ -195,6 +235,7 @@ namespace elysian {
     }
 
     void Layout::_updatePositions(AXIS axis_) {
+        GY_ASSERT(_parent);
         const Widget::AXIS axis = (Widget::AXIS)axis_;
         const float parentPos     = _parent->getPosition(axis);
 

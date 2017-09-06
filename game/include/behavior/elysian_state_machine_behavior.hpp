@@ -3,7 +3,7 @@
 
 #include <crtp/elysian_behavior.hpp>
 #include <crtp/elysian_lua_variant.hpp>
-#include <utility/elysian_cpp_lua_function.hpp>
+#include <utility/elysian_cpp_lua_callback.hpp>
 
 #define ELYSIAN_STATE_MACHINE_DEBUG         1
 #define ELYSIAN_STATE_MACHINE_NAME_SIZE     100

@@ -215,8 +215,10 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_entity_widget.cpp \
     ../../ESGamma/source/proxy/elysian_widget_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_layout_proxy.cpp \
-    ../../game/source/elysian_menu.cpp \
-    ../../game/source/elysian_playable_pane.cpp
+    ../../game/source/elysian_playable_pane.cpp \
+    ../../ESGamma/source/gui/elysian_menu_widget.cpp \
+    ../../ESGamma/source/system/elysian_event_system.cpp \
+    ../../game/source/elysian_pause_menu.cpp
 
 
 !ios: !dreamcast: !android {
@@ -470,7 +472,6 @@ HEADERS += \
     ../../ESGamma/include/crtp/elysian_level_system.hpp \
     ../../ESGamma/include/system/elysian_level_system_base.hpp \
     include/estk/tk_level_system.h \
-    ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../game/include/behavior/elysian_state_machine_behavior.hpp \
     ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
     ../../ESGamma/include/system/elysian_gui_system_base.hpp \
@@ -482,8 +483,12 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_label_widget.hpp \
     ../../ESGamma/include/proxy/elysian_widget_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_layout_proxy.hpp \
-    ../../game/include/elysian_menu.hpp \
-    ../../game/include/elysian_playable_pane.hpp
+    ../../game/include/elysian_playable_pane.hpp \
+    ../../AssetIO/include/utility/elysian_cpp_lua_callback.hpp \
+    ../../ESGamma/include/gui/elysian_menu_widget.hpp \
+    ../../AssetIO/include/utility/elysian_associative_aggregate_array.hpp \
+    ../../ESGamma/include/system/elysian_event_system.hpp \
+    ../../game/include/elysian_pause_menu.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

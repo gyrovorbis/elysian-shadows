@@ -2,7 +2,6 @@
 #define ELYSIAN_LAYOUT_HPP
 
 #include <vector>
-#include <initializer_list>
 #include <crtp/elysian_lua_variant.hpp>
 
 #define ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET   0.1f
@@ -11,6 +10,10 @@
 namespace elysian {
 
     class Widget;
+    class Controller;
+    class Mouse;
+    class TouchDevice;
+    class VirtualDPad;
 
     class Layout {
     public:
@@ -56,6 +59,7 @@ namespace elysian {
         LuaVariant  getWidgetsLua(void) const;
         unsigned    getWidgetCount(void) const;
         Widget*     getWidget(unsigned index) const;
+        Widget*     findWidget(const char* name) const;
 
         AXIS        getGroupingAxis(void) const;
         Widget*     getParent(void) const;
@@ -77,8 +81,16 @@ namespace elysian {
         void        setVerticalAlignment(ALIGNMENT align);
         void        setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical);
 
+        void        activate(void) const;
+        void        deactivate(void) const;
         void        update(void);
-        void        render(void);
+        void        render(void) const;
+
+        void        controllerEvent(const Controller& cont);
+        void        keyboardEvent(const Keyboard& keybd);
+        void        mouseEvent(const Mouse& mouse);
+        void        touchEvent(const TouchDevice& touch);
+        void        virtualDPadEvent(const VirtualDPad& dpad);
     };
 
 
@@ -112,12 +124,18 @@ namespace elysian {
         _groupingAxis(groupingAxis){}
 
     inline Widget* Layout::getWidget(unsigned index) const {
+        GY_ASSERT(index < _widgets.size());
         return _widgets[index];
     }
     inline unsigned Layout::getWidgetCount(void) const { return (unsigned)_widgets.size();}
     inline auto Layout::getGroupingAxis(void) const -> AXIS { return _groupingAxis; }
     inline Widget* Layout::getParent(void) const { return _parent; }
     inline void Layout::setParent(Widget* parent) { _parent = parent; }
+    inline void Layout::setWidget(unsigned index, Widget *widget) {
+        GY_ASSERT(index <= _widgets.size());
+        if(index == _widgets.size())  _widgets.push_back(widget);   //Insertion
+        else _widgets[index] = widget;                              //Modify existing
+    }
     inline void Layout::setWidgets(std::vector<Widget*> widgets) { _widgets = std::move(widgets); }
     inline auto Layout::getWidgets(void) const -> const std::vector<Widget*>& { return _widgets; }
     inline auto Layout::getWidgets(void) -> std::vector<Widget*>& { return _widgets; }

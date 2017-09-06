@@ -44,16 +44,16 @@ class MonitorableSubProcess: public SubProcess<P, M> {
 public:
 
 	inline void start(M*const m) {
-		static_cast<SubProcess<P,M>*>(this)->start(m);
+        SubProcess<P,M>::start(m);
 		if(_monitor && SubProcess<P,M>::_state == PROC_STATE_RUNNING) _monitor->onStart();
 	}
 
 	inline void update(M*const m, const float deltaTime) {
-		static_cast<SubProcess<P,M>*>(this)->update(m, deltaTime);
+        SubProcess<P,M>::update(m, deltaTime);
 	}
 
 	inline void stop(M*const m) {
-		static_cast<SubProcess<P,M>*>(this)->stop(m);
+        SubProcess<P,M>::stop(m);
 		if(_monitor && SubProcess<P,M>::_state == PROC_STATE_IDLE) _monitor->onFinish();
 	}
 

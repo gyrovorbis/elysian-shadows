@@ -10,6 +10,11 @@
 
 namespace elysian {
 
+    class Controller;
+    class Keyboard;
+    class Mouse;
+    class VirtualDPad;
+    class TouchDevice;
     class Layout;
 
     //maybe want alpha values/states so all menu shit can fade out?
@@ -42,6 +47,8 @@ namespace elysian {
         Layout*         _layout                 = nullptr;
         Layout*         _parentLayout           = nullptr;
         bool            _enabled                = true;
+        bool            _focus                  = false;
+
 
     public:
 
@@ -82,11 +89,15 @@ namespace elysian {
         void            setLayout(Layout* layout);
         Layout*         getParentLayout(void) const;
         void            setParentLayout(Layout* layout);
+        Widget*         findChildWidget(const char* name);
+        Widget*         getChildWidget(unsigned index);
 
         bool            isEnabled(void) const;
         void            setEnabled(bool enabled=true);
         void            enable(void);
         void            disable(void);
+        bool            hasFocus(void) const;
+        void            setFocus(bool enabled=true);
 
         float           getMaximizeDelta(AXIS axis) const;
         float           getMinimizeDelta(AXIS axis) const;
@@ -99,8 +110,17 @@ namespace elysian {
         void            minimize(void);
 
         //Overridden by child widgets
+        virtual void    activate(void);
+        virtual void    deactivate(void);
+
         virtual void    update(void);
         virtual void    render(void) const;
+
+        virtual void    controllerEvent(const Controller& cont);
+        virtual void    keyboardEvent(const Keyboard& keybd);
+        virtual void    mouseEvent(const Mouse& mouse);
+        virtual void    touchEvent(const TouchDevice& touch);
+        virtual void    virtualDPadEvent(const VirtualDPad& dpad);
 
         virtual float   getPosition(AXIS axis) const        = 0;
         virtual void    setPosition(AXIS axis, float pos)   = 0;
@@ -160,8 +180,13 @@ namespace elysian {
     inline void Widget::setEnabled(bool enabled) { _enabled = enabled; }
     inline void Widget::disable(void) { _enabled = false; }
     inline void Widget::enable(void) { _enabled = true; }
+    inline bool Widget::hasFocus(void) const { return _focus; }
+    inline void Widget::setFocus(bool enabled) { _focus = enabled; }
     inline void Widget::maximize(void) { maximize(X); maximize(Y); }
     inline void Widget::minimize(void) { minimize(X); minimize(Y); }
+    inline void Widget::activate(void) {}
+    inline void Widget::deactivate(void) {}
+
 
     inline float GroupWidget::getPosition(AXIS axis) const { return _pos[axis]; }
     inline void GroupWidget::setPosition(AXIS axis, float pos) { _pos[axis] = pos; }

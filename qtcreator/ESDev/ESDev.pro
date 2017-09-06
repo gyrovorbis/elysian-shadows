@@ -24,6 +24,10 @@ vmu {
     SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
 }
 
+vulkan {
+    DEFINES+=LIBGYRO_VULKAN
+}
+
 
 libGyro.depends = Spine
 

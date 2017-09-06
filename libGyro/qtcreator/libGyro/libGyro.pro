@@ -24,10 +24,16 @@ macx {
     QMAKE_LFLAGS += -F../../lib/osx
     LIBS += -framework SDL2.framework \
         -framework SDL2_net.framework
+    vulkan {
+        LIBS += -framework MoltenVK.framework
+    }
 
     INCLUDEPATH += ../../lib/osx
     INCLUDEPATH += ../../lib/osx/SDL2.framework/Headers \
                     ../../lib/osx/SDL2_net.framework/Headers
+    vulkan {
+        LIBS += ../../lib/osx/MoltenVK.framework/Headers
+    }
     SOURCES +=	../../source/x86/turfs_osx.c
 }
 
@@ -58,6 +64,10 @@ DEPENDPATH += ../../include \
     ../../source/glal/shaders \
     ../../source/glal \
     ../../include/glal
+
+vulkan {
+    DEPENDPATH += ../../include/vulkan
+}
 
 ios {
     DEPENDPATH += ../../include/ios
@@ -126,7 +136,22 @@ HEADERS += \
     ../../include/common/gyro_spine_common.h \
     ../../include/glal/gyro_bloom_glal.h \
     ../../include/gyro_net_api.h \
-    ../../include/gyro_rumble_api.h
+    ../../include/gyro_rumble_api.h \
+    ../../include/gyro_test_api.h
+
+
+vulkan {
+    HEADERS += \
+        ../../include/vulkan/gyro_resource_vulkan.h \
+        ../../include/vulkan/gyro_descriptor_vulkan.h \
+        ../../include/vulkan/gyro_query_vulkan.h \
+        ../../include/vulkan/gyro_util_vulkan.h \
+        ../../include/vulkan/gyro_context_vulkan.h \
+        ../../include/vulkan/gyro_device_vulkan.h \
+        ../../include/vulkan/gyro_video_vulkan.h \
+        ../../include/vulkan/gyro_vulkan.h
+}
+
 
 android {
 
@@ -172,7 +197,22 @@ SOURCES += \
     ../../source/common/gyro_wav.c \
     ../../source/common/turfs_file_stdio.c \
     ../../source/common/gyro_video.c \
-    ../../source/common/gyro_timer.c
+    ../../source/common/gyro_timer.c \
+    ../../source/common/gyro_test.c
+
+vulkan {
+    SOURCES += \
+    ../../source/vulkan/gyro_video_vulkan.c \
+    ../../source/vulkan/gyro_texture_vulkan.c \
+    ../../source/vulkan/gyro_query_vulkan.c \
+    ../../source/vulkan/gyro_shader_vulkan.c \
+    ../../source/vulkan/gyro_resource_vulkan.c \
+    ../../source/vulkan/gyro_allocator_vulkan.c \
+    ../../source/vulkan/gyro_descriptor_vulkan.c \
+    ../../source/vulkan/gyro_context_vulkan.c \
+    ../../source/vulkan/gyro_util_vulkan.c \
+    ../../source/vulkan/gyro_device_vulkan.c
+}
 
 dreamcast {
 

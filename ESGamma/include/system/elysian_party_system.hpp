@@ -9,10 +9,18 @@
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f
-#define ELYSIAN_PARTY_SLOTS_MAX             5
-#define ELYSIAN_PARTY_GUEST_SLOTS_MAX       10
+#define ELYSIAN_PARTY_SLOTS_MAX                         5
+#define ELYSIAN_PARTY_GUEST_SLOTS_MAX                   10
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
+
+/* Needs the concept of active vs inactive party members
+ * figure out about how to treat guests and if you can play as them?
+ * FOR MENUS
+ * 1 - swap slots
+ * 2 - activate/deactivate
+ */
+
 
 namespace elysian {
 
@@ -119,6 +127,7 @@ namespace elysian {
         unsigned getPartySize(void) const;
 
         int    getPartySlot(const Entity* entity) const;
+        //void    swapBySlot(unsigned slot1, unsigned slot2);
 		
 	//	void DisablePartyFollow(); Probably going to want these pretty soon... 
 	//	void EnablePartyFollow();

@@ -34,6 +34,46 @@ namespace elysian {
         }
     }
 
+    Widget* Widget::findChildWidget(const char *name) {
+        if(_layout) return _layout->findWidget(name);
+        else return nullptr;
+    }
+
+    Widget* Widget::getChildWidget(unsigned index) {
+        GY_ASSERT(_layout && index < _layout->getWidgetCount());
+        return _layout->getWidget(index);
+    }
+
+    void Widget::controllerEvent(const Controller& cont) {
+        if(_layout) {
+            _layout->controllerEvent(cont);
+        }
+    }
+
+    void Widget::keyboardEvent(const Keyboard& keybd) {
+        if(_layout) {
+            _layout->keyboardEvent(keybd);
+        }
+    }
+
+    void Widget::mouseEvent(const Mouse& mouse) {
+        if(_layout) {
+            _layout->mouseEvent(mouse);
+        }
+    }
+
+    void Widget::touchEvent(const TouchDevice& touch) {
+        if(_layout) {
+            _layout->touchEvent(touch);
+        }
+    }
+
+    void Widget::virtualDPadEvent(const VirtualDPad& dpad) {
+        if(_layout) {
+            _layout->virtualDPadEvent(dpad);
+        }
+    }
+
     void Widget::maximize(AXIS axis) {
         if(getSizePolicy(axis) == MAXIMUM) {
             setSize(axis, getSizeHint(axis));

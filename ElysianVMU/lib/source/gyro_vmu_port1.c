@@ -95,56 +95,56 @@ void gyVmuPort1PinsWriteEnd(struct VMUDevice* dev) {
 void gyVmuPort1MemorySink(VMUDevice *dev, int addr, uint8_t val) {
     switch(addr) {
     case SFR_ADDR_P1DDR:
-        _gyLog(GY_DEBUG_VERBOSE, "P1DDR Register Set");
-        _gyPush();
+        //_gyLog(GY_DEBUG_VERBOSE, "P1DDR Register Set");
+        //_gyPush();
         for(unsigned i = 0; i < PORT1_SIZE; ++i) {
             int active = val&(0x1<<i);
             if(i == SFR_P1DDR_P10DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.0 (SO0): %s", active? "out" : "in");
+          //      _gyLog(GY_DEBUG_VERBOSE, "P1.0 (SO0): %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P11DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.1 (S10): %s", active? "out" : "in");
+            //    _gyLog(GY_DEBUG_VERBOSE, "P1.1 (S10): %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P12DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.2 (SCK0): %s", active? "out" : "in");
+              //  _gyLog(GY_DEBUG_VERBOSE, "P1.2 (SCK0): %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P13DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.3 (SO1): %s", active? "out" : "in");
+              //  _gyLog(GY_DEBUG_VERBOSE, "P1.3 (SO1): %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P14DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.4 (S11): %s", active? "out" : "in");
+              //  _gyLog(GY_DEBUG_VERBOSE, "P1.4 (S11): %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P15DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.5 (SCK1): %s", active? "out" : "in");
+              //  _gyLog(GY_DEBUG_VERBOSE, "P1.5 (SCK1): %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P16DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.6: %s", active? "out" : "in");
+              //  _gyLog(GY_DEBUG_VERBOSE, "P1.6: %s", active? "out" : "in");
             } else if(i == SFR_P1DDR_P17DDR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "P1.7: %s", active? "out" : "in");
+                //_gyLog(GY_DEBUG_VERBOSE, "P1.7: %s", active? "out" : "in");
             }
         }
         _updatePins(dev, 0xff);
-        _gyPop(1);
+       // _gyPop(1);
         break;
     case SFR_ADDR_P1FCR:
-        _gyLog(GY_DEBUG_VERBOSE, "P1FCR Register Set");
-        _gyPush();
+        //_gyLog(GY_DEBUG_VERBOSE, "P1FCR Register Set");
+      //  _gyPush();
         for(unsigned i = 0; i < PORT1_SIZE; ++i) {
             int active = val&(0x1<<i);
             if(i == SFR_P1FCR_P10FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.0 Output: %s", active? "SO1" : "P1.0 Data");
+              //  _gyLog(GY_DEBUG_VERBOSE, "Port1.0 Output: %s", active? "SO1" : "P1.0 Data");
             } else if(i == SFR_P1FCR_P11FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.1 Output: %s", active? "SI1" : "P1.1 Data");
+              //  _gyLog(GY_DEBUG_VERBOSE, "Port1.1 Output: %s", active? "SI1" : "P1.1 Data");
             } else if(i == SFR_P1FCR_P12FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.2 Output: %s", active? "SCK0" : "P1.2 Data");
+              //  _gyLog(GY_DEBUG_VERBOSE, "Port1.2 Output: %s", active? "SCK0" : "P1.2 Data");
             } else if(i == SFR_P1FCR_P13FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.3 Output: %s", active? "SO1" : "P1.3 Data");
+              //  _gyLog(GY_DEBUG_VERBOSE, "Port1.3 Output: %s", active? "SO1" : "P1.3 Data");
             } else if(i == SFR_P1FCR_P14FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.4 Output: %s", active? "SI1" : "P1.4 Data");
+              //  _gyLog(GY_DEBUG_VERBOSE, "Port1.4 Output: %s", active? "SI1" : "P1.4 Data");
             } else if(i == SFR_P1FCR_P15FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.5 Output: %s", active? "SCK1" : "P1.5 Data");
+              //  _gyLog(GY_DEBUG_VERBOSE, "Port1.5 Output: %s", active? "SCK1" : "P1.5 Data");
             } else if(i == SFR_P1FCR_P16FCR_POS) {
-                if(active) _gyLog(GY_DEBUG_WARNING, "Port1.6 is fixed to P1.6 Data! Cannot be reassigned!");
+               // if(active) _gyLog(GY_DEBUG_WARNING, "Port1.6 is fixed to P1.6 Data! Cannot be reassigned!");
             } else if(i == SFR_P1FCR_P17FCR_POS) {
-                _gyLog(GY_DEBUG_VERBOSE, "Port1.7 Output: %s", active? "PWM" : "P1.7 Data");
+               // _gyLog(GY_DEBUG_VERBOSE, "Port1.7 Output: %s", active? "PWM" : "P1.7 Data");
             }
         }
         _updatePins(dev, 0xff);
-        _gyPop(1);
+        //_gyPop(1);
         break;
     case SFR_ADDR_P1: {
         int tx = 0;
@@ -157,7 +157,7 @@ void gyVmuPort1MemorySink(VMUDevice *dev, int addr, uint8_t val) {
         }
         _updatePins(dev, 0xff);
         if(!tx) {
-            _gyLog(GY_DEBUG_WARNING, "P1 data write [%d] with no output pins sourced from data!", val);
+         //   _gyLog(GY_DEBUG_WARNING, "P1 data write [%d] with no output pins sourced from data!", val);
         }
     }
         break;

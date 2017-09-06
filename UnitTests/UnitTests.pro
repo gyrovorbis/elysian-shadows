@@ -98,5 +98,6 @@ HEADERS += \
     test_instance_transform.h \
     test_lua_field_ref.h \
     test_functional.h \
-    test_cpp_lua_function.h
+    test_cpp_lua_callback.h \
+    test_associative_aggregate_array.h
 

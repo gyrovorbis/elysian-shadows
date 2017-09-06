@@ -41,7 +41,7 @@
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace game {
-    class MenuWidget;
+    class PauseMenu;
 }
 
 namespace elysian {
@@ -111,7 +111,7 @@ namespace elysian {
 
 
         bool                        _menuActive         = false;
-        ::game::MenuWidget*         _menuWidget         = nullptr;
+        ::game::PauseMenu*         _menuWidget          = nullptr;
 
         void            _printDebugLine(const char*title, const char*str, ...);
         void            _renderDebugOverlay(void);

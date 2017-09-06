@@ -4,7 +4,9 @@ exists( ESDevCommandLineArgs.pri ) {
 }
 
 macx|win32|linux {
-    DEFINES+=OOLUA_DEBUG_CHECKS
+    CONFIG(release, debug|release) {
+        DEFINES+=OOLUA_DEBUG_CHECKS
+    }
 }
 
 dreamcast {

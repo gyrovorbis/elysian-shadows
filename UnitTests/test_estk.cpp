@@ -13,8 +13,9 @@
 #include <test_lua_variant.h>
 #include <test_dialog.h>
 #include <test_functional.h>
-#include <test_cpp_lua_function.h>
+#include <test_cpp_lua_callback.h>
 #include <test_instance_transform.h>
+#include <test_associative_aggregate_array.h>
 
 /*
  *
@@ -114,8 +115,9 @@ int main(QStringList args)
         ESTkTest::enqueueTest(new tktest::LevelTest);
         ESTkTest::enqueueTest(new tktest::LuaVariantTest);
         ESTkTest::enqueueTest(new tktest::LuaFieldRefTest);
-        ESTkTest::enqueueTest(new tktest::CppLuaFunctionTest);
+        ESTkTest::enqueueTest(new tktest::CppLuaCallbackTest);
         ESTkTest::enqueueTest(new tktest::DialogLuaTest);
+        ESTkTest::enqueueTest(new tktest::AssociativeAggregateArrayTest);
     } else {
         ESTkTest::enqueueTest(new tktest::TestProjectAssets());
     }

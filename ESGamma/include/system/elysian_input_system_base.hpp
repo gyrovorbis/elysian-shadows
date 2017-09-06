@@ -9,14 +9,15 @@
 
 #include <system/elysian_system.hpp>
 #include <gyro_input_api.h>
+#include <gyro_rumble_api.h>
 
 namespace elysian {
 
-#if 0
-    class TouchScreen {
+
+    class TouchDevice {
 
     };
-#endif
+
 
     class Keyboard {
     private:
@@ -112,6 +113,46 @@ namespace elysian {
         //registerButtonCallback
 
     };
+#if 0
+    bool                gyRumbleInit(struct GYRumbleInitParams* params);
+    bool                gyRumbleUninit(void);
+
+
+    struct GYRumble*    gyRumblePoll(unsigned slot);
+    void                gyRumbleDeviceDump(const struct GYRumble* dev);
+    void                gyRumbleDeviceEffectsDump(const struct GYRumble* dev);
+
+    bool                gyRumblePlay(struct GYRumble* dev, float intensity, float duration);
+    bool                gyRumbleStop(struct GYRumble* dev);
+
+    bool                gyRumbleEffectInit(struct GYRumbleEffect* effect, const GYRumbleEffectInitParams* params);
+    bool                gyRumbleEffectPlay(struct GYRumble* dev, const struct GYRumbleEffect* effect);
+    int                 gyRumbleEffectStatus(const struct GYRumble* dev, const struct GYRumbleEffect* effect); // <0 - error, 0 - stopped, 1 - playing
+#endif
+
+#if 0
+    class RumbleDevice {
+    private:
+        GYRumble*   _gyHandle = nullptr;
+        bool        _attached = false;
+    public:
+
+        bool        pollInput(void);
+        bool        isAttached(void) const;
+        bool        play(float intensity, float duration);
+        bool        playEffect(const RumbleEffect* effect);
+        //EFFECT_STATUS getEffectStatus(const RumbleEffect* effect);
+        bool        stop();
+
+        void        dumpInfo(void) const;
+        void        dumpEffects(void) const;
+    };
+#endif
+
+    class VisualMemoryDevice {
+
+
+    };
 
 
     class InputSystemBase: public System {
@@ -161,6 +202,7 @@ namespace elysian {
         void            dumpStats(void);
 
         Controller*     getController(const unsigned port);
+        auto            getController(const unsigned port) const -> const Controller*;
         Keyboard*       getKeyboard(void);
         Mouse*          getMouse(void);
 
@@ -233,6 +275,7 @@ namespace elysian {
 
     //======== INPUTSYSTEM INLINEZ =======
     inline Controller* InputSystemBase::getController(const unsigned port) { return &_controllers[port]; }
+    inline const Controller* InputSystemBase::getController(const unsigned port) const { return &_controllers[port]; }
     inline Keyboard* InputSystemBase::getKeyboard(void) { return &_keyboard; }
     inline Mouse* InputSystemBase::getMouse(void) { return &_mouse; }
     inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }

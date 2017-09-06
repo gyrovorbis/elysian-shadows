@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <iterator>
 
+#define ELYSIAN_COMMA ,
+
 namespace elysian {
 
 
