@@ -6,6 +6,7 @@
 #include "../lib/source/gyro_vmu_instr.h"
 #include "../lib/source/gyro_vmu_version.h"
 #include "../lib/source/gyro_vmu_disassembler.h"
+#include <vulkan/gyro_video_vulkan.h>
 
 int main(int argc, char* argv[]) {
 
@@ -83,6 +84,15 @@ int main(int argc, char* argv[]) {
     }
 
     VMUMainWindow win(nullptr, workingDir);
+
+    GYVkVidInitParams params = {
+        NULL,
+        NULL,
+        0
+    };
+#ifdef LIBGYRO_VULKAN
+    vulkanInit(&params); //TESTZING!!!!
+#endif
     win.show();
     if(!romPath.isEmpty() && !win.loadRom(romPath)) return 1;
     return app.exec();

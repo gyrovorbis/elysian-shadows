@@ -133,6 +133,7 @@ FORMS += \
 
 macx {
   LIBS +=  -L../../../libGyro/lib/osx \
+        -framework Metal \
         -framework OpenGL \
         -framework OpenAL \
         -lz \
@@ -140,9 +141,14 @@ macx {
         -L../../../ESGamma/lib/osx \
         -F../../../libGyro/lib/osx \
         -framework SDL2 \
-        -framework SDL2_net \
-        -framework Foundation \
+        -framework SDL2_net
+vulkan {
+        LIBS += -framework MoltenVK
+}
+
+    LIBS += -framework Foundation \
         -framework Cocoa \
+        -framework Quartz \
         -lobjc \
         -logg \
         -lvorbis \
