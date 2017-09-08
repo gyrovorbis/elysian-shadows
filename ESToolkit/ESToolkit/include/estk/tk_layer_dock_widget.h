@@ -17,7 +17,7 @@ class LayerDockWidget : public QDockWidget, public AssetManager
     
 public:
     explicit LayerDockWidget(QWidget *parent = 0);
-    ~LayerDockWidget();
+    virtual ~LayerDockWidget();
     void ToggleDefaultItem(bool selected);
     int GetCurrentLayerIndex();
 	void setTopLevelItemCheckState(const unsigned index, const bool value);

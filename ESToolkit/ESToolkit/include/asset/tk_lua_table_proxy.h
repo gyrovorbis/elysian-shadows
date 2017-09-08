@@ -197,7 +197,7 @@ inline int TkLuaTableProxy<P, T, Bases...>::_connectSignals(lua_State *l) {
     GY_ASSERT(thisPtr);
 
     auto* thisQObj = static_cast<QObject*>(static_cast<TkLuaTableProxy<P, T, Bases...>*>(thisPtr));
-
+    thisQObj->disconnect(tableItem);
     connect(thisQObj, SIGNAL(fieldChanged(const LuaVariant&)), tableItem, SLOT(onFieldChanged(const LuaVariant&)));
 
     return 0;

@@ -663,6 +663,7 @@ void MapView::createSelectionItemGroup(void) {
 void MapView::updateSelectionItemGroup(void) { }
 
 void MapView::deleteSelectionItemGroup(void) {
+    delete _selItemGroup;
     _selItemGroup = nullptr;
 }
 

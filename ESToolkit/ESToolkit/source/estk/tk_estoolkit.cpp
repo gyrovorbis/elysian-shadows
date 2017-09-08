@@ -33,6 +33,9 @@
 #include <estk/tk_entity_selectable.h>
 #include <core/tk_lua_table_selectable.h>
 #include <system/elysian_audio_system.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_area_proxy.hpp>
+#include <proxy/elysian_level_proxy.hpp>
 
 
 #ifdef ESTK_UNIT_TESTS
@@ -868,6 +871,11 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
         _selectionDockWidget->expandSelectionTree();
         break;
     case Selectable::TILE:
+        if(_assets.getCurrentLayer() != Assets::LAYER_TILE1 ||
+                _assets.getCurrentLayer() != Assets::LAYER_TILE2 ||
+                _assets.getCurrentLayer() != Assets::LAYER_TILE3) {
+            _assets.setCurrentLayer(Assets::LAYER_TILE1);
+        }
          _ui->mapView->createSelectionItemGroup();
          static_cast<TileSelectable *>(selection)->populateModel();
          _selectionDockWidget->setSelectionModel(static_cast<TileSelectable *>(selection));
@@ -876,7 +884,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
         _selectionDockWidget->setSelectionTreeView();
         break;
     case Selectable::ENTITY:
-
+        _assets.setCurrentLayer(Assets::LAYER_ENTITY);
         //Update Entity View
         _selectionDockWidget->setSelectionTreeView();
         _selectionDockWidget->setSelectionModel(static_cast<EntitySelectable*>(selection)->getModel());
@@ -1079,8 +1087,25 @@ void ESToolkit::_onEngineInitialized(void) {
 
 void ESToolkit::select(const LuaVariant& ref) {
     auto* self = _instance;
+    Selectable* selection;
 
-    LuaTableSelectable* selection = new LuaTableSelectable(ref);
+    switch(ref.getType()) { //Check whether it's any of the supported Selectable types!
+    case LUA_TUSERDATA:
+        if(strcmp(ref.getTypeString(), "Entity") == 0) {
+            selection = new EntitySelectable(ref.getValue<Entity*>());
+            break;
+        } else if(strcmp(ref.getTypeString(), "Area") == 0) {
+            selection = ref.getValue<Area*>();
+            break;
+        } else if(strcmp(ref.getTypeString(), "Level") == 0) { //Level isn't really implemented via proxies yet...
+            selection = ref.getValue<Level*>();
+            break;
+        }
+    case LUA_TTABLE:
+    default:
+        selection = new LuaTableSelectable(ref);
+    }
+
     self->_assets.setCurrentSelection(selection);
 
 }

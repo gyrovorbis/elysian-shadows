@@ -54,7 +54,7 @@ public:
     virtual TYPE                getType(void) const=0;
     virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/);
     virtual void                setCurrentSelection(const bool /*val*/, const Selectable*const other=nullptr);
-    virtual bool                isTemporary(void);
+    virtual bool                isTemporary(void) const;
     virtual QAbstractItemModel* getModel(void) const = 0;
    // virtual LuaVariant          getLuaRef(void) const { return LuaVariant(); }
 };
@@ -68,7 +68,7 @@ public:
 
 //===== INLINEZ ========
 
-inline bool Selectable::isTemporary(void) { return false; }
+inline bool Selectable::isTemporary(void) const { return false; }
 inline void Selectable::setCurrentSelection(const bool, const Selectable * const) {}
 inline void Selectable::installSelectionViewCustomDelegates(QAbstractItemView * const) { }
 

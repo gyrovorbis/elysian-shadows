@@ -40,7 +40,7 @@ public:
                                 EntitySelectable(void);
                                 EntitySelectable(TkEntity*const entity);
                                 EntitySelectable(EntitySelectable* selectable);
-    virtual                     ~EntitySelectable(void) override = default;
+    virtual                     ~EntitySelectable(void) override;
 
     void                        addEntity(const EntityEntry entry);
     void                        setBaseEntity(TkEntity*const entity);
@@ -59,6 +59,7 @@ public:
 
     virtual void                setCurrentSelection(const bool val, const Selectable*const other) override;
     virtual QAbstractItemModel* getModel(void) const override;
+    virtual bool                isTemporary(void) const override;
 
     QVector<EntityEntry>::iterator begin(void);
     QVector<EntityEntry>::iterator end(void);

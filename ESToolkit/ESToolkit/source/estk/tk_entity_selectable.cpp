@@ -29,6 +29,14 @@ EntitySelectable::EntitySelectable(EntitySelectable *selectable):
     }
 }
 
+EntitySelectable::~EntitySelectable(void) {
+    delete _luaModel;
+}
+
+bool EntitySelectable::isTemporary(void) const {
+    return true;
+}
+
 QAbstractItemModel* EntitySelectable::getModel(void) const {
     if(!_luaModel) {
         _luaModel = new LuaTableStackModel(_tableRef);

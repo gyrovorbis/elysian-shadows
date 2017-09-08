@@ -22,6 +22,7 @@
 #include <core/tk_file_utilities.h>
 #include <QUrl>
 #include <asset/tk_lua_behavior.h>
+#include <core/tk_undo_item.h>
 
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
 
@@ -248,8 +249,9 @@ QMenu* TkEntity::createContextMenu(void) {
 
     menuStack.insertAction("Delete",
          [&](bool) {
-            if(isActive()) getAssets()->getCurrentArea()->removeEntity(this);
-            delete this;
+            //if(isActive()) getAssets()->getCurrentArea()->removeEntity(this);
+            //delete this;
+            getAssets()->getCurrentArea()->getUndoStack().push(createDeleteUndoItem());
     });
 
     menuStack.push("Components");
@@ -258,6 +260,7 @@ QMenu* TkEntity::createContextMenu(void) {
         [&](bool checked) {
             if(checked) addRenderable();
             else removeRenderable();
+            emitFieldChanged("renderable");
         },
         getRenderable(),
         canAddTo(elysian::Renderable()) && !isActive()
@@ -568,4 +571,38 @@ void TkEntity::initializeVirtualTableDelegates(QString property) {
         lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
     }
+}
+
+class TkEntityDeleteUndoItem: public UndoItem {
+private:
+    TkEntity* _entity   = nullptr;
+    TkArea*   _area     = nullptr;
+    bool      _active;
+public:
+    TkEntityDeleteUndoItem(TkEntity* entity):
+        UndoItem(UndoItem::ENTITY_DELETE),
+        _entity(entity),
+        _area(entity->getArea()),
+        _active(entity->isActive())
+    {
+        GY_ASSERT(_entity && _area);
+    }
+
+    virtual ~TkEntityDeleteUndoItem(void) {
+        delete _entity;
+    }
+
+    virtual void undo(void) override {
+        if(_active) _area->addEntity(_entity);
+        else _area->addInactiveEntity(_entity);
+    }
+
+    virtual void redo(void) override {
+        _area->removeEntity(_entity);
+    }
+};
+
+
+UndoItem* TkEntity::createDeleteUndoItem(void) {
+    return new TkEntityDeleteUndoItem(this);
 }

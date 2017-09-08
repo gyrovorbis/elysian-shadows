@@ -297,6 +297,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
     } else if(valueType == LUA_TTABLE) {
         iterable = true;
         auto* ud = TkLuaTableUserdata::inject(*_mainState, _tableRef);
+        ud->disconnect(this);
         connect(ud, SIGNAL(fieldChanged(const LuaVariant&)), this, SLOT(onFieldChanged(const LuaVariant&)));
         connect(ud, SIGNAL(fieldAdded(const LuaVariant&)), this, SLOT(onFieldAdded(const LuaVariant&)));
     } else iterable = false;

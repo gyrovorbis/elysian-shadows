@@ -10,6 +10,7 @@ public:
     virtual Selectable::TYPE    getType(void) const override;
     virtual QAbstractItemModel* getModel(void) const override;
     virtual void                setCurrentSelection(const bool val, const Selectable*const other=nullptr) override;
+    virtual bool                isTemporary(void) const override;
 
 };
 
@@ -23,7 +24,7 @@ inline QAbstractItemModel* LuaTableSelectable::getModel(void) const { return con
 inline void LuaTableSelectable::setCurrentSelection(const bool val, const Selectable * const /*other*/) {
     if(val) populateModel();
 }
-
+inline bool LuaTableSelectable::isTemporary(void) const { return true; }
 
 
 #endif // TK_LUA_TABLE_SELECTABLE_H

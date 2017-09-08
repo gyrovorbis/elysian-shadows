@@ -10,6 +10,7 @@ class QMenu;
 class Sprite;
 class TkEntity;
 class LuaTableStackModel;
+class UndoItem;
 
 ELYSIAN_ASSET_TYPEDEF(SpriteAttrib)
 ELYSIAN_ASSET_TYPEDEF(CollidableAttrib)
@@ -67,6 +68,8 @@ public:
                                 TkEntity(TkEntity* prefab);
     virtual                     ~TkEntity(void) override;
 
+    UndoItem*                   createDeleteUndoItem(void);
+
     void                        setTreeWidgetItemState(const TreeItemState state);
     TreeItemState               getTreeWidgetItemState(void) const;
     void                        setName(const QString name);
@@ -99,6 +102,7 @@ public:
 
     //static Entity*              create(void);
     static Entity*              create(const OOLUA::Lua_table_ref valTable);
+
 
 public Q_SLOTS:
     void                        onEntityParented(Entity*const child, Entity*const parent);
