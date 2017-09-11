@@ -61,9 +61,8 @@ void CollidableBase::update(void) {
   //_entity->_transform.apply();
   getEntity()->pushViewTransform();
 
-  gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y,
-                      _attrib->_relPos.z, _attrib->_relSize.x,
-                      _attrib->_relSize.y, _attrib->_relSize.z);
+  gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, _attrib->_relPos.z,
+                      _attrib->_relSize.x, _attrib->_relSize.y, _attrib->_relSize.z);
   gyMatMultVec(localVecs, worldVecs, 2);
   gyCalcWorldVert(&_collider.col);
 

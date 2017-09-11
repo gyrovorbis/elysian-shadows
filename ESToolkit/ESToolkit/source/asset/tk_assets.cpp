@@ -445,8 +445,8 @@ Project* Assets::reloadProject(void) {
     setCurrentLevel(nullptr);
     setCurrentProject(nullptr);
 
-    delete _project;
     delete _engine;
+    delete _project;
 
     auto* proj = loadProject(projPath);
     Q_EMIT projectAdded(_project);

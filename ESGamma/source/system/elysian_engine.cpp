@@ -266,7 +266,6 @@ Engine::~Engine(void) {
     //gyInputUninit();
     //gyTimerUninit();
 
-    LuaManager::uninitialize();
     delete _inputSystem;
     delete _combatSystem;
     delete _dialogSystem;
@@ -287,6 +286,8 @@ Engine::~Engine(void) {
     delete _skeletonSystem;
     delete _behaviorSystem;
     delete _pathfindingSystem;
+
+    LuaManager::uninitialize();
 
 }
 
