@@ -195,7 +195,7 @@ namespace elysian {
 /*!
     \qmltype Engine
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Static class for Engine providing access to all subsystems.
 
     Engine is a static class (class of all static functions) providing access
@@ -300,7 +300,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Engine)
 /*!
     \qmltype gyro
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Static class for libGyro constants and enumerations.
 */
 /*!

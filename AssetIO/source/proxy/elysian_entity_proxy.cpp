@@ -4,7 +4,7 @@
 /*!
     \qmltype Entity
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Class representing all non-terrain Game Objects.
 
     \l{Entity} is the central class for representing any game object that inhabits an \l{Area}.

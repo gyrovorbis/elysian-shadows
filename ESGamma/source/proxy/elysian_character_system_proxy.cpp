@@ -4,7 +4,7 @@
 /*!
     \qmltype CharacterSystem
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Engine subsystem handling character-related logic and components.
 
     The CharacterSystem is the \l{Engine} subsystem responsible for managing

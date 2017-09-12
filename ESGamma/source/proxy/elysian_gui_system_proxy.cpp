@@ -6,7 +6,7 @@
 /*!
     \qmltype AdventureLog
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief GUI Widget for Combat Log and in-game text. Can be used to display custom content.
 */
 

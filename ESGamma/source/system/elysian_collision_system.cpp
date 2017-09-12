@@ -20,6 +20,10 @@
 
 namespace elysian {
 
+#ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+GYTexture* CollisionSystem::_circleColliderTex = nullptr;
+#endif
+
 CollisionSystem::CollisionSystem(void):
     _detectionMonitor("detectEntities"),
     _tileDetectMonitor("tiles"),
@@ -1146,6 +1150,8 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 #endif
         }
         break;
+    case GY_COLLIDER_CIR:
+        break;//FUCKING IMPLEMENT ME!!!!!
 
     default:
         assert(0);
@@ -1602,6 +1608,20 @@ void CollisionSystem::foreachContact(const Entity& entity, const ContactIterator
 
         if(count == 0 || exit) break; //found them all or user-function is done, exit early.
     }
+}
+
+
+bool CollisionSystem::loadDebugAssets(void) {
+#ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+    DbgEvent event("[CollisionSystem] Loading Debug Assets");
+    return (_circleColliderTex = gyVidTexCreate(ELYSIAN_COLLISION_CIRCLE_COLLIDER_DECORATION_FILE));
+#endif
+}
+
+CollisionSystem::~CollisionSystem(void) {
+#ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+    gyVidTexDestroy(_circleColliderTex);
+#endif
 }
 
 

@@ -4,7 +4,7 @@
     \qmltype Renderable
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component attached to an Entity to make it a sprite or quad.
 
     \l{Renderable} is a \l{Component} that can be attached to an \l{Entity}, allowing

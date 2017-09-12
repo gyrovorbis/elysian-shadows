@@ -3,7 +3,7 @@
 /*!
     \qmltype Keyboard
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Class representing a keyboard device and key states.
 
     The engine supports a single keyboard device, which uses the standard default keyboard on Windows, MacOS, and Linux,
@@ -108,7 +108,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Keyboard,
 /*!
     \qmltype VirtualDPad
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Class that maps a controller's analog stick to a directional pad.
 
     The VirtualDPad class is useful for supporting the analog stick in menus or dialog boxes, where traditionally
@@ -146,7 +146,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(VirtualDPad,
 /*!
     \qmltype Controller
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Class representing a joystick input device for a single player on a single port.
 
     Controller is a virtual input device that may represent a Sega Dreamcast controller,
@@ -238,7 +238,7 @@ The button can be one of:
 /*!
     \qmltype InputSystem
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Subsystem for managing input devices such as controllers, keyboards, mice, and touch screens.
 
     The InputSystem updates and maintains objects for input devices, which are all stored and represented in a

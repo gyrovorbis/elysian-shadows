@@ -16,6 +16,10 @@ const GYVector4 gyRTriLocalVerts[3] = {
     { 0.5f, 0.5f, 0.0f, 1.0f }
 };
 
+const GYVector4 gyCirLocalVert = {
+    0.0f, 0.0f, 0.0f, 1.0f
+};
+
 const GYCollider *_curCol = 0;
 const struct _GYStatic *_curStat = 0;
 
@@ -177,6 +181,10 @@ void gyColliderCurrent(const GYCollider *const col, const struct _GYStatic *cons
     _curStat = stat;
 }
 
+void gyCalcCirWorldVert(GYCirCollider *const cir) {
+    gyMatMultVec(&gyCirLocalVert, &cir->worldVert, 1);
+}
+
 //Should we push/pop from the stack here? Probably?
 //No reason to normalize axes for AABBs!!!
 //Doesn't push/pop matrices, so that you can parent the bastards
@@ -226,6 +234,9 @@ int gyCollision(GYCollider *bodB, const struct _GYStatic *statB, struct _GYConta
                     return gyCollisionOBBvOBB((const GYBoxCollider *)bodA, (const GYBoxCollider *)bodB, con, statA, statB);
                 case GY_COLLIDER_RTRI:
                     return gyCollisionOBBvTri((const GYBoxCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+
+                break;
                 default:
                     assert(0);
             }
@@ -238,6 +249,9 @@ int gyCollision(GYCollider *bodB, const struct _GYStatic *statB, struct _GYConta
                     return gyCollisionOBBvOBB((const GYBoxCollider *)bodA, (const GYBoxCollider *)bodB, con, statA, statB);
                 case GY_COLLIDER_RTRI:
                     return gyCollisionOBBvTri((const GYBoxCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+
+                break;
                 default:
                     assert(0);
             }
@@ -251,6 +265,24 @@ int gyCollision(GYCollider *bodB, const struct _GYStatic *statB, struct _GYConta
                     return gyCollisionOBBvTri((const GYBoxCollider *)bodB, (const GYTriCollider *)bodA, con, statB, statA);
                 case GY_COLLIDER_RTRI:
                     return gyCollisionTrivTri((const GYTriCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+
+                    break;
+                default:
+                    assert(0);
+            }
+            break;
+
+        case GY_COLLIDER_CIR:
+            switch(colB->type) {
+                case GY_COLLIDER_AABB:
+                case GY_COLLIDER_OBB:
+                    *swapFlag = 1; //Tri is the second argument, swapping order!
+                    return gyCollisionOBBvTri((const GYBoxCollider *)bodB, (const GYTriCollider *)bodA, con, statB, statA);
+                case GY_COLLIDER_RTRI:
+                    return gyCollisionTrivTri((const GYTriCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+                    return gyCollisionCirclevCircle((const GYCirCollider *)bodA, (const GYCirCollider *)bodB, con, statA, statB);
                 default:
                     assert(0);
             }
@@ -291,6 +323,25 @@ int gyCollisionTrivTri(const GYTriCollider *triA, const GYTriCollider *triB, str
     return 0;
 }
 
+
+int gyCollisionCirclevCircle(const GYCirCollider *cirA, const GYCirCollider *cirB, struct _GYContact *con, const struct _GYStatic * const statA, const struct _GYStatic * const statB) {
+    GYVector3 normal;
+    gyVec3Sub(&normal, &cirA->worldVert, &cirB->worldVert);
+    float dist = gyVec3MagAndNormalize(&normal);
+    float depth = cirA->collider.transform._scale.x + cirB->collider.transform._scale.x - dist;
+    if(depth > 0) {
+        con->depth = depth;
+        memcpy(&con->normal, &normal, sizeof(GYVector3));
+        memcpy(&con->worldPos, &cirB->worldVert, sizeof(GYVector3));
+        gyVec3AddScaled(&con->worldPos, &normal, 0.5f*dist);
+        con->staticAttrib[0] = statA;
+        con->staticAttrib[1] = statB;
+        con->collider[0] = (const GYCollider*)cirA;
+        con->collider[1] = (const GYCollider*)cirB;
+        return 1;
+    }
+    return 0;
+}
 
 
 static inline void Swapf(float *const a, float *const b) {

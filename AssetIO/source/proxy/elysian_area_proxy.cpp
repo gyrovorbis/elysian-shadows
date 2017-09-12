@@ -5,7 +5,7 @@
 /*!
     \qmltype TileEntry
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents the tile attributes at a single map location.
 
     A TileEntry represents a tile index and various other attributes stored at ever map location.
@@ -113,7 +113,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
 /*!
     \qmltype Area
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Class representing an Area and encapsulating a map and its entities.
 
     An Area represents a sigle map within ESTk and is located within a Level. The Area gets its tile attributes

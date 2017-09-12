@@ -5,7 +5,7 @@
 /*!
     \qmltype Widget
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Abstract base class for all objects that can be added to the GUI layer.
 */
 
@@ -32,7 +32,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Widget,
 /*!
     \qmltype EntityWidget
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Widget container for displaying an Entity in a GUI.
 */
 
@@ -45,7 +45,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(EntityWidget,
 /*!
     \qmltype LabelWidget
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Widget used for displaying text in a GUI.
 */
 

@@ -6,7 +6,7 @@
     \qmltype CameraKeyFrame
     \inherits InstanceTransform
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a Camera transform state.
 
     A CameraKeyFrame represents the transform of a camera. It can be used for setting
@@ -26,7 +26,7 @@ OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame)
 /*!
     \qmltype CameraSystem
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Engine subsystem handling all Camera-related logic, transformations, and states.
 
     The CameraSystem is the engine subystem for managing all aspects of the camera and any

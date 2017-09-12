@@ -20,7 +20,7 @@ namespace OOLUA {
         inline bool pull<QString>(lua_State* state, QString& string) {
             string = luaL_tolstring(state, -1, nullptr); //stringify ANY type
             lua_pop(state, 2);
-            return (string.isNull())? true : false;
+            return (!string.isNull())? true : false;
         }
     }
 

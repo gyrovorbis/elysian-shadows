@@ -36,20 +36,20 @@ LuaVariant TkLuaManager::getParent(const LuaVariant &t) {
 int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {
     if(++_serializeDepth == 1) setSerializing(true);
 
-    rPrintByIndex(-3, 1, "Serialize[-3]");
-    rPrintByIndex(-2, 1, "Serialize[-2]");
-    rPrintByIndex(-1, 1, "Serialize[-1]");
+    //rPrintByIndex(-3, 1, "Serialize[-3]");
+    //rPrintByIndex(-2, 1, "Serialize[-2]");
+    //rPrintByIndex(-1, 1, "Serialize[-1]");
 
-    dbgprintf("Stack size - %d", lua_gettop(*_mainState));
+//    dbgprintf("Stack size - %d", lua_gettop(*_mainState));
     _serializeFunc.push();
 
     lua_insert(*_mainState, -2);
 
-    rPrintByIndex(-3, 1, "Serialize[-3]");
-    rPrintByIndex(-2, 1, "Serialize[-2]");
-    rPrintByIndex(-1, 1, "Serialize[-1]");
+  //  rPrintByIndex(-3, 1, "Serialize[-3]");
+   // rPrintByIndex(-2, 1, "Serialize[-2]");
+   // rPrintByIndex(-1, 1, "Serialize[-1]");
 
-        dbgprintf("Stack size - %d", lua_gettop(*_mainState));
+     //   dbgprintf("Stack size - %d", lua_gettop(*_mainState));
 
     _protectedCall(1, 1, nullptr);
 

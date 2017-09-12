@@ -4,7 +4,7 @@
 /*!
     \qmltype Direction
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Static helper class containing functions relevant to directions in 2D/3D space.
 
     Static helper class containing methods relevant to directions in 2D and 3D space.
@@ -34,7 +34,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
     \qmltype Character
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component containing common functionality for party, enemies, and NPCs.
 
     The Character Component is a Component that can be attached to an Entity. It contains various attributes such as

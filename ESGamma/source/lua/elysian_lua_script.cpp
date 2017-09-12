@@ -10,7 +10,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 /*!
     \qmltype LuaBehaviorScriptAttrib
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Holds properties which may be shared among instances
     of the same LuaBehaviorScript, such as parent behaviors,
     supported triggers, and file paths.
@@ -48,7 +48,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 /*!
     \qmltype LuaScript
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Base class representing an executable Lua script. The
     script may either be a standalone script file (ie area_init.lua)
     or it can be a LuaBehavior script. All LuaScripts run within
@@ -97,7 +97,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaScript,
 /*!
     \qmltype LuaBehaviorScript
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \inherits LuaScript
     \brief Class for Lua scripts implementing "Behavior" functionality.
     A LuaBehaviorScript implements a series of "trigger" callback

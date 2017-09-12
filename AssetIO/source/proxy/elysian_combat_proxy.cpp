@@ -3,7 +3,7 @@
 /*!
     \qmltype CombatAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Collection of shareable attributes contained by a Combat component.
 
     CombatAttrib is a collection of data contained by a Combat component and used
@@ -70,7 +70,7 @@ OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
 /*!
     \qmltype CombatStatus
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Combat-related stats managed by the Engine.
 
     CombatStatus is a collection of the combat-related stats that the engine is aware
@@ -169,7 +169,7 @@ OOLUA_EXPORT_FUNCTIONS(CombatStatus,
     \qmltype CombatStatusModifier
     \inherits CombatStatus
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Modifier to dealing/healing damage or applying/removing status effects from a combatant.
 
     CombatStatusModifier is the class used to represent any kind of modifications to the status
@@ -198,7 +198,7 @@ OOLUA_EXPORT_FUNCTIONS(CombatStatusModifier,
     \qmltype Combat
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component attached to an Entity to give it combat stats and behaviors.
 
     Combat is an optional, attachable Component that can be added to an Entity to signify to the CombatSystem

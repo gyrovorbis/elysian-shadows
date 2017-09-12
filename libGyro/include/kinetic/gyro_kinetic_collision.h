@@ -34,11 +34,19 @@ int gyCollisionAABBvAABB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, s
 //SPECIALIZED SAT - Only OBB v Tri
 int gyCollisionOBBvTri(const GYBoxCollider *boxA, const GYTriCollider *triB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB);
 
+//OBB v Circle
+int gyCollisionOBBvCircle(const GYBoxCollider* boxA, const GYCirCollider* cirB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic* const statB);
+
 //SPECIALIZED SAT - Only Tri v Tri
 int gyCollisionTrivTri(const GYTriCollider *triA, const GYTriCollider *triB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB);
 
+//Circle v Circle
+int gyCollisionCirclevCircle(const GYCirCollider *cirA, const GYCirCollider *cirB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB);
+
+
 //Future Shit
 //int gyCollisionCirclevShit();
+
 
 
 /*
@@ -54,6 +62,8 @@ void gyCalcBoxWorldVert(GYBoxCollider *const box);
 
 void gyCalcTriWorldVert(GYTriCollider *const tri);
 
+void gyCalcCirWorldVert(GYCirCollider* const cir);
+
 static inline void gyCalcWorldVert(void *const obj) {
     GYCollider *const col = (GYCollider *)obj;
 	switch(col->type) {
@@ -64,6 +74,9 @@ static inline void gyCalcWorldVert(void *const obj) {
 	case GY_COLLIDER_RTRI:
         gyCalcTriWorldVert((GYTriCollider *)obj);
 		return;
+    case GY_COLLIDER_CIR:
+        gyCalcCirWorldVert((GYCirCollider *)obj);
+        return;
 	default:
         assert(0);
 	}

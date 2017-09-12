@@ -60,10 +60,6 @@ OOLUA_PROXY_END
 OOLUA_PROXY(DynamicContentPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
-static inline int Toolkit_setSelection(lua_State* const /*vm*/) {
-    ESToolkit::select(LuaVariant::fromStack());
-    return 0;
-}
 
 static inline void luaRegisterTkEnumsConstants(OOLUA::Script */*s*/) {
 

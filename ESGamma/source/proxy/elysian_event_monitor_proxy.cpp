@@ -6,7 +6,7 @@
 /*!
     \qmltype EventMonitor
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Engine base-class for all event monitor types.
 
     EventMonitor is the base-class for all EventMonitor types, including those built into the
@@ -34,7 +34,7 @@
     \qmltype LuaEventMonitor
     \inherits EventMonitor
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Base class for Lua event monitors.
 
     Base class for all \l{EventMonitor}s to be used within Lua. Stores a user-provided Lua
@@ -55,7 +55,7 @@
     \qmltype LuaEventCallback
     \inherits LuaEventMonitor
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Holds a reference to a Lua function that will be invoked when the event is completed.
 
     LuaEventCallback is a type of \l{LuaEventMonitor} that invokes a Lua function when the

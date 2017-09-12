@@ -4,7 +4,7 @@
     \qmltype Behavior
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Extendable component for adding custom triggers and logic outside of the engine.
 
     A Behavior is a custom Component that can be attached to an Entity, allowing a developer to
@@ -78,7 +78,7 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(Behavior,
     \qmltype LuaBehavior
     \inherits Behavior
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Custom component type for extending the engine through a Lua script.
 
     LuaBehavior is a Behavior implementation that allows a Lua script to implement the \l{Behavior}'s

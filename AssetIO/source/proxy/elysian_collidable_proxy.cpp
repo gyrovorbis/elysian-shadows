@@ -4,7 +4,7 @@
 /*!
     \qmltype CollisionFlags
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Flags used by Engine to determine whether or not two Colliders can collide.
 
     Before the Engine checks for collision between two Colliders, it always checks their flags first to see
@@ -84,7 +84,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(CollisionFlags)
 /*!
     \qmltype CollidableStaticAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Collidable attributes used by the rigid body physics engine.
 
     CollidableStaticAttrib is a collection of attributes that is used internally by the physics engine
@@ -238,7 +238,7 @@ OOLUA_EXPORT_FUNCTIONS(CollidableStaticAttrib,
 /*!
     \qmltype CollidableAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Collection of attributes to be shared among similar Colliders.
 
     CollidableAttrib is a collection of various attributes contained by a Collidable that is used by the
@@ -380,7 +380,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(CollidableAttrib,
 /*!
     \qmltype CollisionContact
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a contact from a collision between two Collidables.
 
     The CollisionSystem creates a CollisionContact object when a collision is detected between two
@@ -450,7 +450,7 @@ OOLUA_EXPORT_FUNCTIONS(CollisionContact)
     \qmltype Collidable
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component attached to an Entity to make it a solid, collidable object.
 
     The Collidable component is attached to an Entity to give it collision geometry and

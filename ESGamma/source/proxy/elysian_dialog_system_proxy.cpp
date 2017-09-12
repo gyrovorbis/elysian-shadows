@@ -4,7 +4,7 @@
 /*!
     \qmltype DialogSystem
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Engine subsystem handling dialog-related logic.
 
     The DialogSystem is the \l{Engine} subsystem for handling dialog, text descriptions,

@@ -4,7 +4,7 @@
 /*!
     \qmltype AnimationTrack
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief A Skeletal animation created within Spine to be played on a single track.
 
     AnimationTrack represents a single animation created within Spine. It represents
@@ -88,7 +88,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AnimationTrack,
 /*!
     \qmltype Animation
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Multitrack animation formed as an aggregate of \l{AnimationTrack}s.
 
     Animation contains a group of \l{AnimationTrack}s, each of which corresponds to an
@@ -176,7 +176,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Animation,
 /*!
     \qmltype SkeletonAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Attributes defining atlas and json files and animations for the \l{Skeleton}s.
 
     SkeletonAttrib is a collection of data such as paths to Spine texture atlas and JSON files,
@@ -283,7 +283,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SkeletonAttrib,
     \qmltype Skeleton
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief \l{Component} attached to an \l{Entity} to provide support for Spine skeletal animations.
 
     The Skeleton \l{Component} allows an \l{Entity} to import skeletons and animations created by

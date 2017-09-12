@@ -5,7 +5,7 @@
 /*!
     \qmltype Layout
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Abstract class for organizing Widgets as child GUI elements within a parent Widget.
 */
 
@@ -34,7 +34,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Layout,
 /*!
     \qmltype HorizontalLayout
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief GUI Layout for arranging Widgets horizontally into columns within a parent Widget.
 */
 
@@ -45,7 +45,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(HorizontalLayout)
 /*!
     \qmltype VerticalLayout
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief GUI Layout for arranging Widgets vertically into rows within a parent Widget.
 */
 

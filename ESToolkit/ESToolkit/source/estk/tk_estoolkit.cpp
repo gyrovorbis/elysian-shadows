@@ -849,6 +849,8 @@ bool ESToolkit::openProjectDir(const QString dir) {
 
 void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *const selection) {
 
+
+
     _ui->mapView->deleteSelectionItemGroup();
     /* Must be cleared after every selection change so that the model isn't pointing
       to a deleted TerrainSelection */
@@ -871,8 +873,8 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
         _selectionDockWidget->expandSelectionTree();
         break;
     case Selectable::TILE:
-        if(_assets.getCurrentLayer() != Assets::LAYER_TILE1 ||
-                _assets.getCurrentLayer() != Assets::LAYER_TILE2 ||
+        if(_assets.getCurrentLayer() != Assets::LAYER_TILE1 &&
+                _assets.getCurrentLayer() != Assets::LAYER_TILE2 &&
                 _assets.getCurrentLayer() != Assets::LAYER_TILE3) {
             _assets.setCurrentLayer(Assets::LAYER_TILE1);
         }
@@ -1216,4 +1218,9 @@ void ESToolkit::onAltTabShortcutTriggered(void) {
     if(prevIndex != newIndex) {
         _areaTabBar->setCurrentIndex(newIndex);
     }
+}
+
+void ESToolkit::searchDocs(QString query) {
+    auto* self = _instance;
+    _instance->_helpDockWidget->openSearch(query);
 }

@@ -4,7 +4,7 @@
 /*!
     \qmltype AudioSystem
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Subsystem responsible for handling background music, sound effects, and \l{AudioSource}s.
 
     The AudioSystem is a subsystem of the engine which manages all aspects of audio playback,

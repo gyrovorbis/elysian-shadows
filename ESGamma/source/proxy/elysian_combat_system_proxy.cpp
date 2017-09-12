@@ -5,7 +5,7 @@
 /*!
     \qmltype CombatSystem
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Engine subsystem handling combat-related logic and components.
 
     The CombatSystem is the \l{Engine} subsystem responsible for managing

@@ -4,7 +4,7 @@
 /*!
     \qmltype Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Base class for all attachable Entity components.
 
     Component is the base class from which all other components within the engine are inherited.

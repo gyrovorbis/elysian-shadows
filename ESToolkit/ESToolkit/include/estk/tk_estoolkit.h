@@ -64,9 +64,11 @@ public:
     virtual         ~ESToolkit(void);
 
 
-    static ESToolkit* getInstance(void);
-    static void     select(const LuaVariant& ref);
-    static int      pushSelection(lua_State*const vm);
+    static ESToolkit*   getInstance(void);
+    static void         select(const LuaVariant& ref);
+    static int          pushSelection(lua_State*const vm);
+    static void         searchDocs(QString query);
+
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
     Assets&         getAssets(void);

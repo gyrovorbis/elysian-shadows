@@ -4,7 +4,7 @@
 /*!
     \qmltype GYWav
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Contains a loaded WAV file buffer for sound effects.
 
     GYWav is a simple libGyro class containing a buffer for
@@ -54,7 +54,7 @@ EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
     \qmltype AudioSource
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component for adding sound effects to an Entity.
 
     An AudioSource is a Component that can be attached to an Entity, providing it with an audio emitter

@@ -4,7 +4,7 @@
 /*!
     \qmltype BitMask32
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a 32-bit packed integer of bitfields.
 
     BitMask32 is a convenience class for setting, extracting, and applying bitmasks to a 32-bit unsigned integer.
@@ -63,7 +63,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(BitMask32,
 /*!
     \qmltype BitMask64
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a 64-bit packed integer of bitfields.
 
     BitMask64 is a convenience class for setting, extracting, and applying bitmasks to a 64-bit unsigned integer.

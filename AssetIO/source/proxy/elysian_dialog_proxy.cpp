@@ -4,7 +4,7 @@
 /*!
     \qmltype DialogScreen
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Base class for different types of dialog screens.
 
     A DialogScreen represents a single "screen" of dialog, containing up to 3 lines of text.
@@ -93,7 +93,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DialogScreen,
     \qmltype DialogText
     \inherits DialogScreen
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a single dialog screen of text.
 
     A DialogText object represents a single screen of dialog containing 3 lines of text,
@@ -130,7 +130,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DialogText,
 /*!
     \qmltype DialogOption
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a single option within a DialogPrompt.
 
     A DialogOption object represents a single option that the user can choose
@@ -189,7 +189,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DialogOption,
     \qmltype DialogPrompt
     \inherits DialogScreen
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a screen of text with a list of choices for the user within a Dialog.
 
     A DialogPrompt is a single screen within a dialog containing 3 lines of text followed by
@@ -248,7 +248,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DialogPrompt,
 /*!
     \qmltype Dialog
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a multibranching, interactive conversation or dialog.
 
     Dialog can be used to represent a single screen of text, a linear progression of text,

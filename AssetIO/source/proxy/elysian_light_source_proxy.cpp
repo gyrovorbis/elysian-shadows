@@ -3,7 +3,7 @@
 /*!
     \qmltype LightAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Attributes describing a LightSource.
 
     LighAttrib contains information about a LightSource such as the type of light it is, its color,
@@ -155,7 +155,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib,
     \qmltype LightSource
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component for adding a spot, point, or directional dynamic light source.
 
     Attaching a LightSource Component to an Entity turns it into a dynamic light source which will

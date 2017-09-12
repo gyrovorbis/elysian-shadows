@@ -4,7 +4,7 @@
     \qmltype ParticleEmitterAttrib
     \inherits CollidableStaticAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Attributes defining characteristics of a ParticleEmitter Component.
 
     ParticleEmitterAttrib is used to define characteristics of a ParticleEmitter Component
@@ -380,7 +380,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib,
     \qmltype ParticleEmitter
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component attached to an Entity allowing it to emit particles.
 
     ParticleEmitter is an optional component that allows an Entity to emit particles for special effects when

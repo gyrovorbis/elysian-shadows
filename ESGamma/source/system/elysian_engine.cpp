@@ -91,7 +91,9 @@ bool Engine::loadAssets(void) {
     Debug::push();
     success &= !_guiSystem->loadAssets();
     success &= !_dialogSystem->loadAssets();
-
+#ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+    success &= !_collisionSystem->loadDebugAssets();
+#endif
     Debug::pop();
     return true;
 }

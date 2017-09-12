@@ -84,46 +84,56 @@ void CollidableBase::update(void) {
 }
 
 void CollidableBase::render(void) {
-  if (!_worldSpace) return;
-  const static GYColor4 color = {0, 0, 255, 128};
-  const static GYColor4 colColor = {255, 0, 0, 128};
+    if (!_worldSpace) return;
+    const static GYColor4 color = {0, 0, 255, 128};
+    const static GYColor4 colColor = {255, 0, 0, 128};
 
-  gyVidTexBind(nullptr);
-  gyVidNormalMapBind(nullptr);
-  gyVidSpecularMapBind(nullptr);
-  gyVidAlphaLevel(GY_ALPHA_FULL);
-  gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidNormalMapBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 
-  gyMatPush();
+    gyMatPush();
 
-  gyVidQuadListBegin((_contactCount == 0) ? &color : &colColor);
-  //_entity->_transform.apply();
-  getEntity()->pushViewTransform();
-  gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f,
+    gyVidQuadListBegin((_contactCount == 0) ? &color : &colColor);
+    //_entity->_transform.apply();
+
+    getEntity()->pushViewTransform();
+
+    if(_attrib->_type == GY_COLLIDER_CIR) {
+        gyVidTexBind(CollisionSystem::getCircleColliderTex());
+        const float texScale = _entity->_transform._size.x / (float)ELYSIAN_COLLISION_CIRCLE_COLLIDER_DECORATION_DIAMETER;
+        gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f,
+                      texScale * _attrib->_relSize.x, texScale * _attrib->_relSize.y, 1.0f);
+
+    } else {
+        gyVidTexBind(nullptr);
+        gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f,
                       _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
+    }
 
-  //gyVidQuad(_collider.box.worldVert, 0);
-  gyVidRect(0);
-  gyMatPop();
-  gyMatPop();
-  gyVidQuadListEnd();
+    //gyVidQuad(_collider.box.worldVert, 0);
+    gyVidRect(0);
+    gyMatPop();
+    gyMatPop();
+    gyVidQuadListEnd();
 
-/* ==== DEBUG CODE ==== */
-#if 0
-  gyVidQuadListBegin(&colColor);
+    /* ==== DEBUG CODE ==== */
+    #if 0
+    gyVidQuadListBegin(&colColor);
 
-  gyMatPush(); //Render bottom of entity
+    gyMatPush(); //Render bottom of entity
     gyMatTranslateScale(_entity->_transform._pos.x, _entity->_transform._pos.y + 0.5f*_entity->_transform._size.y, /*ZCoordConstants::tileDecor*/ ZCoordConstants::fg1+2.0f, 2.0f, 2.0f, 1.0f);
-  gyVidRect(0);
-  gyMatPop();
+    gyVidRect(0);
+    gyMatPop();
 
-  gyMatPush(); //Render center of entity
+    gyMatPush(); //Render center of entity
     gyMatTranslateScale(_entity->_transform._pos.x, _entity->_transform._pos.y, /*ZCoordConstants::tileDecor*/ ZCoordConstants::fg1+2.0f, 2.0f, 2.0f, 1.0f);
-  gyVidRect(0);
-  gyMatPop();
+    gyVidRect(0);
+    gyMatPop();
 
-  gyVidQuadListEnd();
-#endif
+    gyVidQuadListEnd();
+    #endif
 }
 
 void CollidableBase::_updateSortSweepAABB(void) {

@@ -4,7 +4,7 @@
 /*!
     \qmltype DaySystem
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Engine subsystem handling day/night-related logic.
 
     The DaySystem is the \l{Engine} subsystem handling all in-game time and a

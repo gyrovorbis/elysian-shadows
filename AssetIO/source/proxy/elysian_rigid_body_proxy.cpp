@@ -4,7 +4,7 @@
 /*!
     \qmltype RigidBodyAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Attribute data used by the RigidBody Compoonent.
 
     RigidBodyAttrib is a collection of miscellaneous attributes that gives
@@ -113,7 +113,7 @@ OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
 /*!
     \qmltype ForceTarget
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Abstraction for an object which is simulated by the \l{RigidBodySystem}.
 
     ForceTarget is an abstraction for a physical object that can be numerically
@@ -296,7 +296,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget,
     \qmltype RigidBody
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component providing an Entity with full rigid body kinematics.
 
     RigidBody is a \l{Component} that can be attached to an \l{Entity} to

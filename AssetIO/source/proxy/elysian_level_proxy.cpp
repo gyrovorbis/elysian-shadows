@@ -4,7 +4,7 @@
 /*!
     \qmltype Tile
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a group of attributes for a single tile type
 
     Tile is a table of attributes that is shared by every TileEntry on the map with the same index.
@@ -77,7 +77,7 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
 /*!
     \qmltype Level
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Contains a group of Areas, tile attributes, and tile sheets.
 
     A Level contains a group of Areas, all sharing the same tile sheet texture and tile attribute array.

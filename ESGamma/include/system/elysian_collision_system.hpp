@@ -11,14 +11,19 @@
 #include <utility/elysian_sort_sweep.hpp>
 #include <elysian_task_monitor.hpp>
 
-#define ELYSIAN_COLLISION_SYSTEM_PROTECTED					true
-#define ELYSIAN_COLLISION_BROAD_PHASE                       true
-#define ELYSIAN_COLLISION_CONTACT_LIST_SIZE					10000
-#define ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE			10000
-#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 1000
-#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.8f
-#define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON           1.0f
-#define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX               16.0f
+#define ELYSIAN_COLLISION_SYSTEM_PROTECTED                      true
+#define ELYSIAN_COLLISION_BROAD_PHASE                           true
+#define ELYSIAN_COLLISION_CONTACT_LIST_SIZE                     10000
+#define ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE                10000
+#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS     1000
+#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON           0.8f
+#define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON               1.0f
+#define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX                   16.0f
+#define ELYSIAN_COLLISION_CIRCLE_COLLIDER_DECORATION_FILE       "/assets/graphics/engine_internal/circle_collider.png"
+#define ELYSIAN_COLLISION_CIRCLE_COLLIDER_DECORATION_DIAMETER   32
+#define ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+
+struct GYTexture;
 
 namespace elysian {
 
@@ -45,7 +50,7 @@ namespace elysian {
         friend Debug;
 	public:
 
-        using ContactIteratorFunc = std::function<bool(const CollisionContact*const, const unsigned)>;
+        using ContactIteratorFunc = std::function<bool(const CollisionContact*const, const unsigned)>; //change this to just being a universal reference to function type
 
 		enum RENDER_LAYER {
 			RENDER_LAYER_1,
@@ -68,7 +73,8 @@ namespace elysian {
 		
 		/* Stores minimal collision information from the previous frame ONLY for
 		 * entities that have collision triggers */
-		struct PrevContact {                                Collidable* collidable[2];
+        struct PrevContact {
+            Collidable* collidable[2];
         }                       _prevContactPool[ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE];
 
         unsigned                _contactAmount		= 0;
@@ -83,6 +89,9 @@ namespace elysian {
 
         RENDER_LAYER            _renderLayer		= RENDER_DISABLED;
         bool                    _enabled			= true;
+#ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+        static GYTexture*        _circleColliderTex;
+#endif
 
         void                    renderEntities(void);
         void                    detectEntityCollision(const unsigned i);
@@ -104,6 +113,12 @@ namespace elysian {
 
 	public:
                                 CollisionSystem(void);
+                                ~CollisionSystem(void);
+#ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
+        bool                    loadDebugAssets(void);
+        static const GYTexture* getCircleColliderTex(void);
+#endif
+
         void                    prepareGeometry(void);
         void                    detectCollisions(void);
         void                    update(void);
@@ -191,6 +206,8 @@ namespace elysian {
     inline void CollisionSystem::setRenderLayer(const RENDER_LAYER layer) {
         _renderLayer = layer;
     }
+
+    inline const GYTexture* CollisionSystem::getCircleColliderTex(void) { return _circleColliderTex; }
 
 }
 

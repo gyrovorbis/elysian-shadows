@@ -7,7 +7,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(GYColor4, getA, getR, getG, getB)
 /*!
     \qmltype Color4
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief 32-Bit Color in RGBA format.
 
     Color4 is a 32-bit color in RGBA format, with 8 bits for each channel.
@@ -93,7 +93,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Color4, getA, getR, getG, getB, setA, setR, setG, s
 /*!
     \qmltype PrimAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Base class for all Renderable Primitive Attributes.
 
     PrimAttrib is an abstract base class inherited by all primitive attributes.
@@ -106,7 +106,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
     \qmltype SpriteAttrib
     \inherits PrimAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Renderable attributes for sprite primitives.
 
     SpriteAttrib contains renderable attributes used by all sprite primitives. An Entity can optionally
@@ -287,7 +287,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SpriteAttrib,
     \qmltype QuadSpriteAttrib
     \inherits SpriteAttrib
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Renderable attributes for gourad shaded sprite primitives.
 
     QuadSpriteAttrib is an extension of SpriteAttrib that allows a sprite to be rendered with
@@ -328,7 +328,7 @@ OOLUA_EXPORT_FUNCTIONS(QuadSpriteAttrib,
 /*!
     \qmltype Material
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Describes how a polygon interacts with a LightSource to create its final color.
 
     A Material is used to modify how a polygon, sprite, or Entity interacts with dynamic lighting

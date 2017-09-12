@@ -3,7 +3,7 @@
 /*!
     \qmltype Vector2
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a 2-dimensional vector.
 
     A simple 2D vector containing an \l{x} and \l{y} component.
@@ -45,7 +45,7 @@
 /*!
     \qmltype Vector3
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a 3-dimensional vector.
     A simple 3D vector containing an \l{x}, \l{y}, and \l{z} component.
 */
@@ -101,7 +101,7 @@
 /*!
     \qmltype Vector4
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a 4-dimensional vector.
     A simple 4D vector containing an \l{x}, \l{y}, \l{z}, and \l{w} component.
 */
@@ -173,7 +173,7 @@
 /*!
     \qmltype InstanceTransform
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Represents a 3D instance transform with position, scale, and rotation.
 
     InstanceTransform represents a set of transforms: scale, rotation, and translation,

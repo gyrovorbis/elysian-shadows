@@ -13,6 +13,9 @@
 #include <estk/tk_estoolkit.h>
 #include <estk/tk_asset_dock_widget.h>
 #include <QMessageBox>
+#ifdef TOOLKIT_DOCUMENTATION_RESOURCES
+#   include <QHelpSearchEngine>
+#endif
 
 /****************************************************************************
 ** This file is part of the documentation of Qt. It was originally
@@ -105,7 +108,7 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
         QHelpEngine* helpEngine = new QHelpEngine(dbFileName);
         if(!helpEngine->setupData()) {
-            Debug::printf(Debug::LOG_WARNING, "QHelpEngine::setupData() failed!");
+            Debug::printf(Debug::LOG_ERROR, "QHelpEngine::setupData() failed!");
         }
 
         QTabWidget* tWidget = new QTabWidget;
@@ -114,6 +117,7 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         tWidget->addTab(helpEngine->indexWidget(), "Index");
 
         HelpBrowser *textViewer = new HelpBrowser(helpEngine);
+        _helpBrowser = textViewer;
         textViewer->setSource(
                QUrl(ESTK_USER_MANUAL_HOME_PAGE));
         connect(helpEngine->contentWidget(),
@@ -143,3 +147,48 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         dbgpop();
     #endif
 }
+
+void HelpDockWidget::openSearch(QString string) {
+    if(!_helpBrowser) {
+        QMessageBox::critical(this, "Cannot Search", "The requested search could not be completed. No documentation data found.");
+    }
+#ifdef TOOLKIT_DOCUMENTATION_RESOURCES
+   // _helpBrowser->getHelpEngine()->searchEngine()->search(string);
+    show();
+#else
+    (void)string;
+#endif
+
+    //IF THERE'S ONLY 1 RESULT, GO AHEAD AND OPEN IT!!!
+}
+
+bool HelpDockWidget::openPage(QString page, QString section) {
+    if(!_helpBrowser) {
+        QMessageBox::critical(this, "Cannot Search", "The requested search could not be completed. No documentation data found.");
+        return false;
+    }
+
+#ifdef TOOLKIT_DOCUMENTATION_RESOURCES
+    auto makeUrl = [](QString page, QString section) {
+        return QUrl();
+    };
+
+    //Try to open the page and section
+    _helpBrowser->setSource(makeUrl(page, section));
+    if(!_helpBrowser->source().isValid()) {
+        _helpBrowser->backward();   //wasn't a good page, revert!
+        openSearch(section.isNull()? page : section); //section takes priority, more specific, fall-back to page if not provided
+        return false;
+    }
+
+    show();
+    return true;
+#else
+    (void)page;
+    (void)section;
+#endif
+
+
+
+}
+

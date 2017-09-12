@@ -4,7 +4,7 @@
     \qmltype Examinable
     \inherits Component
     \since 1.6.0
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Component attached to allow players to examine an Entity.
 
     An Examinable component is an optional component that can be attached to an

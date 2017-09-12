@@ -5,7 +5,7 @@
     \qmltype Warp
     \inherits Component
     \since 1.5.8
-    \inmodule ESToolkit
+    \inmodule Engine
     \brief Entity component for warping player from one location to another.
 
     Warp is a Component that can be attached to an Entity to move a player from one
