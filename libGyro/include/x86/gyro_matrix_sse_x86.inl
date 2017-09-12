@@ -1,8 +1,10 @@
-#include <intrin.h>
-#include <xmmintrin.h>
+#include "gyro_platform.h"
+#ifndef GYRO_MATH_NOASM
+#   include <xmmintrin.h>
+#endif
 #include <string.h>
 #include <assert.h>
-#include "gyro_platform.h"
+
 
 
 #ifdef _WIN32
