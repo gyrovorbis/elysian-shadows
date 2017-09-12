@@ -224,7 +224,7 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
     QVERIFY(static_cast<QTreeWidgetItem*>(level)->parent() == parent);
     QVERIFY(parent->childCount() == childCount);
 
-    QVERIFY(dir.rmdir("area0"));
+    FileUtilities::removeDir(FileUtilities::getAbsoluteAssetPath("/assets/level/_tkSystemTests/subdir1/subdir2/level3/area/area0"));
 
     //change shit back.
     QVERIFY(FileUtilities::copyDir(dir.absoluteFilePath(newNodeName), dir.absoluteFilePath(nodeName)));
