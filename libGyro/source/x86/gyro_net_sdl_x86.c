@@ -71,11 +71,11 @@ int gyNetInit(const GYNetInitParams* params) {
     SDL_version compile_version;
     const SDL_version *link_version = SDLNet_Linked_Version();
     SDL_NET_VERSION(&compile_version);
-    _gyLog(GY_DEBUG_VERBOSE, "Compile-Time Version: %d.%d.%d",
+    _gyLog(GY_DEBUG_VERBOSE, "SDL2_Net Compile-Time Version: %d.%d.%d",
             compile_version.major,
             compile_version.minor,
             compile_version.patch);
-    _gyLog(GY_DEBUG_VERBOSE, "Run-Time Version: %d.%d.%d",
+    _gyLog(GY_DEBUG_VERBOSE, "SDL2_Net Run-Time Version: %d.%d.%d",
             link_version->major,
             link_version->minor,
             link_version->patch);

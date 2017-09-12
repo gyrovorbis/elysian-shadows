@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #ifdef TOOLKIT_DOCUMENTATION_RESOURCES
 #   include <QHelpSearchEngine>
+#   include <QHelpSearchResultWidget>
+#   include <QHelpEngineCore>
 #endif
 
 /****************************************************************************
@@ -107,6 +109,8 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
     QString dbFileName = dir.absolutePath()+QString("/")+ESTK_USER_MANUAL_DB_NAME+QString(".qhc");
 
         QHelpEngine* helpEngine = new QHelpEngine(dbFileName);
+        connect(helpEngine->searchEngine(), SIGNAL(indexingStarted()), this, SLOT(onIndexingStarted()));
+        connect(helpEngine->searchEngine(), SIGNAL(indexingFinished()), this, SLOT(onIndexingFinished()));
         if(!helpEngine->setupData()) {
             Debug::printf(Debug::LOG_ERROR, "QHelpEngine::setupData() failed!");
         }
@@ -127,6 +131,10 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         connect(helpEngine->indexWidget(),
            SIGNAL(linkActivated(QUrl, QString)),
            textViewer, SLOT(setSource(QUrl)));
+
+        _searchResultWidget = helpEngine->searchEngine()->resultWidget(); //force the bitch to be constructed, so it's ready to show results.
+        connect(_searchResultWidget, SIGNAL(requestShowLink(const QUrl&)), this, SLOT(onSearchResultsRequestShowLink(const QUrl&)));
+        connect(helpEngine->searchEngine(), SIGNAL(searchingFinished(int)), this, SLOT(onSearchFinished(int)));
 
         QSplitter *horizSplitter = new QSplitter(Qt::Horizontal);
         horizSplitter->insertWidget(0, tWidget);
@@ -151,10 +159,13 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 void HelpDockWidget::openSearch(QString string) {
     if(!_helpBrowser) {
         QMessageBox::critical(this, "Cannot Search", "The requested search could not be completed. No documentation data found.");
+        return;
+    } else if(! _searchIndexed) {
+        QMessageBox::critical(this, "Cannot Search", "Search engine is still indexing documentation contents. Cannot search yet.");
+        return;
     }
 #ifdef TOOLKIT_DOCUMENTATION_RESOURCES
-   // _helpBrowser->getHelpEngine()->searchEngine()->search(string);
-    show();
+    _helpBrowser->getHelpEngine()->searchEngine()->search(string);
 #else
     (void)string;
 #endif
@@ -187,8 +198,31 @@ bool HelpDockWidget::openPage(QString page, QString section) {
     (void)page;
     (void)section;
 #endif
+}
 
+void HelpDockWidget::onSearchFinished(int resultCount) {
+    if(resultCount) {
+        _searchResultWidget->show();
+    } else {
+        QMessageBox::critical(this, "No Results Found!", "Search query yielded no results.");
 
+    }
+}
 
+void HelpDockWidget::onIndexingStarted(void) {
+    _searchIndexed = false;
+    dbgprintf("[HelpDockWidget] Indexing content for search engine...");
+}
+
+void HelpDockWidget::onIndexingFinished(void) {
+    _searchIndexed = true;
+    dbgprintf("[HelpDockWidget] Search engine completed content indexing.");
+}
+
+void HelpDockWidget::onSearchResultsRequestShowLink(const QUrl &link) {
+    _helpBrowser->onAnchorClicked(link);
+    auto index = _helpBrowser->getHelpEngine()->contentWidget()->indexOf(link);
+    _helpBrowser->getHelpEngine()->contentWidget()->setCurrentIndex(index);
+    show();
 }
 

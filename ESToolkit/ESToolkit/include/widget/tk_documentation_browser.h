@@ -19,6 +19,8 @@
 
 #define TOOLKIT_DOCUMENTATION_RESOURCES
 
+class QHelpSearchResultWidget;
+
 class HelpBrowser : public QTextBrowser
 {
     Q_OBJECT
@@ -29,18 +31,28 @@ public:
 private:
     QHelpEngine* _helpEngine = nullptr;
 
-private Q_SLOTS:
+public Q_SLOTS:
     void onAnchorClicked(const QUrl& link);
 };
 
 class HelpDockWidget: public QMainWindow {
+    Q_OBJECT
 private:
-    HelpBrowser*    _helpBrowser = nullptr;
+    bool                        _searchIndexed      = false;
+    HelpBrowser*                _helpBrowser        = nullptr;
+    QHelpSearchResultWidget*    _searchResultWidget = nullptr;
+
+private Q_SLOTS:
+    void            onSearchFinished(int resultCount);
+    void            onIndexingStarted(void);
+    void            onIndexingFinished(void);
+    void            onSearchResultsRequestShowLink(const QUrl& link);
 public:
                     HelpDockWidget(QWidget*parent=nullptr);
 
     void            openSearch(QString string);
     bool            openPage(QString page, QString section=QString());
+
 
 };
 
