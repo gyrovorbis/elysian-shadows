@@ -110,9 +110,9 @@ inline void LevelTest::initTestCase(void) {
 
     //Clean up any bullshit temporary files from last run!
     QDir tmpArea(FileUtilities::getAssetPath());
-    if(tmpArea.cd("level/_tkSystemTests/subdir1/subdir2/level3/area")) {
-        tmpArea.rmdir("area0");
-    }
+
+    FileUtilities::removeDir(FileUtilities::getAbsoluteAssetPath("/assets/level/_tkSystemTests/subdir1/subdir2/level3/area/area0"));
+
 }
 
 
