@@ -37,6 +37,7 @@ typedef struct _GYCirCollider {
 //Might be useful to the application programs
 extern const GYVector4 gyBoxLocalVerts[4];
 extern const GYVector4 gyRTriLocalVerts[3];
+extern const GYVector4 gyCirLocalVert;
 
 
 #ifdef __cplusplus
