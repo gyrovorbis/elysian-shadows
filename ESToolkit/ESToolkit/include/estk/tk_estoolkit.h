@@ -106,7 +106,8 @@ private:
 
     Assets                  _assets;
     QUndoGroup              _undoGroup;
-    EngineGLSceneWidget*    _engineGLView   = nullptr;
+    EngineGLSceneWidget*    _engineGLView       = nullptr;
+    bool                    _libGyroInitialized = false;
 
     elysian::Debug *        _debug;
     QDir                    _outputDir;

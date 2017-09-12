@@ -258,6 +258,8 @@ ESToolkit::~ESToolkit(void) {
     delete _engineSettingsDialog;
     delete _luaExplorerDialog;
     delete _ui;
+
+    _libGyroUninitialize();
 }
 
 void ESToolkit::_libGyroInitialize(void) {
@@ -298,11 +300,15 @@ void ESToolkit::_libGyroInitialize(void) {
     //gyVidInit(&vidParams);
     gyAudInit();
     //gyTimerInit();
+    _libGyroInitialized = true;
 
 }
 
 void ESToolkit::_libGyroUninitialize(void) {
-    //gyAudUninit();
+    if(_libGyroInitialized) {
+        gyAudUninit();
+        _libGyroInitialized = false;
+    }
 }
 
 
