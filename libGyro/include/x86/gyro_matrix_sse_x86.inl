@@ -1,3 +1,4 @@
+#include <intrin.h>
 #include <xmmintrin.h>
 #include <string.h>
 #include <assert.h>
