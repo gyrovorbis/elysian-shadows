@@ -153,6 +153,8 @@ int main(QStringList args)
 
     //ESTkTest::_estk->getAssets().getCurrentProject()->setIndexHiddenLevels(showHiddenLevelsSettingVal);
 
+    delete ESTkTest::getESToolkit();
+
    return failures;
 }
 
