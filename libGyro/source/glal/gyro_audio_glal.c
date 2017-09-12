@@ -25,6 +25,11 @@ int gyAudInit(void) {
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_AUDIO_API: Initializing OpenAL Subsystem");
     _gyPush();
 
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Vendor",        alGetString(AL_VENDOR));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Renderer",      alGetString(AL_RENDERER));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Version",       alGetString(AL_VERSION));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Extensions",    alGetString(AL_EXTENSIONS));
+
     if(!_alDevice) {
         _gyLog(GY_DEBUG_WARNING, "Could not open OpenAL Device!");
         _gyPop(1);
@@ -41,7 +46,6 @@ int gyAudInit(void) {
 
     _alExtFloat32 = alIsExtensionPresent("AL_EXT_float32");
     if(_alExtFloat32) {
-        _gyLog(GY_DEBUG_VERBOSE, "'AL_EXT_float32' extension supported.");
         _alFmtMono32 = alGetEnumValue("AL_FORMAT_MONO_FLOAT32");
         _alFmtStereo32 = alGetEnumValue("AL_FORMAT_STEREO_FLOAT32");
     } else {

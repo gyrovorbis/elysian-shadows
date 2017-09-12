@@ -96,6 +96,10 @@ static void _checkCPUCapabilities(void) {
 #include <dbghelp.h>
 #endif
 
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
+extern int gyQtInit(void);
+#endif
+
 static GYSysInitParams _sysParams;
 
 void gyDebugSigInit(void);
@@ -123,6 +127,8 @@ int gySysInit(const GYSysInitParams*const params) {
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();
+#elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
+    gyQtInit();
 #endif
 
     memcpy(&_sysParams, params, sizeof(GYSysInitParams));
