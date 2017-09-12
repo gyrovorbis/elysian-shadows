@@ -83,7 +83,7 @@ android {
 } else: ios {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_iOS
     iphonesimulator {
-        QMAKE_IOS_DEPLOYMENT_TARGET = 5.1
+        #QMAKE_IOS_DEPLOYMENT_TARGET = 5.1
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
         QMAKE_CXXFLAGS += -fno-rtti -fno-exceptions
         QMAKE_CXXFLAGS+=-stdlib=libc++
@@ -95,9 +95,9 @@ android {
         #QMAKE_CXXFLAGS += -mcpu=cortex-a8 -mfpu=neon -target armv8-apple-none-eabi -miphoneos-version-min=7.0å
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi
         #QMAKE_CXXFLAGS += -target armv8-apple-none-eabi
-        QMAKE_IOS_DEVICE_ARCHS=armv7
-        QMAKE_IOS_DEPLOYMENT_TARGET=9.3
-        QMAKE_IOS_TARGETED_DEVICE_FAMILY=1,2
+        #QMAKE_IOS_DEVICE_ARCHS=armv7
+        #QMAKE_IOS_DEPLOYMENT_TARGET=10.3
+        #QMAKE_APPLE_TARGETED_DEVICE_FAMILY=1,2
         DEFINES += GYRO_PLATFORM_iOS_DEVICE
         #CONFIG+=neon
     }

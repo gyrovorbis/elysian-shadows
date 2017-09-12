@@ -2,7 +2,6 @@
 #include "gui/elysian_layout.hpp"
 #include <gyro_matrix_api.h>
 #include <cfloat>
-#include <QDebug>
 
 namespace elysian {
 
@@ -94,7 +93,7 @@ namespace elysian {
             float newSize = getSize(axis) + deltaSize;
             if(maxSize < newSize) newSize = maxSize;
             setSize(axis, newSize);
-        } else qDebug() << "CANT EXPAND NONEXPANDING WIDGET!!!";
+        } //else qDebug() << "CANT EXPAND NONEXPANDING WIDGET!!!";
     }
 
     void Widget::shrink(AXIS axis, float deltaSize) {
@@ -104,7 +103,7 @@ namespace elysian {
             float newSize = getSize(axis) - deltaSize;
             if(minSize > newSize) newSize = minSize;
             setSize(axis, newSize);
-        } else qDebug() << "CANT SHRINK NONSHRINKING WIDGET!";
+        } //else qDebug() << "CANT SHRINK NONSHRINKING WIDGET!";
     }
 
     float Widget::getMaximizeDelta(AXIS axis) const {

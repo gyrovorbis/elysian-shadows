@@ -28,7 +28,7 @@ dreamcast {
 
 ios {
 #    QMAKE_XCODE_CODE_SIGN_IDENTITY="Elysian Shadows"
-    QMAKE_INFO_PLIST=iOS_Info.plist
+    #QMAKE_INFO_PLIST=iOS_Info.plist
 }
 
 macx {
@@ -688,7 +688,7 @@ ios {
         DESTDIR = ../../executable/ios
         deployment.files = ../../assets
         deployment.path =
-        QMAKE_BUNDLE_DATA += deployment
+      #  QMAKE_BUNDLE_DATA += deployment
     }
     iphonesimulator {
         DESTDIR = ../../executable/ios_sim

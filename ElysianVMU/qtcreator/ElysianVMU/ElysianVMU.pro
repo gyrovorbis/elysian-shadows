@@ -3,7 +3,7 @@ TEMPLATE = app
 TARGET = ElysianVMU
 QT += gui opengl
 
-!raspberrypi {
+!raspberrypi : !ios {
     QT += serialport
 }
 

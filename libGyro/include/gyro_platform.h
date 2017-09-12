@@ -87,7 +87,8 @@
 #   define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"
 
 #ifdef GYRO_PLATFORM_iOS_SIMULATOR
-#	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
+#   define GYRO_MATH_NOASM
+#	define GYRO_MATH_PLATFORM_INCLUDE       "common/gyro_math_common.inl"
 #	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
 #elif defined(GYRO_PLATFORM_iOS_DEVICE)
 #	define GYRO_MATH_PLATFORM_INCLUDE       "common/gyro_math_common.inl"

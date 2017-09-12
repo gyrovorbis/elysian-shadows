@@ -9,4 +9,10 @@ typedef struct GYTestQueue {
     uint32_t    pendingCount;
 } GYTestQueue;
 
+static int placeHolder = 0;
+
+void updatePlaceHolder(void) {
+    ++placeHolder;
+}
+
 
