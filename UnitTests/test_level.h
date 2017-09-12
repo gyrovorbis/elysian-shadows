@@ -67,6 +67,8 @@ private Q_SLOTS:
 */
 };
 
+
+
 inline QString LevelTest::_nameToPath(const QString name) const {
     return getCurrentProject()->getNodePath() + QString("/level/") + name;
 }
@@ -105,6 +107,12 @@ inline void LevelTest::initTestCase(void) {
     //gyDebugSigInit();
     QVERIFY(getCurrentProject() != nullptr);
     curNodeParent = getCurrentProject()->getTreeNode(getCurrentProject()->getNodePath() + QString("/level"));
+
+    //Clean up any bullshit temporary files from last run!
+    QDir tmpArea(FileUtilities::getAssetPath());
+    if(tmpArea.cd("/levels/_tkSystemTests/subdir1/subdir2/level3/area")) {
+        dir.rmdir("area0");
+    }
 }
 
 

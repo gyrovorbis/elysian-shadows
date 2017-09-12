@@ -62,7 +62,7 @@ static inline int Toolkit_setSelection(lua_State* const /*vm*/) { //this could r
  * Searches through the current \l{Area} to find an \l{Entity}, returning a reference to it if found or nil otherwise.
  *
  * Convenience shortcut for:
- * \code { Engine.getCurArea():findEntity(name) }
+ * \c { Engine.getCurArea():findEntity(name) }
  * \sa Area, Entity
  */
 static inline int Toolkit_findEntity(lua_State* const vm) {
