@@ -227,6 +227,13 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
 
     }
 
+    menu.insertAction("Find Documentation", [=](bool) {
+        fieldItem->getKey();
+        fieldItem->getTableRef().getTypeString();
+
+
+    });
+
 
     return menu.takeTopLevel();
 }

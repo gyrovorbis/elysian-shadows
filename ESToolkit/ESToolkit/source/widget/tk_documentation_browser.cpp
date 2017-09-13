@@ -180,20 +180,22 @@ bool HelpDockWidget::openPage(QString page, QString section) {
     }
 
 #ifdef TOOLKIT_DOCUMENTATION_RESOURCES
-    auto makeUrl = [](QString page, QString section) {
-        return QUrl();
+    auto makeIdentifier = [](QString page, QString section) {
+        if(!section.isNull()) {
+            return page + QString("::") + section;
+        } else return page;
     };
 
     //Try to open the page and section
-    _helpBrowser->setSource(makeUrl(page, section));
-    if(!_helpBrowser->source().isValid()) {
-        _helpBrowser->backward();   //wasn't a good page, revert!
+    auto links = _helpBrowser->getHelpEngine()->linksForIdentifier(makeIdentifier(page, section));
+    if(links.size() == 1) {
+        _helpBrowser->setSource(links.constBegin().value());
+        return true;
+    } else {
         openSearch(section.isNull()? page : section); //section takes priority, more specific, fall-back to page if not provided
         return false;
     }
 
-    show();
-    return true;
 #else
     (void)page;
     (void)section;

@@ -2,10 +2,11 @@
 #include <QKeyEvent>
 #include <QStyledItemDelegate>
 #include <QDebug>
+#include <QFontDatabase>
 
 SelectionTreeView::SelectionTreeView(void) {
-    QFont f = font();
-    f.setPointSize(11);
+    QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    f.setPointSize(10);
     setFont(f);
 
     QPalette p = palette();

@@ -87,6 +87,15 @@ static inline int Toolkit_searchDocs(lua_State* const vm) {
     return 0;
 }
 
+static inline int Toolkit_openDocs(lua_State* const vm) {
+    QString page, section;
+    if(OOLUA::pull(vm, page)) {
+        OOLUA::pull(vm, section);
+        ESToolkit::openDoc(page, section);
+    }
+    return 0;
+}
+
 /*!
     \qmltype PropertyItemDelegate
     \since 1.6.1
@@ -158,6 +167,7 @@ void TkLuaManager::_registerWrappers(void) {
     _mainState->register_class_static<Toolkit>("getSelection", &ESToolkit::pushSelection);
     _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);
     _mainState->register_class_static<Toolkit>("searchDocs", &Toolkit_searchDocs);
+    _mainState->register_class_static<Toolkit>("openDocs", &Toolkit_openDocs);
 
     luaRegisterTkEnumsConstants(_mainState);
     TkLuaTableUserdata::staticInitialize();

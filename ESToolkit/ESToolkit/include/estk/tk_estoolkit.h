@@ -68,6 +68,7 @@ public:
     static void         select(const LuaVariant& ref);
     static int          pushSelection(lua_State*const vm);
     static void         searchDocs(QString query);
+    static void         openDoc(QString page, QString section=QString());
 
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);

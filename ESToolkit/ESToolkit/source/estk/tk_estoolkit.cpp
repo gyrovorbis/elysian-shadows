@@ -1227,6 +1227,9 @@ void ESToolkit::onAltTabShortcutTriggered(void) {
 }
 
 void ESToolkit::searchDocs(QString query) {
-    auto* self = _instance;
     _instance->_helpDockWidget->openSearch(query);
+}
+
+void ESToolkit::openDoc(QString page, QString section) {
+    _instance->_helpDockWidget->openPage(page, section);
 }
