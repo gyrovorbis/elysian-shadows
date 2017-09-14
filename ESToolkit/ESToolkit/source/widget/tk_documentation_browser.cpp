@@ -16,7 +16,9 @@
 #ifdef TOOLKIT_DOCUMENTATION_RESOURCES
 #   include <QHelpSearchEngine>
 #   include <QHelpSearchResultWidget>
-#   include <QHelpEngineCore>
+#   include <QVBoxLayout>
+#   include <QPushButton>
+#   include <QLineEdit>
 #endif
 
 /****************************************************************************
@@ -116,9 +118,29 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         }
 
         QTabWidget* tWidget = new QTabWidget;
-        //tWidget->setWid(200);
         tWidget->addTab(helpEngine->contentWidget(), "Contents");
         tWidget->addTab(helpEngine->indexWidget(), "Index");
+
+        QHBoxLayout* searchLayout = new QHBoxLayout;
+        searchLayout->setMargin(0);
+        searchLayout->setSpacing(0);
+        QWidget* searchWidget = new QWidget;
+        _searchLineEdit = new QLineEdit;
+        _searchButton = new QPushButton("Search");
+        searchLayout->addWidget(_searchLineEdit);
+        searchLayout->addWidget(_searchButton);
+        connect(_searchButton, SIGNAL(clicked()), this, SLOT(onSearchButtonClicked()));
+        connect(_searchLineEdit, SIGNAL(returnPressed()), this, SLOT(onSearchButtonClicked()));
+        searchWidget->setLayout(searchLayout);
+
+        QVBoxLayout* naviLayout = new QVBoxLayout;
+        naviLayout->setMargin(0);
+        naviLayout->setSpacing(0);
+        naviLayout->addWidget(tWidget);
+        naviLayout->addWidget(searchWidget);
+        QWidget* naviWidget = new QWidget;
+        naviWidget->setLayout(naviLayout);
+        naviWidget->setContentsMargins(0, 0, 0, 0);
 
         HelpBrowser *textViewer = new HelpBrowser(helpEngine);
         _helpBrowser = textViewer;
@@ -137,7 +159,9 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         connect(helpEngine->searchEngine(), SIGNAL(searchingFinished(int)), this, SLOT(onSearchFinished(int)));
 
         QSplitter *horizSplitter = new QSplitter(Qt::Horizontal);
-        horizSplitter->insertWidget(0, tWidget);
+        horizSplitter->setContentsMargins(0, 0, 0, 0);
+        horizSplitter->setLineWidth(0);
+        horizSplitter->insertWidget(0, naviWidget);
         horizSplitter->insertWidget(1, textViewer);
         horizSplitter->setSizes(QList<int>{300, 800});
        // horizSplitter->hide();
@@ -226,5 +250,13 @@ void HelpDockWidget::onSearchResultsRequestShowLink(const QUrl &link) {
     auto index = _helpBrowser->getHelpEngine()->contentWidget()->indexOf(link);
     _helpBrowser->getHelpEngine()->contentWidget()->setCurrentIndex(index);
     show();
+}
+
+void HelpDockWidget::onSearchButtonClicked(void) {
+    if(_searchLineEdit->text().isEmpty()) {
+        QMessageBox::critical(this, "Search failed!", "Search for what? Search field is empty. Enter a string!");
+        return;
+    }
+    openSearch(_searchLineEdit->text());
 }
 

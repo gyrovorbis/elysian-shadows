@@ -17,9 +17,10 @@
 #define ESTK_USER_MANUAL_QCH_EXPANDED_PATH  "doc/" ESTK_USER_MANUAL_QCH_FILE_NAME
 #define ESTK_USER_MANUAL_EXPANDED_DIR       "doc"
 
-#define TOOLKIT_DOCUMENTATION_RESOURCES
-
 class QHelpSearchResultWidget;
+class QPushButton;
+class QLineEdit;
+
 
 class HelpBrowser : public QTextBrowser
 {
@@ -41,17 +42,21 @@ private:
     bool                        _searchIndexed      = false;
     HelpBrowser*                _helpBrowser        = nullptr;
     QHelpSearchResultWidget*    _searchResultWidget = nullptr;
+    QLineEdit*                  _searchLineEdit     = nullptr;
+    QPushButton*                _searchButton       = nullptr;
 
 private Q_SLOTS:
     void            onSearchFinished(int resultCount);
     void            onIndexingStarted(void);
     void            onIndexingFinished(void);
     void            onSearchResultsRequestShowLink(const QUrl& link);
+    void            onSearchButtonClicked(void);
 public:
                     HelpDockWidget(QWidget*parent=nullptr);
 
     void            openSearch(QString string);
     bool            openPage(QString page, QString section=QString());
+
 
 
 };
