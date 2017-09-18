@@ -431,6 +431,164 @@
 	If your controller is not immediately detected with corresponding device driver information, the issue is most likely a driver issue. Make sure the device drivers are installed correctly. If they are, and the controller works in other applications, but not ESTk, it's most likely an ESTk issue and should be reported.
 
 	You can force the engine to dump the profiles of all detected input devices to the debug logs through the "Input Device Dump" option in the Engine file menu.
+
+	\section2 Keyboard Shortcuts and HotKeys
+	\section3 Toolkit Shortcuts
+	The following are shortcuts built into ESTk, mostly to quickly allow for toggling a menu action.
+
+	\section4 Selection Shortcuts
+	\table
+    \header
+    	\li Feature
+    	\li Shortcut Key(s)
+    \row 
+    	\li Cut Selection
+    	\li CMD/CTRL+X
+    \row 
+    	\li Copy Selection
+    	\li CMD/CTRL+Z
+    \row 
+    	\li Delete Selection
+    	\li DEL
+    \row
+    	\li Select All (Tiles or Entities)
+    	\li CTRL/CMD+A
+   	\row
+    	\li Tile Selection - Flip Horizontal
+    	\li UP (with tile(s) selected)
+	\row
+    	\li Tile Selection - Flip Vertical
+    	\li DOWN (with tile(s) selected)
+    \row
+    	\li Tile Selection - Rotate 90 Degrees Counterclockwise
+    	\li LEFT (with tile(s) selected)
+    \row
+    	\li Tile Selection - Rotate 90 Degrees Clockwise
+    	\li RIGHT (with tile(s) selected)
+    \row
+    	\li Tile Selection - Orient as Front-Facing Upright Plane
+    	\li = (with tile(s) selected)
+    \row
+    	\li Tile Selection - Increase Elevation
+		\li + (with tile(s) selected)
+	\row
+		\li Tile Selection - Decrease Elevation
+		\li - (with tile(s) selected)
+	\row 
+		\li Tile Selection - Cycle Plane Face
+		\li N
+	\row 
+		\li Entity - Move Entity to Mouse Position
+		\li E (with entity(s) selected)
+    \endtable
+
+    \section4 Menu Shortcuts
+\table
+    \header
+    	\li Feature
+    	\li Shortcut Key(s)
+    \row
+    	\li Undo
+    	\li CMD/CTRL+Z
+    \row 
+    	\li Redo
+    	\li CMD/CTRL+Y
+    \row
+    	\li Save Area
+    	\li CMD/CTRL+S
+   	\row
+    	\li Load Project
+    	\li CMD/CTRL+L
+    \row 
+    	\li Open Previous Project
+    	\li CMD/CTRL+O
+    \row Quick Hide/Show SheetView
+    	\li Space
+    \row
+    	\li Reload Project
+    	\li CMD/CTRL+R
+    \row
+    	\li View Debug Log File
+    	\li CMD/CTRL+D
+    \row
+    	\li Invoke Engine (external)
+    	\li F5
+    \row 
+    	\li Reset Widget Layout
+    	\li CMD/CTRL+W
+	\row 
+    	\li Reset MapView Camera Transform
+    	\li CMD/CTRL+T
+	\row 
+		\li Reset Widget Layout
+		\li CMD/CTRL+W
+	\row 
+		\li SheetView Reorient Horizontal/Vertical
+		\li CMD/CTRL+F
+	\row
+		\li Advance Engine by Single Frame
+		\li F4
+	\row
+		\li Toggle Manual/Engine Control Over Camera
+		\li CMD/CTRL+M
+	\row
+		\li Enable/Disable Audio
+		\li CTRL/CMD+A
+    \endtable
+
+	\section3 Engine Debug Hotkeys
+	In addition to debugging features built into ESTk, there are certain hotkeys built into the engine itself that can be used to display useful information or aid in debugging. Since the functionality is built into the engine itself, it is also availble in standalone builds and on devices like the Dreamcast, OUYA, and RazerTV which all support optional external keyboards. Please notice the vast majority of these all require the \b{left alternate key} to be held down. In general, this is the debugging keyspace to ensure that the regular keyspace is avaiable for normal in-game input.
+
+	Note: \e{To use these hotkeys within ESTk builds, please ensure that the \l{MapView} widget is given focus, so they engine receives the input key events.}
+
+	\table
+    \header
+    	\li Feature
+    	\li Shortcut Key(s)
+	\row
+		\li View Collision Layers (cycles through layers)
+		\li 0
+	\row
+		\li Enable/Disable GUI Layer
+		\li 5
+    \row
+    	\li Camera Zoom Out
+    	\li LALT+W 
+	 \row
+		\li Camera Zoom In
+		\li LALT+S
+	\row
+		\li Reset Camera Scale
+		\li LALT+Z
+	\row 
+		\li Enable/Disable Collision Checks
+		\li LALT+C
+	\row 
+		\li Feed Lua "print()" statements into Adventure Log
+		\li LALT+L
+	\row
+		\li Enable/Disable Gravity
+		\li LALT+G
+	\row 
+		\li Render Shadow Volumes
+		\li LALT+R
+	\row
+		\li Add/Remove Sun Entity
+		\li LALT+N
+	\row
+		\li Advance Game Time (600 seconds)
+		\li LALT+M
+	\row
+		\li Dump Lua Interpreter Stats
+		\li LALT+\
+	\row
+		\li Elevate Player (single tile)
+		\li LALT_Y
+    \endtable
+
+
+
+	\sa {Debugging}
 */
 
 
@@ -474,6 +632,7 @@
 	\nextpage Warps
 	\contentspage {ESToolkit User Manual} {Contents}
 	\ingroup estk
+	\sa {Input Devices} {Engine Debug Hotkeys}
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -497,7 +656,7 @@
 	The settings filed is saved as "estk_settings.ini." The file contains all user settings for ESTk. These settings include widget orientations, screen resolution, default project directory, and preferences and are saved immediately upon exit. They are replayed immediately upon opening ESTk. In the event of ESTk crashing immediately upon loading, delete this file to clear your settings. It could very well be unable to replay the settings properly.
 
 	\section1 Engine Debug Overlays
-	While in play mode, pressing ALT+6 will cycle through different debug information from the engine as a screen overlay. The information includes things such as framerate, poly count, VRAM usage, Lua statistics, <x, y> locations of the player, number of entities, and more.
+	While in play mode, pressing ALT+6 will cycle through different debug information from the engine as a screen overlay. The information includes things such as framerate, poly count, VRAM usage, Lua statistics, <x, y> locations of the player, number of entities, and more. See the other \l{Engine Debug Hotkeys} for more useful debugging features.
 
 	\section1 Real-Time Lua Terminal
 	The Lua terminal is located just beneath the Debug Log and provides a real-time execution of Lua code by the engine's internal Lua interpreter. This allows you to manipulate any aspect of the Lua run-time environment such as manipulating and retrieving variables, configuring entities, changing the selection, etc while the game is running.

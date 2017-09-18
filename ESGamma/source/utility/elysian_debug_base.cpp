@@ -408,7 +408,6 @@ void DebugBase::processInput(Keyboard*const input) {
 
     if(input->isTapped(GY_KEY_Z)) { //Reset Transform
 		_engine->_cameraSystem->setStaticScale(1.0f);
-        _guiWidgetsTest();
         //_engine->_cameraSystem->setOrientZ(0.0f);
         //_engine->_cameraSystem->setOrientX(0.0f);
 	}
@@ -441,7 +440,7 @@ void DebugBase::processInput(Keyboard*const input) {
 	}
 
     if(input->isTapped(GY_KEY_G)) {
-#if 0
+#if 1
 		static bool enabled = true;
 		enabled = !enabled;
 		getRigidBodySys()->setGravityEnabled(enabled);
@@ -455,17 +454,6 @@ void DebugBase::processInput(Keyboard*const input) {
         _engine->_timerSystem->printTaskStats();
 #endif
 	}
-
-    if(input->isTapped(GY_KEY_5)) {
-        static bool enabled = true;
-        enabled = !enabled;
-        getRigidBodySys()->setGravityEnabled(enabled);
-        Debug::printf(Debug::LOG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
-	}
-    if(input->isTapped(GY_KEY_6)) {
-        getGuiSys()->nextDebugOverlayPage();
-	}
-
 
     if(input->isTapped(GY_KEY_R)) {
         //freeCam = !freeCam;
@@ -482,42 +470,6 @@ void DebugBase::processInput(Keyboard*const input) {
 #endif
 	}
 
-    if(input->isPressed(GY_KEY_U)) {
-
-		static bool once = true;
-        static ParticleEmitter* emitter;
-        static Entity* entity;
-
-		if(once) {
-            auto* attrib = new ParticleEmitterAttrib();//getPartSys()->getAttrib(0);
-            entity = getCurrentArea()->findEntity("Julien");
-            attrib->loadTexture("/assets/item/ruinsPot.png", 32, 64, 32, 32);
-            emitter = entity->addParticleEmitter();
-            emitter->setAttrib(attrib);
-            attrib->setStartSize(32);
-            attrib->setEndSize(32);
-            attrib->setColor(10, 10, 255, 10);
-            attrib->setEndColor(GYColor4{0, 0, 255, 100});
-            attrib->setAnimGridSize(2, 2);
-            attrib->setAnimGridIndex(0, 0, 0);
-            attrib->setAnimGridIndex(0, 1, 1);
-            attrib->setAnimGridIndex(1, 0, 1);
-            attrib->setAnimGridIndex(1, 1, 0);
-            attrib->setAnimFrameDuration(5);
-            attrib->setMaxLife(60);
-            //getPartSys()->getAttrib(0)->setSize(32);
-			//getPartSys()->getAttrib(0)->setFrameRange(10, 13);
-            once = false;
-		}
-
-        emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 3.0f }, theta, 1);
-        //getPartSys()->Q_EMITFromPoint(0, entity->transform._pos, theta, intensity*10);
-       // void Q_EMITFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
-		  // getPartSys()->Q_EMITFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
-
-//		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
-
-    }
 
 //	static float timeSpeed = 60.0f;
 
@@ -543,123 +495,6 @@ void DebugBase::processInput(Keyboard*const input) {
     if(input->isTapped(GY_KEY_FORWARDSLASH)) {
 		LuaManager::dumpStats();
 	}
-/*	if(input.getTapped(GameInput::BUT_N)) {
-		Debug::luaPrint("-----------------------------------------");
-		Debug::luaPrint("One man's corruption is another man's salvation.");
-		Debug::luaPrint("-----------------------------------------");
-	}*/
-    if(input->isTapped(GY_KEY_T)) {
-		Entity *entity = new Entity;
-		entity->setName("DICKMITE");
-        entity->_transform.setPos(200.0F, 200.0f);
-        entity->_transform.setScale(1.0f, 1.0f);
-        entity->_transform.setSize(128.0f, 128.0f);
-		entity->setElev(0);
-        entity->setPlaneType(GY_RECT_PLANE_FRONT);
-		Renderable* render = entity->addRenderable();
-#if 1
-		QuadSpriteAttrib* attrib = new QuadSpriteAttrib;
-        attrib->setVertexColor(0, 255, 0,
-                               0, 255);
-		attrib->setVertexColor(1, 0, 255, 0, 100);
-		attrib->setVertexColor(2, 0, 0, 255, 255);
-		attrib->setVertexColor(3, 255, 255, 0, 255);
-		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
-		attrib->setTexCoord(3, 2.0, 2.0f);
-		attrib->setTexCoord(2, 0.0, 2.0f);
-		attrib->setTexCoord(1, 2.0, 0.0f);
-		attrib->setTexCoord(0, 0.0, 0.0f);
-#else
-
-		SpriteAttrib* attrib = new SpriteAttrib;
-		attrib->setColor(100, 100, 100, 100);
-		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
-#endif
-		render->setSpriteAttrib(attrib);
-
-		GYWav* wav = gyAudWavCreate("phone.wav");
-		AudioSource* src = entity->addAudioSource();
-		src->setLooping(true);
-		src->playWav(wav);
-		Collidable *col = entity->addCollidable();
-		CollidableAttrib* colattrib = new CollidableAttrib();
-		col->setAttrib(colattrib);
-		entity->addRigidBody();
-
-        getCurrentArea()->addEntity(entity);
-	}
-
-
-    if(input->isTapped(GY_KEY_X)) {
-/*		GYVector4 diffuseColors[4] = {
-			{ 1.0f, 1.0f, 5.0f, 1.0f},
-			{ 1.0f, 2.0f, 1.0f, 1.0f},
-			{ 2.0f, 1.0f, 1.0f, 1.0f},
-			{ 2.0f, 2.0f, 1.0f, 1.0f}
-		};
-*/
-		static int count = 0;
-		char buff[100];
-
-		if(count == 0) {
-
-        Entity* julien = getCurrentArea()->findEntity("Julien");
-
-	sprintf(buff, "LightSrc[%d]", count);
-
-			Entity* entity = julien;
-		//	--entity->getRenderable()->getSpriteAttrib()->setAlpha(0);
-		//	entity->setName(buff);
-			entity->setShadowVolume(false);
-			//entity->transform.setSize(1.0f, 1.0f, 1.0f);
-			//entity->removeAnimation();
-			//entity->removeRenderable();
-			//entity->transform.setPos(((count%8)*200)+100, 700+200*(count/8));
-			//entity->transform.setPos(julien->transform._pos.x, julien->transform._pos.y);
-			entity->setElev(0);
-			//curArea->addEntity(entity);
-			//entity->transform.setPos(600, 600);
-			//entity->setDepthType(DEPTH_BUFFERED);
-			src = lightSrc = entity->addLightSource();
-            lightSrc->setLightType(GY_LIGHT_POINT);
-			//lightSrc->setRelativePos(0.0f, 0.0f, 2.0f);
-			gyVec3Normalize(&dirVec);
-			//lightSrc->setDirection(dirVec);
-			LightAttrib* attrib = new LightAttrib;
-			attrib->setAmbientColor(GYVector4{ 0.1f, 0.1f, 0.1f, 0.0f});
-			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 1.0f, 0.0f });
-			attrib->setSpecularColor(GYVector4{ 0.0f, 1.0f, 1.0f, 0.0f});
-			lightSrc->setAttrib(attrib);
-
-
-			//lightSrc->setSpotCutoffAngle(45.0f);
-			lightSrc->setShadowCaster(true);
-			attrib->setAttenuationFactors(GYVector3{ 0.00001f, 0.00001f, 0.00001f });
-
-            Debug::printf(LOG_VERBOSE, "Adding light - %d", count);
-
-			//getCameraSys()->setCustomCameraState(lightSrc->getCameraState());
-
-			//if(count) {
-                //getCurrentArea()->addEntity(entity);
-			//} else {
-				//lightSrc->setShadowCaster(true);
-			//}
-
-		}
-
-		if(count%2 == 0) {
-            getCameraSys()->pushCustomCamera(src->getCameraState());
-
-		} else {
-			getCameraSys()->popState();
-
-		}
-
-			++count;
-
-
-	}
 
 	//Elevate player
     if(input->isPressed(GY_KEY_Y)) {
@@ -676,18 +511,6 @@ void DebugBase::processInput(Keyboard*const input) {
             printf(LOG_VERBOSE, "Player.elevation - %d", elev);
 		}
 	}
-	//Display players' tile position
-/*	if(input.getTapped(GameInput::BUT_M)) {
-		Entity *player1 = _engine->_partySystem->getPartyLeader();
-		if(player1) {
-            printf(LOG_VERBOSE, "<%d, %d>\n",  ((int)player1->transform._pos.x+16)/32, ((int)player1->transform._pos.y+16)/32);
-		}
-	}*/
-
-	//KILL ALL INPUT WHEN YOU'RE HOLDING ALT!!!!
-#if 0
-    input.clear();
-#endif
 }
 
 #define ARG_LIMIT 20

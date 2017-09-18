@@ -48,3 +48,6 @@ tests {
 vmu {
     ElysianVMU.depends += libGyro
 }
+
+HEADERS += \
+    ../../libGyro/include/physics/gyro_physics_simulation.h
