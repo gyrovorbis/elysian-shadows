@@ -2,6 +2,8 @@
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
 #include <spine/AnimationState.h>
+#include <spine/Slot.h>
+#include <spine/Skeleton.h>
 #include <estk/tk_lua_wrappers.h>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <delegate/tk_file_browser_property_item_delegate.h>
@@ -425,3 +427,36 @@ void TkAnimationTrack::initializeDelegates(void) {
     lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 }
 
+
+void TkSkeleton::printSlotData(void) const {
+    DbgEvent event("Entity[%s].skeleton.printSlotData()", _entity->getName());
+
+    if(_attrib) {
+        for(int i = 0; i < _skeleton->slotsCount; ++i) {
+            dbgprintf("slot[%d]: %s", i, _skeleton->data->slots[i]->name);
+            dbgpush();
+
+            auto* attachment = _skeleton->slots[i]->attachment;
+            if(attachment) {
+                bool found = false;
+
+                for(unsigned i = 0; i < _entityAttachments.size(); ++i) {
+                    if(attachment == _entityAttachments[i]) {
+                        dbgprintf("attachment: %s (ENTITY)", _entityAttachments[i]->entity->getName());
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) {
+                    dbgprintf("attachment: %s (SPINE)", attachment->name);
+                }
+            } else {
+                dbgprintf("attachment: NONE");
+            }
+
+            dbgpop();
+        }
+    } else {
+        warnprintf("Skeleton component has no attributes!");
+    }
+}

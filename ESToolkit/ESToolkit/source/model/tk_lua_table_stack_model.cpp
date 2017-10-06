@@ -85,12 +85,19 @@ LuaTableFieldItem::~LuaTableFieldItem(void) {
 
 void LuaTableFieldItem::setDirty(const bool val) {
     if(val) {
+#if 0
         while(_labelItem->rowCount()) {
             auto&& row = _labelItem->takeRow(0);
             for(int j = 0; j < row.size(); ++j) {
                 delete row[j];
             }
         }
+#else
+
+
+    static_cast<PropertyStackModel*>(model())->removeChildItems(this);
+    model()->itemChanged(this);
+#endif
         delete _tableData;
         _tableData = nullptr;
     }
@@ -208,8 +215,13 @@ QStandardItem* LuaTableFieldItem::getAncestorSiblingItem(QStringList keyNames, i
 
 void LuaTableTableFieldData::onFieldChanged(const LuaVariant& key) {
     auto* item = static_cast<LuaTableFieldItem*>(_fieldItems[key]->getValue<void*>());
-    item->setDirty();
-    item->emitDataChanged();
+    if(item) {
+        item->setDirty();
+        item->emitDataChanged();
+    } else {
+        Debug::printf(Debug::LOG_ERROR, "LuaTableTableFieldData(LuaVariant key): Could not find key '%s' in the table!", key.asString().getValue<const char*>());
+
+    }
 }
 
 void LuaTableTableFieldData::onFieldAdded(const LuaVariant& key) {

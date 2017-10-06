@@ -61,6 +61,9 @@ OOLUA_PROXY(Skeleton, Component)
     OOLUA_MEM_FUNC(void, removeEntityFromSlot, const char*)
     OOLUA_MEM_FUNC(void, setSkin, const char*)
     OOLUA_MEM_FUNC_CONST(maybe_null<const char*>, getSkin)
+#ifndef ELYSIAN_ENGINE
+    OOLUA_MEM_FUNC_CONST(void, printSlotData)
+#endif
 OOLUA_PROXY_END
 
 

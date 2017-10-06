@@ -561,7 +561,11 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Skeleton,
                              getAnimTimeScale,
                              getEntityAttachedToSlot,
                              getSkin,
-                             getAnimName)
+                             getAnimName
+#ifndef ELYSIAN_ENGINE
+                             ,printSlotData
+#endif
+                             )
 OOLUA_EXPORT_FUNCTIONS(Skeleton,
                        setAttrib,
                        setAnimName,

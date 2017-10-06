@@ -33,7 +33,7 @@ public:
     PropertyStackModel(QObject *parent=nullptr);
 	virtual ~PropertyStackModel(void);
 
-	virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual QVariant                data(const QModelIndex &index, int role) const override;
 
 	virtual void populateModel(void)=0;
 
@@ -48,7 +48,8 @@ public:
     void addRow(QStandardItem* label, QStandardItem* item, QStandardItem* item2=nullptr);
     void addProperty(const QString name, QStandardItem *const item, QStandardItem* item2=nullptr);
 
-    static QStandardItem* createReadOnlyItem(QString name=QString());
+    void                            removeChildItems(QStandardItem* parent);
+    static QStandardItem*           createReadOnlyItem(QString name=QString());
 
 };
 

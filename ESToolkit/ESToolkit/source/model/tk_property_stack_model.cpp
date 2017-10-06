@@ -215,3 +215,34 @@ if(!item) return QColor();
         //   return pair.first;
        return pair.second;
 }
+
+/*
+ * Stolen from: http://www.qtcentre.org/threads/7275-Deleting-rows-(children)-from-a-qstandarditem
+ * Thanks, bro.
+ */
+void PropertyStackModel::removeChildItems(QStandardItem* parent) {
+#if 0
+    QStandardItem * loopItem = parent; //main loop item
+        QList<QStandardItem *> carryItems; //Last In First Out stack of items
+        QList<QStandardItem *> itemsToBeDeleted; //List of items to be deleted
+        while (loopItem->rowCount())
+        {
+            itemsToBeDeleted << loopItem->takeRow(0);
+            //if the row removed has children:
+            if (itemsToBeDeleted.at(0)->hasChildren())
+            {
+                carryItems << loopItem;                 //put on the stack the current loopItem
+                loopItem = itemsToBeDeleted.at(0);      //set the row with children as the loopItem
+            }
+            //if current loopItem has no more rows but carryItems list is not empty:
+            if (!loopItem->rowCount() && !carryItems.isEmpty()) loopItem = carryItems.takeFirst();
+
+        }
+        qDeleteAll(itemsToBeDeleted);
+#else
+    const auto rowCount = parent->rowCount();
+    removeRows(0, rowCount, parent->index());
+    Q_ASSERT(!parent->rowCount());
+
+#endif
+}

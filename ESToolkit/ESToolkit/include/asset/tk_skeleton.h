@@ -40,6 +40,8 @@ public:
 
     void            setAttrib(SkeletonAttrib * const attrib);
 
+    void            printSlotData(void) const;
+
     virtual bool    validate(QString& msg) const override;
     virtual QMenu*  createContextMenu(void) override;
 
@@ -49,6 +51,7 @@ private Q_SLOTS:
 
     void            onJsonChanged(void);
     void            onAtlasChanged(void);
+
 
 };
 
