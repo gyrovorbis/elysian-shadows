@@ -85,7 +85,7 @@ LuaTableFieldItem::~LuaTableFieldItem(void) {
 
 void LuaTableFieldItem::setDirty(const bool val) {
     if(val) {
-#if 0
+#if 1
         while(_labelItem->rowCount()) {
             auto&& row = _labelItem->takeRow(0);
             for(int j = 0; j < row.size(); ++j) {
@@ -96,8 +96,8 @@ void LuaTableFieldItem::setDirty(const bool val) {
 
 
     static_cast<PropertyStackModel*>(model())->removeChildItems(this);
-    model()->itemChanged(this);
 #endif
+        model()->itemChanged(this);
         delete _tableData;
         _tableData = nullptr;
     }

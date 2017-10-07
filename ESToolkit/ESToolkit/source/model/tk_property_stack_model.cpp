@@ -221,7 +221,7 @@ if(!item) return QColor();
  * Thanks, bro.
  */
 void PropertyStackModel::removeChildItems(QStandardItem* parent) {
-#if 0
+#if 1
     QStandardItem * loopItem = parent; //main loop item
         QList<QStandardItem *> carryItems; //Last In First Out stack of items
         QList<QStandardItem *> itemsToBeDeleted; //List of items to be deleted
