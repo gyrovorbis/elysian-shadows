@@ -261,7 +261,7 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
 
                                 });
 
-                                return stack.first();
+                                return stack.takeTopLevel();
                             }
                         }
                         return nullptr;
@@ -348,7 +348,7 @@ void TkAnimation::initializeVirtualTableDelegates(QString key) {
 
                                 });
 
-                                return stack.first();
+                                return stack.takeTopLevel();
                             }
                         }
                         return nullptr;
