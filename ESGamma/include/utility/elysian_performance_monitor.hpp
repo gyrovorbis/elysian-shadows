@@ -2,6 +2,7 @@
 #define ELYSIAN_PERFORMANCE_MONITOR_HPP
 
 #include <stdint.h>
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <vector>
 #include <gyro_timer_api.h>
