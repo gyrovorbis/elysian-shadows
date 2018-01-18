@@ -25,18 +25,24 @@
 
 
 /*!
- * \qmlmethod void CharacterSystem::walkToWayPoint(Entity* entity, float x, float y, EventMonitor* monitor)
- *  Makes the given \a{entity} walk in a straight line from its current location to the 2D location given by
- * <\a{x}, \a{y}>. The \l{EventMonitor} provied by \a{monitor} is notified once the \l{Entity} arrives. This
- * uses the \l{Character} \l{Component} to walk, so one must be attached, and animations and speed are handled
- * automatically.
- * \sa moveToWayPoint()
+ * \qmlmethod void addCharacterToParty(Entity* entity)
+ *  Adds the \l{Entity} given by \a{entity} to the \l{PartySystem} and assumes ownership over it.
+ *  Note that \a{entity} must have a valid \l{Character} component and its necessary prerequisites.
+ * \sa removeCharacterFromParty(), getCharacterPartyMember()
  */
+/*!
+ * \qmlmethod void removeCharacterFromParty(Entity* entity)
+ *  Removes the \l{Entity} given by \a{entity} from the \l{PartySystem} and returns ownership of it
+ *  back to Lua.
+ * \sa addCharacterToParty(), getCharacterPartyMember()
+ */
+
 OOLUA_EXPORT_FUNCTIONS(PartySystem,
                         addCharacterToParty,
                         removeCharacterFromParty,
                         setPartyLeader,
-                        addPlayable)
+                        addPlayable,
+                        setFollowLogicEnabled)
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
                                 getPartyLeader,
                                 getCharacterPartyMember,

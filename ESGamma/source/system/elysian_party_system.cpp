@@ -270,6 +270,7 @@ void PartySystem::_resizePartyPathPoints(void) {
 
 void PartySystem::updatePartyPaths(void) {
   unsigned int i;
+  if(!_followLogic) return;
   if(_playableParty.size() == 0 && _characterParty.size() == 0) return;
   if(_playableParty.size() == 1 && _characterParty.size() == 0) return;
 

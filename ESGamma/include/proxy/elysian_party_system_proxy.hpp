@@ -23,6 +23,7 @@ OOLUA_PROXY(PartySystem)
     OOLUA_MEM_FUNC_CONST(int, getPartySlot, const Entity*)
     OOLUA_MEM_FUNC(void, addPlayable, cpp_in_p<Entity*>)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getPlayable, const char*)
+    OOLUA_MEM_FUNC(void, setFollowLogicEnabled, bool)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_PARTY_SYSTEM_PROXY_LUA

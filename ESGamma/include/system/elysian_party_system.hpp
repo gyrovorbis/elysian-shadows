@@ -94,6 +94,7 @@ namespace elysian {
         GYWav*                  _curWalkSfx                 = nullptr;
         bool                    _wasOnGround                = true;
         bool                    _partyActive                = false;
+        bool                    _followLogic                = true;
 
 	public:
             PartySystem(void);
@@ -138,6 +139,7 @@ namespace elysian {
         void setDashTime(const float time);
         void setDashForceMagnitude(const float mag);
         void setDashAnimSpeedMultiplier(const float mult);
+        void setFollowLogicEnabled(bool val=true);
 		
 		//bool SwapPlayablePartyMembersBySlot();
 		//bool SwapLeader();
@@ -151,11 +153,12 @@ namespace elysian {
 
      inline unsigned PartySystem::getPartySize(void) const { return _characterParty.size(); }
     inline unsigned PartySystem::getPlayableCount(void) const { return _playables.size(); }
-
+    inline void PartySystem::setFollowLogicEnabled(bool val) { _followLogic = val; }
 
 
      inline unsigned Player::getPlayerNum(void) const { return _playerNum; }
      inline void Player::setPlayerNum(const unsigned num) { _playerNum = num; }
+
 
 }
 
