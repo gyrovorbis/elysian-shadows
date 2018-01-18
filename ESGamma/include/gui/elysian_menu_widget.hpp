@@ -17,7 +17,7 @@
 #define ELYSIAN_MENU_WIDGET_FLAGS_CANCEL_BUTTON 0x20
 
 
-#define ELYSIAN_MENU_WIDGET_FLAGS_DEFAULT (ELYSIAN_MENU_WIDGET_FLAGS_SELECTABLE | ELYSIAN_MENU_WIDGET_FLAGS_SCROLL_WRAP)
+#define ELYSIAN_MENU_WIDGET_FLAGS_DEFAULT (ELYSIAN_MENU_WIDGET_FLAGS_SELECTABLE/* | ELYSIAN_MENU_WIDGET_FLAGS_SCROLL_WRAP*/)
 
 namespace elysian {
 
@@ -44,9 +44,9 @@ namespace elysian {
      */
     class MenuWidget: public GroupWidget {
     public:
-        using CurrentChangeCb       = CppLuaCallback<int, Widget*, Widget*>; //FUCKING FIXME!!!!!
-        using SelectionChangeCb     = CppLuaCallback<int, void*, void*>;
-        using CancelCb              = CppLuaCallback<int, Widget*>;
+        using CurrentChangeCb       = CppLuaCallback<void, Widget*, Widget*>; //FUCKING FIXME!!!!!
+        using SelectionChangeCb     = CppLuaCallback<void, void*, void*>;
+        using CancelCb              = CppLuaCallback<void, Widget*>;
 
         const static int    InvalidIndex = ELYSIAN_MENU_WIDGET_INVALID_INDEX;
 
@@ -54,6 +54,7 @@ namespace elysian {
         MenuSelection       _selection;
         SelectionChangeCb   _selectionChangeCb;
         CurrentChangeCb     _currentChangeCb;
+        CancelCb            _cancelCb;
         Widget*             _cursor                     = nullptr;
         Widget*             _currentWidget              = nullptr;
         int                 _currentIndex[AXIS_COUNT]   = { InvalidIndex };
@@ -64,6 +65,7 @@ namespace elysian {
         void            _setCurrent(Widget* next, int index);
         void            _onCurrentChange(Widget* prev, Widget* next);
         void            _onSelectionChange(MenuSelection* sel);
+        void            _onCancel(void);
         int             _toWrapIndex(int index) const;
 
     protected:
@@ -89,8 +91,12 @@ namespace elysian {
 
         auto            getSelection(void) -> const MenuSelection*;
         auto            getSelection(void) const -> const MenuSelection*;
-        void            setSelection(const MenuSelection& selection);
+        void            setSelection(MenuSelection selection);
         void            clearSelection(void);
+
+        void            setSelectionChangeCb(SelectionChangeCb cb);
+        void            setCurrentChangeCb(CurrentChangeCb cb);
+        void            setCancelCb(CancelCb cb);
 
         //Overridden from GroupWidget
         virtual void    render(void) const override;
@@ -103,9 +109,6 @@ namespace elysian {
 
 
 
-
-
-
 //========== INLINEZ ==========
 
 inline Widget* MenuWidget::getCurrentWidget(void) const {
@@ -114,6 +117,7 @@ inline Widget* MenuWidget::getCurrentWidget(void) const {
 
 inline void MenuWidget::setCurrentIndex(int index) {
     int wrapIndex = _toWrapIndex(index);
+    dbgprintf("INDEX - %d, WRAPINDEX - %d", index, wrapIndex);
     _setCurrent(_getWidgetFromIndex(wrapIndex), wrapIndex);
 }
 
@@ -133,11 +137,6 @@ inline const MenuSelection* MenuWidget::getSelection(void) {
     return _selection.getCount()? &_selection : nullptr;
 }
 
-inline void MenuWidget::_onCurrentChange(Widget* prevSel, Widget* nextSel) {
-    if(_selectionChangeCb) _selectionChangeCb((void*)prevSel, (void*)nextSel);
-    else onCurrentChange(prevSel, nextSel);
-}
-
 inline void MenuWidget::clearSelection(void) { _selection.clear(); }
 
 inline Widget* MenuWidget::getCursor(void) const { return _cursor; }
@@ -145,6 +144,16 @@ inline Widget* MenuWidget::getCursor(void) const { return _cursor; }
 
 inline uint32_t MenuWidget::getFlags(void) const { return _flags; }
 inline void MenuWidget::setFlags(uint32_t flags) { _flags = flags; }
+
+inline void MenuWidget::setSelectionChangeCb(SelectionChangeCb cb) {
+  //  _selectionChangeCb = cb;
+}
+inline void MenuWidget::setCurrentChangeCb(CurrentChangeCb cb) {
+    //_currentChangeCb = cb;
+}
+inline void MenuWidget::setCancelCb(CancelCb cb) {
+    //_cancelCb = cb;
+}
 
 
 }

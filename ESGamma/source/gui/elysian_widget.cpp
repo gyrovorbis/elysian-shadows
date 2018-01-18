@@ -43,6 +43,18 @@ namespace elysian {
         return _layout->getWidget(index);
     }
 
+    inline void Widget::activate(void) {
+        if(_layout) {
+            _layout->activate();
+        }
+    }
+
+    inline void Widget::deactivate(void) {
+        if(_layout) {
+            _layout->deactivate();
+        }
+    }
+
     void Widget::controllerEvent(const Controller& cont) {
         if(_layout) {
             _layout->controllerEvent(cont);

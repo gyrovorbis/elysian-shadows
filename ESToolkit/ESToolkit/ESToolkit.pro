@@ -623,7 +623,8 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
     form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
     form/dialog/tk_lua_explorer.ui \
     form/dialog/tk_gitlab_dialog.ui \
-    form/estk/tk_camera_dock_widget.ui
+    form/estk/tk_camera_dock_widget.ui \
+    form/widget/tk_particle_attrib_preview_widget.ui
 
 #docs.target = ESToolkit.qhc
 #docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc

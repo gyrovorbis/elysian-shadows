@@ -43,10 +43,13 @@ namespace game {
             "Skills",
             "Options"
         };
+
+        virtual void    onSelectionChange(elysian::MenuSelection* sel);
+        virtual void    onCurrentChange(Widget* pev, Widget* next);
     };
 
     class PartyMenu: public elysian::MenuWidget, public elysian::System {
-                PlayablePane*               _playablePane[ELYSIAN_PARTY_SLOTS_MAX];
+        PlayablePane*               _playablePane[ELYSIAN_PARTY_SLOTS_MAX];
 
         enum SELECT_STATE {
             SELECT_FIRST,
@@ -58,6 +61,8 @@ namespace game {
         virtual void update(void) override;
         virtual void onSelectionChange(elysian::MenuSelection* sel) override;
         virtual void onCancel() override;
+    public:
+        PartyMenu(void);
 
     };
 

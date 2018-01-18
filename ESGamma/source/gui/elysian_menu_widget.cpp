@@ -2,6 +2,9 @@
 #include <crtp/elysian_debug.hpp>
 #include <gui/elysian_layout.hpp>
 #include <crtp/elysian_input_system.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_layout_proxy.hpp>
+#include <proxy/elysian_widget_proxy.hpp>
 
 namespace elysian {
 
@@ -18,7 +21,7 @@ void MenuWidget::_setCurrent(Widget *next, int index) {
     GY_ASSERT(_layout);
     const auto axis = _layout->getGroupingAxis();
     if(next != _currentWidget) {
-        GY_ASSERT(_currentIndex[axis] != index);
+      //  GY_ASSERT(_currentIndex[axis] != index);
         if(!next) GY_ASSERT(index == InvalidIndex); //shit better be synchronized!
 
         _currentIndex[axis] = index;
@@ -30,10 +33,10 @@ void MenuWidget::_setCurrent(Widget *next, int index) {
 
 int MenuWidget::_toWrapIndex(int index) const {
     const int   count       = _layout->getWidgetCount();
-    int         newIndex    = InvalidIndex;
+    int         newIndex    = index;
 
     //Only check if we actually HAVE widgets and a valid index
-    if(count && index != InvalidIndex) {
+    if(count) {
         int topIndex = count-1;
 
         //Apply upper boundary
@@ -45,7 +48,7 @@ int MenuWidget::_toWrapIndex(int index) const {
             newIndex = (_flags & ELYSIAN_MENU_WIDGET_FLAGS_SCROLL_WRAP)?
                         count - (abs(index) % count) : 0;
         }
-    }
+    } else newIndex = InvalidIndex;
     return newIndex;
 }
 
@@ -68,11 +71,14 @@ int MenuWidget::_getIndexFromWidget(const Widget *widget) {
 }
 
 void MenuWidget::activate(void) {
-    if(_flags & ELYSIAN_MENU_WIDGET_FLAGS_RESET_CURRENT) {
+    GY_ASSERT(_layout);
+    const auto groupingAxis = _layout->getGroupingAxis();
+    if(_flags & ELYSIAN_MENU_WIDGET_FLAGS_RESET_CURRENT || _currentIndex[groupingAxis] == InvalidIndex) {
         if(_layout->getWidgetCount() > 1) {
             setCurrentIndex(0);
         }
     }
+    GroupWidget::activate();
 }
 
 
@@ -82,14 +88,32 @@ void MenuWidget::render(void) const {
 
 
 void MenuWidget::onCurrentChange(Widget*, Widget*) {
+
     //default implementation doesn't do shit!?
 }
-void MenuWidget::onSelectionChange(MenuSelection*) {
+void MenuWidget::onSelectionChange(MenuSelection* sel) {
     //default implementation doesn't do shit either!?!
+    dbgprintf("SELECTION CHANGE - %d", sel->getEntry(0)->second.index);
 }
 
 void MenuWidget::onCancel(void) {
 }
+
+void MenuWidget::_onCurrentChange(Widget* prevSel, Widget* nextSel) {
+   // if(_currentChangeCb) _currentChangeCb(prevSel, nextSel);
+   // else onCurrentChange(prevSel, nextSel);
+}
+
+void MenuWidget::_onSelectionChange(MenuSelection* sel) {
+     //if(_selectionChangeCb) _selectionChangeCb(sel);
+    //else onSelectionChange(sel);
+}
+
+void MenuWidget::_onCancel(void) {
+    //if(_cancelCb) _cancelCb();
+    //else onCancel();
+}
+
 
 #if 0
 void MenuWidget::onFocusChange(bool) {
@@ -104,13 +128,19 @@ void MenuWidget::controllerEvent(const Controller &cont) {
     if(!count) { //no options
         setCurrentIndex(InvalidIndex);
     } else { //available options
+        const auto axis = _layout->getGroupingAxis();
 
         //check for selecting option
-        if(cont.getButtonState(GY_CONTROLLER_BUT_X));
+        MenuSelection sel;
+        MenuSelection::Entry entry(_currentWidget, MenuSelectionData{_currentIndex[axis]});
+        sel.addEntry(entry);
+        if(cont.getButtonState(GY_CONTROLLER_BUT_X)) setSelection(sel);
 
         //check for going backwards
         if(cont.getButtonState(GY_CONTROLLER_BUT_CIRCLE)) _enabled = false;
     }
+
+    GroupWidget::controllerEvent(cont);
 
 }
 
@@ -141,6 +171,12 @@ void MenuWidget::virtualDPadEvent(const VirtualDPad &dpad) {
             }
         }
     }
+    GroupWidget::virtualDPadEvent(dpad);
+}
+
+void MenuWidget::setSelection(MenuSelection selection) {
+    _selection = std::move(selection);
+    _onSelectionChange(&_selection);
 }
 
 

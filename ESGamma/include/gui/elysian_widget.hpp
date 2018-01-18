@@ -184,9 +184,6 @@ namespace elysian {
     inline void Widget::setFocus(bool enabled) { _focus = enabled; }
     inline void Widget::maximize(void) { maximize(X); maximize(Y); }
     inline void Widget::minimize(void) { minimize(X); minimize(Y); }
-    inline void Widget::activate(void) {}
-    inline void Widget::deactivate(void) {}
-
 
     inline float GroupWidget::getPosition(AXIS axis) const { return _pos[axis]; }
     inline void GroupWidget::setPosition(AXIS axis, float pos) { _pos[axis] = pos; }

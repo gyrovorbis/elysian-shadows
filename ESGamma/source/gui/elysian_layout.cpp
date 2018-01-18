@@ -84,11 +84,11 @@ namespace elysian {
     }
 
     void Layout::controllerEvent(const Controller &cont) {
-        for(auto& widget: _widgets) widget->controllerEvent(cont);
+        for(auto& widget: _widgets) if(widget->hasFocus()) widget->controllerEvent(cont);
     }
 
     void Layout::keyboardEvent(const Keyboard &keybd) {
-        for(auto& widget: _widgets) widget->keyboardEvent(keybd);
+        for(auto& widget: _widgets) if(widget->hasFocus()) widget->keyboardEvent(keybd);
     }
 
     void Layout::mouseEvent(const Mouse &mouse) {
@@ -100,7 +100,7 @@ namespace elysian {
     }
 
     void Layout::virtualDPadEvent(const VirtualDPad &vdpad) {
-        for(auto& widget: _widgets) widget->virtualDPadEvent(vdpad);
+        for(auto& widget: _widgets) if(widget->hasFocus()) widget->virtualDPadEvent(vdpad);
     }
 
     void Layout::clearWidgets(void) {

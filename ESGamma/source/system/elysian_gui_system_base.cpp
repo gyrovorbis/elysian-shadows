@@ -356,6 +356,22 @@ void GuiSystem::processInput(void) {
     if(getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_START)) {
         setFgWidget(_menuActive? nullptr : _menuWidget);
         _menuActive = !_menuActive;
+
+        if(_menuActive) {
+            setEngineState(ENGINE_MODAL_MENU);
+            _menuWidget->activate();
+            _menuWidget->setFocus();
+        } else {
+            _menuWidget->deactivate();
+            setEngineState(ENGINE_NORMAL);
+            _menuWidget->setFocus(false);
+        }
+
+    }
+    if(_menuActive) {
+
+        _menuWidget->controllerEvent(*getInputSys()->getController(0));
+        _menuWidget->virtualDPadEvent(getInputSys()->getController(0)->getVirtualDPad(GY_CONTROLLER_ANALOG_LEFT));
     }
 }
 

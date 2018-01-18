@@ -266,6 +266,9 @@ void Engine::processInput(void) {
         case System::ENGINE_MODAL_CONVERSATION:
             _dialogSystem->processInput();
             break;
+        case System::ENGINE_MODAL_MENU:
+            _guiSystem->processInput();
+            break;
         case System::ENGINE_WARPING:
             break;
         case System::ENGINE_CAMERA_DEBUG:

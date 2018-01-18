@@ -71,6 +71,7 @@ void PauseMenu::controllerEvent(const Controller& cont) {
     if(cont.isTapped(GY_CONTROLLER_BUT_START)) {
          //quit
     }
+    EntityWidget::controllerEvent(cont);
 }
 
 void PauseMenu::keyboardEvent(const Keyboard& keybd) {
@@ -90,13 +91,29 @@ OptionsMenu::OptionsMenu(void) {
 
     for(unsigned i = 0; i < sizeof(optionStrings)/sizeof(optionStrings[0]); ++i) {
         options.push_back(new LabelWidget(optionStrings[i]));
-
     }
 
     _mainLayout = new VerticalLayout(std::move(options));
     setLayout(_mainLayout);
 }
 
+void OptionsMenu::onSelectionChange(elysian::MenuSelection* sel) {
+
+
+}
+
+void OptionsMenu::onCurrentChange(Widget* prev, Widget* next) {
+    auto* prevLabel = static_cast<LabelWidget*>(prev);
+    auto* nextLabel = static_cast<LabelWidget*>(next);
+    if(prevLabel) prevLabel->setColor(Color4::white);
+    if(nextLabel) nextLabel->setColor(Color4::aqua);
+
+}
+
+PartyMenu::PartyMenu(void) {
+    for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _playablePane[i] = new PlayablePane();
+    setLayout(new VerticalLayout);
+}
 
 //GET RID OF THIS BULLSHIT AND CHANGE TO
 //ON PARTY CHANGED EVENT!!!

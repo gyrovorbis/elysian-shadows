@@ -452,10 +452,12 @@ attached to an active entity, otherwise behavior is undefined (ie: it's going to
  * \sa emitFromPointInDir(), emitFromEntity()
  */
 /*!
- * \qmlmethod void ParticleEmitter::emitFromPointInDir(Vector3 pos, Vector3 dir, int intensity)
+ * \qmlmethod void ParticleEmitter::emitFromPointInDir(Vector3 pos, Vector3 dir, int intensity, float spread)
  *
  * Emits a group of particles at the location given by \a{pos} in the direction given by the unit vector, \a{dir}.
- * The number of particles to emit is given by \a{intensity}.
+ * The number of particles to emit is given by \a{intensity}. \a{spread} is the 2D angle representing the spread
+ * of the particles to be emitted from the point, forming a cone from the point of emission.
+ * This gives the particles a slightly randomized initial position and velocity and is specified in degrees.
  * \sa emitFromPoint(), emitFromEntity()
  */
 /*!
