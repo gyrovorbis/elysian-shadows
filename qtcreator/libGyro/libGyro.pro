@@ -32,7 +32,7 @@ macx {
     INCLUDEPATH += ../../lib/osx/SDL2.framework/Headers \
                     ../../lib/osx/SDL2_net.framework/Headers
     vulkan {
-        LIBS += ../../lib/osx/MoltenVK.framework/Headers
+        INCLUDEPATH += ../../lib/osx/MoltenVK.framework/Headers
     }
     SOURCES +=	../../source/x86/turfs_osx.c
 }
@@ -137,7 +137,8 @@ HEADERS += \
     ../../include/glal/gyro_bloom_glal.h \
     ../../include/gyro_net_api.h \
     ../../include/gyro_rumble_api.h \
-    ../../include/gyro_test_api.h
+    ../../include/gyro_test_api.h \
+    ../../include/glal/gyro_gl_utils.h
 
 
 vulkan {
@@ -198,7 +199,8 @@ SOURCES += \
     ../../source/common/turfs_file_stdio.c \
     ../../source/common/gyro_video.c \
     ../../source/common/gyro_timer.c \
-    ../../source/common/gyro_test.c
+    ../../source/common/gyro_test.c \
+    ../../source/glal/gyro_gl_utils.c
 
 vulkan {
     SOURCES += \

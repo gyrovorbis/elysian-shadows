@@ -3,6 +3,7 @@
 
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +36,8 @@ extern unsigned                     glalPrevTextureChangeCount;
 extern GY_ALPHA_LEVEL               glalAlphaLevel;
 extern GY_BLEND_MODE                glalBlendMode;
 extern int                          glalDepthTest;
+extern int                          glalVersionMajor;
+extern int                          glalVersionMinor;
 
 extern const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4];
 extern const GYVector3 glalPlaneNormals[GY_RECT_PLANE_MAX];
@@ -65,7 +68,6 @@ static inline float glalOrientNormalMapZFactor(const GY_RECT_TEX_ORIENT orient) 
 static inline const GYVector3* glalPlaneNormalVector(const int normalMapActive, const GY_RECT_PLANE_TYPE planeType, const GY_RECT_TEX_ORIENT texOrient) {
    return (!normalMapActive)? &glalPlaneNormals[planeType] : &glalPlaneNormalMapNormals[planeType][texOrient];
 }
-
 
 #ifdef __cplusplus
 }
