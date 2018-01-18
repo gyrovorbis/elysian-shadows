@@ -28,7 +28,10 @@ int gyAudInit(void) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Vendor",        alGetString(AL_VENDOR));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Renderer",      alGetString(AL_RENDERER));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Version",       alGetString(AL_VERSION));
+    const char* devStr = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Device", devStr? devStr : "ERROR");
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "OpenAL Extensions",    alGetString(AL_EXTENSIONS));
+        char* device = (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
     if(!_alDevice) {
         _gyLog(GY_DEBUG_WARNING, "Could not open OpenAL Device!");

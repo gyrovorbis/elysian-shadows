@@ -5,6 +5,7 @@
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
 #include <glal/gyro_bloom_glal.h>
+#include <glal/gyro_gl_utils.h>
 #include <common/gyro_spine_common.h>
 #include <spine/spine.h>
 
@@ -76,11 +77,11 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
  #if 0
     //FRONT
     {
-        {-0.5f, -0.5f, 1.0f, 1.0f},
-        {0.5f, -0.5f, 1.0f, 1.0f},
+        {-0.5f, -0.5f, 0.5f, 1.0f},
+        {0.5f, -0.5f, 0.5f, 1.0f},
         {-0.5f, 0.5f, 0.0f, 1.0f},
         {0.5f, 0.5f, 0.0f, 1.0f}
-    }
+    },
 #else
     //FRONT
     {
@@ -105,12 +106,22 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
         {0.5f, 0.5f, 0.0f, 1.0f}
     },
     //FRONT_SLOPE_45
+    #if 0
+    {
+        {-0.5f, -0.5f, SQRT_OF_HALF, 1.0f},
+        {0.5f, -0.5f, SQRT_OF_HALF, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    },
+    #else
     {
         {-0.5f, -0.5f, 1.0f, 1.0f},
         {0.5f, -0.5f, 1.0f, 1.0f},
         {-0.5f, 0.5f, 0.0f, 1.0f},
         {0.5f, 0.5f, 0.0f, 1.0f}
     },
+    #endif
+
     //LEFT_SLOPE_45
     {
         {0.5f, -0.5f, 1.0f, 1.0f},
@@ -155,6 +166,8 @@ int                         glalDepthTest               = 0;
 int                         glalVertexArray             = 0;
 void                        (*glalFlushCallback)(void*) = NULL;
 void*                       glalFlushObject             = NULL;
+int                         glalVersionMajor            = 0;
+int                         glalVersionMinor            = 0;
 
 //Private video state variables
 static unsigned int			_projWidth                  = 0;
@@ -263,6 +276,8 @@ int glalVidGlewInit(void) {
     return 1;
 }
 
+
+
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
     _projWidth = projWidth;
     _projHeight = projHeight;
@@ -271,8 +286,17 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
     static int once = 0;
     if(!once) {
+        GLint glint[2];
         _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing OpenGL.");
         _gyPush();
+
+        glGetIntegerv(GL_MAJOR_VERSION, &glint[0]);
+        glGetIntegerv(GL_MINOR_VERSION, &glint[1]);
+        if(!GY_GL_CHECK_ERROR()) {
+            glalVersionMajor = glint[0];
+            glalVersionMinor = glint[1];
+        }
+        glalGLDriverQuery();
 
         glalLoadDefaultShaders();
         glalVidInitializeBloom();

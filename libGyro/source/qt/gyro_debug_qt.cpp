@@ -9,8 +9,8 @@ static QTextStream* _stream = nullptr;
 extern "C" int gyQtInit(void) {
     _gyLog(GY_DEBUG_VERBOSE, "Initializing Qt");
     _gyPush();
-    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %40s", "Qt Version (Compile-Time)",    QT_VERSION_STR);
-    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %40s", "Qt Version (Run-Time)",        qVersion());
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %20s", "Qt Version (Compile-Time)",    QT_VERSION_STR);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %20s", "Qt Version (Run-Time)",        qVersion());
     _gyPop(1);
     return 1;
 }
