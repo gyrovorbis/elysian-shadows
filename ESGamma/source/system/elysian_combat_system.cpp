@@ -85,51 +85,113 @@ void CombatSystem::onCollisionExit(Collidable* const /*bodyA*/,
   //_dealCollisionDamage(combatA, combatB, bodyB, nullptr);
 }
 
+void CombatSystem::onAreaEnter(void) {
+    clearCombatants();
+}
+
+void CombatSystem::clearCombatants(void) {
+    std::vector<Entity*> combatCache;
+
+    for(auto it = _combatants.begin(); it != _combatants.end(); ++it) {
+        combatCache.push_back(*it);
+    }
+    for(auto it: combatCache)
+        removeCombatant(*it);
+    GY_ASSERT(!_combatants.size());
+}
+
+int CombatSystem::_getCombatantIndex(const Entity& entity) const {
+    int index   = -1;
+    int i       = 0;
+    for(auto it = _combatants.begin(); it != _combatants.end(); ++it, ++i) {
+        if(*it == &entity) {
+            index = i;
+            break;
+        }
+    }
+    return index;
+}
+
 void CombatSystem::addCombatant(Entity& entity) {
-  getCameraSys()->addEntity(&entity);
-  entity.getCombat()->setInCombat(true);
-  getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_ENTER);
-  if (_bgmDynamic) getAudioSys()->morphIntoBgmTrack(_bgmCombatTrack, 0.5f);
-  _combatants.claimFreeEntry() = &entity;
-  if (entity.getCombat()->getTargetType() != Combat::TARGET_NONE)
-    getGuiSys()->addCombatStatsEntity(&entity);
+    if(_getCombatantIndex(entity) != -1) return;
+    auto* combat = entity.getCombat();
+    GY_ASSERT(combat);
+
+    ++_combatantTargetCounts[combat->getTargetType()];
+    _combatants.claimFreeEntry() = &entity;
+    if(_combatState == COMBAT_STATE_ACTIVE) _setCombatantActive(&entity, true);
+
+    _updateCombatState();
 }
 
 void CombatSystem::removeCombatant(Entity& entity) {
-  entity.getCombat()->setInCombat(false);
-  getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_EXIT);
-  getCameraSys()->removeEntity(&entity);
-  _combatants.removeEntry(&entity);
-  if (_combatants.size() == 0 && _bgmDynamic) {
-    getAudioSys()->morphIntoBgmTrack(0, 0.5f);
-  }
-  if (entity.getCombat()->getTargetType() != Combat::TARGET_NONE)
-    getGuiSys()->removeCombatStatsEntity(&entity);
+    if(_getCombatantIndex(entity) == -1) return;
+    auto* combat = entity.getCombat();
+    GY_ASSERT(combat);
+
+    --_combatantTargetCounts[combat->getTargetType()];
+    _combatants.removeEntry(&entity);
+    _setCombatantActive(&entity, false);
+
+    _updateCombatState();
 }
 
+
 void CombatSystem::killCombatant(Entity& entity) {
-  getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_DEATH);
-  entity.getCombat()->setInCombat(false);
-  // removeCombatant(entity); //don't call that or we call the ON_EXIT trigger
-  getCameraSys()->removeEntity(&entity);
-  _combatants.removeEntry(&entity);
-  if (_combatants.size() == 0 && _bgmDynamic) {
-    getAudioSys()->morphIntoBgmTrack(0, 0.5f);
-  }
-  /*
-  if(entity.getCombat()->getTargetType() == Combat::TARGET_ENEMY) {
-      GYVector2 pos = *(GYVector2*)&entity._transform._pos;
-      pos.y += 0.5f*entity._transform._size.y;
+    removeCombatant(entity);
+    getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_DEATH);
+}
 
-      getGuiSys()->addVictoryText(*(GYVector2*)&entity._transform._pos, "10
-  EXP");
-  }*/
-  if (entity.getCombat()->getTargetType() != Combat::TARGET_NONE) {
-    getGuiSys()->removeCombatStatsEntity(&entity);
-  }
+void CombatSystem::_updateCombatState(void) {
+    if(_combatantTargetCounts[Combat::TARGET_PARTY] >= 1 &&
+       _combatantTargetCounts[Combat::TARGET_ENEMY] >= 1 &&
+            _combatState != COMBAT_STATE_DISABLED) {
+        _setCombatState(COMBAT_STATE_ACTIVE);
 
-  // getCurArea()->removeEntity(&entity);
-  // delete &entity;
+    } else {
+        _setCombatState(COMBAT_STATE_INACTIVE);
+    }
+}
+
+void CombatSystem::_setCombatState(COMBAT_STATE state) {
+    if(_combatState != state) {
+        switch(state) {
+        case COMBAT_STATE_ACTIVE:
+            if(_bgmDynamic) {
+                _bgmPrevTrack = getAudioSys()->getBgmTrack();
+                getAudioSys()->morphIntoBgmTrack(_bgmCombatTrack, 0.5f);
+            }
+            break;
+        case COMBAT_STATE_INACTIVE:
+        case COMBAT_STATE_DISABLED:
+            if(_bgmDynamic && _combatState == COMBAT_STATE_ACTIVE) {
+                getAudioSys()->morphIntoBgmTrack(_bgmPrevTrack, 0.5f);
+            }
+        }
+        _combatState = state;
+        for(auto it = _combatants.begin(); it != _combatants.end(); ++it) {
+            _setCombatantActive(*it, (state == COMBAT_STATE_ACTIVE)? true: false);
+        }
+    }
+}
+
+void CombatSystem::_setCombatantActive(Entity *entity, bool active) const {
+    auto* combat = entity->getCombat();
+    GY_ASSERT(combat);// && combat->isInCombat() != active);
+
+    if(combat->isInCombat() != active) {
+        combat->setInCombat(active);
+        if(active) {
+            getCameraSys()->addEntity(entity);
+            if(combat->getTargetType() != Combat::TARGET_NONE) getGuiSys()->addCombatStatsEntity(entity);
+            getBehavSys()->callTrigger(entity, Behavior::ON_COMBAT_ENTER);
+        } else {
+            getCameraSys()->removeEntity(entity);
+            if(combat->getTargetType() != Combat::TARGET_NONE) getGuiSys()->removeCombatStatsEntity(entity);
+            getBehavSys()->callTrigger(entity, Behavior::ON_COMBAT_EXIT);
+
+        }
+    }
 }
 
 #if 0
@@ -243,31 +305,57 @@ void CombatSystem::_dealCollisionDamage(Combat* const src, Combat* const target,
 }
 
 void CombatSystem::update(void) {
-  auto* leader = getPartySys()->getPartyLeader();
-  const auto& playerPos = leader->_transform._pos;
+    const unsigned partySize = getPartySys()->getPartySize();
 
-  for (auto& it : getCurrentArea()->combats) {
-    if (it == leader->getCombat() || it->getTargetType() == Combat::TARGET_NONE)
-      continue;
-    const float dist =
-        gyVec3Dist(&playerPos, &it->getEntity()->_transform._pos);
+    if(_combatMgmtType != COMBAT_MGMT_MANUAL && _combatState != COMBAT_STATE_DISABLED) {
+        //dirty-ass hack to poll for Entities that have been removed from area
+        std::vector<Entity*> combatCache;
+        for(auto it = _combatants.begin(); it != _combatants.end(); ++it) {
+            if(!(*it)->isActive() || (*it)->getArea() != _curArea)
+                combatCache.push_back(*it);
+        }
+        for(auto it: combatCache)
+            removeCombatant(*it);
 
-    // Check for deaggro
-    if (it->isInCombat()) {
-      if (dist > it->getDeaggroDist()) removeCombatant(*it->getEntity());
-      // Check for aggro
-    } else {
-      if (dist < it->getAggroDist()) addCombatant(*it->getEntity());
+        //dirty-ass hack to add active party members as combatants
+        for(unsigned i = 0; i < getPartySys()->getPartySize(); ++i) {
+            auto* partyMem = getPartySys()->getCharacterPartyMember(i);
+            addCombatant(*partyMem);
+        }
+
+        for(auto& it : getCurrentArea()->combats) {
+            if(it->getTargetType() == Combat::TARGET_NONE || it->getTargetType() == Combat::TARGET_PARTY)
+                continue;
+
+            float dists[partySize];
+
+            for(unsigned i = 0; i < partySize; ++i) {
+                const auto& playerPos = getPartySys()->getCharacterPartyMember(i)->_transform._pos;
+
+                dists[i] = gyVec3Dist(&playerPos, &it->getEntity()->_transform._pos);
+            }
+
+            //check for deaggro
+            if(it->isInCombat()) {
+                unsigned count = 0;
+                for(unsigned i = 0; i < partySize; ++i) {
+                    if(dists[i] > it->getDeaggroDist())
+                        ++count;
+                }
+                //all party members have to be outside of deaggro range to remove
+                if(count == partySize) removeCombatant(*it->getEntity());
+
+            } else { //check for aggro
+                //if even one party member is within range, add
+                for(unsigned i = 0; i < partySize; ++i) {
+                    if(dists[i] < it->getDeaggroDist()) {
+                        addCombatant(*it->getEntity());
+                        break;
+                    }
+                }
+            }
+        }
     }
-  }
-
-  // Check whether we should add or remove leader (PARTY EVENTUALLY)
-  if (leader && leader->getCombat() && leader->getCombat()->isInCombat() &&
-      _combatants.size() == 1) {
-    removeCombatant(*leader);
-  } else if (_combatants.size() > 0 && !leader->getCombat()->isInCombat()) {
-    addCombatant(*leader);
-  }
 }
 
 /* Needs to gracefully handle the case where there are multiple modifiers.

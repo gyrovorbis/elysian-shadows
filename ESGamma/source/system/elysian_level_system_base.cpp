@@ -1,4 +1,5 @@
 #include <crtp/elysian_level_system.hpp>
+#include <system/elysian_combat_system.hpp>
 #include <crtp/elysian_level.hpp>
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_entity.hpp>
@@ -177,6 +178,7 @@ void LevelSystemBase::_onAreaEnter(void) {
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
     getCollisionSys()->onAreaEnter();
     getAudioSys()->update();
+    getCombatSys()->onAreaEnter();
 }
 
 void LevelSystemBase::_onAreaExit(void) {
