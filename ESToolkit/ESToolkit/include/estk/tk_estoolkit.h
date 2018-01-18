@@ -273,6 +273,7 @@ private Q_SLOTS:
     void on_actionSelect_All_triggered();
     void on_actionSelect_Eraser_triggered();
     void on_actionDelete_Selection_triggered();
+    void on_actionPerformance_Monitor_Dump_triggered();
 };
 
 

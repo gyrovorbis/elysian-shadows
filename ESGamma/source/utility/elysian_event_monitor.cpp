@@ -9,7 +9,7 @@ void LuaEventCallback::onFinish(void) {
     EventMonitor::onFinish();
 	_callback.push(*_mainState);
 	_table.push(*_mainState);
-	_protectedCall(1, 0, nullptr);
+	ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 0, nullptr);
 }
 
 }

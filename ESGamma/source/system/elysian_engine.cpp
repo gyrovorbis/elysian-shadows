@@ -79,6 +79,28 @@ Engine::Engine(void):
     //Singletons::setGameInput(&_gameInput);
     Singletons::setDebug(&Debug::getInstance());
 
+    renderMonitor.addChild(&shadowPassMonitor);
+    renderMonitor.addChild(&lightPassMonitor);
+    renderMonitor.addChild(&guiRenderMonitor);
+    renderMonitor.addChild(&bloomMonitor);
+
+    updateMonitor.addChild(&updateRigidBodyMonitor);
+    updateMonitor.addChild(&updateCollisionMonitor);
+    updateMonitor.addChild(&updatePartyMonitor);
+    updateMonitor.addChild(&updateAudioMonitor);
+    updateMonitor.addChild(&updateSkeletonMonitor);
+    updateMonitor.addChild(&updateLightMonitor);
+    updateMonitor.addChild(&updateGuiMonitor);
+    updateMonitor.addChild(&updateMapMonitor);
+    updateMonitor.addChild(&updateCharacterMonitor);
+    updateMonitor.addChild(&updateTimerMonitor);
+    updateMonitor.addChild(&updateWarpMonitor);
+    updateMonitor.addChild(&updateParticleMonitor);
+    updateMonitor.addChild(&updateDayMonitor);
+    updateMonitor.addChild(&updateDialogMonitor);
+    updateMonitor.addChild(&updateCombatMonitor);
+    updateMonitor.addChild(&updateLuaMonitor);
+
    // memset(&_platInput, 0, sizeof(GYInput));
 }
 
@@ -98,42 +120,99 @@ bool Engine::loadAssets(void) {
     return true;
 }
 
+void Engine::perfMonitorDump() {
+
+}
+
 void Engine::update(void) {
 
-  _timerSystem->pushTaskMonitor(&_updateMonitor);
+    //_updateMonitor.startNewFrame();
+    updateMonitor.start();
 
     switch(System::_engineState) {
         case System::ENGINE_NORMAL:
         case System::ENGINE_WARPING:
         case System::ENGINE_MODAL_CONVERSATION:
         case System::ENGINE_CONVERSATION:
-            LuaManager::updateFrameStats();
+            //LuaManager::updateFrameStats();
+            updatePartyMonitor.start();
             _partySystem->update();
-            _lightSystem->update();
-            _audioSystem->update();
+            updatePartyMonitor.stop();
 
+            updateLightMonitor.start();
+            _lightSystem->update();
+            updateLightMonitor.stop();
+
+            updateAudioMonitor.start();
+            _audioSystem->update();
+            updateAudioMonitor.stop();
+
+            updateRigidBodyMonitor.start();
             _rigidBodySystem->applyForces();
             _rigidBodySystem->integrate();
+            updateRigidBodyMonitor.stop();
+
+            updateCollisionMonitor.start();
             _collisionSystem->prepareGeometry();
+            updateCollisionMonitor.stop();
+
+            updateRigidBodyMonitor.resume();
             _rigidBodySystem->integrate3D();
+            updateRigidBodyMonitor.stop();
+
+            updateCollisionMonitor.resume();
             _collisionSystem->update();
+            updateCollisionMonitor.stop();
+
+            updateRigidBodyMonitor.resume();
             _rigidBodySystem->update();
             _rigidBodySystem->resolveContactVelocities();
             _rigidBodySystem->breakRigidBodies();
+            updateRigidBodyMonitor.stop();
 
+            updateTimerMonitor.start();
             _timerSystem->update();
+            updateTimerMonitor.stop();
+
+            updateMapMonitor.start();
             _mapSystem->update();
+            updateMapMonitor.stop();
+
+            updateCharacterMonitor.start();
             _characterSystem->update();
+            updateCharacterMonitor.stop();
+
+            updateSkeletonMonitor.start();
             _skeletonSystem->update();
+            updateSkeletonMonitor.stop();
+
+            updateGuiMonitor.start();
             _guiSystem->update();
+            updateGuiMonitor.stop();
+
+            updateWarpMonitor.start();
             _warpSystem->update();
+            updateWarpMonitor.stop();
+
+            updateParticleMonitor.start();
             _particleSystem->update();
+            updateParticleMonitor.stop();
+
+            updateDayMonitor.start();
             _daySystem->update();
+            updateDayMonitor.stop();
+
+            updateDialogMonitor.start();
             _dialogSystem->update();
+            updateDialogMonitor.stop();
+
+            updateCombatMonitor.start();
             _combatSystem->update();
+            updateCombatMonitor.stop();
 
-
+            updateLuaMonitor.start();
             _behaviorSystem->callTriggers(Behavior::ON_UPDATE);
+            updateLuaMonitor.stop();
             break;
 
         case System::ENGINE_ESTK_STOP:
@@ -153,12 +232,14 @@ void Engine::update(void) {
     }
 
 
-  _timerSystem->popTaskMonitor(&_updateMonitor);
+ // _timerSystem->popTaskMonitor(&_updateMonitor);
+    updateMonitor.stop();
 }
 
 void Engine::processInput(void) {
 
   _timerSystem->pushTaskMonitor(&_inputMonitor);
+  processInputMonitor.start();
 
     _inputSystem->update();
 
@@ -195,13 +276,23 @@ void Engine::processInput(void) {
         default:
             break;
     }
-
+    processInputMonitor.stop();
   _timerSystem->popTaskMonitor(&_inputMonitor);
 }
 
 void Engine::render(void) {
 
   _timerSystem->pushTaskMonitor(&_renderMonitor);
+    renderMonitor.start();
+    for(unsigned i = 0; i < 100; ++i) {
+    processInputMonitor.start();
+    processInputMonitor.stop();
+    processInputMonitor.resume();
+    processInputMonitor.stop();
+    }
+    renderMonitor.stop();
+
+
 
     switch(System::_engineState) {
         default:
@@ -229,10 +320,14 @@ void Engine::render(void) {
             //gyVidProjectionDefaultMatrix(); */
             _guiSystem->renderBackground();
             _cameraSystem->pushViewProjMatrix();
+            shadowPassMonitor.start();
             _lightSystem->shadowRenderPasses();
+            shadowPassMonitor.stop();
             //_lightSystem->addLightSourcesToScene();
 
+            lightPassMonitor.start();
             _mapSystem->render();
+            lightPassMonitor.stop();
 
             //_lightSystem->render();
 
@@ -242,11 +337,15 @@ void Engine::render(void) {
 
              _lightSystem->removeLightSourcesFromScene();
 
+             guiRenderMonitor.start();
              _guiSystem->render();
+             guiRenderMonitor.stop();
 
             _cameraSystem->popViewProjMatrix();
 
+            bloomMonitor.start();
             _lightSystem->applyBloomEffect();
+            bloomMonitor.stop();
 
             //Begin rendering overlays
           //  func();
@@ -257,6 +356,7 @@ void Engine::render(void) {
             gyVidSceneEnd();
     }
 
+   // renderMonitor.stop();
   _timerSystem->popTaskMonitor(&_renderMonitor);
 }
 

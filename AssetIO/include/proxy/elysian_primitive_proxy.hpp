@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_PRIMITIVE_PROXY_HPP
 #define ELYSIAN_PRIMITIVE_PROXY_HPP
 
-#include <primitive/elysian_color.hpp>
+#include <primitive/elysian_color_base.hpp>
 #include <primitive/elysian_material.hpp>
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <primitive/elysian_quad_sprite_attrib.hpp>

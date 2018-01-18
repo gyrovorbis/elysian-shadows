@@ -4,9 +4,9 @@
 #include <model/tk_property_standard_item.h>
 #include <model/tk_lua_table_stack_model.h>
 #include <delegate/tk_file_browser_property_item_delegate.h>
-
+#include <QPainter>
 #include <QMouseEvent>
-
+#include <QApplication>
 
 
 PropertyItemDelegate* PropertyItemProxyDelegate::_defaultTableDelegate = nullptr;
@@ -88,7 +88,31 @@ void PropertyItemProxyDelegate::paint(QPainter *painter, const QStyleOptionViewI
     if(item && item->getStyledItemDelegate()) {
         return item->getStyledItemDelegate()->paint(painter, option, index);
     }
+    QStyledItemDelegate::paint(painter, option, index);
+#if 0
 
-    return QStyledItemDelegate::paint(painter, option, index);
+      QModelIndex s = index.sibling( index.row(), 0 );
+          if ( s.isValid() )
+          {
+               QRect rectr = option.rect;
+               int py = rectr.y();
+               int ph = rectr.height();
+               int pw = rectr.width();
+               painter->setPen( QColor(Qt::gray) );
+               painter->drawLine( rectr.x(), py, pw, py );
+               //p->drawLine(rect.x()+pw, rect.y(), rect.x()+pw, rect.y()+ph);
+      }
+#else
+    auto opt = option;
+    opt.palette.setCurrentColorGroup(QPalette::Active);
+    QColor color = static_cast<QRgb>(QApplication::style()->styleHint(QStyle::SH_Table_GridLineColor, &opt));
+    painter->save();
+    painter->setPen(QPen(color));
+    if (index.column() < index.model()->columnCount()-1) {
+        int right = (option.direction == Qt::LeftToRight) ? option.rect.right() : option.rect.left();
+        painter->drawLine(right, option.rect.y(), right, option.rect.bottom());
+    }
+    painter->restore();
+#endif
 }
 

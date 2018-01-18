@@ -234,7 +234,7 @@ int TkLuaTableUserdata::_pairsMetamethod(lua_State*const l) {
     Q_ASSERT(ud);
     lua_pop(l, 1);
     lua_rawgeti(l, LUA_REGISTRYINDEX, ud->getPropRef());
-    LuaManager::_protectedCall(1, 3, nullptr);
+    ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 3, nullptr);
     //lua_pushnil(l);
     return 3;
 }

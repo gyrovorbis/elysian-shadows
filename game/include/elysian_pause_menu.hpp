@@ -67,7 +67,7 @@ namespace game {
         enum FRAME_INDEX {
             FRAME_LEFT,
             FRAME_RIGHT
-        } FRAME_INDEX;
+        };
 
         OptionsMenu*                _optionsPane;
 

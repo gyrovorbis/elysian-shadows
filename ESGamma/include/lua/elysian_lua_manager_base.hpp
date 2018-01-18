@@ -29,6 +29,26 @@
 #define ELYSIAN_LUA_PROXY_TYPE_METAFIELD                "__typename"
 #define ELYSIAN_LUA_PROXY_DOWN_CAST_METAFIELD           "__downcast"
 
+#if 0
+#define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
+#define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
+
+#define ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(_1, _2, _3, NAME, ...) NAME
+#define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
+#endif
+
+#define ELYSIAN_LUA_MANAGER_PROTECTED_CALL_WITH_SCRIPT(nargs, nresults, script) \
+    (elysian::LuaManager::_protectedCall(nargs, nresults, script, __FILE__, __LINE__, __func__))
+#define ELYSIAN_LUA_MANAGER_PROTECTED_CALL_WITHOUT_SCRIPT(nargs, nresults) \
+    (ELYSIAN_LUA_MANAGER_PROTECTED_CALL_WITH_SCRIPT(nargs, nresults, nullptr))
+
+#define ELYSIAN_LUA_MANAGER_PROTECTED_CALL_MACRO(_1, _2, _3, MACRO, ...) MACRO
+#define ELYSIAN_LUA_MANAGER_PROTECTED_CALL(...) \
+    ELYSIAN_LUA_MANAGER_PROTECTED_CALL_MACRO(__VA_ARGS__, \
+                                            ELYSIAN_LUA_MANAGER_PROTECTED_CALL_WITH_SCRIPT, \
+                                            ELYSIAN_LUA_MANAGER_PROTECTED_CALL_WITHOUT_SCRIPT)(__VA_ARGS__)
+ELYSIAN_ASSET_TYPEDEF(LuaManager)
+
 namespace elysian {
 	
     class LuaVariantBase;
@@ -65,7 +85,7 @@ namespace elysian {
 		static void					_showError(void);
 		static int					_getErrorCode(void);
 		
-        static bool					_protectedCall(const int nargs, const int nresults, LuaScript *script, const char*const msg=nullptr, ...);
+        static bool					_protectedCall(const int nargs, const int nresults, LuaScript *script, const char* file, int line, const char* func);
 		static LuaScript*			_createScriptFromExisting(const char* const file);
 
         static int					_traceBack(lua_State *L);
@@ -190,7 +210,7 @@ namespace elysian {
         const unsigned retc = (unsigned)!std::is_void<RType>::value;
 
         push(std::forward<PTypes>(parameters)...);
-        if(!_protectedCall(argc, retc, script) && retc) {
+        if(!_protectedCall(argc, retc, script, nullptr, -1, nullptr) && retc) {
             /* If a nonvoid function fails, we still have to return something to the calling function,
              * or we're going to start pulling other shit off the stack.
              * Put nil on the stack to simulate error return type. */
@@ -221,8 +241,10 @@ namespace elysian {
         }
     }
 
-
-    inline bool LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script, const char* /*context*/, ...) {
+inline bool LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script, const char* file, int line, const char* func) {
+    (void)(file);
+            (void)(line);
+          (void)(func);
 #ifdef ELYSIAN_LUA_DEBUG
         bool success = true;
         if(script) {
@@ -239,12 +261,20 @@ namespace elysian {
                 lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
                 //_envDump(script);
                 dumpStats();
+                if(file && func) {
+                    DbgEvent event("C/++ Caller Info");
+                    dbgprintf("%s:%d (function: %s)", file, line, func);
+                }
                 //if(_traceBackDbgPushes) {
                     //Debug::pop();
                 //    --_traceBackDbgPushes;
                // }
             } else {
                 _showError();
+                if(file && func) {
+                    DbgEvent event("C/++ Caller Info");
+                    dbgprintf("%s:%d (function: %s)", file, line, func);
+                }
                 //lua_remove(*_mainState, 1);
                 //_cStackDump();
                 //dumpStats();

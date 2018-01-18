@@ -175,6 +175,8 @@ void EngineGLSceneWidget::paintGL(void) {
 
     getAssets()->getEngine()->getTimerSys()->pushTaskMonitor(&_engineTask);
 
+    _monitor.start();
+
     getAssets()->getEngine()->render();
 
     //doneCurrent();
@@ -182,6 +184,9 @@ void EngineGLSceneWidget::paintGL(void) {
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
+
+    _monitor.stop();
+
     if(_advanceFrame) {
 
         _advanceFrame = false;
@@ -214,6 +219,19 @@ void EngineGLSceneWidget::paintGL(void) {
 
     Q_EMIT engineUpdated();
 }
+
+void EngineGLSceneWidget::dumpPerfMonitor(void) {
+    static bool once = false;
+    if(!once) {
+        _monitor.addChild(&getAssets()->getEngine()->updateMonitor);
+        _monitor.addChild(&getAssets()->getEngine()->renderMonitor);
+        _monitor.addChild(&getAssets()->getEngine()->processInputMonitor);
+        once = true;
+    }
+    elysian::PerformanceMonitor::print(&_monitor);
+
+}
+
 
 EngineGLSceneWidget::~EngineGLSceneWidget(void){}
 /*

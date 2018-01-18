@@ -41,6 +41,8 @@ QWidget*            TkDebug::_centralWidget;
 bool                TkDebug::_pendingError = false;
 unsigned            TkDebug::_stackDepth = 0;
 constexpr char      TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
+constexpr const char* const
+                    TkDebug::_filterList[];
 bool                TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{ true }};
 QVector<QString>    TkDebug::_commandHistory;
 int                 TkDebug::_commandHistoryIndex;
@@ -238,6 +240,11 @@ void TkDebug::resetStackDepth(void) {
 }
 
 void TkDebug::Log(SEVERITY flag, QString msg, int src) {
+#ifdef DEBUG_FILTER_LIST_ENABLED
+    for(unsigned i = 0; i < sizeof(_filterList); ++i) {
+        if(msg == _filterList[i]) return;
+    }
+#endif
     _postToQueue((TK_SOURCE)src, flag, msg);
 }
 

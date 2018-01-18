@@ -1209,13 +1209,13 @@ namespace elysian {
         pushGlobalField("pairs");
         if(push()) {
             //call pairs(this)
-            if(_protectedCall(1, 3, nullptr)) {
+            if(ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 3)) {
                 //store next() function
                 lua_pushvalue(*_mainState, -3);
                 if(nextFunc.pull()) {
                     GY_ASSERT(nextFunc.getType() == LUA_TFUNCTION);
                     //call next(this, k)
-                    if(_protectedCall(2, 2, nullptr)) {
+                    if(ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 2, nullptr)) {
                         OOLUA::pull(*_mainState, pair);
                     } else GY_ASSERT(false);    //next(this, k) failed
                 } else GY_ASSERT(false);        //no next function found
@@ -1254,7 +1254,7 @@ namespace elysian {
         success = _fieldRef._key.push();
         GY_ASSERT(success);
 
-        if(_protectedCall(2, 2, nullptr)) {
+        if(ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 2, nullptr)) {
 
             success &= _fieldRef._cachedValue.pull();
             GY_ASSERT(success);

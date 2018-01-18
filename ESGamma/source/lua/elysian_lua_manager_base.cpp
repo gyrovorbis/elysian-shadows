@@ -165,7 +165,7 @@ unsigned LuaManagerBase::_envDump(LuaScript *scr) {
     lua_pushnumber(*_mainState, 3);
     sprintf(envString, "_env[%d]", envCount-1);
     lua_pushstring(*_mainState, envString);
-    _protectedCall(3, 1, nullptr);
+    ELYSIAN_LUA_MANAGER_PROTECTED_CALL(3, 1, nullptr);
     lua_pop(*_mainState, 1);
 
 
@@ -316,7 +316,7 @@ bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const s
             script->setEnvironRef(ref);                                 //and save key in LuaScript
         }
         lua_setupvalue(*_mainState, -2, 1);
-        _protectedCall(0, retCount, script);
+        ELYSIAN_LUA_MANAGER_PROTECTED_CALL(0, retCount, script);
     }
 
     return true;
@@ -357,7 +357,7 @@ bool LuaManagerBase::unloadScript(LuaScript &script) {
                         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());		//push _ENV
                         lua_getfield(*_mainState, -1, "onScriptDestroy");							//get _ENV.onScriptDestroy()
                         lua_remove(*_mainState, -2);												//remove _ENV
-                        _protectedCall(1, 0, behav);												//call _ENV.onScriptDestroy()
+                        ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 0, behav);												//call _ENV.onScriptDestroy()
                     }
                 }
                 //remove reference to script's ENV from Lua registry
@@ -498,7 +498,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
 
     pushGlobalField("pairs");
     lua_pushvalue(*_mainState, -2);
-    _protectedCall(1, 3, nullptr);
+    ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 3, nullptr);
 
     lua_pushvalue(*_mainState, -3);
     lua_insert(*_mainState, -4);
@@ -507,7 +507,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     lua_insert(*_mainState, -4);
 
     do {
-        if(!_protectedCall(2, 2, nullptr)) {
+        if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 2, nullptr)) {
             break;
         }
          if(lua_isnil(*_mainState, -2)) {

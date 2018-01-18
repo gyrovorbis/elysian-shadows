@@ -3,7 +3,7 @@
 
 #include <primitive/elysian_prim_attrib.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
-#include <primitive/elysian_color.hpp>
+#include <crtp/elysian_color.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Renderable)
 ELYSIAN_ASSET_TYPEDEF(SpriteAttrib)

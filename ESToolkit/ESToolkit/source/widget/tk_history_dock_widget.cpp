@@ -14,6 +14,7 @@ HistoryDockWidget::HistoryDockWidget(QWidget *parent) :
 
     m_undoView = new QUndoView(parent);
     m_undoView->setEmptyLabel("<Undo All>");
+    m_undoView->setAlternatingRowColors(true);
 
     QPalette p = m_undoView->palette();
     p.setColor(QPalette::Highlight, QColor(225,202,251));

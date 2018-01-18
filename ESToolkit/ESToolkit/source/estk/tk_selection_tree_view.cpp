@@ -1,7 +1,9 @@
 #include <estk/tk_selection_tree_view.h>
 #include <QKeyEvent>
 #include <QStyledItemDelegate>
+#include <QApplication>
 #include <QDebug>
+#include <QPainter>
 #include <QFontDatabase>
 
 SelectionTreeView::SelectionTreeView(void) {
@@ -29,6 +31,19 @@ void SelectionTreeView::keyPressEvent(QKeyEvent *event) {
     for(auto&& it : selectionModel()->selectedIndexes()) {
         delegate->editorEvent(event, model(), QStyleOptionViewItem(), it);
     }
+}
+
+void SelectionTreeView::drawRow(QPainter *p, const QStyleOptionViewItem &opt, const QModelIndex &idx) const {
+
+    QTreeView::drawRow(p, opt, idx);
+                p->save();
+                QColor color = static_cast<QRgb>(QApplication::style()->styleHint(QStyle::SH_Table_GridLineColor, &opt));
+
+               p->setPen( color );
+               p->drawLine(opt.rect.x(), opt.rect.bottom(), opt.rect.right(), opt.rect.bottom());
+               p->restore();
+          //     p->drawLine( 0, py, pw, py );
+               //p->drawLine(rect.x()+pw, rect.y(), rect.x()+pw, rect.y()+ph);
 }
 
 #if 0

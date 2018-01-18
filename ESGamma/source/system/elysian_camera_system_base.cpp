@@ -204,7 +204,10 @@ void CameraSystemBase::initializeProjMatrix(void) {
     memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
     gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
 
-    _debugState.setOrient(0.0f, 1.0f, 1.0f);
+    GYVector3 orient = { 0.0f, 1.0f, 1.0f };
+    gyVec3Normalize(&orient);
+
+    _debugState.setOrient(orient.x, orient.y, orient.z);
     gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 9000.0f);
 
     _curState->updateViewVolumeBoundingRegion();

@@ -237,7 +237,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     connect(altTabAction, SIGNAL(triggered()), this, SLOT(onAltTabShortcutTriggered()));
     addAction(altTabAction);
 
-    glUtilities::printGLSupport();
+    //glUtilities::printGLSupport();
     ReadSettings();
 
     setMouseTracking(true);
@@ -250,6 +250,7 @@ ESToolkit::~ESToolkit(void) {
     _areaTabBar->disconnect();
     _assetDockWidget->disconnect();
     _assets.disconnect();
+    delete _assets.getEngine();
 
     delete _helpDockWidget;
     delete _gitlabDialog;
@@ -336,6 +337,7 @@ void ESToolkit::closeEvent(QCloseEvent *event) {
     //MEMORY LEAK, BUT TEMPORARY FIX FOR DOUBLE DELETING AREA/SEVERITY IN ~TREEWIDGETITEM
     removeDockWidget(_assetDockWidget);
     _assetDockWidget->setParent(nullptr);
+
 
 }
 

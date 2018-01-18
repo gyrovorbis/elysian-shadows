@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <primitive/elysian_color.hpp>
+#include <primitive/elysian_color_base.hpp>
 
 #ifdef _WIN32
 #include <windows.h>

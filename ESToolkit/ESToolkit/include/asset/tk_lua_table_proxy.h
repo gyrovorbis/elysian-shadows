@@ -9,6 +9,7 @@
 #define TK_LUA_TABLE_METAMETHODSET_FIELD_KEY    "__metaset"
 #define TK_LUA_TABLE_PROPERTY_TABLE_FIELD_KEY   "__prop"
 #define TK_LUA_TABLE_DELEGATE_FIELD_KEY         "__delegate"
+#define TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY   "__outerdelegate"
 
 
 class TkLuaTableUserdata: public QObject {

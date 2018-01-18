@@ -153,6 +153,14 @@ OOLUA_EXPORT_FUNCTIONS(ComboBoxPropertyItemDelegate)
 OOLUA_EXPORT_FUNCTIONS_CONST(DynamicContentPropertyItemDelegate)
 OOLUA_EXPORT_FUNCTIONS(DynamicContentPropertyItemDelegate)
 
+/*!
+    \qmltype ColorSwatchPropertyItemDelegate
+    \since 1.6.1
+    \inmodule Toolkit
+    \brief Delegate
+*/
+OOLUA_EXPORT_FUNCTIONS_CONST(ColorSwatchPropertyItemDelegate)
+OOLUA_EXPORT_FUNCTIONS(ColorSwatchPropertyItemDelegate)
 
 
 void TkLuaManager::_registerWrappers(void) {
@@ -163,6 +171,7 @@ void TkLuaManager::_registerWrappers(void) {
     _mainState->register_class<EnumDropdownPropertyItemDelegate>();
     _mainState->register_class<SpinboxPropertyItemDelegate>();
     _mainState->register_class<FileBrowserPropertyItemDelegate>();
+    _mainState->register_class<ColorSwatchPropertyItemDelegate>();
     _mainState->register_class_static<Toolkit>("setSelection", &Toolkit_setSelection);
     _mainState->register_class_static<Toolkit>("getSelection", &ESToolkit::pushSelection);
     _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);

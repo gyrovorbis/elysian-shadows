@@ -51,7 +51,7 @@ int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {
 
      //   dbgprintf("Stack size - %d", lua_gettop(*_mainState));
 
-    _protectedCall(1, 1, nullptr);
+    ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr);
 
     if(--_serializeDepth == 0) setSerializing(false);
 

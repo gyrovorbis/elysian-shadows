@@ -87,7 +87,9 @@ GYOgg* gyAudOggCreate(const char*const path) {
     int result;
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     int alErrorCode;
-    char* device = (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+
+    _gyLog(GY_DEBUG_VERBOSE, "[GYRO_AUDIO] Loading OGG file: %s", path);
+    _gyPush();
 
     GYOgg* ogg = malloc(sizeof(GYOgg));
     GYOggPayload* payload = ogg->_data = malloc(sizeof(GYOggPayload));
@@ -105,6 +107,7 @@ GYOgg* gyAudOggCreate(const char*const path) {
         _gyLog(GY_DEBUG_WARNING, "Could not open ogg file %s", path);
         free(payload);
         free(ogg);
+        _gyPop(1);
         return NULL;
     }
 
@@ -113,6 +116,7 @@ GYOgg* gyAudOggCreate(const char*const path) {
         gyFileClose(&payload->oggFile);
         free(payload);
         free(ogg);
+        _gyPop(1);
         return NULL;
     }
 
@@ -129,14 +133,15 @@ GYOgg* gyAudOggCreate(const char*const path) {
 
     /* Debug stuff. */
 
-    printf("Device			- %s\n", device);
-    printf("Version			- %d\n", payload->vorbisInfo->version);
-    printf("Channels		- %d\n", payload->vorbisInfo->channels);
-    printf("Rate (hz)		- %ld\n", payload->vorbisInfo->rate);
-    printf("bitrate upper	- %ld\n", payload->vorbisInfo->bitrate_upper);
-    printf("bitrate nominal - %ld\n", payload->vorbisInfo->bitrate_nominal);
-    printf("bitrate lower	- %ld\n", payload->vorbisInfo->bitrate_lower);
-    printf("bitrate window	- %ld\n", payload->vorbisInfo->bitrate_window);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "OGG Version", payload->vorbisInfo->version);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "Channels", payload->vorbisInfo->channels);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "Rate (Hz)", payload->vorbisInfo->rate);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "Bitrate Upper", payload->vorbisInfo->bitrate_upper);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "Bitrate Nominal", payload->vorbisInfo->bitrate_nominal);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "Bitrate Lower", payload->vorbisInfo->bitrate_lower);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %20d", "Bitrate Window", payload->vorbisInfo->bitrate_window);
+
+    _gyPop(1);
     return ogg;
 #endif
 }

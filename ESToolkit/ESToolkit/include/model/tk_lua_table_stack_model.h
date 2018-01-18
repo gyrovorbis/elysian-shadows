@@ -26,6 +26,7 @@ protected:
     mutable QStandardItem*          _labelItem      = nullptr;
     LuaFieldRef                     _fieldRef;
     mutable bool                    _ownsDelegate   = false;
+    mutable bool                    _triedDelegate  = false;
 
 public:
                                     LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelItem);

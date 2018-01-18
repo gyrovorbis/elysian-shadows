@@ -7,6 +7,7 @@
 #include <QQuaternion>
 #include <QVector2D>
 #include <QTimer>
+#include <utility/elysian_performance_monitor.hpp>
 #include <tk_task_monitor.h>
 //#include <QOpenGLFunctions>
 //#include <QGLFunctions>
@@ -38,6 +39,7 @@ public:
         bool        isCameraManualOnPlay(void) const;
         void        setCameraManualOnPlay(const bool val);
         void        setMapView(MapView* view);
+        void        dumpPerfMonitor(void);
 
         explicit    EngineGLSceneWidget(QWidget* parent = nullptr);
         virtual     ~EngineGLSceneWidget(void);
@@ -59,6 +61,7 @@ protected:
     bool                    _wasGLError         = false;
     QString                 _prevGLError;
     TaskMonitor             _engineTask;
+    elysian::PerformanceMonitor _monitor = elysian::PerformanceMonitor("Engine Frame");
     QTimer                  _engineUpdateTimer;
 
     static EngineGLSceneWidget* _self;

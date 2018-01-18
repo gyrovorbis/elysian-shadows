@@ -29,7 +29,6 @@ private:
     TextCallbackType        _textCallback;
     DeleteCallbackType      _deleteCallback;
 
-
 public:
 
     static void             luaArraySizeTextCallback(ESTkStandardItem* item, QStyleOptionViewItem& option);

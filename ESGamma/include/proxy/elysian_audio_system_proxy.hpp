@@ -6,7 +6,6 @@
 
 namespace OOLUA {
     typedef elysian::AudioSystem    AudioSystem;
-
 }
 
 

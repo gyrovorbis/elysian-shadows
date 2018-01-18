@@ -123,7 +123,6 @@ SOURCES += \
     ../../AssetIO/source/level/elysian_level_manager.cpp \
     ../../AssetIO/source/level/elysian_tile.cpp \
     ../../AssetIO/source/level/elysian_zcoords.cpp \
-    ../../AssetIO/source/primitive/elysian_color.cpp \
     ../../AssetIO/source/primitive/elysian_instance_transform.cpp \
     ../../AssetIO/source/primitive/elysian_material.cpp \
     ../../AssetIO/source/primitive/elysian_quad_sprite_attrib.cpp \
@@ -218,7 +217,10 @@ SOURCES += \
     ../../game/source/elysian_playable_pane.cpp \
     ../../ESGamma/source/gui/elysian_menu_widget.cpp \
     ../../ESGamma/source/system/elysian_event_system.cpp \
-    ../../game/source/elysian_pause_menu.cpp
+    ../../game/source/elysian_pause_menu.cpp \
+    ../../AssetIO/source/primitive/elysian_color_base.cpp \
+    source/asset/tk_color.cpp \
+    source/delegate/tk_color_swatch_property_item_delegate.cpp
 
 
 !ios: !dreamcast: !android {
@@ -344,7 +346,6 @@ HEADERS += \
     ../../AssetIO/include/level/elysian_map_depth_buffer.hpp \
     ../../AssetIO/include/level/elysian_tile.hpp \
     ../../AssetIO/include/level/elysian_zcoords.hpp \
-    ../../AssetIO/include/primitive/elysian_color.hpp \
     ../../AssetIO/include/primitive/elysian_instance_transform.hpp \
     ../../AssetIO/include/primitive/elysian_material.hpp \
     ../../AssetIO/include/primitive/elysian_model_attrib.hpp \
@@ -488,7 +489,13 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_menu_widget.hpp \
     ../../AssetIO/include/utility/elysian_associative_aggregate_array.hpp \
     ../../ESGamma/include/system/elysian_event_system.hpp \
-    ../../game/include/elysian_pause_menu.hpp
+    ../../game/include/elysian_pause_menu.hpp \
+    ../../ESGamma/include/utility/elysian_performance_monitor.hpp \
+    include/model/tk_performance_monitor.hpp \
+    ../../AssetIO/include/crtp/elysian_color.hpp \
+    ../../AssetIO/include/primitive/elysian_color_base.hpp \
+    include/asset/tk_color.h \
+    include/delegate/tk_color_swatch_property_item_delegate.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

@@ -177,7 +177,7 @@ void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const
   lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, action.ref());	//push actionTable
   lua_getfield(*_mainState, -1, "calculateCombatStatMods");
   OOLUA::push(*_mainState, src);
-  _protectedCall(1, 1, nullptr);
+  ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr);
   OOLUA::pull(*_mainState, statMods);
 
   lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, target->getSelfTable().ref()); //push combat target's self table

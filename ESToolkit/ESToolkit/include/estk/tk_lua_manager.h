@@ -58,7 +58,7 @@ inline void TkLuaManager::getGlobal(const char * const key) {
 inline bool TkLuaManager::getMetatable(const int index) {
     pushGlobalField("getmetatable");
     lua_pushvalue(*_mainState, index < 0? index-1 : index);
-    _protectedCall(1, 1, nullptr);
+    ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1);
 
     if(lua_isnil(*_mainState, -1)) {
         lua_pop(*_mainState, 1);

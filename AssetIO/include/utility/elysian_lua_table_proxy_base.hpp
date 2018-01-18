@@ -161,7 +161,7 @@ namespace elysian {
             lua_getglobal(l, "appendTable");
             lua_pushvalue(l, -2); //duplicate dest table
             lua_rawgeti(l, LUA_REGISTRYINDEX, This::_propertyProxyIndexTable);
-            LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 0);
             _LuaTableProxyParents<T, P, Rest...>::appendParentIndexTable(l, proxy, totalProxies);
         }
 
@@ -169,7 +169,7 @@ namespace elysian {
             lua_getglobal(l, "appendTable");
             lua_pushvalue(l, -2); //duplicate dest table
             lua_rawgeti(l, LUA_REGISTRYINDEX, This::_propertyProxyNewIndexTable);
-            LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 0);
             _LuaTableProxyParents<T, P, Rest...>::appendParentNewIndexTable(l);
         }
 
@@ -429,7 +429,7 @@ namespace elysian {
                 lua_pushvalue(l, -2);                       //this ptr
 
                 GY_ASSERT(!lua_isnil(l, -1));      //ARRAY WITH NO SIZE FUNCTION, FOOL!
-                LuaManager::_protectedCall(1, 1, nullptr);              //get array size
+                ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr);              //get array size
 
                 int size = lua_tointeger(l, -1);
 
@@ -444,7 +444,7 @@ namespace elysian {
                 lua_pushvalue(l, lua_upvalueindex(LUA_TABLE_PROXY_UPVALUE_GET_METHOD));      //get function
                 lua_pushvalue(l, -3);                       //this ptr arg1
                 lua_pushinteger(l, index-1);                //index arg2 (C arrays are zero based)
-                LuaManager::_protectedCall(2, 1, nullptr);              //this->getByIndex(index);
+                ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 1, nullptr);              //this->getByIndex(index);
 
                 return 2; // return <key, value> pair
 
@@ -464,7 +464,7 @@ namespace elysian {
                 lua_pushvalue(*_mainState, -3);     //key
                 const unsigned varArgs = _LuaTableProxyParents<Bases...>::pushParentsIndexTable(*_mainState);
                 _ooluaIndexTable.push(*_mainState);
-                LuaManager::_protectedCall(3+varArgs, 2, nullptr, "LuaTableProxy::next()");
+                ELYSIAN_LUA_MANAGER_PROTECTED_CALL(3+varArgs, 2, nullptr, "LuaTableProxy::next()");
                 if(!lua_isnil(*_mainState, -1)) {
 #else
 
@@ -487,7 +487,7 @@ namespace elysian {
                             lua_remove(l, -2);
                         }
 
-                        if(!LuaManager::_protectedCall(1, 1, nullptr)) {
+                        if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr)) {
                             return 0;
                         }
 
@@ -513,9 +513,9 @@ namespace elysian {
             _LuaTableProxyParents<P, T>::pushUpvalues();
             lua_pushcclosure(l, &_createVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
             lua_pushvalue(l, -4);
-            LuaManager::_protectedCall(1, 1, nullptr);      //create proxy table
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr);      //create proxy table
             lua_pushvalue(l, -3);                           //push valueTable
-            LuaManager::_protectedCall(2, 0, nullptr);      //iterate over valueTable, copying values
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 0, nullptr);      //iterate over valueTable, copying values
             return 0;
         }
 
@@ -537,7 +537,7 @@ namespace elysian {
 
         static inline  void _callPropertyProxyMethod(const bool /*write*/, const unsigned args, const unsigned retVals, const int keyIndex) {
             lua_remove(*LuaManager::_mainState, keyIndex);
-            LuaManager::_protectedCall(args, retVals, nullptr);
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(args, retVals, nullptr);
         }
 
         static inline void  _registerPropertyMetaMethodTables(lua_State* l);
@@ -571,7 +571,7 @@ namespace elysian {
 				//qDebug() << "found field!";
                 lua_pushvalue(l, -4);
 
-                LuaManager::_protectedCall(1, 1, nullptr);
+                ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr);
 
                 lua_remove(l, -4);
                 lua_remove(l, -2);
@@ -602,7 +602,7 @@ namespace elysian {
                 GY_ASSERT(!lua_isnil(l, -1)); //no sizef unction for array proxy
                 lua_pushvalue(l, -2);                       //this ptr
 
-                LuaManager::_protectedCall(1, 1, nullptr); //put array size on stack
+                ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1, nullptr); //put array size on stack
                 break;
 
             }
@@ -761,7 +761,7 @@ namespace elysian {
             lua_pushcclosure(l, &_luaFromTableCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
             lua_rawset(l, -3);
 
-            //metatable["__type"] = class name
+            //metatable["__typename"] = class name
             lua_pushstring(l, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
             lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
             lua_rawset(l, -3);
@@ -995,7 +995,7 @@ namespace elysian {
             lua_pushinteger(state, -1);
             lua_pushcclosure(*LuaManager::_mainState, &_luaFromTableCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
             lua_insert(state, -3);
-            LuaManager::_protectedCall(2, 0, nullptr);
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 0, nullptr);
             _initializing = false;
         }
 
@@ -1035,7 +1035,7 @@ namespace elysian {
 #if 0
             if(!rvalue.isNil()) rvalue.push();  //Push rvalue object as argument to copy constructor!
 
-            if(!LuaManager::_protectedCall(!rvalue.isNil()? 1 : 0, 1, nullptr)) {
+            if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(!rvalue.isNil()? 1 : 0, 1, nullptr)) {
                 errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!", OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
                 retCount = 0;
             }
@@ -1044,7 +1044,7 @@ namespace elysian {
             GY_ASSERT(!lua_isnil(l, -1));
 #else
 
-            if(!LuaManager::_protectedCall(0, 1, nullptr)) {
+            if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(0, 1, nullptr)) {
                 errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!", OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
                 retCount = 0;
             }

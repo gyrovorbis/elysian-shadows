@@ -781,3 +781,8 @@ void ESToolkit::on_actionDelete_Selection_triggered()
     _ui->mapView->deleteSelection();
 }
 
+
+void ESToolkit::on_actionPerformance_Monitor_Dump_triggered()
+{
+    _engineGLView->dumpPerfMonitor();
+}

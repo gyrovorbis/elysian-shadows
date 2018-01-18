@@ -10,6 +10,12 @@
     <height>768</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>5</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="focusPolicy">
    <enum>Qt::ClickFocus</enum>
   </property>
@@ -65,6 +71,9 @@
      <widget class="MapView" name="mapView">
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="toolTipDuration">
+       <number>2</number>
       </property>
       <property name="alignment">
        <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -278,6 +287,7 @@
     <addaction name="actionTexture_Dump"/>
     <addaction name="actionAudio_Dump"/>
     <addaction name="actionLua_Manager_Dump"/>
+    <addaction name="actionPerformance_Monitor_Dump"/>
     <addaction name="actionAdd_Player"/>
     <addaction name="actionRemove_Player"/>
    </widget>
@@ -1635,6 +1645,11 @@
   <action name="actionRemove">
    <property name="text">
     <string>Remove</string>
+   </property>
+  </action>
+  <action name="actionPerformance_Monitor_Dump">
+   <property name="text">
+    <string>Performance Monitor Dump</string>
    </property>
   </action>
  </widget>

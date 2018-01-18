@@ -4,7 +4,7 @@
 #include <crtp/elysian_particle_emitter.hpp>
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_collidable.hpp>
-#include <primitive/elysian_color.hpp>
+#include <primitive/elysian_color_base.hpp>
 
 namespace OOLUA {
     typedef elysian::ParticleEmitterAttrib      ParticleEmitterAttrib;

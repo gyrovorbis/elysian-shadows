@@ -8,6 +8,7 @@
 #include <QStack>
 #include <QPoint>
 
+#define DEBUG_FILTER_LIST_ENABLED
 #define GY_FILE_QT_DEBUG_DIR            "logs"
 #define DEBUG_QT_BUFF_SIZE              GYRO_PRINTF_BUFFER_SIZE
 #define DEBUG_LOG_POLL_MSEC             500
@@ -137,6 +138,11 @@ private:
 
     constexpr static char    _srcEnumToStr[SOURCE_MAX][50] = {
         "LIBGYRO", "ENGINE", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL"
+    };
+
+    constexpr static const char* const _filterList[] = {
+        "libpng warning: iCCP: known incorrect sRGB profile ((null):0, (null))",
+        "libpng warning: iCCP: known incorrect sRGB profile"
     };
 
 };

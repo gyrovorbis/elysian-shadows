@@ -104,79 +104,74 @@ void LuaTableFieldItem::setDirty(const bool val) {
 }
 
 QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
-
-    if(!_delegate) {
+    if(!_triedDelegate) {
+        _triedDelegate = true;
 
         LuaManager::stackBalanceBegin();
-        int top = lua_gettop(*_mainState);
-
         _fieldRef.getTableRef().push();
 
-        LuaManager::getMetatable(-1);
-        lua_getfield(*_mainState, -1, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
-
-        if(lua_isnil(*_mainState, -1)) {
-
-            _fieldRef.getTableRef().push();
-
-            lua_getfield(*_mainState, -1, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
-
-            if(lua_isnil(*_mainState, -1)) {
-                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                LuaManager::stackBalanceEnd();
-                return nullptr;
-            }
-
-            QString registryName;
-            OOLUA::pull(*_mainState, registryName);
-
-            LuaManager::pushGlobalField(Q_CSTR(registryName));
-
-            if(lua_isnil(*_mainState, -1)) {
-                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                LuaManager::stackBalanceEnd();
-                return nullptr;
-            }
-
-            //TK_LUA_TABLE_DELEGATE_FIELD_KEY
+        if(LuaManager::getMetatable(-1)) {
+            //Check for delegate associated with particular field
             lua_getfield(*_mainState, -1, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
-            if(lua_isnil(*_mainState, -1)) {
-                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                LuaManager::stackBalanceEnd();
-                return nullptr;
+            if(!lua_isnil(*_mainState, -1)) {
+                int type = lua_type(*_mainState, -1);
+                switch(type) {
+                case LUA_TFUNCTION:
+                    _delegate = LuaManager::_callFunction<PropertyItemDelegate*>(nullptr, _fieldRef.getTableRef(), _fieldRef.getKey());
+                    if(_delegate) _ownsDelegate = true;
+                    break;
+                case LUA_TTABLE:
+                    _fieldRef.getKey().push();
+                    lua_gettable(*_mainState, -2);
+
+                    if(!lua_isnil(*_mainState, -1)) {
+                        PropertyItemDelegate* delegate;
+                        OOLUA::pull(*_mainState, delegate);
+                        _delegate = static_cast<QStyledItemDelegate*>(delegate);
+                        GY_ASSERT(_delegate); //WTF
+                    } else lua_pop(*_mainState, 1);
+
+                    lua_pop(*_mainState, 1);
+                    break;
+                default:
+                    lua_pop(*_mainState, 1);
+                    GY_ASSERT(false); //trying to pull some kind of fucked-ass shit as a delegate!
+                    break;
+                }
+            } else lua_pop(*_mainState, 1);
+            lua_pop(*_mainState, 1);
+        }
+        lua_pop(*_mainState, 1);
+
+
+        //Fall-back: Check for delegate associated with particular outer table/userdata type
+        const int luaType = _fieldRef.getVariant().getType();
+        if(!_delegate && (luaType == LUA_TTABLE || luaType == LUA_TUSERDATA)) {
+            _fieldRef.getVariant().push();
+            if(LuaManager::getMetatable(-1)) {
+                lua_getfield(*_mainState, -1, TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY);
+                if(!lua_isnil(*_mainState, -1)) {
+                    int type = lua_type(*_mainState, -1);
+                    switch(type) {
+                    case LUA_TUSERDATA: {
+                        PropertyItemDelegate* delegate;
+                        OOLUA::pull(*_mainState, delegate);
+                        _delegate = static_cast<QStyledItemDelegate*>(delegate);
+                        GY_ASSERT(_delegate); //WTF
+                        break;
+                    }
+                    default:
+                        lua_pop(*_mainState, 1);
+                        GY_ASSERT(false); //trying to pull some kind of fucked-ass shit as a delegate!
+                        break;
+                    }
+                } else lua_pop(*_mainState, 1);
+                lua_pop(*_mainState, 1);
             }
+
+            lua_pop(*_mainState, 1);
         }
 
-        int type = lua_type(*_mainState, -1);
-
-        switch(type) {
-        case LUA_TFUNCTION:
-            _delegate = LuaManager::_callFunction<PropertyItemDelegate*>(nullptr, _fieldRef.getTableRef(), _fieldRef.getKey());
-            _ownsDelegate = true;
-            break;
-        case LUA_TTABLE:
-
-            _fieldRef.getKey().push();
-
-            lua_gettable(*_mainState, -2);
-
-            if(lua_isnil(*_mainState, -1)) {
-                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                LuaManager::stackBalanceEnd();
-                return nullptr;
-            }
-
-            PropertyItemDelegate* delegate;
-            OOLUA::pull(*_mainState, delegate);
-            _delegate = static_cast<QStyledItemDelegate*>(delegate);
-            break;
-
-        default:
-            break;
-
-        }
-
-        lua_pop(*_mainState, lua_gettop(*_mainState)-top);
         LuaManager::stackBalanceEnd();
     }
 
@@ -271,7 +266,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
     if(valueType == LUA_TUSERDATA) {
         LuaManager::pushGlobalField("down_cast");
         lua_pushvalue(*_mainState, -2);
-        LuaManager::_protectedCall(1, 1, nullptr, "LuaTableTableFieldData - downcasting");
+        ELYSIAN_LUA_MANAGER_PROTECTED_CALL(1, 1);
         //update reference
         lua_pushvalue(*_mainState, -1);
 
@@ -297,7 +292,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
         if(!lua_isnil(*_mainState, -1)) {
             lua_pushvalue(*_mainState, -3);
             lua_pushlightuserdata(*_mainState, static_cast<QObject*>(this));
-            _protectedCall(2, 0, nullptr);
+            ELYSIAN_LUA_MANAGER_PROTECTED_CALL(2, 0, nullptr);
             iterable = true;
         //userdata doesn't have lua table proxy
         } else {

@@ -12,6 +12,7 @@
 #include <delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <delegate/tk_combobox_property_item_delegate.h>
 #include <delegate/tk_dynamic_content_property_item_delegate.h>
+#include <delegate/tk_color_swatch_property_item_delegate.h>
 
 
 namespace OOLUA
@@ -58,6 +59,9 @@ OOLUA_PROXY(ComboBoxPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DynamicContentPropertyItemDelegate, PropertyItemDelegate)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ColorSwatchPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 

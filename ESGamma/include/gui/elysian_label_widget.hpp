@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_LABEL_WIDGET_HPP
 #define ELYSIAN_LABEL_WIDGET_HPP
 
-#include "gui/elysian_widget.hpp"
-#include "primitive/elysian_color.hpp"
+#include <gui/elysian_widget.hpp>
+#include <crtp/elysian_color.hpp>
 
 #define ELYSIAN_LABEL_WIDGET_TEXT_SIZE  100
 
