@@ -318,10 +318,6 @@ ParticleEmitterAttrib* ParticleEmitterInternals::getAttrib(void) const {
     return _attrib;
 }
 
-void ParticleEmitterInternals::allocatePool(const unsigned size) {
-    _pool.resize(size);
-}
-
 void ParticleEmitterInternals::setAttrib(ParticleEmitterAttrib * const attrib) {
     //delete _attrib;
   _attrib = attrib;

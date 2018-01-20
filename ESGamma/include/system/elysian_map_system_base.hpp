@@ -7,7 +7,7 @@
 #include <level/elysian_map_depth_buffer.hpp>
 #include <level/elysian_zcoords.hpp>
 #include <crtp/elysian_renderable.hpp>
-#include "elysian_particle_system.hpp"
+#include <crtp/elysian_particle_system.hpp>
 #include <utility/elysian_mem_pool.hpp>
 #include <crtp/elysian_entity.hpp>
 #include "elysian_light_system.hpp"

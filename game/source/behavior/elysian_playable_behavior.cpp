@@ -3,7 +3,7 @@
 #include <crtp/elysian_timer_system.hpp>
 #include <system/elysian_party_system.hpp>
 #include <crtp/elysian_input_system.hpp>
-#include <system/elysian_particle_system.hpp>
+#include <crtp/elysian_particle_system.hpp>
 #include <system/elysian_audio_system.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <gyro_input_api.h>

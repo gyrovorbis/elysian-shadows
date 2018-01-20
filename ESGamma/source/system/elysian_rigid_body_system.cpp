@@ -8,7 +8,7 @@
 #include "elysian_force_generator.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_level.hpp>
-#include "elysian_particle_system.hpp"
+#include <crtp/elysian_particle_system.hpp>
 #include "elysian_behavior_system.hpp"
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_renderable.hpp>

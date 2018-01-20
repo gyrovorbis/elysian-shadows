@@ -395,6 +395,15 @@ QMenu* TkEntity::createContextMenu(void) {
 #endif
     menuStack.pop();
 
+    menuStack.insertAction("Center in Scene",
+         [&](bool) {
+            //if(isActive()) getAssets()->getCurrentArea()->removeEntity(this);
+            //delete this;
+            elysian::CameraKeyFrame keyFrame = *System::getCameraSys()->getCurrentState();
+            keyFrame.setPos(_transform._pos.x, _transform._pos.y - _transform._pos.z, 1.0f);
+            System::getCameraSys()->moveToKeyFrame(keyFrame, 0.5f);
+    });
+
 
     return menuStack.takeTopLevel();
 }

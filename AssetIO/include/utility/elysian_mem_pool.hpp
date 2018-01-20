@@ -51,6 +51,7 @@ protected:
     unsigned        _maxSize            = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY;
     unsigned        _freeIndicesSize    = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY;
 
+
     unsigned _claimFreeIndex(void) {
         //Out of space
         if(_usedCount == _maxSize) {
@@ -279,6 +280,8 @@ public:
         }
         return end();
     }
+
+    unsigned getMaxSize(void) const { return _maxSize; }
 
 
     T& claimFreeEntry(void) {

@@ -19,7 +19,7 @@
 #include <crtp/elysian_entity.hpp>
 #include "elysian_map_system.hpp"
 #include <crtp/elysian_light_source.hpp>
-#include "elysian_particle_system.hpp"
+#include "elysian_particle_system_base.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
 #include "elysian_examinable_system.hpp"

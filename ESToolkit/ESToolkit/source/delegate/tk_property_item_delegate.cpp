@@ -42,6 +42,7 @@ bool NewLineFilter::eventFilter(QObject* object, QEvent* event) {
 
 
 QWidget* PropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    if(_readOnly) return nullptr;
     auto* widget = QStyledItemDelegate::createEditor(parent, option, index);
 
     QLineEdit* lineEdit = qobject_cast<QLineEdit*>(widget);

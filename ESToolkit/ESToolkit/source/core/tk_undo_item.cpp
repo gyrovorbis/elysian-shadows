@@ -22,7 +22,7 @@ const QString UndoItem::text[TYPE_SIZE] =
     "Tile Group Transparency",
     "Tile Group Normal Map",
     "Tile Group Specular Map",
-    "Entity Deleted"
-    "Lua Table Field",
+    "Entity Deleted",
+    "Lua Table Field"
 
 };

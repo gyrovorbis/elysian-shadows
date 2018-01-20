@@ -79,6 +79,9 @@
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QLabel" name="planeLabel">
               <property name="font">
@@ -108,7 +111,7 @@
               <property name="sizeHint" stdset="0">
                <size>
                 <width>40</width>
-                <height>20</height>
+                <height>12</height>
                </size>
               </property>
              </spacer>
@@ -136,13 +139,18 @@
               <property name="sizeHint" stdset="0">
                <size>
                 <width>40</width>
-                <height>20</height>
+                <height>12</height>
                </size>
               </property>
              </spacer>
             </item>
             <item>
              <widget class="QLabel" name="orientLabel">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="text">
                <string>Orientation</string>
               </property>

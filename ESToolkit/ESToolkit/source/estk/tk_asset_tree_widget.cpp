@@ -13,6 +13,7 @@
 
 AssetTreeWidget::AssetTreeWidget(QWidget *parent): QTreeWidget(parent), _ignoreItemChange(false), _prev(NULL) {
 	setContextMenuPolicy(Qt::CustomContextMenu);
+    //setIconSize(QSize(12, 12));
 	connect(this, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(OnCurrentItemChanged(QTreeWidgetItem*,int)));
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenuRequested(QPoint)));
 	connect(getAssets(), SIGNAL(areaAdded(Project *const, Level *const, Area *const)), this, SLOT(OnAddArea(Project* const, Level* const, Area* const)));

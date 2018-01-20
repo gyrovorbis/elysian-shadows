@@ -41,6 +41,7 @@ protected:
     QVector<QString>        _supportedUserData;
     MimeDropManager*        _mimeDropManager    = nullptr;
     int                     _completerMode;
+    bool                    _readOnly;
 
     //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
     //virtual void    setEditorData(QWidget *editor, const QModelIndex &index) const = 0;
@@ -61,6 +62,8 @@ public:
     void                        setMimeDropManager(MimeDropManager* mgr);
 
     void                        addSupportedType(const int luaType);
+    bool                        isReadOnly(void) const;
+    void                        setReadOnly(bool val=true);
     static LuaTableFieldItem*   modelIndexToLuaTableFieldItem(const QModelIndex& index);
     static ESTkStandardItem*    modelIndexToESTkStandardItem(const QModelIndex& index);
 
@@ -75,6 +78,8 @@ inline void PropertyItemDelegate::addSupportedType(const int luaType) { _support
 inline void PropertyItemDelegate::setContextMenuCallback(MenuCallbackType callback) { _menuCallback = std::move(callback); }
 inline void PropertyItemDelegate::setMimeDropManager(MimeDropManager* mgr) { _mimeDropManager = mgr; }
 inline void PropertyItemDelegate::setCompleterCallback(CompleterCallbackType callback, int mode) { _completerCallback = std::move(callback); _completerMode = mode; }
+inline bool PropertyItemDelegate::isReadOnly(void) const { return _readOnly; }
+inline void PropertyItemDelegate::setReadOnly(bool val) { _readOnly = val; }
 
 
 

@@ -106,3 +106,4 @@ void DynamicContentPropertyItemDelegate::luaArraySizeTextCallback(ESTkStandardIt
     palette.setColor(QPalette::Text, QColor(Qt::gray));
     option.palette = palette;
 }
+

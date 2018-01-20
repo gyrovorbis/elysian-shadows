@@ -246,3 +246,5 @@ void PropertyStackModel::removeChildItems(QStandardItem* parent) {
 
 #endif
 }
+
+void PropertyStackModel::populateModel(void) { }

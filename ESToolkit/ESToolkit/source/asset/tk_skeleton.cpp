@@ -1,10 +1,10 @@
-
 #include <asset/tk_skeleton.h>
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
 #include <spine/AnimationState.h>
 #include <spine/Slot.h>
 #include <spine/Skeleton.h>
+
 #include <estk/tk_lua_wrappers.h>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <delegate/tk_file_browser_property_item_delegate.h>

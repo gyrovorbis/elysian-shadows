@@ -35,7 +35,7 @@ public:
 
     virtual QVariant                data(const QModelIndex &index, int role) const override;
 
-	virtual void populateModel(void)=0;
+    virtual void populateModel(void);
 
 	void clearStack(void);
 	void insertHeaders(void);

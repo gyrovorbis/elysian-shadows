@@ -32,6 +32,9 @@ namespace elysian {
         float       getY(void) const;
         void        setX(const float val) const;
         void        setY(const float val) const;
+
+        float       getMagnitude(void) const;
+        void        normalize(void);
     };
 
     struct Vector3: public GYVector3, public VirtualArray<Vector3, int, float>, public LuaTableProxy<Vector3> {
@@ -272,6 +275,12 @@ namespace elysian {
         GY_ASSERT(index == 0 || index == 1);
         if(!index) _ptr->x = value;
         else _ptr->y = value;
+    }
+    inline float Vector2::getMagnitude(void) const {
+        return gyVec2Magnitude(_ptr);
+    }
+    inline void Vector2::normalize(void) {
+        gyVec2Normalize(_ptr);
     }
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}

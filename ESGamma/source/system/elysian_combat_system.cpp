@@ -7,7 +7,7 @@
 #include "elysian_behavior_system.hpp"
 #include "elysian_audio_system.hpp"
 #include <system/elysian_party_system.hpp>
-#include <system/elysian_particle_system.hpp>
+#include <crtp/elysian_particle_system.hpp>
 #include <cmath>
 
 namespace elysian {

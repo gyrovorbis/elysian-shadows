@@ -413,7 +413,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib,
     internally rather than dynamically allocating them as needed. This DRASTICALLY reduces allocation and
     processing overhead in exchange for a larger memory footprint. By default, the engine gives each emitter a pool
     of size 5000 particles. If you know that a ParticleEmitter will definitely not require this large of a pool size,
-    you should manually lower it with ParticleEmitter::allocatePool() to free wasted RAM.
+    you should manually lower it with ParticleEmitter::resizePool() to free wasted RAM.
     \li \b{Textures} - By default, particles are all untextured. Texturing the particles is more expensive, but not
     by a whole lot; however, normal and specular mapping them as well starts to become more expensive.
     \li \b{Lifetime} - The ParticleEmitterAttrib::maxLife property is used to configure how long until a particle
@@ -469,7 +469,7 @@ attached to an active entity, otherwise behavior is undefined (ie: it's going to
  * \sa emitFromPoint(), emitFromPointInDir()
  */
 /*!
- * \qmlmethod void ParticleEmitter::allocatePool(int size)
+ * \qmlmethod void ParticleEmitter::resizePool(int size)
  *
  * Low-level function for reallocating the size of the particle pool used by the emitter. A larger size allows
  * for more particles on screen and for particles to last longer before needing to be recycled. Care must be taken
@@ -483,6 +483,6 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,
                        emitFromPointInDir,
                        emitFromEntity,
                        setAttrib,
-                       allocatePool)
+                       resizePool)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitter,
                              getAttrib)

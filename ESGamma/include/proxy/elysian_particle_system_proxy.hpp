@@ -2,12 +2,10 @@
 #define ELYSIAN_PARTICLE_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_particle_system.hpp>
+#include <crtp/elysian_particle_system.hpp>
 
 namespace OOLUA {
     typedef elysian::ParticleSystem     ParticleSystem;
-
-
 }
 
 OOLUA_PROXY(ParticleSystem)

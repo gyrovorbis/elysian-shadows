@@ -25,7 +25,7 @@
 #include <crtp/elysian_audio_source.hpp>
 #include <crtp/elysian_light_source.hpp>
 #include "elysian_light_system.hpp"
-#include "elysian_particle_system.hpp"
+#include "elysian_particle_system_base.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
 #include "elysian_event_monitor.hpp"

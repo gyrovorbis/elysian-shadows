@@ -24,6 +24,7 @@ AssetDockWidget::AssetDockWidget(QWidget *parent) :
     _ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     _ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
     _ui->treeView->setDragEnabled(true);
+    _ui->treeView->setIconSize(QSize(12, 12));
     //_ui->treeView->setAcceptDrops(true);
     //_ui->treeView->setDropIndicatorShown(true);
 

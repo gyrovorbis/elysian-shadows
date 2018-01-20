@@ -18,6 +18,8 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
     _hiddenItem->setFlags(Qt::ItemIsEnabled);
 
     setContextMenuPolicy(Qt::CustomContextMenu);
+    setSortingEnabled(true);
+    sortByColumn(0, Qt::AscendingOrder);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(_onCustomContextMenuRequested(QPoint)));
 
 	connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(OnAreaChange(Area*const)));
@@ -98,6 +100,7 @@ void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectabl
             //setCurrentItem(static_cast<TkEntity*>(*it));
             auto index = indexFromItem(static_cast<QTreeWidgetItem*>(*it));
             selModel->select(index, QItemSelectionModel::Select);
+            scrollTo(index);
         }
 
         //_ignoreLayerChange = true;

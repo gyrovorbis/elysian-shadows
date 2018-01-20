@@ -9,6 +9,7 @@ ELYSIAN_ASSET_TYPEDEF(MapSystem)
 ELYSIAN_ASSET_TYPEDEF(CameraSystem)
 ELYSIAN_ASSET_TYPEDEF(InputSystem)
 ELYSIAN_ASSET_TYPEDEF(LevelSystem)
+ELYSIAN_ASSET_TYPEDEF(ParticleSystem)
 
 namespace elysian {
   class CharacterSystem;
@@ -21,7 +22,6 @@ namespace elysian {
   class BehaviorSystem;
   class AudioSystem;
   class LightSystem;
-  class ParticleSystem;
   class DaySystem;
   class DialogSystem;
   class ExaminableSystem;

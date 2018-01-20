@@ -8,7 +8,7 @@
 #include "elysian_collision_system.hpp"
 #include <crtp/elysian_examinable.hpp>
 #include "elysian_behavior_system.hpp"
-#include "elysian_particle_system.hpp"
+#include <crtp/elysian_particle_system.hpp>
 #include <crtp/elysian_level.hpp>
 #include "elysian_audio_system.hpp"
 #include <crtp/elysian_input_system.hpp>

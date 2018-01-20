@@ -136,6 +136,9 @@ namespace elysian {
         ParticleEmitterInternals&   operator=(const ParticleEmitterInternals& rhs);
 
         void                        allocatePool(const unsigned size);
+        unsigned                    getPoolSize(void) const;
+        unsigned                    getActiveCount(void) const;
+        void                        resizePool(unsigned size);
         void                        setAttrib(ParticleEmitterAttrib*const attrib);
         ParticleEmitterAttrib*      getAttrib(void) const;
 
@@ -221,6 +224,9 @@ namespace elysian {
         _attrib = rhs._attrib;
         return *this;
     }
+    inline unsigned ParticleEmitterInternals::getPoolSize(void) const { return _pool.getMaxSize(); }
+    inline void ParticleEmitterInternals::resizePool(unsigned size) { _pool.resize(size); }
+    inline unsigned ParticleEmitterInternals::getActiveCount(void) const { return _pool.size(); }
 
     inline ParticleEmitterBase::ParticleEmitterBase(Entity& entity, const ParticleEmitterBase*const prefab): Component(entity) {
         if(prefab) *this = *prefab;

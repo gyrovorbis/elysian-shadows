@@ -51,7 +51,7 @@ OOLUA_PROXY(ParticleEmitter, Component)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, allocatePool, unsigned)
+    OOLUA_MEM_FUNC(void, resizePool, unsigned)
     OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<ParticleEmitterAttrib*>)
     OOLUA_MEM_FUNC_CONST(maybe_null<ParticleEmitterAttrib*>, getAttrib)
     OOLUA_MEM_FUNC(void, emitFromPoint, const GYVector3&, float, unsigned)

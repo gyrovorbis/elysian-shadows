@@ -145,7 +145,6 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_examinable_system.cpp \
     ../../ESGamma/source/system/elysian_light_system.cpp \
     ../../ESGamma/source/system/elysian_map_system_base.cpp \
-    ../../ESGamma/source/system/elysian_particle_system.cpp \
     ../../ESGamma/source/system/elysian_party_system.cpp \
     ../../ESGamma/source/system/elysian_rigid_body_system.cpp \
     ../../ESGamma/source/system/elysian_skeleton_system.cpp \
@@ -220,7 +219,11 @@ SOURCES += \
     ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
     source/asset/tk_color.cpp \
-    source/delegate/tk_color_swatch_property_item_delegate.cpp
+    source/delegate/tk_color_swatch_property_item_delegate.cpp \
+    ../../ESGamma/source/system/elysian_particle_system_base.cpp \
+    source/estk/tk_particle_system.cpp \
+    source/widget/tk_particle_attrib_preview_dock_widget.cpp \
+    source/widget/tk_2d_vector_widget.cpp
 
 
 !ios: !dreamcast: !android {
@@ -380,7 +383,6 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_examinable_system.hpp \
     ../../ESGamma/include/system/elysian_light_system.hpp \
     ../../ESGamma/include/system/elysian_map_system_base.hpp \
-    ../../ESGamma/include/system/elysian_particle_system.hpp \
     ../../ESGamma/include/system/elysian_party_system.hpp \
     ../../ESGamma/include/system/elysian_rigid_body_system.hpp \
     ../../ESGamma/include/system/elysian_skeleton_system.hpp \
@@ -495,7 +497,12 @@ HEADERS += \
     ../../AssetIO/include/crtp/elysian_color.hpp \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
     include/asset/tk_color.h \
-    include/delegate/tk_color_swatch_property_item_delegate.h
+    include/delegate/tk_color_swatch_property_item_delegate.h \
+    ../../ESGamma/include/system/elysian_particle_system_base.hpp \
+    ../../ESGamma/include/crtp/elysian_particle_system.hpp \
+    include/estk/tk_particle_system.h \
+    include/widget/tk_particle_attrib_preview_dock_widget.h \
+    include/widget/tk_2d_vector_widget.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -623,8 +630,7 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
     form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
     form/dialog/tk_lua_explorer.ui \
     form/dialog/tk_gitlab_dialog.ui \
-    form/estk/tk_camera_dock_widget.ui \
-    form/widget/tk_particle_attrib_preview_widget.ui
+    form/estk/tk_camera_dock_widget.ui
 
 #docs.target = ESToolkit.qhc
 #docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
