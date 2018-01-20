@@ -40,6 +40,7 @@ private Q_SLOTS:
     void onEntityParented(Entity*const child, Entity*const parent);
     //void onLayerChange(const Assets::LAYER_TYPE layer);
     void _onCustomContextMenuRequested(QPoint location);
+    void _onItemDoubleClicked(QTreeWidgetItem* item, int column);
 
 Q_SIGNALS:
     void entityLayerActivate(void);

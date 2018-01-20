@@ -94,6 +94,7 @@ namespace elysian {
         void                    removeCombatant(Entity& entity);
         void                    clearCombatants(void);
         void                    killCombatant(Entity& entity);
+        LuaVariant              getCombatants(void) const;
 
         void                    setBgmDynamic(const bool enabled=true);
         void                    setBgmCombatTrack(const unsigned track);
@@ -124,6 +125,7 @@ namespace elysian {
 	inline void CombatSystem::setBgmDynamic(const bool enabled) { _bgmDynamic = enabled; }
     inline auto CombatSystem::getCombatState(void) const -> COMBAT_STATE { return _combatState; }
     inline auto CombatSystem::getCombatMgmtType(void) const -> COMBAT_MGMT_TYPE { return _combatMgmtType; }
+    inline void CombatSystem::setCombatMgmtType(COMBAT_MGMT_TYPE type) { _combatMgmtType = type; }
     inline void CombatSystem::setCombatEnabled(bool value) {
         _setCombatState(value? COMBAT_STATE_INACTIVE : COMBAT_STATE_DISABLED);
         _updateCombatState();

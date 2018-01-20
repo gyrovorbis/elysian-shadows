@@ -30,6 +30,7 @@ public:
     virtual ITEM_TYPE           getTreeWidgetItemType(void);
     virtual QAbstractItemModel* getModel(void) const;
     virtual TYPE                getType(void) const;
+    virtual void                onDoubleClick(void);
 
 };
 

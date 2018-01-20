@@ -400,7 +400,8 @@ void ESToolkit::WriteSettings()
     settings.setValue("lightingEnabled", _engineParams.lightingEnabled);
     settings.setValue("bloomEnabled", _engineParams.bloomEnabled);
     settings.setValue("manualCameraEnabled", _engineParams.manualCameraEnabled);
-    settings.setValue("audioEnabled", _engineParams.audioEnabled);
+    bool audioEnabled = _engineParams.audioEnabled;
+    settings.setValue("audioEnabled", audioEnabled);
     unsigned x, y;
     _engineDialog->getStartPos(x, y);
     settings.setValue("engineStartPosX", x);

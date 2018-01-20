@@ -8,6 +8,7 @@ ParticleAttribPreviewDockWidget::ParticleAttribPreviewDockWidget(QWidget *parent
     _treeView(new QTreeView),
     _vectorWidget(new Vector2DWidget)
 {
+    setObjectName("particlePreviewDockWidget");
     setWindowTitle("Particle Preview");
     auto layout = new QHBoxLayout;
     layout->setMargin(0);

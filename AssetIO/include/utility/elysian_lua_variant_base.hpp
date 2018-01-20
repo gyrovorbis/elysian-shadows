@@ -229,6 +229,8 @@ namespace elysian {
         static LuaVariantBase       fromRef(const int luaRef);
         static LuaVariantBase       fromWeakRef(const int ref);
         static LuaVariantBase       fromArray(const std::initializer_list<LuaVariant>& array);
+        template<typename C>
+        static LuaVariantBase       fromSequenceContainer(const C& cont);
         static LuaVariantBase       makeWeakRef(const LuaVariant& variant);
         static LuaVariantBase       newTable(void);
 
@@ -1013,6 +1015,17 @@ public:
             lua_settable(*_mainState, -3);
         }
         return fromStack();
+    }
+
+    template<typename C>
+    inline LuaVariantBase LuaVariantBase::fromSequenceContainer(const C& cont) {
+        LuaVariant array;
+        unsigned index = 1;
+        for(auto it: cont) {
+            array[index++] = it;
+
+        }
+        return array;
     }
 
     inline LuaVariantBase LuaVariantBase::makeWeakRef(const LuaVariant& src) {

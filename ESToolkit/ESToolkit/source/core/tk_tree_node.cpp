@@ -36,3 +36,8 @@ void TreeNode::setChanged(bool clean)
 QString TreeNode::getNodeName() const {
     return text(0);
 }
+
+void TreeNode::onDoubleClick(void) {
+
+
+}

@@ -134,6 +134,8 @@ namespace elysian {
         void                    translateOffset(const GYVector3& dist);
         void                    scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr);
         void                    moveToKeyFrame(const CameraKeyFrame& frame, const float time=0.0f, EventMonitor*const monitor=nullptr);
+        void                    moveToPosition(float x, float y, float z, float time=0.0f, EventMonitor*const monitor=nullptr);
+        void                    centerOnEntity(const Entity& entity, float time=0.0f, EventMonitor*const monitor=nullptr);
         void                    shake(const GYVector3& displacement, unsigned int oscillations, const float time, const bool fade=false, EventMonitor*const monitor=nullptr);
         void                    staticScale(const float factor);
         void                    setStaticScale(const float factor);
@@ -403,6 +405,11 @@ namespace elysian {
 
     inline void CameraSystemBase::setDynamic(const bool value) { _dynamic = value; }
 
+    inline void CameraSystemBase::moveToPosition(float x, float y, float z, float time, EventMonitor*const monitor) {
+        auto keyFrame = getKeyFrame();
+        keyFrame.setPos(x, y-z, 1.0f);
+        moveToKeyFrame(keyFrame, time, monitor);
+    }
 }
 
 

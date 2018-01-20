@@ -29,6 +29,7 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 	connect(getAssets(), SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnAddEntity(Project*const,Level*const,Area*const,Entity*const)));
 	connect(getAssets(), SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnRemoveEntity(Project*const,Level*const,Area*const,Entity*const)));
     connect(getAssets(), SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(_onItemDoubleClicked(QTreeWidgetItem*,int)));
     //onnect(getAssets(), SIGNAL(layerChanged(Assets::LAYER_TYPE)), this, SLOT(onLayerChange(Assets::LAYER_TYPE)));
 }
 
@@ -193,3 +194,7 @@ void EntityTreeWidget::_onCustomContextMenuRequested(QPoint location) {
 
 }
 
+void EntityTreeWidget::_onItemDoubleClicked(QTreeWidgetItem *item, int) {
+    TreeNode *node= static_cast<TreeNode*>(item);
+    node->onDoubleClick();
+}

@@ -397,11 +397,7 @@ QMenu* TkEntity::createContextMenu(void) {
 
     menuStack.insertAction("Center in Scene",
          [&](bool) {
-            //if(isActive()) getAssets()->getCurrentArea()->removeEntity(this);
-            //delete this;
-            elysian::CameraKeyFrame keyFrame = *System::getCameraSys()->getCurrentState();
-            keyFrame.setPos(_transform._pos.x, _transform._pos.y - _transform._pos.z, 1.0f);
-            System::getCameraSys()->moveToKeyFrame(keyFrame, 0.5f);
+           centerInScene();
     });
 
 
@@ -614,4 +610,14 @@ public:
 
 UndoItem* TkEntity::createDeleteUndoItem(void) {
     return new TkEntityDeleteUndoItem(this);
+}
+
+void TkEntity::centerInScene(void) const {
+    elysian::CameraKeyFrame keyFrame = *System::getCameraSys()->getCurrentState();
+    keyFrame.setPos(_transform._pos.x, _transform._pos.y - _transform._pos.z, 1.0f);
+    System::getCameraSys()->centerOnEntity(*this, 0.5f);
+}
+
+void TkEntity::onDoubleClick(void) {
+    centerInScene();
 }

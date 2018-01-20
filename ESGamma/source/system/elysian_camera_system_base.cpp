@@ -542,7 +542,9 @@ bool CameraSystemBase::isOnscreen(const Entity &entity) {
 }
 
 
-
+void CameraSystemBase::centerOnEntity(const Entity& entity, float time, EventMonitor*const monitor) {
+    moveToPosition(entity._transform._pos.x, entity._transform._pos.y, entity._transform._pos.z, time, monitor);
+}
 
 
 }

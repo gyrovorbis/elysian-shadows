@@ -8,6 +8,7 @@
 #include "elysian_audio_system.hpp"
 #include <system/elysian_party_system.hpp>
 #include <crtp/elysian_particle_system.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
 #include <cmath>
 
 namespace elysian {
@@ -399,4 +400,9 @@ void CombatSystem::_emitCombatModifierText(const Combat* const target,
 
   // Emit icons for status ailments!
 }
+
+LuaVariant CombatSystem::getCombatants(void) const {
+   return LuaVariant::fromSequenceContainer(_combatants);
+}
+
 }

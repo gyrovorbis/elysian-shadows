@@ -82,15 +82,17 @@ public:
     bool                        getSaveFlag(void) const;
     void                        setSaveFlag(const bool val);
     QString                     getTexturePath(void) const;
+    void                        centerInScene(void) const;
 
     //LuaTableProxy
     static void                 initializeDelegates(void);
     static void                 initializeVirtualTableDelegates(QString property);
 
-	//Selectable
+    //TreeNode + Selectable
     virtual auto                getType(void) const -> TYPE override;
     virtual auto                getTreeWidgetItemType(void) -> ITEM_TYPE override;
     virtual QAbstractItemModel* getModel(void) const override;
+    virtual void                onDoubleClick(void) override;
 
     //elysian::EntityBase
     virtual bool                activate(void) override;

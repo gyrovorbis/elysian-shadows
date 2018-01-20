@@ -118,6 +118,7 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         }
 
         QTabWidget* tWidget = new QTabWidget;
+        tWidget->setContentsMargins(0, 0, 0, 0);
         tWidget->addTab(helpEngine->contentWidget(), "Contents");
         tWidget->addTab(helpEngine->indexWidget(), "Index");
 

@@ -72,7 +72,7 @@ namespace elysian {
         void        setMaxLife(const unsigned life); //number of frames since birth that it lives
         void        setStartSize(const unsigned size); // 1 = 1x1 square
         void        setEndSize(const unsigned size);
-        void        setEndColor(const GYColor4 color);
+        void        setEndColor(const Color4& color);
         void        setAnimGridSize(const unsigned w, const unsigned h);
         void        setAnimGridIndex(const unsigned row, const unsigned col, int index);
         void        setAnimFrameDuration(const unsigned frame);
@@ -191,7 +191,7 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setForceMask(const BitMask32 mask) { _forceMask = mask; }
     inline void ParticleEmitterAttribBase::setStartSize(const unsigned size) { _startSize = size; }
     inline void ParticleEmitterAttribBase::setEndSize(const unsigned size) { _endSize = size; }
-    inline void ParticleEmitterAttribBase::setEndColor(const GYColor4 color) { _endColor = color; }
+    inline void ParticleEmitterAttribBase::setEndColor(const Color4& color) { _endColor = color; }
 
     inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;

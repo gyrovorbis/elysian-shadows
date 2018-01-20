@@ -72,14 +72,18 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
         _fsModel->setResolveSymlinks(true);
         _ui->treeView->setModel(_fsModel);
+        _ui->treeView->setRootIndex(_fsModel->index(project->getNodePath()));
+        _ui->treeView->header()->setStretchLastSection(true);
         _ui->treeView->hideColumn(1);
         _ui->treeView->hideColumn(3);
-        _ui->treeView->setRootIndex(_fsModel->index(project->getNodePath()));
+        // _ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
         connect(_ui->treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), _fsModel, SLOT(_onSelectionChanged(const QItemSelection&,const QItemSelection&)));
         connect(_ui->treeView, SIGNAL(doubleClicked(const QModelIndex&)), _fsModel, SLOT(_onDoubleClick(const QModelIndex&)));
         connect(_ui->treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(_onCustomContextMenuRequested(const QPoint&)));
         _onLevelChanged(getAssets()->getCurrentLevel());
         _onAreaChanged(getAssets()->getCurrentArea());
+        auto width = _ui->treeView->header()->width();
+        _ui->treeView->setColumnWidth(0, width*0.7f);
     }
 }
 
@@ -95,12 +99,18 @@ void AssetDockWidget::_onAreaChanged(TkArea*const area) {
         const auto index = _fsModel->index(absPath);
         if(index.isValid()) {
             _ui->treeView->setCurrentIndex(index);
+            _ui->treeView->scrollTo(index);
         }
     }
 }
 
 void AssetDockWidget::_onLevelChanged(TkLevel*const level) {
-    if(level && _fsModel) _ui->treeView->setCurrentIndex(_fsModel->index(FileUtilities::getAbsoluteAssetPath(level->getNodePath())));
+    if(level && _fsModel) {
+        auto index = _fsModel->index(FileUtilities::getAbsoluteAssetPath(level->getNodePath()));
+        _ui->treeView->setCurrentIndex(index);
+        _ui->treeView->scrollTo(index);
+
+    }
 }
 
 void AssetDockWidget::_onSelectionChanged(const Selectable::TYPE type, Selectable *const selection) {
@@ -355,7 +365,7 @@ QVariant CustomAssetFileType::data(const QModelIndex& index, int role) {
         }
     }
     else if(role == Qt::DisplayRole && index.column() == 2 && !_typeName.isNull()) return _typeName;
-    else if(role == Qt::DecorationRole && !_icon.isNull()) return _icon;
+    else if(role == Qt::DecorationRole && !_icon.isNull() && index.column() == 0) return _icon;
     else {
         QVariant value = static_cast<const QFileSystemModel*>(index.model())->QFileSystemModel::data(index, role);
         if(role == Qt::DisplayRole && index.column() == 0 && _modified)
