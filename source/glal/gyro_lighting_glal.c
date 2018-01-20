@@ -70,9 +70,9 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
       //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
+    GLfloat border[] = {1.0f, 0.0f,0.0f,0.0f };
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
 #else
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -702,7 +702,6 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
      //glEnable(GL_CULL_FACE);
     //    glCullFace(GL_FRONT);
 
-             glClear(GL_DEPTH_BUFFER_BIT);
     if(_firstShadowPass) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
          glClearDepth(1.0f);
@@ -716,6 +715,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         glDepthFunc(GL_LESS);
         _firstShadowPass = 0;
     }
+                 glClear(GL_DEPTH_BUFFER_BIT);
 
     //find projView matrix
     gyMatMultMat(lightProjViewMatrix, (const float (*)[4])lightProjMatrix, (const float (*)[4])lightViewMatrix);
