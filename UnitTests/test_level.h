@@ -6,7 +6,7 @@
 #include <test_area.h>
 #include <test_estk.h>
 #include <QDebug>
-#include <tk_tree_node.h>
+#include <ESToolkit/ui/item/tk_tree_node.h>
 #include <QTreeWidgetItem>
 #include <ESToolkit/core/tk_project.h>
 #include <ESToolkit/core/tk_file_utilities.h>

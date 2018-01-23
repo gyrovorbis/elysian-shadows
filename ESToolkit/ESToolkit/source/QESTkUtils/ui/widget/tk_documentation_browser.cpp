@@ -228,12 +228,14 @@ bool HelpDockWidget::openPage(QString page, QString section) {
 }
 
 void HelpDockWidget::onSearchFinished(int resultCount) {
+#ifdef TOOLKIT_DOCUMENTATION_RESOURCES
     if(resultCount) {
         _searchResultWidget->show();
     } else {
         QMessageBox::critical(this, "No Results Found!", "Search query yielded no results.");
 
     }
+#endif
 }
 
 void HelpDockWidget::onIndexingStarted(void) {
@@ -254,10 +256,12 @@ void HelpDockWidget::onSearchResultsRequestShowLink(const QUrl &link) {
 }
 
 void HelpDockWidget::onSearchButtonClicked(void) {
+#ifdef TOOLKIT_DOCUMENTATION_RESOURCES
     if(_searchLineEdit->text().isEmpty()) {
         QMessageBox::critical(this, "Search failed!", "Search for what? Search field is empty. Enter a string!");
         return;
     }
     openSearch(_searchLineEdit->text());
+#endif
 }
 

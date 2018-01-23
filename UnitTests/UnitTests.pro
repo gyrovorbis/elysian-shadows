@@ -23,16 +23,12 @@ DEPENDPATH += ../AssetIO/include \
 	../ESGamma/include/system \
 	../ESGamma/include/utility \
         ../ESToolkit/ESToolkit/include \
-	../ESToolkit/ESToolkit/include/asset \
-	../ESToolkit/ESToolkit/include/model \
-	../ESToolkit/ESToolkit/include/estk \
-	../ESToolkit/ESToolkit/include/tile_engine \
-	../ESToolkit/ESToolkit/include/core \
+        ../ESToolkit/ESToolkit/include/AssetIO \
+        ../ESToolkit/ESToolkit/include/ESGamma \
+        ../ESToolkit/ESToolkit/include/ESToolkit \
+        ../ESToolkit/ESToolkit/include/QtESTkUtils \
 	../libGyro/include \
 	../libGyro/include/kinetic \
-	../ESToolkit/ESToolkit/include/sheet_manager \
-	../ESToolkit/ESToolkit/include/dialog \
-	../ESToolkit/ESToolkit/include/widget
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../AssetIO/include \
@@ -48,11 +44,10 @@ INCLUDEPATH += ../AssetIO/include \
 	../ESGamma/include/system \
 	../ESGamma/include/utility \
         ../ESToolkit/ESToolkit/include \
-	../ESToolkit/ESToolkit/include/asset \
-	../ESToolkit/ESToolkit/include/model \
-	../ESToolkit/ESToolkit/include/estk \
-	../ESToolkit/ESToolkit/include/tile_engine \
-	../ESToolkit/ESToolkit/include/core \
+        ../ESToolkit/ESToolkit/include/ESGamma \
+        ../ESToolkit/ESToolkit/include/AssetIO \
+        ../ESToolkit/ESToolkit/include/ESToolkit \
+        ../ESToolkit/ESToolkit/include/QESTkUtils \
 	../libGyro/include \
 	../libGyro/include/kinetic \
 	../ESToolkit/ESToolkit/include/sheet_manager \

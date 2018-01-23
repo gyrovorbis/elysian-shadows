@@ -3,7 +3,7 @@
 
 #include <QtTest>
 #include <QDebug>
-#include <asset/tk_dialog.h>
+#include <AssetIO/tk_dialog.h>
 #include <utility/elysian_lua_variant_base.hpp>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_dialog_proxy.hpp>
