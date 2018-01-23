@@ -1,0 +1,524 @@
+#include <QDir>
+#include <QMessageBox>
+#include <ESToolkit/core/tk_assets.h>
+#include <ESToolkit/core/tk_project.h>
+#include <AssetIO/tk_level.h>
+#include <AssetIO/tk_area.h>
+#include <crtp/elysian_entity.hpp>
+#include "elysian_debug.hpp"
+#include "elysian_engine.hpp"
+#include <crtp/elysian_level_system.hpp>
+#include "elysian_map_system.hpp"
+#include "elysian_map_system.hpp"
+#include <ESToolkit/core/tk_entity_selectable.h>
+#include "elysian_party_system.hpp"
+#include <AssetIO/tk_behavior.h>
+#include <ESToolkit/core/tk_file_utilities.h>
+#include <crtp/elysian_input_system.hpp>
+
+//====STATIC MEMBERS====
+
+Project*            Assets::_project                            = nullptr;
+elysian::Engine*    Assets::_engine                             = nullptr;
+Selectable*         Assets::_currentSelection                   = nullptr;
+Selectable::TYPE    Assets::_currentSelectionType               = Selectable::EMPTY;
+Assets::LAYER_TYPE  Assets::_currentLayer                       = Assets::LAYER_TILE1;
+bool                Assets::_layerVisible[Assets::LAYER_MAX]    = { true };
+int                 Assets::_levelChangeDepth                   = 0;
+int                 Assets::_areaChangeDepth                    = 0;
+
+//====INSTANCE MEMBERS====
+
+//General case
+void Assets::setCurrentSelection(Selectable *const selection) {
+    Selectable *const oldSelection = _currentSelection;
+
+    if(oldSelection != selection) {
+
+        _currentSelectionType = (!selection)? Selectable::EMPTY : selection->getType();
+        _currentSelection = selection;
+
+        if(oldSelection) {
+            oldSelection->setCurrentSelection(false, selection);
+        }
+
+        if(_currentSelection) {
+            _currentSelection->setCurrentSelection(true, oldSelection);
+        }
+
+        Q_EMIT selectionChanged(_currentSelectionType, _currentSelection);
+
+        //prevent fucking memory leaks!
+        //Must be done after, in case shit is still using this data before change.
+        if(oldSelection && oldSelection->isTemporary()) delete oldSelection;
+
+    }
+}
+
+//Use a regular expression instead!
+QString Assets::formatFileName(const QString string) {
+    QString text=string.simplified();
+    for(int i=0;i<text.size();i++) {
+        if  ( (text.data()[i].unicode() < 48 && text.data()[i].unicode()!=32)
+            || (text.data()[i].unicode() < 65 && text.data()[i].unicode() > 57)
+            || (text.data()[i].unicode() < 97 && text.data()[i].unicode() > 90 && text.data()[i].unicode()!=95)
+            || (text.data()[i].unicode() < 127 && text.data()[i].unicode() > 122) ) {
+            text.data()[i]='X';
+        } else if(text.data()[i].unicode()==32) {
+            text.data()[i]='_';
+        }
+    }
+    return text;
+}
+
+QString Assets::getProjectDir(void)
+{
+    if(_project != nullptr) {
+        return _project->getLocation();
+    }
+
+    else {
+        return "";
+    }
+}
+
+int Assets::getUndoStackCount(void)
+{
+    return _curArea->getUndoStackCount();
+}
+
+
+void Assets::connectSlots(Project *const project) {
+    connect(project, SIGNAL(activating(Project *const, Level *const, Area *const)), this, SLOT(onChildProjectActivating(Project *const, Level *const, Area *const)));
+    connect(project, SIGNAL(areaAdded(Project * const, Level *const, Area *const)), this, SLOT(onAreaAdded(Project *const, Level *const, Area *const)));
+    connect(project, SIGNAL(areaRenamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
+    connect(project, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(onAreaRemoved(Project*const,Level*const,Area*const)));
+    connect(project, SIGNAL(levelAdded(Project *const, Level *const)), this, SLOT(onLevelAdded(Project *const, Level *const)));
+    connect(project, SIGNAL(levelRemoved(Project*const,Level*const)), this, SLOT(onLevelRemoved(Project*const,Level*const)));
+    connect(project, SIGNAL(levelRenamed(QString,QString)), this, SLOT(onLevelRenamed(QString,QString)));
+    connect(project, SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityAdded(Project*const,Level*const,Area*const,Entity*const)));
+    connect(project, SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityRemoved(Project*const,Level*const,Area*const,Entity*const)));
+    connect(project, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(project, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(project, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
+    connect(project, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
+
+    QObject::connect(project, &Project::inactiveEntityAdded, [&](Project*const project, Level*const level, Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityAdded(project, level, area, entity);
+    });
+
+    QObject::connect(project, &Project::inactiveEntityRemoved, [&](Project*const project, Level*const level, Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityRemoved(project, level, area, entity);
+    });
+}
+
+//====NONSTATIC====
+
+Assets::Assets(void) {
+    for(unsigned i = 0; i < Assets::LAYER_MAX; ++i) _layerVisible[i] = true;
+}
+
+Assets::~Assets(void) {
+    //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
+      //  delete it.value();
+    //}
+    if(_project) {
+        _project->clear();
+        delete _project;
+
+    }
+    //_project.clear();
+}
+
+void Assets::setLayerVisible(const Assets::LAYER_TYPE type, bool flag) {
+    //_layerVisible[type] = flag;
+    if(type <= 3) _engine->getMapSys()->setRenderTileLayer(type, flag);
+    _layerVisible[type] = flag;
+}
+
+bool Assets::getLayerVisible(const Assets::LAYER_TYPE type) const {
+    return (type <= 2)? _engine->getMapSys()->getRenderTileLayer(type) : _layerVisible[type];
+}
+
+bool Assets::setCurrentArea(const QString path) {
+/*    if(_currentArea) _currentArea->Deactivate();
+    if(_currentLevel->getArea(name)) {
+        _currentArea = _currentLevel->getArea(name);
+        _currentArea->Activate();
+        if(_currentArea->entity.size() > 0) setCurrentEntity(_currentArea->entity.first());
+        else setCurrentEntity(NULL);
+        Q_EMIT AreaChanged(_currentArea);
+        return true;
+    }
+    Debug::Log(Debug::LOG_WARNING, "Could not set current area to %s!\n", name.toStdString().c_str());
+    return false;*/
+    if(!_curLevel) {
+        setCurrentArea(nullptr);
+        return false;
+    }
+    Area *area = _curLevel->getArea(path);
+    if(!area) {
+        setCurrentArea(nullptr);
+        return false;
+    }
+    setCurrentArea(area);
+    return true;
+}
+
+void Assets::setCurrentArea(Area *const area) {
+    ++_areaChangeDepth;
+   // if(_currentArea) _currentArea->deactivate();
+    //if(_currentArea == area) return;
+    //_currentArea = area;
+    Q_EMIT areaChanging(area);
+    if(_engine) _engine->getLevelSys()->switchArea(area? area->path : nullptr);
+  //  if(area) {
+        //area->activate();
+    //    Q_EMIT areaChanged(_curArea);
+        //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
+      //  setCurrentSelection((EntitySelectable*)nullptr);
+    //}
+   // else {
+        setCurrentSelection((EntitySelectable*)nullptr);
+        Q_EMIT areaChanged(_curArea);
+    //}
+    --_areaChangeDepth;
+}
+
+
+void Assets::setCurrentLayer(const LAYER_TYPE type) {
+    _currentLayer = type;
+    Q_EMIT layerChanged(type);
+}
+
+bool Assets::setCurrentLevel(const QString path) {
+
+    if(!_project) return false;
+    Level *level = _project->getLevel(path);
+    if(!level) return false;
+    setCurrentLevel(level);
+    return true;
+}
+
+void Assets::setCurrentLevel(Level *const level) {
+    ++_levelChangeDepth;
+   // if(_currentLevel) _currentLevel->deactivate();
+    //if(_currentLevel == level) return;
+  //  _currentLevel = level;
+    Q_EMIT levelChanging(level);
+    if(_engine) {
+        //_tkLevelChange = true;  //Prevent recursion from lower level informing upper level of level change
+        _engine->getLevelSys()->switchLevel(level? level->path : nullptr);
+        //_tkLevelChange = false;
+    }
+    if(level) {
+    //	level->activate();
+        if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodePath());
+        else setCurrentArea(nullptr);
+    }
+    else setCurrentArea(nullptr);
+    Q_EMIT levelChanged(level);
+    --_levelChangeDepth;
+}
+
+bool Assets::setCurrentProject(const QString path) {
+
+    Project *project = getProject(path);
+    if(!project) return false;
+    setCurrentProject(project);
+    return true;
+}
+
+void Assets::setCurrentProject(Project *const project) {
+    if(_project != project) {
+        _project = project;
+    }
+
+    if(project) {
+        project->activate();
+        if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getNodePath());
+        else setCurrentLevel(nullptr);
+        QDir::setCurrent(_project->getLocation());
+    }
+
+    else {
+        setCurrentLevel(nullptr);
+    }
+
+    Q_EMIT projectChanged(project);
+}
+
+Project *Assets::getProject(const QString /*name*/) const {
+    return _project;
+}
+
+Project *Assets::loadProject(const QString directory) {
+    //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
+    if(_project != nullptr) {
+        if(_project->getLocation() == directory) {
+            QMessageBox::critical(nullptr, tr("Error!"), tr("The project is already open!\n"));
+            return nullptr;
+        }
+    }
+  //  makeGLContextCurrent();
+   // qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
+
+   // if(!validateProjectPath(directory)) return nullptr;
+
+    FileUtilities::setAssetPath(QDir(directory).absolutePath());
+    Project *proj = new Project;
+    connectSlots(proj);
+    gyTimerInit();
+
+    elysian::Debug::getInstance().setEngine(*_engine);
+
+    {
+        DbgEvent event("Initializing ESGamma engine");
+        _engine = new elysian::Engine;
+        elysian::Debug::setEngine(*_engine);
+
+        elysian::Debug::getInstance().sandboxInit();
+        _engine->loadAssets();
+        _engine->setEngineState(elysian::System::ENGINE_ESTK_STOP);
+    }
+
+    Q_EMIT engineInitialize();
+
+    //_engine->getMapSys()->makeCurrent();
+
+
+    if(proj->load(directory)) {
+        //ConnectSlots(proj);
+        _project = proj;
+        Q_EMIT projectAdded(proj);
+
+       // _engine->getMapSys()->show();
+//        doneGLContextCurrent();
+        return proj;
+    }
+
+   // doneGLContextCurrent();
+    delete proj;
+    Debug::Logf(Debug::LOG_VERBOSE, "Could not load project %s!", directory.toStdString().c_str());
+    return nullptr;
+}
+
+bool Assets::saveProject(const QString path) const {
+    if(_project->getNodePath() == path) return _project->save();
+    Debug::Logf(Debug::LOG_VERBOSE, "Project %s does not exist!", Q_CSTR(path));
+    return false;
+}
+
+bool Assets::removeProject(const QString path) {
+    //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
+        if(_project->getNodePath() == path) {
+            setCurrentProject(nullptr);
+            Q_EMIT projectRemoved(_project);
+            Q_EMIT projectRemoveUI();
+
+            Project *temp = _project;
+            //_project.erase(it);
+            delete temp;
+
+
+            return true;
+        }
+
+    //}
+    Debug::Logf(Debug::LOG_VERBOSE, "Project %s could not be removed!", Q_CSTR(path));
+    return false;
+}
+
+void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
+    if(project && _project != project) setCurrentProject(project->getNodePath());
+    if(level && _curLevel != level) setCurrentLevel(level->getNodePath());
+    if(area && _curArea != area) setCurrentArea(area->getNodePath());
+}
+
+void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {
+    Q_EMIT areaAdded(project, level, area);
+}
+
+void Assets::onAreaRemoved(Project *const project, Level *const level, Area *const area) {
+    Q_EMIT areaRemoved(project, level, area);
+}
+
+void Assets::onLevelAdded(Project *const project, Level *const level) {
+    Q_EMIT levelAdded(project, level);
+}
+
+void Assets::onLevelRemoved(Project *const project, Level *const level) {
+    Q_EMIT levelRemoved(project, level);
+}
+
+void Assets::onEntityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity) {
+    Q_EMIT entityAdded(project, level, area, entity);
+}
+
+void Assets::onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity) {
+    Q_EMIT entityRemoved(project, level, area, entity);
+}
+
+void Assets::onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp) {
+    Q_EMIT componentAttached(project, level, area, entity, comp);
+}
+
+void Assets::onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp) {
+    Q_EMIT componentRemoved(project, level, area, entity, comp);
+}
+
+void Assets::onAreaRenamed(const QString oldName, const QString newName) {
+    Q_EMIT areaRenamed(oldName, newName);
+}
+
+void Assets::onLevelRenamed(const QString oldName, const QString newName) {
+    Q_EMIT levelRenamed(oldName, newName);
+}
+
+void Assets::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
+    Q_EMIT mapChanged(area, changes);
+}
+
+void Assets::onEntityParented(Entity * const child, Entity * const parent) {
+    Q_EMIT entityParented(child, parent);
+}
+
+Level* Assets::reloadLevel(Level* level) {
+    bool wasCurrent = false;
+    if(!level) level = getCurrentLevel();
+    QString levelPath;
+    QString areaPath;
+    if(getCurrentLevel() == level) {
+        wasCurrent = true;
+        levelPath = level->getNodePath();
+        if(getCurrentArea()) areaPath = getCurrentArea()->getNodePath();
+        setCurrentArea(nullptr);
+        setCurrentLevel(nullptr);
+    }
+    level = level->getProject()->reloadLevel(level);
+    if(wasCurrent) {
+        setCurrentLevel(level);
+        if(!areaPath.isNull()) {
+            setCurrentArea(level->getArea(areaPath));
+        }
+    } else {
+        setCurrentLevel(getCurrentLevel());
+    }
+
+    return level;
+}
+
+Area* Assets::reloadArea(Area* area) {
+    if(!area) area = getCurrentArea();
+    QString areaPath;
+    if(getCurrentArea() == area) {
+        setCurrentArea(nullptr);
+        areaPath = area->getNodePath();
+   }
+   auto* newArea = area->getLevel()->reloadArea(area);
+   if(!areaPath.isNull()) {
+        setCurrentArea(newArea);
+   } else {
+       //Force views and widgets to have correct selection
+        setCurrentArea(getCurrentArea());
+   }
+   return newArea;
+}
+
+Project* Assets::reloadProject(void) {
+    if(!_project) return nullptr;
+    const QString areaName = _curArea->getNodePath();
+    const QString levelName = _curLevel->getNodePath();
+    const QString projPath = _project->getLocation();
+    const elysian::System::ENGINE_STATE engineState = _engine->getEngineState();
+    const Entity* partyLeader = _engine->getPartySys()->getPartyLeader();
+    GYVector3 playerPos;
+
+    if(partyLeader) {
+        playerPos = partyLeader->_transform._pos;
+    }
+
+    Q_EMIT projectRemoved(_project);
+
+    setCurrentSelection(nullptr);
+    setCurrentArea(nullptr);
+    setCurrentLevel(nullptr);
+    setCurrentProject(nullptr);
+
+    delete _engine;
+    delete _project;
+
+    auto* proj = loadProject(projPath);
+    Q_EMIT projectAdded(_project);
+
+    if(!levelName.isNull()) {
+        auto* lev = proj->getLevel(levelName);
+        setCurrentLevel(lev);
+        if(!areaName.isNull()) {
+            setCurrentArea(lev->getArea(areaName));
+        }
+    }
+
+    _engine->setEngineState(engineState);
+    if(partyLeader) _engine->getPartySys()->getPartyLeader()->_transform._pos = playerPos;
+    return proj;
+}
+
+bool Assets::validateProjectPath(const QString path) {
+    QDir dir(QDir::current());
+
+    if(!dir.cd(path)) {
+        qWarning() << "Could not enter project directory: " << path;
+        return false;
+    }
+
+    if(!dir.isReadable()) {
+        qWarning() << "Project path is not readable: " << path;
+        return false;
+    }
+
+    return true;
+}
+
+Area* Assets::findArea(const QString path) const {
+    for(unsigned i = 0; i < _project->getLevelAmount(); ++i) {
+        auto* area = _project->getLevelByIndex(i)->getArea(path);
+        if(area) return area;
+    }
+    return nullptr;
+}
+
+Level* Assets::findLevel(const QString path) const {
+    return _project->getLevel(path);
+}
+
+void Assets::onLevelChanged(Level *level) {
+    if(_levelChangeDepth <= 0) setCurrentLevel(level);
+}
+
+void Assets::onAreaChanged(Area *area) {
+    if(_areaChangeDepth <= 0) setCurrentArea(area);
+}
+
+Level* Assets::loadLevel(const QString path) {
+    return _project->loadLevel(path);
+}
+
+Area* Assets::loadArea(const QString path) {
+    DbgEvent event("Assets::loadArea(%s)", Q_CSTR(path));
+    (void)event;
+
+    QString levelPath   = FileUtilities::getLevelPathFromAreaPath(path);
+    Level*  level       = findLevel(levelPath);
+    Area*   area        = nullptr;
+    if(!level) {
+        dbgprintf("Parent level not found. Loading it first!");
+        level = loadLevel(levelPath);
+    }
+
+    if(level) {
+        area = level->loadArea(path);
+    }
+
+    return area;
+}
