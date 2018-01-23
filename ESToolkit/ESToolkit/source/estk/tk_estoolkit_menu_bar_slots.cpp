@@ -786,3 +786,8 @@ void ESToolkit::on_actionPerformance_Monitor_Dump_triggered()
 {
     _engineGLView->dumpPerfMonitor();
 }
+
+void ESToolkit::on_actionAudio_Dump_triggered() {
+    _assets.getEngine()->getAudioSys()->dumpDebugInfo();
+
+}

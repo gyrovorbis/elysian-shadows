@@ -1,6 +1,7 @@
 #include <QCloseEvent>
 #include <QFileSystemModel>
 #include <estk/tk_asset_dock_widget.h>
+#include <system/elysian_audio_system.hpp>
 #include <asset/tk_area.h>
 #include <asset/tk_level.h>
 #include <core/tk_file_utilities.h>
@@ -67,6 +68,7 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
         _fsModel->addFileType(new MapAssetFileType);
         _fsModel->addFileType(new PrefabAssetFileType);
         _fsModel->addFileType(new LuaScriptAssetFileType);
+        _fsModel->addFileType(new WavAssetFileType);
         _fsModel->setRootPath(project->getNodePath());
         //qDebug() << "LA NODE PATH" << project->getNodePath();
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -323,10 +325,12 @@ bool AssetFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
 }
 
 
-CustomAssetFileType::CustomAssetFileType(QString typeName, QIcon icon, QString filePath):
+CustomAssetFileType::CustomAssetFileType(QString typeName, QIcon icon, QString filePath, QString toolTip, QString whatsThis):
     _filePath(std::move(filePath)),
     _typeName(std::move(typeName)),
-    _icon(std::move(icon))
+    _icon(std::move(icon)),
+    _toolTip(std::move(toolTip)),
+    _whatsThis(std::move(whatsThis))
 {}
 
 QMimeData* CustomAssetFileType::mimeData(void) const {
@@ -366,6 +370,8 @@ QVariant CustomAssetFileType::data(const QModelIndex& index, int role) {
     }
     else if(role == Qt::DisplayRole && index.column() == 2 && !_typeName.isNull()) return _typeName;
     else if(role == Qt::DecorationRole && !_icon.isNull() && index.column() == 0) return _icon;
+    else if(role == Qt::ToolTipRole && !_toolTip.isEmpty()) return _toolTip;
+    else if(role == Qt::WhatsThisRole && !_whatsThis.isEmpty()) return _whatsThis;
     else {
         QVariant value = static_cast<const QFileSystemModel*>(index.model())->QFileSystemModel::data(index, role);
         if(role == Qt::DisplayRole && index.column() == 0 && _modified)
@@ -503,6 +509,27 @@ auto TilesheetAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* 
 auto MapAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     if(QFileInfo(QFile(path).fileName()).fileName() == TK_MAP_ASSET_NAME_TOKEN) return new MapAssetFileType(std::move(path));
     return nullptr;
+}
+
+auto WavAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path)).suffix().toLower() == "wav") return new WavAssetFileType(std::move(path));
+    return nullptr;
+}
+
+void WavAssetFileType::doubleClick(const QModelIndex &) {
+    GYWav* wav = gyAudWavCreate(Q_CSTR(_filePath));
+    if(!wav) {
+        QMessageBox::critical(nullptr, "Unable to Preview", "AudioSystem was unable to load the selected WAVE file for a preview.");
+    } else {
+        auto* callback = new elysian::EventCallback();
+        callback->setCallbackFunction([=]() {
+            gyAudWavDestroy(wav);
+            delete callback;
+            setFontState(FONT_INACTIVE);
+        });
+        elysian::System::getAudioSys()->playSfxChannel(-1, *wav, callback);
+        setFontState(FONT_ACTIVE);
+    }
 }
 
 auto LuaScriptAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {

@@ -5,7 +5,8 @@
 #include <gyro_wav_api.h>
 #include <gyro_ogg_api.h>
 #include <gyro_matrix_api.h>
-#include "elysian_system.hpp"
+#include <system/elysian_system.hpp>
+#include <utility/elysian_subprocess_manager.hpp>
 
 #define ELYSIAN_AUDIO_CHANNELS			32
 #define ELYSIAN_AUDIO_REFERENCE_DIST	10
@@ -14,13 +15,42 @@
 #define ELYSIAN_AUDIO_AUX_OGGS          4
 #define ELYSIAN_AUDIO_BGM_TRACKS        3
 #define ELYSIAN_AUDIO_AUX_TRACKS        2
+#define ELYSIAN_AUDIO_SFX_CHANNELS      26
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(AudioSource)
 
 namespace elysian {
 
-  class AudioSystem: public System {
+
+    class WavPlaybackSubProcess:
+        public MonitorableSubProcess<WavPlaybackSubProcess, AudioSystem>
+    {
+      protected:
+        const GYWav*      _wav      = nullptr;
+        int               _channel  = -1;
+        GYAudioSource*    _src      = nullptr;
+
+      public:
+
+          void            _start(AudioSystem* sys);
+          void            _stop(AudioSystem* sys);
+          void            _update(AudioSystem* sys, const float deltaTime);
+          void            setChannel(int channel);
+          void            setWav(const GYWav* wav);
+    };
+
+
+
+    using WavPlaybackSubProcessPool = MonitorableSubProcessPool<WavPlaybackSubProcess, AudioSystem, ELYSIAN_AUDIO_SFX_CHANNELS>;
+
+
+  class AudioSystem:
+          public SubProcessManager<AudioSystem, WavPlaybackSubProcessPool>,
+          public System
+  {
+  private:
+    enum SUBPROCS   { SUBPROC_WAV_PLAYBACK_POOL };
   public:
                     AudioSystem(void);
                     ~AudioSystem(void);
@@ -30,10 +60,11 @@ namespace elysian {
     bool            isEnabled(void) const;
     void            updateAreaTracks(void);
     void            setListenerGain(const float gain);
+    void            dumpDebugInfo(void) const;
 
     //WAV SFX API
     //accept -1 for dynamic channel
-    void            playSfxChannel(int channel, const GYWav& wav);
+    void            playSfxChannel(const int channel, const GYWav& wav, EventMonitor* monitor=nullptr);
     void            stopSfxChannel(const unsigned channel) const;
     bool            isSfxChannelPlaying(const unsigned channel) const;
     void            setSfxChannelGain(const unsigned channel, const float val) const;
@@ -86,6 +117,8 @@ namespace elysian {
     //Internal
     GYAudioSource*	reserveChannel(AudioSource*const comp = nullptr);
     void			releaseChannel(const GYAudioSource* const src);
+    int             sourceToIndex(const GYAudioSource* src) const;
+    void            _playSfxChannel(const unsigned channel, const GYWav& wav);
 
     //called from Component
     struct AudioChannel {
@@ -160,7 +193,6 @@ namespace elysian {
     bool				_aux2Looping		= true;
     bool                _enabled            = true;
 
-
     static unsigned     _auxIndexToStreamChannel(const unsigned index);
     static unsigned     _auxIndexToTrack(const unsigned index);
   };
@@ -173,6 +205,37 @@ namespace elysian {
     // ====== INLINEZ =======
 
     inline bool AudioSystem::isEnabled(void) const { return _enabled; }
+
+    inline void WavPlaybackSubProcess::_start(AudioSystem* sys) {
+        if(_channel == -1) {
+            _src = sys->reserveChannel();
+            _channel = sys->sourceToIndex(_src);
+        }
+        sys->setSfxChannelRolloffFactor(_channel, 0.0f);
+        sys->setSfxChannelGain(_channel, 1.0f);
+        sys->_playSfxChannel(_channel, *_wav);
+
+    }
+    inline void WavPlaybackSubProcess::_stop(AudioSystem* sys) {
+        sys->stopSfxChannel(_channel);
+        if(_src) {
+            sys->releaseChannel(_src);
+            _src = nullptr;
+        }
+        _channel = -1;
+        _wav = nullptr;
+    }
+    inline void WavPlaybackSubProcess::_update(AudioSystem* sys, const float) {
+        if(!sys->isSfxChannelPlaying(_channel)) {
+            stop(sys);
+        }
+    }
+    inline void WavPlaybackSubProcess::setChannel(int channel) {
+        _channel = channel;
+    }
+    inline void WavPlaybackSubProcess::setWav(const GYWav* wav) {
+        _wav = wav;
+    }
 
 }
 

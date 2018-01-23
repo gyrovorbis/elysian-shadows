@@ -287,10 +287,14 @@
     \sa AudioSource, GYWav, Area
 */
 /*!
- * \qmlmethod void AudioSystem::playSfxChannel(int channel, GYWav* wav)
+ * \qmlmethod void AudioSystem::playSfxChannel(int channel, GYWav* wav, EventMonitor* monitor)
  *
  * Plays the WAV contained by \a{wav} on the channel given by \a{channel}.
- * If the given \a{channel} was already playing a WAV, it will be interrupted.
+ * If the given \a{channel} was already playing a WAV, it will be interrupted. If \a{monitor}
+ * is not nil, an event notification will be triggered when the sound effect is done playing.
+ *
+ * \e{NOTE: A channel of -1 can by used to specify a channel within the dynamic range which
+ * will automatically be allocated to play the WAV and deallocated once playback is complete.}
  *
  * Refer to \l{Audio Channels} for valid \a{channel} values.
  * \sa stopSfxChannel()

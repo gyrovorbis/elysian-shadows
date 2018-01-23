@@ -167,28 +167,6 @@ namespace elysian {
                                     template<typename T>
         static T                    pull(void);
 
-
-#if 0
-
-
-        void pushField(const int index, const LuaVariant& variant);
-        void pushField(const int index, const char*const string);
-
-        int getTop(void) const;
-
-        void pop(const unsigned count=1);
-
-       // template<typename T>
-       // T pull(void) const;
-
-        void insertAt(const int index, const LuaVariant& variant);
-
-        void removeAt(const int index) const;
-        void swap(const int index1, const int index2) const;
-
-        void clear(void) const;
-#endif
-
 	};
 
 

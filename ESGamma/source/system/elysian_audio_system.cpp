@@ -34,14 +34,23 @@ namespace elysian {
 			gyAudOggStreamSetLooping(_channels[i].src, 1);
 			//gyAudSourceSeti(_channels[i].src, GY_SOURCE_RELATIVE, 1);
 		}
+
+        auto& proc = get<SUBPROC_WAV_PLAYBACK_POOL> ( static_cast<SubProcessManager<AudioSystem,
+                                                  WavPlaybackSubProcessPool>& >(*this));
+
+        proc.start(this);
 	}
 
 	AudioSystem::~AudioSystem(void) {
 		//Deallocate channels and their sources
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-			gyAudSourceStop(_channels[i].src);
-			if(i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2) gyAudOggStreamDestroy(_channels[i].src);
-			else gyAudSourceDestroy(_channels[i].src);
+            if(i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2) {
+                gyAudOggStreamStop(_channels[i].src);
+                gyAudOggStreamDestroy(_channels[i].src);
+            } else {
+                gyAudSourceStop(_channels[i].src);
+                gyAudSourceDestroy(_channels[i].src);
+            }
 		}
 
 		//Deallocate BGM tracks
@@ -56,6 +65,8 @@ namespace elysian {
     }
 
 	void AudioSystem::update(void) {
+        updateSubProcesses(0.0f);
+
 		auto* player = getPartySys()->getPartyLeader();
 
         updateAreaTracks();
@@ -289,16 +300,22 @@ namespace elysian {
 	}
 
 	void AudioSystem::releaseChannel(const GYAudioSource* const src) {
-		for(unsigned i = AudioChannel::DYN_1; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-			if(_channels[i].src == src) {
-				_channels[i].comp = nullptr;
-				_channels[i].owner = AudioChannel::FREE;
-				return;
-			}
-		}
-
-		//uhhhh.... You're dumb as hell, but okay.
+        const int i = sourceToIndex(src);
+        GY_ASSERT(i >= AudioChannel::DYN_1 && i < ELYSIAN_AUDIO_CHANNELS);
+        if(i != -1) {
+            _channels[i].comp = nullptr;
+            _channels[i].owner = AudioChannel::FREE;
+        } //else uhhhh.... You're dumb as hell, but okay.
 	}
+
+    int AudioSystem::sourceToIndex(const GYAudioSource *src) const {
+        for(int i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
+            if(_channels[i].src == src) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 	//========= SFX WAV API =======
 
@@ -306,9 +323,20 @@ namespace elysian {
 		return gyAudSourceIsPlaying(_channels[channel].src);
 	}
 
-	void AudioSystem::playSfxChannel(const int channel, const GYWav& wav) {
-		auto *src = (channel == -1)? reserveChannel() : _channels[channel].src;
-		gyAudSourcePlayWav(src, &wav);
+    void AudioSystem::playSfxChannel(const int channel, const GYWav& wav, EventMonitor* monitor) {
+        auto& proc = get<SUBPROC_WAV_PLAYBACK_POOL> ( static_cast<SubProcessManager<AudioSystem,
+                                                  WavPlaybackSubProcessPool>& >(*this));
+
+        auto& subProc = proc.claimIdleSubProcess();
+        subProc.setWav(&wav);
+        subProc.setChannel(channel);
+        subProc.setEventMonitor(monitor);
+        subProc.start(this);
+    }
+
+    void AudioSystem::_playSfxChannel(const unsigned channel, const GYWav& wav) {
+        GY_ASSERT(channel < ELYSIAN_AUDIO_CHANNELS);
+        gyAudSourcePlayWav(_channels[channel].src, &wav);
 	}
 
 	void AudioSystem::stopSfxChannel(const unsigned channel) const {
@@ -787,7 +815,10 @@ namespace elysian {
                 fadeOutAuxTrack(i, 1.0);
             }
         }
+    }
 
+    void AudioSystem::dumpDebugInfo(void) const {
+        gyAudWavWalkthrough();
 
     }
 }

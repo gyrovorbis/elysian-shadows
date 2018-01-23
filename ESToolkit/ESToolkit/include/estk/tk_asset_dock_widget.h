@@ -39,6 +39,8 @@ public:
 protected:
     QString                 _filePath;
     QString                 _typeName;
+    QString                 _toolTip;
+    QString                 _whatsThis;
     QIcon                   _icon;
     FONT_STATE              _fontState  = FONT_INACTIVE;
     bool                    _modified   = false;
@@ -47,7 +49,7 @@ Q_SIGNALS:
     void                    itemChanged(void);
 
 public:
-                            CustomAssetFileType(QString typeName, QIcon icon, QString filePath=QString());
+                            CustomAssetFileType(QString typeName, QIcon icon=QIcon(), QString filePath=QString(), QString toolTip=QString(), QString whatsThis=QString());
     virtual                 ~CustomAssetFileType(void) = default;
 
     void                    setFontState(const FONT_STATE state);
@@ -55,6 +57,10 @@ public:
     void                    setModified(const bool val);
     QString                 getFilePath(void) const;
     QString                 getTypeName(void) const;
+    QString                 getToolTip(void) const;
+    void                    setToolTip(QString str);
+    QString                 getWhatsThisText(void) const;
+    void                    setWhatsThisText(QString text);
 
     virtual QMenu*          contextMenu(const QModelIndex& index);
     virtual void            select(QModelIndex& index);
@@ -162,6 +168,12 @@ public:
     virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 };
 
+class WavAssetFileType: public CustomAssetFileType {
+public:
+                        WavAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
+    virtual void        doubleClick(const QModelIndex &index) override;
+};
 
 class AssetFileSystemModel: public QFileSystemModel {
     Q_OBJECT
@@ -245,6 +257,10 @@ inline void CustomAssetFileType::setModified(const bool val) { _modified = val; 
 inline QString CustomAssetFileType::getFilePath(void) const { return _filePath; }
 inline QString CustomAssetFileType::getTypeName(void) const { return _typeName; }
 inline void CustomAssetFileType::fileRemoved(void) {}
+inline QString CustomAssetFileType::getToolTip(void) const { return _toolTip; }
+inline void CustomAssetFileType::setToolTip(QString str) { _toolTip = str; }
+inline QString CustomAssetFileType::getWhatsThisText(void) const { return _whatsThis; }
+inline void CustomAssetFileType::setWhatsThisText(QString text) { _whatsThis = text; }
 
 
 inline void AssetFileSystemModel::addFileType(CustomAssetFileType *type) {
@@ -261,6 +277,7 @@ inline TilesheetAssetFileType::TilesheetAssetFileType(QString filePath): CustomA
 inline LuaScriptAssetFileType::LuaScriptAssetFileType(QString filePath): CustomAssetFileType("Lua Script", QIcon(TK_LUA_SCRIPT_ASSET_ICON), std::move(filePath)) {}
 inline LuaBehaviorAssetFileType::LuaBehaviorAssetFileType(QString filePath): CustomAssetFileType("Lua Behavior", QIcon(TK_LUA_BEHAVIOR_ASSET_ICON), std::move(filePath)) {}
 inline MapAssetFileType::MapAssetFileType(QString filePath): CustomAssetFileType("Map", QIcon(TK_MAP_ASSET_ICON), std::move(filePath)) {}
+inline WavAssetFileType::WavAssetFileType(QString filePath): CustomAssetFileType("SFX", QIcon(), std::move(filePath), "Double-Click to Preview") {}
 
 
 #endif // ASSETDOCKWIDGET_H

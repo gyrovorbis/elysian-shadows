@@ -1236,3 +1236,4 @@ void ESToolkit::searchDocs(QString query) {
 void ESToolkit::openDoc(QString page, QString section) {
     _instance->_helpDockWidget->openPage(page, section);
 }
+

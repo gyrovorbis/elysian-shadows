@@ -137,7 +137,7 @@ void LuaManagerBase::_cStackDump(void) {
 
     for (i = 1; i <= top; ++i) {  /* repeat for each level */
         sprintf(varDisplayString, "_cStack[%d]", i);
-        rPrintByIndex(i, 10, varDisplayString);
+        rPrintByIndex(i, 2, varDisplayString);
     }
 
     Debug::pop();
@@ -202,8 +202,11 @@ void LuaManagerBase::_runtimeStackDump(void) {
             if(!localVarName) break;
 
             int stackIndex = lua_gettop(*_mainState);
-            sprintf(displayName, "_local[%d][%d] [%s]", stackLevel, localIndex, localVarName);
-            rPrintByIndex(stackIndex, 0, displayName);
+            LuaVariant v = LuaVariant::fromStack(stackIndex);
+            LuaVariant s = v.asString();
+            sprintf(displayName, "_local[%d][%d] = %s (%s)", stackLevel, localIndex, localVarName, s.getValue<const char*>(), v.getTypeString());
+            dbgprintf("%s", displayName);
+           // rPrintByIndex(stackIndex, 1, displayName);
 
             lua_pop(*_mainState, 1);
 
