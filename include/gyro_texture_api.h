@@ -17,7 +17,6 @@ typedef enum _GY_RECT_TEX_ORIENT { GY_RECT_TEX_ORIENT_NORMAL, GY_RECT_TEX_ORIENT
     GY_RECT_TEX_ORIENT_MAX //not representable with 3 bits
 } GY_RECT_TEX_ORIENT;
 
-typedef enum _GY_TEX_BPP { GY_TEX_16BPP, GY_TEX_8BPP, GY_TEX_4BPP } GY_TEX_BPP;
 //TODO: PALETTE SUPPORT!
 typedef enum _GY_PALETTE   { GY_PAL_NONE, GY_PAL_1, GY_PAL_2, GY_PAL_3, GY_PAL_4 } GY_TEX_PAL;
 
@@ -38,7 +37,7 @@ typedef struct GYTexture {
     unsigned				bytes;
     unsigned                width;
     unsigned                height;
-    GY_TEX_BPP				bpp;
+    unsigned				bpp;
     GY_TEX_PAL				palette;
     GYTexCoordSheet*		_coord;
     void*					_data;

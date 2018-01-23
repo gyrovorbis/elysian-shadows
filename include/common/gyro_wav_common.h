@@ -9,11 +9,14 @@ extern "C" {
 
 struct GYWav;
 
-struct GYWav *gyAudWavCreate(const char *const filename);
-int gyAudWavDestroy(struct GYWav *const wav);
-unsigned int gyAudWavAmount(void);
-int gyAudWavClear(void);
-void gyAudWavWalkthrough(void);
+struct GYWav*   gyAudWavCreate(const char *const filename);
+int             gyAudWavDestroy(struct GYWav* const wav);
+int             gyAudWavReload(struct GYWav* const wav);
+int             gyAudWavReloadPath(const char*const path);
+unsigned int    gyAudWavAmount(void);
+unsigned int    gyAudWavRefCount(const char *const filename);
+int             gyAudWavClear(void);
+void            gyAudWavWalkthrough(void);
 
 #ifdef __cplusplus
 }

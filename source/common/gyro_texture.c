@@ -204,26 +204,16 @@ static void *_TexConstructor(void *const data) {
     //Allocate texture and add entry
     tex = malloc(sizeof(GYTexture));
     strcpy(tex->filename, texData->file);
-    tex->bpp = GY_TEX_16BPP; //DEREEST ME!
     tex->palette = GY_PAL_NONE;
-    switch(tex->bpp) {
-    case GY_TEX_16BPP:
-        tex->bytes = texData->sheetWidth * texData->sheetHeight * 2;
-        break;
-    case GY_TEX_8BPP:
-        tex->bytes = texData->sheetWidth * texData->sheetHeight;
-        break;
-    case GY_TEX_4BPP:
-        tex->bytes = texData->sheetWidth * texData->sheetHeight / 2;
-        break;
-    }
 
     //platform-specific texture allocation
     if(!_gyVidTexAlloc(tex)) {
-        _gyLog(GY_DEBUG_WARNING, "Could not load texture! - %s", texData->file);
+        _gyLog(GY_DEBUG_ERROR, "Could not load texture: [%s]", texData->file);
         free(tex);
         return NULL;
     }
+
+    tex->bytes = tex->width * tex->height * (tex->bpp/8);
 
     tex->_coord = (texData->sheetWidth == 0)? &_defaultTexCoords : //(!texData->spriteWidth || !texData->spriteHeight)?
         //_LoadSheetCoords(texData) :
@@ -287,6 +277,14 @@ unsigned int gyVidTexAmount(void) {
     return gyAssetBankSize(&_texBank);
 }
 
+unsigned int gyVidTexRefCount(const char*const filename) {
+    GYTexEntryDat data = {
+        filename, 0, 0, 0, 0
+    };
+    GYAssetBankEntry* entry = gyAssetBankFindEntry(&_texBank, &data, NULL);
+    return entry? entry->_refCount : 0;
+}
+
 unsigned gyVidTexBytes(void) {
     unsigned totalBytes = 0;
     GYAssetBankEntry *entry = _texBank._head;
@@ -309,6 +307,14 @@ int gyVidTexReload(struct GYTexture * const tex) {
     return success;
 }
 
+int gyVidTexReloadPath(const char * const path) {
+    GYTexEntryDat data = {
+        path, 0, 0, 0, 0
+    };
+    GYTexture* tex = gyAssetBankFind(&_texBank, &data);
+    return tex? gyVidTexReload(tex) : 0;
+}
+
 /*I hate to fucking do this, but SDL forces us with window resizing...
     ughhghg --Falco */
 int gyVidTexReloadAll(void) {
@@ -328,31 +334,39 @@ void gyVidTexWalkthrough(void) {
     GYTexture *tex;
     GYAssetBankEntry *entry = _texCoordBank._head;
 
-    _gyLog(GY_DEBUG_VERBOSE, "====TEX COORD WALKTHROUGH====");
+    _gyLog(GY_DEBUG_VERBOSE, "Texture Coordinate Bank Walkthrough");
+    _gyPush();
     for(; entry; entry = entry->_next) {
         coord = entry->_payload;
         _gyLog(GY_DEBUG_VERBOSE, "%d) Sheet - %dx%d, Sprite - %dx%d", count, coord->sheetWidth, coord->sheetHeight, coord->spriteWidth, coord->spriteHeight);
-        _gyLog(GY_DEBUG_VERBOSE, "\tFrames - %d, _refCount - %d", coord->frames, entry->_refCount);
+        _gyPush();
+        _gyLog(GY_DEBUG_VERBOSE, "Frames - %d, _refCount - %d", coord->frames, entry->_refCount);
+        _gyPop(1);
         ++count;
     }
-    _gyLog(GY_DEBUG_VERBOSE, "====/TEX COORD WALKTHROUGH====");
+    _gyPop(1);
 
     count = 0;
-    _gyLog(GY_DEBUG_VERBOSE, "====TEXTURE WALKTHROUGH====");
+    _gyLog(GY_DEBUG_VERBOSE, "Texture Bank Walkthrough (%d items, %fMB total)", gyVidTexAmount(), (float)gyVidTexBytes()/(1024.0f*1024.0f));
     for(entry = _texBank._head; entry; entry = entry->_next) {
         tex = entry->_payload;
         if(!tex) {
-            _gyLog(GY_DEBUG_VERBOSE, "%d) NULL", count++);
+            _gyLog(GY_DEBUG_ERROR, "%d) NULL", count++);
             continue;
         }
         _gyLog(GY_DEBUG_VERBOSE, "%d) %s", count, tex->filename);
-        _gyLog(GY_DEBUG_VERBOSE, "\tbpp - %d, palette - %d", tex->bpp, tex->palette);
-        _gyLog(GY_DEBUG_VERBOSE, "\tSheet size - %dx%d", tex->_coord->sheetWidth, tex->_coord->sheetHeight);
-        _gyLog(GY_DEBUG_VERBOSE, "\tSprite size - %dx%d", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
-        _gyLog(GY_DEBUG_VERBOSE, "\t_refCount - %d", entry->_refCount);
+        _gyPush();
+        _gyLog(GY_DEBUG_VERBOSE, "bpp - %d, palette - %d", tex->bpp, tex->palette);
+        _gyLog(GY_DEBUG_VERBOSE, "dimensions = <%d, %d>", tex->width, tex->height);
+        if(tex->_coord && tex->_coord != &_defaultTexCoords) {
+            _gyLog(GY_DEBUG_VERBOSE, "sprite dimensions = <%d, %d>", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
+        }
+        _gyLog(GY_DEBUG_VERBOSE, "size - %d bytes", tex->bytes);
+        _gyLog(GY_DEBUG_VERBOSE, "_refCount - %d", entry->_refCount);
+        _gyPop(1);
         ++count;
     }
-    _gyLog(GY_DEBUG_VERBOSE, "====/TEXTURE WALKTHROUGH====");
+    _gyPop(1);
 }
 
 const struct GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct GYTexCoordFrame *const frame, const GY_RECT_TEX_ORIENT orient) {

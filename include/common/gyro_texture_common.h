@@ -19,12 +19,14 @@ const struct GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct GYTexCoordFra
                                                        const GY_RECT_TEX_ORIENT orient);
 
 int             gyVidTexReload(struct GYTexture* const tex);
+int             gyVidTexReloadPath(const char*const path);
 int             gyVidTexDestroy(struct GYTexture* const tex);
 unsigned int    gyVidTexAmount(void);
 unsigned        gyVidTexBytes(void);
 int             gyVidTexClear(void);
 int             gyVidTexReloadAll(void);
 void            gyVidTexWalkthrough(void);
+unsigned int    gyVidTexRefCount(const char*const filename);
 
 
 #ifdef __cplusplus
