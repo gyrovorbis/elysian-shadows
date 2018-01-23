@@ -38,6 +38,7 @@ void glalGLDriverQuery(void) {
     GL_QUERY_STRING(GL_SHADING_LANGUAGE_VERSION);
     GL_QUERY_STRING(GL_VENDOR);
 
+#ifdef GYRO_GLAL_GL_Desktop
     glGetIntegerv(GL_CONTEXT_PROFILE_MASK, glint);
     if(!GY_GL_CHECK_ERROR()) {
         _gyLog(GY_DEBUG_VERBOSE, "Context Properties");
@@ -67,6 +68,7 @@ void glalGLDriverQuery(void) {
         _gyPop(1);
 
     }
+#endif
 
     _gyLog(GY_DEBUG_VERBOSE, "Limits");
     _gyPush();
