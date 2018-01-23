@@ -86,7 +86,6 @@ static long int __ov_tell_fn(void *datasource)
 GYOgg* gyAudOggCreate(const char*const path) {
     int result;
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
-    int alErrorCode;
 
     _gyLog(GY_DEBUG_VERBOSE, "[GYRO_AUDIO] Loading OGG file: %s", path);
     _gyPush();
@@ -126,10 +125,9 @@ GYOgg* gyAudOggCreate(const char*const path) {
     payload->format = (payload->vorbisInfo->channels == 1)?
         AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
 
+    GY_AL_CLEAR_ERROR();
     alGenBuffers(2, payload->buffers);
-    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "! - Could not generate OpenAL buffers for OGG stream: %s", _openALError(alErrorCode));
-    }
+    GY_AL_CHECK_ERROR();
 
     /* Debug stuff. */
 
@@ -150,13 +148,11 @@ void gyAudOggDestroy(GYOgg*const ogg) {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     if(!ogg) return;
     GYOggPayload* payload = ogg->_data;
-    int errorCode;
 
     //Homeboy only deleted one, but I think that's a memory leak!
+    GY_AL_CLEAR_ERROR();
     alDeleteBuffers(2, payload->buffers);
-    if((errorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "Could not delete OpenAL buffers from OGG stream [%s]: %s", ogg->path, _openALError(errorCode));
-    }
+    GY_AL_CHECK_ERROR();
 
     ov_clear(&payload->oggStream);
 
@@ -195,8 +191,9 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
     }
 
     if(size != 0) {
+        GY_AL_CLEAR_ERROR();
         alBufferData(buffer, payload->format, pcm, size, payload->vorbisInfo->rate);
-        _checkALError("_streamOgg(): alBufferData()");
+        GY_AL_CHECK_ERROR();
         return 1;
     }
 #endif
@@ -242,9 +239,9 @@ static int _gyAudOggStreamUpdate(void* data) {
 
         //Update stream if we're playing
         if(gyAudSourceIsPlaying((GYAudioSource*)stream)) {
-
+            GY_AL_CLEAR_ERROR();
             alGetSourcei(stream->src, AL_BUFFERS_PROCESSED, &processed);
-            _checkALError("_gyAudOggStreamUpdate(): alGetSourceI(AL_BUFFERS_PROCESSED)");
+            GY_AL_CHECK_ERROR();
 
             while(processed--) {
                 ALuint buffer;
@@ -254,9 +251,9 @@ static int _gyAudOggStreamUpdate(void* data) {
                     done = 1;
                     break;
                 }
-
+                GY_AL_CLEAR_ERROR();
                 alSourceQueueBuffers(stream->src, 1, &buffer);
-                _checkALError("_gyAudOggStreamUpdate(): alSourceQueueBuffers()");
+                GY_AL_CHECK_ERROR();
             }
         } else done = 1;	//otherwise we're done
 
@@ -337,9 +334,10 @@ void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
         ++validBuffers;
 
     if(validBuffers) {
+        GY_AL_CLEAR_ERROR();
         alSourceQueueBuffers(*(ALuint*)src, validBuffers, payload->buffers);
         alSourcePlay(*(ALuint*)src);
-        _checkALError("gyAudOggStreamPlay(): alSourcePlay()");
+        GY_AL_CHECK_ERROR();
 
         stream->ogg = ogg;
         stream->ogg->looping = stream->looping;
@@ -364,10 +362,11 @@ void gyAudOggStreamPause(struct GYAudioSource*src) {
 
     while(queued--) {
         ALuint buffer;
-
+        GY_AL_CLEAR_ERROR();
         alSourceUnqueueBuffers(stream->src, 1, &buffer);
-        _checkALError("gyAudOggStreamPause(): alSourceUnqueueBuffers()");
+        GY_AL_CHECK_ERROR();
     }
+    alSourcei(*(ALuint*)src, AL_BUFFER, NULL);
 
     stream->stillStreaming = 0;
 

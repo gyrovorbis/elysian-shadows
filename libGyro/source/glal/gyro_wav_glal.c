@@ -76,7 +76,6 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     _WAVE_RIFF_Header riff_header;
     _WAVE_Chunk wave_chunk;
     unsigned char* data;
-    int alErrorCode;
 
     if (!gyFileOpen(filename, "rb", &soundFile)) {
         _gyLog(GY_DEBUG_WARNING, "Could not open WAV file [%s]", filename);
@@ -180,18 +179,18 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     }
 
     //create our openAL buffer and check for success
+    GY_AL_CLEAR_ERROR();
     alGenBuffers(1, buffer);
-    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "alGenBuffers() failure %s [%s]", _openALError(alErrorCode), filename);
+    if(GY_AL_CHECK_ERROR()) {
         goto error_post_malloc;
     }
 
     //now we put our data into the openAL buffer and
     //check for success
+    GY_AL_CLEAR_ERROR();
     alBufferData(*buffer, *format, (void*)data,
                  *size, *frequency);
-    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "alBufferData() failure - %s [%s]", filename, _openALError(alErrorCode), filename);
+    if(GY_AL_CHECK_ERROR()) {
         goto error_post_malloc;
     }
 
@@ -218,9 +217,10 @@ int _gyAudWavAlloc(GYWav *const wav) {
 
 int _gyAudWavFree(GYWav *const wav) {
     GYAudWavPayload *payload = wav->_data;
+    GY_AL_CLEAR_ERROR();
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     alDeleteBuffers(1, &payload->buffer);
-    _checkALError("_gyAudWavFree(): alDeleteBuffers()");
+    GY_AL_CHECK_ERROR();
 #endif
     free(payload);
     return 1;

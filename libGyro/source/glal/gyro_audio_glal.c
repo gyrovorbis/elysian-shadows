@@ -79,9 +79,10 @@ void gyAudSetZScale(const float scale) {
 }
 void glalAudSourceAlloc(GYAudioSource*const src) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+    GY_AL_CLEAR_ERROR();
     alGenSources(1, (ALuint*)src);
     alSourcei(*(ALuint*)src, AL_REFERENCE_DISTANCE, _refDist);
-    _checkALError("glalAudSourceAlloc(): alSourcei(AL_REFERENCE_DISTANCE)");
+    GY_AL_CHECK_ERROR();
 #endif
 }
 
@@ -96,8 +97,9 @@ struct GYAudioSource* gyAudSourceCreate(void) {
 void gyAudSourceDestroy(struct GYAudioSource*const src) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     if(!src) return;
+    GY_AL_CLEAR_ERROR();
     alDeleteSources(1, (ALuint*)src);
-    _checkALError("gyAudSourceDestroy(): alDeleteSources()");
+    GY_AL_CHECK_ERROR();
     free(src);
 #endif
 }
@@ -184,14 +186,19 @@ void gyAudSourceSeti(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attr
 
 void gyAudSourceStop(struct GYAudioSource*const src) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+    GY_AL_CLEAR_ERROR();
     alSourceStop(*(ALuint*)src);
+    alSourcei(*(ALuint*)src, AL_BUFFER, NULL);
+    GY_AL_CHECK_ERROR();
 #endif
 }
 
 int gyAudSourceIsPlaying(struct GYAudioSource*const src) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     ALenum state;
+    GY_AL_CLEAR_ERROR();
     alGetSourcei(*(ALuint*)src, AL_SOURCE_STATE, &state);
+    GY_AL_CHECK_ERROR();
     return (state == AL_PLAYING);
 #endif
 }
@@ -212,14 +219,13 @@ void gyAudListenerSetGain(const float gain) {
 
 GYAudBuffer* gyAudBufferCreate(void) {
     ALuint id;
-    int alErrorCode;
 
     _gyLog(GY_DEBUG_VERBOSE, "Creating audio buffer.");
     _gyPush();
 
+    GY_AL_CLEAR_ERROR();
     alGenBuffers(1, &id);
-    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "! - alGenBuffers() failure - %s", _openALError(alErrorCode));
+    if(GY_AL_CHECK_ERROR()) {
         return NULL;
     }
 
@@ -239,8 +245,9 @@ void gyAudBufferDestroy(GYAudBuffer* buff) {
     _gyPush();
 
     ALuint id = (ALuint)buff->_data;
+    GY_AL_CLEAR_ERROR();
     alDeleteBuffers(1, &id);
-    _checkALError("gyAudBufferDestroy(): alDeleteBuffers()");
+    GY_AL_CHECK_ERROR();
     free(buff);
 
     _gyPop(1);
@@ -250,17 +257,17 @@ void gyAudBufferDestroy(GYAudBuffer* buff) {
 //void gyAudSourceUnbindBuffer(struct GYAudSource* src);
 
 void gyAudBufferData(GYAudBuffer* buff, unsigned char* data, int format, size_t size, int freq) {
-    int alErrorCode;
+    GY_AL_CLEAR_ERROR();
     alBufferData(buff->_data, format, (void*)data, size, freq);
-    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "! - alBufferData() failure - %s", _openALError(alErrorCode));
-    }
+    GY_AL_CHECK_ERROR();
 }
 
 void gyAudSourcePlayBuffer(struct GYAudioSource* src, const GYAudBuffer* buff) {
     //now we put our data into the openAL buffer and
     //check for success
+    GY_AL_CLEAR_ERROR();
     alSourcei(*(ALuint*)src, AL_BUFFER, (ALuint)buff->_data);
     alSourcePlay(*(ALuint*)src);
+    GY_AL_CHECK_ERROR();
 }
 
