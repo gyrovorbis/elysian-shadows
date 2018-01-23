@@ -1,0 +1,4100 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+		5E618435888B9D49F8540165 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Qt Qmake";
+			shellPath = "/bin/sh";
+			shellScript = "make -C /Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/ -f ESToolkit.xcodeproj/qt_makeqmake.mak";
+			showEnvVarsInLog = "0";
+		};
+		11A943A9ED4F56A0B83B7A31 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_audio_source_base.cpp";
+			name = "elysian_audio_source_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		D0960C340C24E99C78DEC55D = {
+			fileRef = "11A943A9ED4F56A0B83B7A31";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		CE74F89FCD0CF5344B33285A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_behavior_base.cpp";
+			name = "elysian_behavior_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		215C549F55CDE9CE10EA769E = {
+			fileRef = "CE74F89FCD0CF5344B33285A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		1293C558B636A26C601F07D2 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_character_base.cpp";
+			name = "elysian_character_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		98DAA4D201513DA2791259D9 = {
+			fileRef = "1293C558B636A26C601F07D2";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		74B96F94DA2405471862B0AE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_collidable_base.cpp";
+			name = "elysian_collidable_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		AA221594137AD145739E0455 = {
+			fileRef = "74B96F94DA2405471862B0AE";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		6E1075B19DF72D38B09C946E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_combat_base.cpp";
+			name = "elysian_combat_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		3F94F8C79BFD747188C0E777 = {
+			fileRef = "6E1075B19DF72D38B09C946E";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		C839AA2F9AD1FBF66B471A7D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_examinable_base.cpp";
+			name = "elysian_examinable_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		71F1E1D37C2614BD5CFFB9F9 = {
+			fileRef = "C839AA2F9AD1FBF66B471A7D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		FCBA5C1334EAA8EA679F378F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_light_source_base.cpp";
+			name = "elysian_light_source_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DCEA0A3FED9310C441686DAA = {
+			fileRef = "FCBA5C1334EAA8EA679F378F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		6EBF2F355E5441EA4B1F6F92 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_particle_emitter_base.cpp";
+			name = "elysian_particle_emitter_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		34E98E2E4033D6B91C214354 = {
+			fileRef = "6EBF2F355E5441EA4B1F6F92";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		50996A1A21CFFBF75F2E7D3B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_renderable_base.cpp";
+			name = "elysian_renderable_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		4BBDB15970F223052D2C7EA8 = {
+			fileRef = "50996A1A21CFFBF75F2E7D3B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		7F95D139AE59DE38499097FE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_rigid_body_base.cpp";
+			name = "elysian_rigid_body_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		7883B6B0F011CBED49E65051 = {
+			fileRef = "7F95D139AE59DE38499097FE";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		FBC7F69417B89047B65410AA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_skeleton_base.cpp";
+			name = "elysian_skeleton_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		B44ED8A66B01217B1D4C4E59 = {
+			fileRef = "FBC7F69417B89047B65410AA";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		AF155743DAD787258F65D0ED = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_warp_base.cpp";
+			name = "elysian_warp_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		2AC4005CEFA6AAE9B8E39936 = {
+			fileRef = "AF155743DAD787258F65D0ED";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		750FEE2DCAAC8D734E5BFA56 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_area_base.cpp";
+			name = "elysian_area_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		1B79F78AF8D999026869E615 = {
+			fileRef = "750FEE2DCAAC8D734E5BFA56";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		744B0FB5ECC3E4A41A4F6138 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_entity_base.cpp";
+			name = "elysian_entity_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		25C32EFE87E892DE37C27AC5 = {
+			fileRef = "744B0FB5ECC3E4A41A4F6138";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9A35A98DA2BFAD3602CC433F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_level_base.cpp";
+			name = "elysian_level_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		770BAF0BC94938D7683E166C = {
+			fileRef = "9A35A98DA2BFAD3602CC433F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8EFB3A0E740DD027E2F25C55 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_level_manager.cpp";
+			name = "elysian_level_manager.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C36F20845D59B80787B1E3EA = {
+			fileRef = "8EFB3A0E740DD027E2F25C55";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		243BCCE9E508483DCBB19360 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_tile.cpp";
+			name = "elysian_tile.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		9AFFBDA3851621E50362A804 = {
+			fileRef = "243BCCE9E508483DCBB19360";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		BFD3840CAB74C116FE63D4C5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_zcoords.cpp";
+			name = "elysian_zcoords.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		A8B1079DFD80FA333ED80FFF = {
+			fileRef = "BFD3840CAB74C116FE63D4C5";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		15EA2AFA96AC8B56B1CCE99E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/primitive/elysian_color.cpp";
+			name = "elysian_color.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		B398366D72645F982D78ADC1 = {
+			fileRef = "15EA2AFA96AC8B56B1CCE99E";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9ACC34792988EBE7F862E04C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/primitive/elysian_instance_transform.cpp";
+			name = "elysian_instance_transform.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		6799B653025A3E8CC296314A = {
+			fileRef = "9ACC34792988EBE7F862E04C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		07B32098F31C5338B04A3AB8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/primitive/elysian_material.cpp";
+			name = "elysian_material.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		D6774167A8D8CA56CCD65E80 = {
+			fileRef = "07B32098F31C5338B04A3AB8";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		4B234FAA2E94BD3B1A3A8EC0 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/primitive/elysian_quad_sprite_attrib.cpp";
+			name = "elysian_quad_sprite_attrib.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		CE2D2D2068B8E01A0F89F0FF = {
+			fileRef = "4B234FAA2E94BD3B1A3A8EC0";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		63DDC68280BEECEF2AF28871 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/primitive/elysian_sprite_attrib.cpp";
+			name = "elysian_sprite_attrib.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		3FCED225554631E858E0FCA7 = {
+			fileRef = "63DDC68280BEECEF2AF28871";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9466F872A53A3E0490BC85BF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/utility/elysian_lua_table_proxy_base.cpp";
+			name = "elysian_lua_table_proxy_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		9BFAB2E9547B014DC4D5925F = {
+			fileRef = "9466F872A53A3E0490BC85BF";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		D47654237C476135462D4111 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_adventure_log.cpp";
+			name = "elysian_adventure_log.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C71279EDE3FD943C3B90AB44 = {
+			fileRef = "D47654237C476135462D4111";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9B46BCA64D6423DB6B490645 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_font.cpp";
+			name = "elysian_font.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C7490AC074D2BE254C2635C0 = {
+			fileRef = "9B46BCA64D6423DB6B490645";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		28C3D6EDEE7EE24EC62A1441 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/lua/elysian_lua_manager_base.cpp";
+			name = "elysian_lua_manager_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		4BC761DA11CA9B95E0FC6EF6 = {
+			fileRef = "28C3D6EDEE7EE24EC62A1441";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		5FCD5EB7D4CF2DB5BF934650 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/lua/elysian_lua_script.cpp";
+			name = "elysian_lua_script.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		2AD7E1F4B28D480980F86E6F = {
+			fileRef = "5FCD5EB7D4CF2DB5BF934650";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		1B1147A44F8BE686443E110A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/lua/elysian_lua_singleton.cpp";
+			name = "elysian_lua_singleton.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		E470027A2523DC04CEEC14EF = {
+			fileRef = "1B1147A44F8BE686443E110A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		4B307EE9323C8C76568A7DF9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/lua/elysian_lua_wrappers.cpp";
+			name = "elysian_lua_wrappers.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		24E08448F18E0323FB6AE948 = {
+			fileRef = "4B307EE9323C8C76568A7DF9";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		60454B540A634568A6402EC5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_audio_system.cpp";
+			name = "elysian_audio_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		4A7C25E5F79610AD6A2C29EE = {
+			fileRef = "60454B540A634568A6402EC5";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		94BA7EDFFFF74B8AC5A8AB3B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_behavior_system.cpp";
+			name = "elysian_behavior_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		D178F4482DABEAE577CE1C1B = {
+			fileRef = "94BA7EDFFFF74B8AC5A8AB3B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		2E7F55E72C9578D15F2BA7B8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_character_system.cpp";
+			name = "elysian_character_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		2219A7A5C881300ED5AF6B9A = {
+			fileRef = "2E7F55E72C9578D15F2BA7B8";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		68BF1E57B56E41E3A911FD91 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_collision_system.cpp";
+			name = "elysian_collision_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		97D21C2C150C28326BA10B0A = {
+			fileRef = "68BF1E57B56E41E3A911FD91";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		54268150BD854376FE8EAA18 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_combat_system.cpp";
+			name = "elysian_combat_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		335F111FF5207C12AF205563 = {
+			fileRef = "54268150BD854376FE8EAA18";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		2E45720901A42AE31DF0183C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_day_system.cpp";
+			name = "elysian_day_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		1F2009ACDB7D53ABC81167A0 = {
+			fileRef = "2E45720901A42AE31DF0183C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		28E3441C87FED16636B79567 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_dialog_system.cpp";
+			name = "elysian_dialog_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C94A872E43ABC60FD1FB9D75 = {
+			fileRef = "28E3441C87FED16636B79567";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		1812C11480D0BC06C4055721 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_engine.cpp";
+			name = "elysian_engine.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		AE6ACB1CE850EEDEFFD7B7D8 = {
+			fileRef = "1812C11480D0BC06C4055721";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		93A8072D78A095014A16611D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_examinable_system.cpp";
+			name = "elysian_examinable_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		175006058CA2422B8C49C08B = {
+			fileRef = "93A8072D78A095014A16611D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		D3DADAB501A686BEC400D624 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_light_system.cpp";
+			name = "elysian_light_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		47F3A7A8F384B640739EAF73 = {
+			fileRef = "D3DADAB501A686BEC400D624";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		396422FA7EE8CB8FA8D8DABA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_map_system_base.cpp";
+			name = "elysian_map_system_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		462DBFF4636CAB286E1BE9BD = {
+			fileRef = "396422FA7EE8CB8FA8D8DABA";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		46D360F671C914BAD10A0E40 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_particle_system.cpp";
+			name = "elysian_particle_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		B5C9D2F10901467163D47838 = {
+			fileRef = "46D360F671C914BAD10A0E40";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		2CCB1D8EA4B1C71F09D33BA9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_party_system.cpp";
+			name = "elysian_party_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		FB2B92465FFCA7539CC105F9 = {
+			fileRef = "2CCB1D8EA4B1C71F09D33BA9";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		088439D6DFD5644F5D8BA8C5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_rigid_body_system.cpp";
+			name = "elysian_rigid_body_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C2D89BAC79A31EE64CF24020 = {
+			fileRef = "088439D6DFD5644F5D8BA8C5";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F8D85BCD3A4EDE48DE6E0910 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_skeleton_system.cpp";
+			name = "elysian_skeleton_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		D988616E581BB2A345E3A42C = {
+			fileRef = "F8D85BCD3A4EDE48DE6E0910";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		5845ADDE71A81B47F0941A20 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_system.cpp";
+			name = "elysian_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		ED93C850A1ABCABBFEEB23B4 = {
+			fileRef = "5845ADDE71A81B47F0941A20";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		A400A20F2894842BC80371E9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_warp_system.cpp";
+			name = "elysian_warp_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		596B14F3B639992407F6D984 = {
+			fileRef = "A400A20F2894842BC80371E9";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		EE948A8EADDB497F7314FE84 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_debug_base.cpp";
+			name = "elysian_debug_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DB8D5FBD5CC3FE5BD7699E9C = {
+			fileRef = "EE948A8EADDB497F7314FE84";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		C014F42629FA7F93871504F3 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_event_monitor.cpp";
+			name = "elysian_event_monitor.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		4869F2864907B37C53CEF5C5 = {
+			fileRef = "C014F42629FA7F93871504F3";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		5AE4A595302A22E81AFA11B9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_force_generator.cpp";
+			name = "elysian_force_generator.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		AF341FDEA45FA90966694F7B = {
+			fileRef = "5AE4A595302A22E81AFA11B9";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		B94FDEA1917EDA11119E4EBF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_sort_sweep.cpp";
+			name = "elysian_sort_sweep.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		1AD74FEDFC17C17582221154 = {
+			fileRef = "B94FDEA1917EDA11119E4EBF";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		A8FF5C80520E789BCE96D23D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_task_monitor_base.cpp";
+			name = "elysian_task_monitor_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C8F7E5649F62D3B882254F8F = {
+			fileRef = "A8FF5C80520E789BCE96D23D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		DBD12AFAD80B3AD2AFCAD4ED = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_timer_system_base.cpp";
+			name = "elysian_timer_system_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		00B1AD28EBF6C9B433C7FE6A = {
+			fileRef = "DBD12AFAD80B3AD2AFCAD4ED";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8AA3A3BFE6D6162A33CF17AC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_area_proxy.cpp";
+			name = "elysian_area_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		404A388024D72066A389D814 = {
+			fileRef = "8AA3A3BFE6D6162A33CF17AC";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		27B169613063465BA297208E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_audio_source_proxy.cpp";
+			name = "elysian_audio_source_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		D411AA4D236F05F179597B75 = {
+			fileRef = "27B169613063465BA297208E";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		96CD929DF57F33CB1E0AF8B8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_character_proxy.cpp";
+			name = "elysian_character_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		E9BD59E1FED2F299A29105F9 = {
+			fileRef = "96CD929DF57F33CB1E0AF8B8";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		145B26249B1E0BB92BC0EA29 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_collidable_proxy.cpp";
+			name = "elysian_collidable_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		0A454EA8143DEB243CDA2B6F = {
+			fileRef = "145B26249B1E0BB92BC0EA29";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8EAB81198520EC39342BAE36 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_combat_proxy.cpp";
+			name = "elysian_combat_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		0CF4B46B6E19EF89EA94701D = {
+			fileRef = "8EAB81198520EC39342BAE36";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		1646D8F137226D9170246E48 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_component_proxy.cpp";
+			name = "elysian_component_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		15D0364378A029D31B1B1169 = {
+			fileRef = "1646D8F137226D9170246E48";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		321F4DC5CCCA982135AA2C46 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_entity_proxy.cpp";
+			name = "elysian_entity_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		C4E175601CA2AA364461BD35 = {
+			fileRef = "321F4DC5CCCA982135AA2C46";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		4BE3A32BCC5A572336ECBD34 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_examinable_proxy.cpp";
+			name = "elysian_examinable_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		E7A8F9695F178E656A8F31E9 = {
+			fileRef = "4BE3A32BCC5A572336ECBD34";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8E57EA113A14ECBAD2774BE1 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_instance_transform_proxy.cpp";
+			name = "elysian_instance_transform_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		5FA7368C4B35DA5F2E87314F = {
+			fileRef = "8E57EA113A14ECBAD2774BE1";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		28D0482EA5E87FAF193DA93A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_level_proxy.cpp";
+			name = "elysian_level_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		61E5E53996AD56B25BEB186D = {
+			fileRef = "28D0482EA5E87FAF193DA93A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		ACC3228F261B6A17C2A7252D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_light_source_proxy.cpp";
+			name = "elysian_light_source_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		538E3C218E7D55492755183D = {
+			fileRef = "ACC3228F261B6A17C2A7252D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		B9144748FDBA6327F0F4E898 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_lua_behavior_proxy.cpp";
+			name = "elysian_lua_behavior_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		89CDF7B06A2EDCE7C2F10478 = {
+			fileRef = "B9144748FDBA6327F0F4E898";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		68EA9F8795DB0C8CC2F25DED = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_particle_emitter_proxy.cpp";
+			name = "elysian_particle_emitter_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		BC63EA63384058D7C3B9EEBA = {
+			fileRef = "68EA9F8795DB0C8CC2F25DED";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		093937A080713ADEFDE21B2C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_primitive_proxy.cpp";
+			name = "elysian_primitive_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		D028E70ED24A5D71AE9D8C6C = {
+			fileRef = "093937A080713ADEFDE21B2C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F36D6C0A5130A670E5E6D8BF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_renderable_proxy.cpp";
+			name = "elysian_renderable_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		8A205A3EDF6387A46006CEFA = {
+			fileRef = "F36D6C0A5130A670E5E6D8BF";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		7E522EDA9B1AA2030C3B330D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_rigid_body_proxy.cpp";
+			name = "elysian_rigid_body_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DCBDFF9FCCC592536CFC4C4F = {
+			fileRef = "7E522EDA9B1AA2030C3B330D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		69BBEDDE5538E87887927AC8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_skeleton_proxy.cpp";
+			name = "elysian_skeleton_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		18E757DEA1C6A12891EE184D = {
+			fileRef = "69BBEDDE5538E87887927AC8";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		67F57D7692B3CAE7874B5E4C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_warp_proxy.cpp";
+			name = "elysian_warp_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		516AF48881A00AD14284F03F = {
+			fileRef = "67F57D7692B3CAE7874B5E4C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		A8976CCBE99932C7CE4ED836 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_audio_system_proxy.cpp";
+			name = "elysian_audio_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		E9277B9A2581FAC3BB8E91ED = {
+			fileRef = "A8976CCBE99932C7CE4ED836";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		10792D4331D919B1A45E3CE7 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_camera_system_proxy.cpp";
+			name = "elysian_camera_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		7A6F8AEE22E1D9006F690918 = {
+			fileRef = "10792D4331D919B1A45E3CE7";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		EDECB923301C860E8E5006B3 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_character_system_proxy.cpp";
+			name = "elysian_character_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DF603041C4D714C293CF7D28 = {
+			fileRef = "EDECB923301C860E8E5006B3";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		86E6EE1E35C4CDF643B8E3C8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_combat_system_proxy.cpp";
+			name = "elysian_combat_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		CA0ED88314A57F40CAB4F194 = {
+			fileRef = "86E6EE1E35C4CDF643B8E3C8";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8CAF857082C30A2498785D63 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_day_system_proxy.cpp";
+			name = "elysian_day_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DAE2E8394F031D41CB597D8F = {
+			fileRef = "8CAF857082C30A2498785D63";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		927D8BF7401B46A86CB572B0 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_dialog_system_proxy.cpp";
+			name = "elysian_dialog_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		E9618B9B5FD83F8EE130A57E = {
+			fileRef = "927D8BF7401B46A86CB572B0";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		894F414C05342A95EF857238 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_event_monitor_proxy.cpp";
+			name = "elysian_event_monitor_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		A137CB900FF91B97A35D5020 = {
+			fileRef = "894F414C05342A95EF857238";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		E3FA9973AE935414B3A2CEB2 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_gui_system_proxy.cpp";
+			name = "elysian_gui_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		41E751848D708282A12E37ED = {
+			fileRef = "E3FA9973AE935414B3A2CEB2";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		81016BDD89D072BF8217A27A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_level_system_proxy.cpp";
+			name = "elysian_level_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		5C6F2083695BE1E4AD1446B5 = {
+			fileRef = "81016BDD89D072BF8217A27A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		E7C98782CA60FA9B6B7ED10D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_light_system_proxy.cpp";
+			name = "elysian_light_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		818B85271C942153C057F260 = {
+			fileRef = "E7C98782CA60FA9B6B7ED10D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		A45B569992D87FD1E26CB59A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_particle_system_proxy.cpp";
+			name = "elysian_particle_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		8427F2E3FEF30F649514E20A = {
+			fileRef = "A45B569992D87FD1E26CB59A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		3B06C57B24286590EAB3609D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_pathfinding_system_proxy.cpp";
+			name = "elysian_pathfinding_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		9B48DF09DEF9EAF23336C7FA = {
+			fileRef = "3B06C57B24286590EAB3609D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		DCF243509E92ED5176EE8523 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_party_system_proxy.cpp";
+			name = "elysian_party_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		6403B952905130F132B19D17 = {
+			fileRef = "DCF243509E92ED5176EE8523";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		68DBCF8EFD8DE08ABE59EF94 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp";
+			name = "elysian_rigid_body_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		0EB837454F41F9AA1DF26EB5 = {
+			fileRef = "68DBCF8EFD8DE08ABE59EF94";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		BA29AD9728AC02D45C8CE18F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_timer_system_proxy.cpp";
+			name = "elysian_timer_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		5388200CC5C03AD3BE2C47F2 = {
+			fileRef = "BA29AD9728AC02D45C8CE18F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		AA2627C3B4676F75E41835E5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/component/elysian_lua_behavior_base.cpp";
+			name = "elysian_lua_behavior_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		BFFB616C661EF50AF3414A52 = {
+			fileRef = "AA2627C3B4676F75E41835E5";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F9D8D0E811CBE8ECD225F40A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_camera_system_base.cpp";
+			name = "elysian_camera_system_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		2BFB0128C3B3C73888FE98B3 = {
+			fileRef = "F9D8D0E811CBE8ECD225F40A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		C9B0E53C4E2E65A6484A3180 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_camera_shake_subprocess.cpp";
+			name = "elysian_camera_shake_subprocess.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		8CAB773B93AF762D6DCC48EC = {
+			fileRef = "C9B0E53C4E2E65A6484A3180";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		B5E873C5FF3F3080C55B6BA0 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_bit_mask_proxy.cpp";
+			name = "elysian_bit_mask_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		6E401C945CA7EB8B64F511B1 = {
+			fileRef = "B5E873C5FF3F3080C55B6BA0";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		02A3BAB81476EDE747F88B00 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/utility/elysian_bit_mask.cpp";
+			name = "elysian_bit_mask.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		DAE2F46D59A2E2AA9CDCBA22 = {
+			fileRef = "02A3BAB81476EDE747F88B00";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		AFDAEE250C3ED6E86B0F6D69 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_lua_table_ref.cpp";
+			name = "elysian_lua_table_ref.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		A827FDE74DC69B2BCA5574DD = {
+			fileRef = "AFDAEE250C3ED6E86B0F6D69";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		1720FC5A368C4143FBCEB2BA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/utility/elysian_lua_variant.cpp";
+			name = "elysian_lua_variant.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		AC75A20C732824A2732F7F11 = {
+			fileRef = "1720FC5A368C4143FBCEB2BA";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		0227550715B2D6BD3C052097 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/proxy/elysian_dialog_proxy.cpp";
+			name = "elysian_dialog_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		27E4285CAF941EDC83D0F4D2 = {
+			fileRef = "0227550715B2D6BD3C052097";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		BC58B8E7F1A1EAB136BF1ABE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_dialog_base.cpp";
+			name = "elysian_dialog_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		B62D3047E477417E2B78E1FC = {
+			fileRef = "BC58B8E7F1A1EAB136BF1ABE";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		17D4E17F42871E06961FB4C9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/level/elysian_dialog_screen_base.cpp";
+			name = "elysian_dialog_screen_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		159994CDBCCA95160840F92B = {
+			fileRef = "17D4E17F42871E06961FB4C9";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		1633F6609CE3D19E29D217C4 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_input_system_proxy.cpp";
+			name = "elysian_input_system_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		9612ECAF5FC673AD670EB388 = {
+			fileRef = "1633F6609CE3D19E29D217C4";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		E60BBDFB60F3DF5925DCB73C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_input_system_base.cpp";
+			name = "elysian_input_system_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		191972EBE62C83AF36FD586C = {
+			fileRef = "E60BBDFB60F3DF5925DCB73C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9E9C5D366A3C5CD933C42B10 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/source/behavior/elysian_playable_behavior.cpp";
+			name = "elysian_playable_behavior.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		140844E0CDC048DC69E1D48A = {
+			fileRef = "9E9C5D366A3C5CD933C42B10";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		4DCD0C75C2DC112CC1BAC3F8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_pathfinding_system.cpp";
+			name = "elysian_pathfinding_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		443CFF671385C124046AF438 = {
+			fileRef = "4DCD0C75C2DC112CC1BAC3F8";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F2B7F7A2D78257681AE132F2 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/source/utility/elysian_lua_variant_base.cpp";
+			name = "elysian_lua_variant_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		905212C9185FEC1268A8026A = {
+			fileRef = "F2B7F7A2D78257681AE132F2";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		4E13BB62B7E565D5955C5D4D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_level_system_base.cpp";
+			name = "elysian_level_system_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		5E9F5E5B2D421A4860B2159C = {
+			fileRef = "4E13BB62B7E565D5955C5D4D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8C30DF36F57B14E57AC91F16 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/source/behavior/elysian_state_machine_behavior.cpp";
+			name = "elysian_state_machine_behavior.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		1854300CC5E687B5309891CD = {
+			fileRef = "8C30DF36F57B14E57AC91F16";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		7027247D2B5FA333F8E54CD1 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_gui_system_base.cpp";
+			name = "elysian_gui_system_base.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		2E8AFB6244BDE901BDD25630 = {
+			fileRef = "7027247D2B5FA333F8E54CD1";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		97338755A362F2E5BEF5F396 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_widget.cpp";
+			name = "elysian_widget.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		10AF4117905A7182EE31C63E = {
+			fileRef = "97338755A362F2E5BEF5F396";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		C9C43CAAF980516349104CEB = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_layout.cpp";
+			name = "elysian_layout.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		897E293C37261560BEC06967 = {
+			fileRef = "C9C43CAAF980516349104CEB";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		002C4DFEE2BF2A8F96FD47A1 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_label_widget.cpp";
+			name = "elysian_label_widget.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		5175940BC0A86844A950CEB3 = {
+			fileRef = "002C4DFEE2BF2A8F96FD47A1";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		32DDCFC8BD6095CA787D9B7D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_entity_widget.cpp";
+			name = "elysian_entity_widget.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		FF23D599295284489B477C54 = {
+			fileRef = "32DDCFC8BD6095CA787D9B7D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F37C7400D8410A921B8DEF6D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_widget_proxy.cpp";
+			name = "elysian_widget_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		9B5DEBA51FDACBDC6D5C5EE8 = {
+			fileRef = "F37C7400D8410A921B8DEF6D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		459036FCBE2DFE360481880F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/proxy/elysian_layout_proxy.cpp";
+			name = "elysian_layout_proxy.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		307EC54AB4F3B2376D8FA4D1 = {
+			fileRef = "459036FCBE2DFE360481880F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		637D36A5C2FE999998BF4493 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/source/elysian_playable_pane.cpp";
+			name = "elysian_playable_pane.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		14C0CE2748625DED91655EFA = {
+			fileRef = "637D36A5C2FE999998BF4493";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9D134069CBD4BC0965E0F1DE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/gui/elysian_menu_widget.cpp";
+			name = "elysian_menu_widget.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		A847876E14F30BFEC1F99481 = {
+			fileRef = "9D134069CBD4BC0965E0F1DE";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		7063262FC93FCC2B50E99148 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/elysian_event_system.cpp";
+			name = "elysian_event_system.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		151F492762629338551C45F9 = {
+			fileRef = "7063262FC93FCC2B50E99148";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		FAB8443A9770F241C83CD3FF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/source/elysian_pause_menu.cpp";
+			name = "elysian_pause_menu.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		47DD60E77AF7812DDE87D810 = {
+			fileRef = "FAB8443A9770F241C83CD3FF";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		35A6AD5579C97941755848F4 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/source/system/main.cpp";
+			name = "main.cpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.cpp.cpp";
+		};
+		3EA2AAE5A32E26DC6E0F355D = {
+			fileRef = "35A6AD5579C97941755848F4";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		DD5CBF255856D49A9487E94F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/resource/images/estk.icns";
+			name = "estk.icns";
+			sourceTree = "<absolute>";
+		};
+		346520CEEDC74FDFF3D3368C = {
+			fileRef = "DD5CBF255856D49A9487E94F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		6FE63E9A108072DD0615187E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_audio_source_base.hpp";
+			name = "elysian_audio_source_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		EFB3C69B2B2A5964083168B7 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_behavior_base.hpp";
+			name = "elysian_behavior_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		BDBD85F0453A63A3EA4F0D22 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_character_base.hpp";
+			name = "elysian_character_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E67437A7789F1CF15A4009DC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_collidable_base.hpp";
+			name = "elysian_collidable_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		7808813BB8B034B106AAF481 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_combat_base.hpp";
+			name = "elysian_combat_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8FAE6FA2944D80F61D4118CE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_component_base.hpp";
+			name = "elysian_component_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8FD750278FA36711A925DE39 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_examinable_base.hpp";
+			name = "elysian_examinable_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D65E2826A503D4A8AE29671D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_light_source_base.hpp";
+			name = "elysian_light_source_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		9A074AA6D2AD7F1A9B8C62FC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_particle_emitter_base.hpp";
+			name = "elysian_particle_emitter_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1931D62DA15CE2F55D487FDF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_renderable_base.hpp";
+			name = "elysian_renderable_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		0369F68C4613A233B3B580C4 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_rigid_body_base.hpp";
+			name = "elysian_rigid_body_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		686BE90E9CCA50AD8CC80A7F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_warp_base.hpp";
+			name = "elysian_warp_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6C2AD49C7505B6D8825B8E1F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_area.hpp";
+			name = "elysian_area.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		139CB7774D1EAA48B7A6C36A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_collidable.hpp";
+			name = "elysian_collidable.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		2A297BFEEB2E2D6B34FF4963 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_component.hpp";
+			name = "elysian_component.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		966B983649D3072AAF975127 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_entity.hpp";
+			name = "elysian_entity.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		34D6210063464EFB583E05FE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_level.hpp";
+			name = "elysian_level.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		DA30D63171D3F9074B22102A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_lua_table_proxy.hpp";
+			name = "elysian_lua_table_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E2860F345DD356A2B0069974 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_renderable.hpp";
+			name = "elysian_renderable.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		02CEBD82E9A6F9CDE2C5721D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_area_base.hpp";
+			name = "elysian_area_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		20486015DCBC8256AA8AC050 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_direction.hpp";
+			name = "elysian_direction.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A888A3F53730C6ACF5068F39 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_entity_base.hpp";
+			name = "elysian_entity_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		B2D15673D79BD9F782E45697 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_level_base.hpp";
+			name = "elysian_level_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		65AF90363DE009D3BC8204D3 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_level_manager.hpp";
+			name = "elysian_level_manager.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		7FE461DC4ABDCD5CD222ABE4 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_map_depth_buffer.hpp";
+			name = "elysian_map_depth_buffer.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		2355C44F7C18D1F544141CDC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_tile.hpp";
+			name = "elysian_tile.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		0EA6CC6EE3BD08F3299E5159 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_zcoords.hpp";
+			name = "elysian_zcoords.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		B7DEA7FFBC5E68D4F83A322D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_color.hpp";
+			name = "elysian_color.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6B054CC7702F9E2046C8CC4E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_instance_transform.hpp";
+			name = "elysian_instance_transform.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1D8563BA871F4A7798E05A34 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_material.hpp";
+			name = "elysian_material.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		4206C1003E1BF4B916AC74F8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_model_attrib.hpp";
+			name = "elysian_model_attrib.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D1EB4A310BBF51B8ADB07B12 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_prim_attrib.hpp";
+			name = "elysian_prim_attrib.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		755E7833FBAD8B9BEF989C20 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_quad_sprite_attrib.hpp";
+			name = "elysian_quad_sprite_attrib.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		F808870F8B6D4ECAF1E21E9B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_renderable_object.hpp";
+			name = "elysian_renderable_object.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		629CD4B610D2C7BB13F54B21 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_textured_attrib.hpp";
+			name = "elysian_textured_attrib.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		99850DDC85785E3662E6FEEF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_asset_typedefs.hpp";
+			name = "elysian_asset_typedefs.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		5A424D2E1980B473A2E31FEF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_cstr_map.hpp";
+			name = "elysian_cstr_map.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		3DFBE3ECF4CC5B04AE759A01 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_generic.hpp";
+			name = "elysian_generic.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E6B4154E3E3CE86EE556FB8F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_lua_table_proxy_base.hpp";
+			name = "elysian_lua_table_proxy_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		ABFCF0DAA4ABE1F64914DA59 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_mem_pool.hpp";
+			name = "elysian_mem_pool.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		807BF536D1DF72A5185DF6AB = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_stl_algorithm.hpp";
+			name = "elysian_stl_algorithm.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		3C0097309FAC2DCFC15EEF4A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_ring_buffer.hpp";
+			name = "elysian_ring_buffer.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		98C135C180C268465FD012DF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_debug.hpp";
+			name = "elysian_debug.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		530D2223344FE5FDBFDE910F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_lua_manager.hpp";
+			name = "elysian_lua_manager.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		47EDF9B11B9182D175284BDA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_map_system.hpp";
+			name = "elysian_map_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		FFC60776702B852125B99908 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_adventure_log.hpp";
+			name = "elysian_adventure_log.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		FEFF8947AB600C6F8ADBA69B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_font.hpp";
+			name = "elysian_font.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		662067AEE6BD78AE26C4E8AC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/lua/elysian_lua_manager_base.hpp";
+			name = "elysian_lua_manager_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		0B73AFE47CC56B22504D7E0C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/lua/elysian_lua_script.hpp";
+			name = "elysian_lua_script.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		0095EDE0160E84108ADDB0CC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/lua/elysian_lua_singleton.hpp";
+			name = "elysian_lua_singleton.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C31F32E9A315B199F066BCC6 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/lua/elysian_lua_wrappers.hpp";
+			name = "elysian_lua_wrappers.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		0A220037341AF754C01B98EC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_audio_system.hpp";
+			name = "elysian_audio_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		90C54E8326F92A57ACDE9F5D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_behavior_system.hpp";
+			name = "elysian_behavior_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6A37434DF2F31BACE5B25040 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_character_system.hpp";
+			name = "elysian_character_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D889B009DE88CAE2F3626A63 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_collision_system.hpp";
+			name = "elysian_collision_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		DADC69F91BE2D07145B37BAE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_combat_system.hpp";
+			name = "elysian_combat_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		AA152019CAF2796D91134AAF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_day_system.hpp";
+			name = "elysian_day_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		F886C76A227FAEE2ABCBD2A7 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_dialog_system.hpp";
+			name = "elysian_dialog_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		26447E7742B3DF99E04F5D64 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_engine.hpp";
+			name = "elysian_engine.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8E94AC2B94E81A3A7DE3ED64 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_examinable_system.hpp";
+			name = "elysian_examinable_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		F99A8116C05DC7F271B00DDB = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_light_system.hpp";
+			name = "elysian_light_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C4BB53F4480451A1A21A4C24 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_map_system_base.hpp";
+			name = "elysian_map_system_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		CD99815B34F5AF3E81668958 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_particle_system.hpp";
+			name = "elysian_particle_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8591D867D060FBE757067AA7 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_party_system.hpp";
+			name = "elysian_party_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		0D9BC85E37384FDDD20658C8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_rigid_body_system.hpp";
+			name = "elysian_rigid_body_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E73FE8D7CD61E4A6164D6044 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_skeleton_system.hpp";
+			name = "elysian_skeleton_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		EC4EFB6DFAD237181B18DEF5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_system.hpp";
+			name = "elysian_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		B823531A65D330AF59A172B9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_warp_system.hpp";
+			name = "elysian_warp_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D240CC8E32C7F00961A7D928 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_pathfinding_system.hpp";
+			name = "elysian_pathfinding_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A6A6B1F0F76FE8EBF34FA37A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_debug_base.hpp";
+			name = "elysian_debug_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		AE2AA33A391969DC353BA65A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_event_monitor.hpp";
+			name = "elysian_event_monitor.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		9FEECA757BE89292099C5A4E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_force_generator.hpp";
+			name = "elysian_force_generator.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		CDF103E80DC311BE2854779A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_sort_sweep.hpp";
+			name = "elysian_sort_sweep.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		BE091A36B8840EC83045E3EC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_subprocess_manager.hpp";
+			name = "elysian_subprocess_manager.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		CBED8086915B5EF1C97D8D84 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_behavior.hpp";
+			name = "elysian_behavior.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		87EBE23414EA2A63950CD723 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_particle_emitter.hpp";
+			name = "elysian_particle_emitter.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		7469B0461A9D0522FFDE6928 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_character.hpp";
+			name = "elysian_character.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8F08BC00E8A2652DBF9EB98C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_rigid_body.hpp";
+			name = "elysian_rigid_body.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E9A7AA679ED9619C70040BFD = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_audio_source.hpp";
+			name = "elysian_audio_source.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8919532B57A53E4824BBE816 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_combat.hpp";
+			name = "elysian_combat.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8A9C95FD17C777624D3774F9 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_light_source.hpp";
+			name = "elysian_light_source.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6703535F0CA5F6590BBD85AB = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_examinable.hpp";
+			name = "elysian_examinable.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		68DF440D90CDEF6F34D645C0 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_skeleton_base.hpp";
+			name = "elysian_skeleton_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		2B8FDC8BBF253DE8F439DF27 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_skeleton.hpp";
+			name = "elysian_skeleton.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6AA15E84B432437E19ADE337 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_warp.hpp";
+			name = "elysian_warp.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		313112B5E1377C466D20F560 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_sprite.hpp";
+			name = "elysian_sprite.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		318A2382B2F0AC30BDF12999 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_quad_sprite.hpp";
+			name = "elysian_quad_sprite.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		7BDC07E8CA1B79AE8F88C9A6 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_task_monitor_base.hpp";
+			name = "elysian_task_monitor_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D3A99829271C61F0EC261E26 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_task_monitor.hpp";
+			name = "elysian_task_monitor.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		B3111BDCC8914D7E809629AF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_timer_system_base.hpp";
+			name = "elysian_timer_system_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		940A26F0F0DD7AA087E3968E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_timer_system.hpp";
+			name = "elysian_timer_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6D1DEED6AC2DDC572EF2A217 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_area_proxy.hpp";
+			name = "elysian_area_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		501E8C3FF15685DFC8F15094 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_audio_source_proxy.hpp";
+			name = "elysian_audio_source_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		7EF01EAF9820613F456083BA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_character_proxy.hpp";
+			name = "elysian_character_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		F581CB7B235A64C47A698241 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_collidable_proxy.hpp";
+			name = "elysian_collidable_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		DBCD637A4C5B20660A80C794 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_combat_proxy.hpp";
+			name = "elysian_combat_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C0F293716A36DBEA662FE8BF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_component_proxy.hpp";
+			name = "elysian_component_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C49349CF090308DB9F9F35E6 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_entity_proxy.hpp";
+			name = "elysian_entity_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		BEDD87CE008F0DAB22E5A54E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_examinable_proxy.hpp";
+			name = "elysian_examinable_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		79D721EF6B095DBDE8FD6009 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_instance_transform_proxy.hpp";
+			name = "elysian_instance_transform_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8EE777D24486308901C53141 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_level_proxy.hpp";
+			name = "elysian_level_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		F8E202766643E9AC8795BE71 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_light_source_proxy.hpp";
+			name = "elysian_light_source_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		805911A9DE75204AE3CA1B76 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_lua_behavior_proxy.hpp";
+			name = "elysian_lua_behavior_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		51B669DBBF9F7BD245729C35 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_particle_emitter_proxy.hpp";
+			name = "elysian_particle_emitter_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		AA85801D8F57681007138005 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_primitive_proxy.hpp";
+			name = "elysian_primitive_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1825033AFECD96645426DBF8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_renderable_proxy.hpp";
+			name = "elysian_renderable_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		80AD72F285244C06884D7101 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_rigid_body_proxy.hpp";
+			name = "elysian_rigid_body_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		CD534E5235F58F4C668B8D52 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_skeleton_proxy.hpp";
+			name = "elysian_skeleton_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8EF5EE6A9580540FFE51CFBF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_warp_proxy.hpp";
+			name = "elysian_warp_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		7A219FFD0C662370BF99CBCB = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_audio_system_proxy.hpp";
+			name = "elysian_audio_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E70F60F414EC632C931A6317 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_camera_system_proxy.hpp";
+			name = "elysian_camera_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		96315C7DC9400BB24C54BB5E = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_character_system_proxy.hpp";
+			name = "elysian_character_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		3558F87F781CA4055653E41B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_combat_system_proxy.hpp";
+			name = "elysian_combat_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		52C8F775D7423CEAFAA4EEA0 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_day_system_proxy.hpp";
+			name = "elysian_day_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		B53BDDE1F5A9437B62D27CAA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_dialog_system_proxy.hpp";
+			name = "elysian_dialog_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		ED176D5DE68DFB2282F30163 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_event_monitor_proxy.hpp";
+			name = "elysian_event_monitor_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		BA17377F92A8C4635F7DFFB6 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_gui_system_proxy.hpp";
+			name = "elysian_gui_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		2EC6BA67BA628197FD447B5A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_level_system_proxy.hpp";
+			name = "elysian_level_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		620F218A4D0679C965E257F5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_light_system_proxy.hpp";
+			name = "elysian_light_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		E0A1F9097CE0D31120218656 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_particle_system_proxy.hpp";
+			name = "elysian_particle_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A164F61AA70A876C1594424B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_party_system_proxy.hpp";
+			name = "elysian_party_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		20EC5337A9F3526A009026F2 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_timer_system_proxy.hpp";
+			name = "elysian_timer_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		385FD66A2C7F256853B58A1F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp";
+			name = "elysian_rigid_body_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A504B2820B35F26AE7E76AA2 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_pathfinding_system_proxy.hpp";
+			name = "elysian_pathfinding_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		677119BF719AC7D029962DE5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/component/elysian_lua_behavior_base.hpp";
+			name = "elysian_lua_behavior_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		5FFE98A12BF2A6F00B76425B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_lua_behavior.hpp";
+			name = "elysian_lua_behavior.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D3C977D5568C0BC376284CEC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_depth_buff_entry_base.hpp";
+			name = "elysian_depth_buff_entry_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		884E6001D78E5E5262AA9D8B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_depth_buff_entry.hpp";
+			name = "elysian_depth_buff_entry.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		461FC7E5A3F57AE543894493 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_camera_system_base.hpp";
+			name = "elysian_camera_system_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		CB70DECEE0DD0DE1EB85CF06 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_camera_system.hpp";
+			name = "elysian_camera_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		67F1D202F302467B88B41A8B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_camera_shake_subprocess.hpp";
+			name = "elysian_camera_shake_subprocess.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C96B402DD8F4A3062EBBEB91 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/utility/elysian_bit_mask.hpp";
+			name = "elysian_bit_mask.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		DDB1EBB255A929C5D3B7899F = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_bit_mask_proxy.hpp";
+			name = "elysian_bit_mask_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		38957D9C837DA467E61E333B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_sprite_attrib.hpp";
+			name = "elysian_sprite_attrib.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C3B1F331A34A0D214638D419 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/primitive/elysian_sprite_attrib_base.hpp";
+			name = "elysian_sprite_attrib_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A40DA09F7112A0CADC72B984 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_lua_table_ref.hpp";
+			name = "elysian_lua_table_ref.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		AF4142DC1ADA93A3574FEB7A = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/proxy/elysian_dialog_proxy.hpp";
+			name = "elysian_dialog_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		90D01A566DA6AAF89B29AE7C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_dialog_base.hpp";
+			name = "elysian_dialog_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		4B98B40B11EB6E723E6FDBDF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_dialog.hpp";
+			name = "elysian_dialog.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		D674311E973479CCA596F203 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_dialog_screen.hpp";
+			name = "elysian_dialog_screen.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A5B2913F056A0967BF323F3B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/level/elysian_dialog_screen_base.hpp";
+			name = "elysian_dialog_screen_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		B836A252DC24FCB00975F688 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/crtp/elysian_lua_variant.hpp";
+			name = "elysian_lua_variant.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		8E52CA5AF4265EFBC1DD6B98 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_lua_variant_base.hpp";
+			name = "elysian_lua_variant_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		3931939CBBB69DBD92D0EC72 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_input_system_proxy.hpp";
+			name = "elysian_input_system_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		66F37FAAC36A688918BC5600 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_input_system_base.hpp";
+			name = "elysian_input_system_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C30D49F22A9AFD5CF60EB550 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_input_system.hpp";
+			name = "elysian_input_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		C39967248065BB9DE09C2DDD = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/include/behavior/elysian_playable_behavior.hpp";
+			name = "elysian_playable_behavior.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		044A2046A8A0568A28FBF415 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/include/core/tk_lua_table_selectable.h";
+			name = "tk_lua_table_selectable.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A7AB91E2D21FD812D6530EAD = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_lua_stack.hpp";
+			name = "elysian_lua_stack.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		035EE05B881A294B281C5708 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_functional.hpp";
+			name = "elysian_functional.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		95E3049548A6BA9A688067DE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/include/core/tk_mime_data.h";
+			name = "tk_mime_data.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1107D833523562BC909D9FC5 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/include/core/tk_mime_drop_manager.h";
+			name = "tk_mime_drop_manager.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A0AC26EB03622CF06D6FA1A8 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_level_system.hpp";
+			name = "elysian_level_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		47B3A60CBCF0960CE3E007B6 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_level_system_base.hpp";
+			name = "elysian_level_system_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		92A8F5F670F4BDB0B2BE2182 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/include/estk/tk_level_system.h";
+			name = "tk_level_system.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		63D306B2163499BCBC9C8866 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/include/behavior/elysian_state_machine_behavior.hpp";
+			name = "elysian_state_machine_behavior.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		66344CDBEA371AB24088B163 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_oolua_string_traits.hpp";
+			name = "elysian_oolua_string_traits.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		5DA7F1251BB61A48B9B0BE05 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_gui_system_base.hpp";
+			name = "elysian_gui_system_base.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		A3FF58B842B1F3421F87E4FA = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/crtp/elysian_gui_system.hpp";
+			name = "elysian_gui_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1C65DF9D91F694715F746A15 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/include/estk/tk_gui_system.h";
+			name = "tk_gui_system.h";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		FFA34131A088013996F8888D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_widget.hpp";
+			name = "elysian_widget.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		86DA547B1BAEC72BB370A22D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_layout.hpp";
+			name = "elysian_layout.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		5AE0255313D2120D971B5F79 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_entity_widget.hpp";
+			name = "elysian_entity_widget.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		3A28EF527E1CB46041FE6CCC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_label_widget.hpp";
+			name = "elysian_label_widget.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		EE99C08FF54992621541BD39 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_widget_proxy.hpp";
+			name = "elysian_widget_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		F7CA7533C0FE83775722DC09 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/proxy/elysian_layout_proxy.hpp";
+			name = "elysian_layout_proxy.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		69CE022ECCF2FD6413AFD488 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/include/elysian_playable_pane.hpp";
+			name = "elysian_playable_pane.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		67FF3C60B5390F2CABDE3270 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_cpp_lua_callback.hpp";
+			name = "elysian_cpp_lua_callback.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		1CE416623E7590BF330CD86C = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/gui/elysian_menu_widget.hpp";
+			name = "elysian_menu_widget.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		AC0071DCD4E4351E809187AC = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/AssetIO/include/utility/elysian_associative_aggregate_array.hpp";
+			name = "elysian_associative_aggregate_array.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		6067FECB62688AE8D31B285D = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESGamma/include/system/elysian_event_system.hpp";
+			name = "elysian_event_system.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		3FEA5864476A588B5C60872B = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/game/include/elysian_pause_menu.hpp";
+			name = "elysian_pause_menu.hpp";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "sourcecode.c.h";
+		};
+		75B3B4EE677F1DFAF6207830 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/ESToolkit.pro";
+			name = "ESToolkit.pro";
+			sourceTree = "<absolute>";
+			lastKnownFileType = "text";
+		};
+		E2052DD5525EC6B5112DA782 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/.qmake.stash";
+			name = ".qmake.stash";
+			sourceTree = "<absolute>";
+		};
+		5A37396FDBD7F51D8F3082F3 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/qtcreator/ESDev/ESDev.pri";
+			name = "ESDev.pri";
+			sourceTree = "<absolute>";
+		};
+		10C0E51435348D4CF4483294 = {
+			isa = PBXGroup;
+			children = (
+				"92AFB21E4AD4E310E942B383",
+				"85BCC65933FA1518584E2BC8");
+			name = "include";
+			sourceTree = "<group>";
+		};
+		92AFB21E4AD4E310E942B383 = {
+			isa = PBXGroup;
+			children = (
+				"044A2046A8A0568A28FBF415",
+				"95E3049548A6BA9A688067DE",
+				"1107D833523562BC909D9FC5");
+			name = "core";
+			sourceTree = "<group>";
+		};
+		85BCC65933FA1518584E2BC8 = {
+			isa = PBXGroup;
+			children = (
+				"92A8F5F670F4BDB0B2BE2182",
+				"1C65DF9D91F694715F746A15");
+			name = "estk";
+			sourceTree = "<group>";
+		};
+		D044928BEC81F9DB4B39DF78 = {
+			isa = PBXGroup;
+			children = (
+				"4B2489715CEF8656150501DB");
+			name = "resource";
+			sourceTree = "<group>";
+		};
+		4B2489715CEF8656150501DB = {
+			isa = PBXGroup;
+			children = (
+				"DD5CBF255856D49A9487E94F");
+			name = "images";
+			sourceTree = "<group>";
+		};
+		2EB56BE3C2D93CDAB0C52E67 = {
+			isa = PBXGroup;
+			children = (
+				"11A943A9ED4F56A0B83B7A31",
+				"CE74F89FCD0CF5344B33285A",
+				"1293C558B636A26C601F07D2",
+				"74B96F94DA2405471862B0AE",
+				"6E1075B19DF72D38B09C946E",
+				"C839AA2F9AD1FBF66B471A7D",
+				"FCBA5C1334EAA8EA679F378F",
+				"6EBF2F355E5441EA4B1F6F92",
+				"50996A1A21CFFBF75F2E7D3B",
+				"7F95D139AE59DE38499097FE",
+				"FBC7F69417B89047B65410AA",
+				"AF155743DAD787258F65D0ED",
+				"750FEE2DCAAC8D734E5BFA56",
+				"744B0FB5ECC3E4A41A4F6138",
+				"9A35A98DA2BFAD3602CC433F",
+				"8EFB3A0E740DD027E2F25C55",
+				"243BCCE9E508483DCBB19360",
+				"BFD3840CAB74C116FE63D4C5",
+				"15EA2AFA96AC8B56B1CCE99E",
+				"9ACC34792988EBE7F862E04C",
+				"07B32098F31C5338B04A3AB8",
+				"4B234FAA2E94BD3B1A3A8EC0",
+				"63DDC68280BEECEF2AF28871",
+				"9466F872A53A3E0490BC85BF",
+				"D47654237C476135462D4111",
+				"9B46BCA64D6423DB6B490645",
+				"28C3D6EDEE7EE24EC62A1441",
+				"5FCD5EB7D4CF2DB5BF934650",
+				"1B1147A44F8BE686443E110A",
+				"4B307EE9323C8C76568A7DF9",
+				"60454B540A634568A6402EC5",
+				"94BA7EDFFFF74B8AC5A8AB3B",
+				"2E7F55E72C9578D15F2BA7B8",
+				"68BF1E57B56E41E3A911FD91",
+				"54268150BD854376FE8EAA18",
+				"2E45720901A42AE31DF0183C",
+				"28E3441C87FED16636B79567",
+				"1812C11480D0BC06C4055721",
+				"93A8072D78A095014A16611D",
+				"D3DADAB501A686BEC400D624",
+				"396422FA7EE8CB8FA8D8DABA",
+				"46D360F671C914BAD10A0E40",
+				"2CCB1D8EA4B1C71F09D33BA9",
+				"088439D6DFD5644F5D8BA8C5",
+				"F8D85BCD3A4EDE48DE6E0910",
+				"5845ADDE71A81B47F0941A20",
+				"A400A20F2894842BC80371E9",
+				"EE948A8EADDB497F7314FE84",
+				"C014F42629FA7F93871504F3",
+				"5AE4A595302A22E81AFA11B9",
+				"B94FDEA1917EDA11119E4EBF",
+				"A8FF5C80520E789BCE96D23D",
+				"DBD12AFAD80B3AD2AFCAD4ED",
+				"8AA3A3BFE6D6162A33CF17AC",
+				"27B169613063465BA297208E",
+				"96CD929DF57F33CB1E0AF8B8",
+				"145B26249B1E0BB92BC0EA29",
+				"8EAB81198520EC39342BAE36",
+				"1646D8F137226D9170246E48",
+				"321F4DC5CCCA982135AA2C46",
+				"4BE3A32BCC5A572336ECBD34",
+				"8E57EA113A14ECBAD2774BE1",
+				"28D0482EA5E87FAF193DA93A",
+				"ACC3228F261B6A17C2A7252D",
+				"B9144748FDBA6327F0F4E898",
+				"68EA9F8795DB0C8CC2F25DED",
+				"093937A080713ADEFDE21B2C",
+				"F36D6C0A5130A670E5E6D8BF",
+				"7E522EDA9B1AA2030C3B330D",
+				"69BBEDDE5538E87887927AC8",
+				"67F57D7692B3CAE7874B5E4C",
+				"A8976CCBE99932C7CE4ED836",
+				"10792D4331D919B1A45E3CE7",
+				"EDECB923301C860E8E5006B3",
+				"86E6EE1E35C4CDF643B8E3C8",
+				"8CAF857082C30A2498785D63",
+				"927D8BF7401B46A86CB572B0",
+				"894F414C05342A95EF857238",
+				"E3FA9973AE935414B3A2CEB2",
+				"81016BDD89D072BF8217A27A",
+				"E7C98782CA60FA9B6B7ED10D",
+				"A45B569992D87FD1E26CB59A",
+				"3B06C57B24286590EAB3609D",
+				"DCF243509E92ED5176EE8523",
+				"68DBCF8EFD8DE08ABE59EF94",
+				"BA29AD9728AC02D45C8CE18F",
+				"AA2627C3B4676F75E41835E5",
+				"F9D8D0E811CBE8ECD225F40A",
+				"C9B0E53C4E2E65A6484A3180",
+				"B5E873C5FF3F3080C55B6BA0",
+				"02A3BAB81476EDE747F88B00",
+				"AFDAEE250C3ED6E86B0F6D69",
+				"1720FC5A368C4143FBCEB2BA",
+				"0227550715B2D6BD3C052097",
+				"BC58B8E7F1A1EAB136BF1ABE",
+				"17D4E17F42871E06961FB4C9",
+				"1633F6609CE3D19E29D217C4",
+				"E60BBDFB60F3DF5925DCB73C",
+				"9E9C5D366A3C5CD933C42B10",
+				"4DCD0C75C2DC112CC1BAC3F8",
+				"F2B7F7A2D78257681AE132F2",
+				"4E13BB62B7E565D5955C5D4D",
+				"8C30DF36F57B14E57AC91F16",
+				"7027247D2B5FA333F8E54CD1",
+				"97338755A362F2E5BEF5F396",
+				"C9C43CAAF980516349104CEB",
+				"002C4DFEE2BF2A8F96FD47A1",
+				"32DDCFC8BD6095CA787D9B7D",
+				"F37C7400D8410A921B8DEF6D",
+				"459036FCBE2DFE360481880F",
+				"637D36A5C2FE999998BF4493",
+				"9D134069CBD4BC0965E0F1DE",
+				"7063262FC93FCC2B50E99148",
+				"FAB8443A9770F241C83CD3FF",
+				"35A6AD5579C97941755848F4",
+				"D044928BEC81F9DB4B39DF78",
+				"6FE63E9A108072DD0615187E",
+				"EFB3C69B2B2A5964083168B7",
+				"BDBD85F0453A63A3EA4F0D22",
+				"E67437A7789F1CF15A4009DC",
+				"7808813BB8B034B106AAF481",
+				"8FAE6FA2944D80F61D4118CE",
+				"8FD750278FA36711A925DE39",
+				"D65E2826A503D4A8AE29671D",
+				"9A074AA6D2AD7F1A9B8C62FC",
+				"1931D62DA15CE2F55D487FDF",
+				"0369F68C4613A233B3B580C4",
+				"686BE90E9CCA50AD8CC80A7F",
+				"6C2AD49C7505B6D8825B8E1F",
+				"139CB7774D1EAA48B7A6C36A",
+				"2A297BFEEB2E2D6B34FF4963",
+				"966B983649D3072AAF975127",
+				"34D6210063464EFB583E05FE",
+				"DA30D63171D3F9074B22102A",
+				"E2860F345DD356A2B0069974",
+				"02CEBD82E9A6F9CDE2C5721D",
+				"20486015DCBC8256AA8AC050",
+				"A888A3F53730C6ACF5068F39",
+				"B2D15673D79BD9F782E45697",
+				"65AF90363DE009D3BC8204D3",
+				"7FE461DC4ABDCD5CD222ABE4",
+				"2355C44F7C18D1F544141CDC",
+				"0EA6CC6EE3BD08F3299E5159",
+				"B7DEA7FFBC5E68D4F83A322D",
+				"6B054CC7702F9E2046C8CC4E",
+				"1D8563BA871F4A7798E05A34",
+				"4206C1003E1BF4B916AC74F8",
+				"D1EB4A310BBF51B8ADB07B12",
+				"755E7833FBAD8B9BEF989C20",
+				"F808870F8B6D4ECAF1E21E9B",
+				"629CD4B610D2C7BB13F54B21",
+				"99850DDC85785E3662E6FEEF",
+				"5A424D2E1980B473A2E31FEF",
+				"3DFBE3ECF4CC5B04AE759A01",
+				"E6B4154E3E3CE86EE556FB8F",
+				"ABFCF0DAA4ABE1F64914DA59",
+				"807BF536D1DF72A5185DF6AB",
+				"3C0097309FAC2DCFC15EEF4A",
+				"98C135C180C268465FD012DF",
+				"530D2223344FE5FDBFDE910F",
+				"47EDF9B11B9182D175284BDA",
+				"FFC60776702B852125B99908",
+				"FEFF8947AB600C6F8ADBA69B",
+				"662067AEE6BD78AE26C4E8AC",
+				"0B73AFE47CC56B22504D7E0C",
+				"0095EDE0160E84108ADDB0CC",
+				"C31F32E9A315B199F066BCC6",
+				"0A220037341AF754C01B98EC",
+				"90C54E8326F92A57ACDE9F5D",
+				"6A37434DF2F31BACE5B25040",
+				"D889B009DE88CAE2F3626A63",
+				"DADC69F91BE2D07145B37BAE",
+				"AA152019CAF2796D91134AAF",
+				"F886C76A227FAEE2ABCBD2A7",
+				"26447E7742B3DF99E04F5D64",
+				"8E94AC2B94E81A3A7DE3ED64",
+				"F99A8116C05DC7F271B00DDB",
+				"C4BB53F4480451A1A21A4C24",
+				"CD99815B34F5AF3E81668958",
+				"8591D867D060FBE757067AA7",
+				"0D9BC85E37384FDDD20658C8",
+				"E73FE8D7CD61E4A6164D6044",
+				"EC4EFB6DFAD237181B18DEF5",
+				"B823531A65D330AF59A172B9",
+				"D240CC8E32C7F00961A7D928",
+				"A6A6B1F0F76FE8EBF34FA37A",
+				"AE2AA33A391969DC353BA65A",
+				"9FEECA757BE89292099C5A4E",
+				"CDF103E80DC311BE2854779A",
+				"BE091A36B8840EC83045E3EC",
+				"CBED8086915B5EF1C97D8D84",
+				"87EBE23414EA2A63950CD723",
+				"7469B0461A9D0522FFDE6928",
+				"8F08BC00E8A2652DBF9EB98C",
+				"E9A7AA679ED9619C70040BFD",
+				"8919532B57A53E4824BBE816",
+				"8A9C95FD17C777624D3774F9",
+				"6703535F0CA5F6590BBD85AB",
+				"68DF440D90CDEF6F34D645C0",
+				"2B8FDC8BBF253DE8F439DF27",
+				"6AA15E84B432437E19ADE337",
+				"313112B5E1377C466D20F560",
+				"318A2382B2F0AC30BDF12999",
+				"7BDC07E8CA1B79AE8F88C9A6",
+				"D3A99829271C61F0EC261E26",
+				"B3111BDCC8914D7E809629AF",
+				"940A26F0F0DD7AA087E3968E",
+				"6D1DEED6AC2DDC572EF2A217",
+				"501E8C3FF15685DFC8F15094",
+				"7EF01EAF9820613F456083BA",
+				"F581CB7B235A64C47A698241",
+				"DBCD637A4C5B20660A80C794",
+				"C0F293716A36DBEA662FE8BF",
+				"C49349CF090308DB9F9F35E6",
+				"BEDD87CE008F0DAB22E5A54E",
+				"79D721EF6B095DBDE8FD6009",
+				"8EE777D24486308901C53141",
+				"F8E202766643E9AC8795BE71",
+				"805911A9DE75204AE3CA1B76",
+				"51B669DBBF9F7BD245729C35",
+				"AA85801D8F57681007138005",
+				"1825033AFECD96645426DBF8",
+				"80AD72F285244C06884D7101",
+				"CD534E5235F58F4C668B8D52",
+				"8EF5EE6A9580540FFE51CFBF",
+				"7A219FFD0C662370BF99CBCB",
+				"E70F60F414EC632C931A6317",
+				"96315C7DC9400BB24C54BB5E",
+				"3558F87F781CA4055653E41B",
+				"52C8F775D7423CEAFAA4EEA0",
+				"B53BDDE1F5A9437B62D27CAA",
+				"ED176D5DE68DFB2282F30163",
+				"BA17377F92A8C4635F7DFFB6",
+				"2EC6BA67BA628197FD447B5A",
+				"620F218A4D0679C965E257F5",
+				"E0A1F9097CE0D31120218656",
+				"A164F61AA70A876C1594424B",
+				"20EC5337A9F3526A009026F2",
+				"385FD66A2C7F256853B58A1F",
+				"A504B2820B35F26AE7E76AA2",
+				"677119BF719AC7D029962DE5",
+				"5FFE98A12BF2A6F00B76425B",
+				"D3C977D5568C0BC376284CEC",
+				"884E6001D78E5E5262AA9D8B",
+				"461FC7E5A3F57AE543894493",
+				"CB70DECEE0DD0DE1EB85CF06",
+				"67F1D202F302467B88B41A8B",
+				"C96B402DD8F4A3062EBBEB91",
+				"DDB1EBB255A929C5D3B7899F",
+				"38957D9C837DA467E61E333B",
+				"C3B1F331A34A0D214638D419",
+				"A40DA09F7112A0CADC72B984",
+				"AF4142DC1ADA93A3574FEB7A",
+				"90D01A566DA6AAF89B29AE7C",
+				"4B98B40B11EB6E723E6FDBDF",
+				"D674311E973479CCA596F203",
+				"A5B2913F056A0967BF323F3B",
+				"B836A252DC24FCB00975F688",
+				"8E52CA5AF4265EFBC1DD6B98",
+				"3931939CBBB69DBD92D0EC72",
+				"66F37FAAC36A688918BC5600",
+				"C30D49F22A9AFD5CF60EB550",
+				"C39967248065BB9DE09C2DDD",
+				"10C0E51435348D4CF4483294",
+				"A7AB91E2D21FD812D6530EAD",
+				"035EE05B881A294B281C5708",
+				"A0AC26EB03622CF06D6FA1A8",
+				"47B3A60CBCF0960CE3E007B6",
+				"63D306B2163499BCBC9C8866",
+				"66344CDBEA371AB24088B163",
+				"5DA7F1251BB61A48B9B0BE05",
+				"A3FF58B842B1F3421F87E4FA",
+				"FFA34131A088013996F8888D",
+				"86DA547B1BAEC72BB370A22D",
+				"5AE0255313D2120D971B5F79",
+				"3A28EF527E1CB46041FE6CCC",
+				"EE99C08FF54992621541BD39",
+				"F7CA7533C0FE83775722DC09",
+				"69CE022ECCF2FD6413AFD488",
+				"67FF3C60B5390F2CABDE3270",
+				"1CE416623E7590BF330CD86C",
+				"AC0071DCD4E4351E809187AC",
+				"6067FECB62688AE8D31B285D",
+				"3FEA5864476A588B5C60872B");
+			name = "Sources";
+			sourceTree = "<group>";
+		};
+		74B182DB50CB5611B5C1C297 = {
+			isa = PBXGroup;
+			children = (
+				"75B3B4EE677F1DFAF6207830",
+				"E2052DD5525EC6B5112DA782",
+				"5A37396FDBD7F51D8F3082F3");
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7EF0942E79C014DCEC8976BC = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Qt Preprocessors";
+			shellPath = "/bin/sh";
+			shellScript = "make -C /Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/ -f ESToolkit.xcodeproj/qt_preprocess.mak";
+			showEnvVarsInLog = "0";
+		};
+		F7E50F631C51CD5B5DC0BC43 = {
+			buildActionMask = 2147483647;
+			files = (
+				"D0960C340C24E99C78DEC55D",
+				"215C549F55CDE9CE10EA769E",
+				"98DAA4D201513DA2791259D9",
+				"AA221594137AD145739E0455",
+				"3F94F8C79BFD747188C0E777",
+				"71F1E1D37C2614BD5CFFB9F9",
+				"DCEA0A3FED9310C441686DAA",
+				"34E98E2E4033D6B91C214354",
+				"4BBDB15970F223052D2C7EA8",
+				"7883B6B0F011CBED49E65051",
+				"B44ED8A66B01217B1D4C4E59",
+				"2AC4005CEFA6AAE9B8E39936",
+				"1B79F78AF8D999026869E615",
+				"25C32EFE87E892DE37C27AC5",
+				"770BAF0BC94938D7683E166C",
+				"C36F20845D59B80787B1E3EA",
+				"9AFFBDA3851621E50362A804",
+				"A8B1079DFD80FA333ED80FFF",
+				"B398366D72645F982D78ADC1",
+				"6799B653025A3E8CC296314A",
+				"D6774167A8D8CA56CCD65E80",
+				"CE2D2D2068B8E01A0F89F0FF",
+				"3FCED225554631E858E0FCA7",
+				"9BFAB2E9547B014DC4D5925F",
+				"C71279EDE3FD943C3B90AB44",
+				"C7490AC074D2BE254C2635C0",
+				"4BC761DA11CA9B95E0FC6EF6",
+				"2AD7E1F4B28D480980F86E6F",
+				"E470027A2523DC04CEEC14EF",
+				"24E08448F18E0323FB6AE948",
+				"4A7C25E5F79610AD6A2C29EE",
+				"D178F4482DABEAE577CE1C1B",
+				"2219A7A5C881300ED5AF6B9A",
+				"97D21C2C150C28326BA10B0A",
+				"335F111FF5207C12AF205563",
+				"1F2009ACDB7D53ABC81167A0",
+				"C94A872E43ABC60FD1FB9D75",
+				"AE6ACB1CE850EEDEFFD7B7D8",
+				"175006058CA2422B8C49C08B",
+				"47F3A7A8F384B640739EAF73",
+				"462DBFF4636CAB286E1BE9BD",
+				"B5C9D2F10901467163D47838",
+				"FB2B92465FFCA7539CC105F9",
+				"C2D89BAC79A31EE64CF24020",
+				"D988616E581BB2A345E3A42C",
+				"ED93C850A1ABCABBFEEB23B4",
+				"596B14F3B639992407F6D984",
+				"DB8D5FBD5CC3FE5BD7699E9C",
+				"4869F2864907B37C53CEF5C5",
+				"AF341FDEA45FA90966694F7B",
+				"1AD74FEDFC17C17582221154",
+				"C8F7E5649F62D3B882254F8F",
+				"00B1AD28EBF6C9B433C7FE6A",
+				"404A388024D72066A389D814",
+				"D411AA4D236F05F179597B75",
+				"E9BD59E1FED2F299A29105F9",
+				"0A454EA8143DEB243CDA2B6F",
+				"0CF4B46B6E19EF89EA94701D",
+				"15D0364378A029D31B1B1169",
+				"C4E175601CA2AA364461BD35",
+				"E7A8F9695F178E656A8F31E9",
+				"5FA7368C4B35DA5F2E87314F",
+				"61E5E53996AD56B25BEB186D",
+				"538E3C218E7D55492755183D",
+				"89CDF7B06A2EDCE7C2F10478",
+				"BC63EA63384058D7C3B9EEBA",
+				"D028E70ED24A5D71AE9D8C6C",
+				"8A205A3EDF6387A46006CEFA",
+				"DCBDFF9FCCC592536CFC4C4F",
+				"18E757DEA1C6A12891EE184D",
+				"516AF48881A00AD14284F03F",
+				"E9277B9A2581FAC3BB8E91ED",
+				"7A6F8AEE22E1D9006F690918",
+				"DF603041C4D714C293CF7D28",
+				"CA0ED88314A57F40CAB4F194",
+				"DAE2E8394F031D41CB597D8F",
+				"E9618B9B5FD83F8EE130A57E",
+				"A137CB900FF91B97A35D5020",
+				"41E751848D708282A12E37ED",
+				"5C6F2083695BE1E4AD1446B5",
+				"818B85271C942153C057F260",
+				"8427F2E3FEF30F649514E20A",
+				"9B48DF09DEF9EAF23336C7FA",
+				"6403B952905130F132B19D17",
+				"0EB837454F41F9AA1DF26EB5",
+				"5388200CC5C03AD3BE2C47F2",
+				"BFFB616C661EF50AF3414A52",
+				"2BFB0128C3B3C73888FE98B3",
+				"8CAB773B93AF762D6DCC48EC",
+				"6E401C945CA7EB8B64F511B1",
+				"DAE2F46D59A2E2AA9CDCBA22",
+				"A827FDE74DC69B2BCA5574DD",
+				"AC75A20C732824A2732F7F11",
+				"27E4285CAF941EDC83D0F4D2",
+				"B62D3047E477417E2B78E1FC",
+				"159994CDBCCA95160840F92B",
+				"9612ECAF5FC673AD670EB388",
+				"191972EBE62C83AF36FD586C",
+				"140844E0CDC048DC69E1D48A",
+				"443CFF671385C124046AF438",
+				"905212C9185FEC1268A8026A",
+				"5E9F5E5B2D421A4860B2159C",
+				"1854300CC5E687B5309891CD",
+				"2E8AFB6244BDE901BDD25630",
+				"10AF4117905A7182EE31C63E",
+				"897E293C37261560BEC06967",
+				"5175940BC0A86844A950CEB3",
+				"FF23D599295284489B477C54",
+				"9B5DEBA51FDACBDC6D5C5EE8",
+				"307EC54AB4F3B2376D8FA4D1",
+				"14C0CE2748625DED91655EFA",
+				"A847876E14F30BFEC1F99481",
+				"151F492762629338551C45F9",
+				"47DD60E77AF7812DDE87D810",
+				"3EA2AAE5A32E26DC6E0F355D");
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Compile Sources";
+		};
+		E2EFA9EB751F0F4FFB0D5F9B = {
+			isa = PBXFileReference;
+			name = "libGyro";
+			path = "/Users/falcogirgis/Documents/Dev/esdev/libGyro/qtcreator/libGyro/liblibGyro.a";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		F9541694DF0A6422BCCBB882 = {
+			fileRef = "E2EFA9EB751F0F4FFB0D5F9B";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		98746C08DEF50E4486875BC1 = {
+			isa = PBXFileReference;
+			name = "OOLua";
+			path = "/Users/falcogirgis/Documents/Dev/esdev/OOLua/qtcreator/OOLua/libOOLua.a";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		B08233DD895435AA8FF3695C = {
+			fileRef = "98746C08DEF50E4486875BC1";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		68896C8191E7A2AB3B797E63 = {
+			isa = PBXFileReference;
+			name = "Lua5_2";
+			path = "/Users/falcogirgis/Documents/Dev/esdev/Lua5.2/qtcreator/Lua5_2/libLua5_2.a";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		A55F19EB8F2AF29DD16F3D9F = {
+			fileRef = "68896C8191E7A2AB3B797E63";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		5C153235112EC36FE9567108 = {
+			isa = PBXFileReference;
+			name = "Spine";
+			path = "/Users/falcogirgis/Documents/Dev/esdev/Spine/qtcreator/Spine/libSpine.a";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		F9B7422924B0D9CFFFC9402C = {
+			fileRef = "5C153235112EC36FE9567108";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		1C00B53005F8B5A6E51E9929 = {
+			isa = PBXFileReference;
+			name = "GLKit.framework";
+			path = "/System/Library/Frameworks/GLKit.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		4435A5630127E95592A64D2E = {
+			fileRef = "1C00B53005F8B5A6E51E9929";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FCC237CA5AD60B9BA4447615 = {
+			isa = PBXFileReference;
+			name = "Foundation.framework";
+			path = "/System/Library/Frameworks/Foundation.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		F26454630C80841CBDCFE1CA = {
+			fileRef = "FCC237CA5AD60B9BA4447615";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AE3EC31EE5BB1FCEE84137C = {
+			isa = PBXFileReference;
+			name = "CoreGraphics.framework";
+			path = "/System/Library/Frameworks/CoreGraphics.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		0CE02722F00CAD43741297B5 = {
+			fileRef = "6AE3EC31EE5BB1FCEE84137C";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		5D4F1790D2379A35B17F04EE = {
+			isa = PBXFileReference;
+			name = "OpenAL.framework";
+			path = "/System/Library/Frameworks/OpenAL.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		D70EF20D3C17B57F65C68E9D = {
+			fileRef = "5D4F1790D2379A35B17F04EE";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		1950DDF7CC6BA00B5B349A37 = {
+			isa = PBXFileReference;
+			name = "Ogg.framework";
+			path = "/Users/falcogirgis/Documents/Dev/esdev/libGyro/lib/ios/Ogg.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		F0434ED93930BD68D1214190 = {
+			fileRef = "1950DDF7CC6BA00B5B349A37";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		127D53604A31A9EFBD5E0620 = {
+			isa = PBXFileReference;
+			name = "Vorbis.framework";
+			path = "/Users/falcogirgis/Documents/Dev/esdev/libGyro/lib/ios/Vorbis.framework";
+			refType = 0;
+			sourceTree = "<absolute>";
+			lastKnownFileType = "wrapper.framework";
+		};
+		9C625014EFFDA665C1779467 = {
+			fileRef = "127D53604A31A9EFBD5E0620";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AF39DD055C3EF8226FBE929D = {
+			children = (
+				"E2EFA9EB751F0F4FFB0D5F9B",
+				"98746C08DEF50E4486875BC1",
+				"68896C8191E7A2AB3B797E63",
+				"5C153235112EC36FE9567108",
+				"1C00B53005F8B5A6E51E9929",
+				"FCC237CA5AD60B9BA4447615",
+				"6AE3EC31EE5BB1FCEE84137C",
+				"5D4F1790D2379A35B17F04EE",
+				"1950DDF7CC6BA00B5B349A37",
+				"127D53604A31A9EFBD5E0620");
+			isa = PBXGroup;
+			name = "Frameworks";
+			sourceTree = "<group>";
+		};
+		D1C883685E82D5676953459A = {
+			buildActionMask = 2147483647;
+			files = (
+				"F9541694DF0A6422BCCBB882",
+				"B08233DD895435AA8FF3695C",
+				"A55F19EB8F2AF29DD16F3D9F",
+				"F9B7422924B0D9CFFFC9402C",
+				"4435A5630127E95592A64D2E",
+				"F26454630C80841CBDCFE1CA",
+				"0CE02722F00CAD43741297B5",
+				"D70EF20D3C17B57F65C68E9D",
+				"F0434ED93930BD68D1214190",
+				"9C625014EFFDA665C1779467");
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Link Binary With Libraries";
+		};
+		9C316F444A62BF296E3E1F25 = {
+			isa = PBXShellScriptBuildPhase;
+			name = "Project Copy";
+			buildActionMask = 2147483647;
+			files = (
+				);
+			inputPaths = (
+				);
+			outputPaths = (
+				);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh";
+			shellScript = "cp -r $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME /Users/falcogirgis/Documents/Dev/esdev/executable/ios_sim";
+			showEnvVarsInLog = "0";
+		};
+		E6BB0254D85FFF11B1F831E2 = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/assets";
+			name = "assets";
+			sourceTree = "<absolute>";
+		};
+		52986621D788AFD6B1388B99 = {
+			fileRef = "E6BB0254D85FFF11B1F831E2";
+			isa = PBXBuildFile;
+		};
+		496E7DF71883F2C16013FDBF = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/ESToolkit.xcodeproj/Default-568h@2x.png";
+			name = "Default-568h@2x.png";
+			sourceTree = "<absolute>";
+		};
+		857DAE2733B4294BAB6A7F74 = {
+			fileRef = "496E7DF71883F2C16013FDBF";
+			isa = PBXBuildFile;
+		};
+		6EC6F0276FE8AE1BA3B0AACE = {
+			isa = PBXFileReference;
+			path = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/ESToolkit.xcodeproj/LaunchScreen.xib";
+			name = "LaunchScreen.xib";
+			sourceTree = "<absolute>";
+		};
+		8898CA10E3BAAC16C9D28059 = {
+			fileRef = "6EC6F0276FE8AE1BA3B0AACE";
+			isa = PBXBuildFile;
+		};
+		858FCAB0EB1F29CF8B07677C = {
+			children = (
+				"E6BB0254D85FFF11B1F831E2",
+				"496E7DF71883F2C16013FDBF",
+				"6EC6F0276FE8AE1BA3B0AACE");
+			isa = PBXGroup;
+			name = "Bundle Data";
+			sourceTree = "<group>";
+		};
+		30414803F31797EB689AE508 = {
+			buildActionMask = 2147483647;
+			files = (
+				"52986621D788AFD6B1388B99",
+				"857DAE2733B4294BAB6A7F74",
+				"8898CA10E3BAAC16C9D28059",
+				"E42FE69FA7A2643AB45DB327");
+			isa = PBXResourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Copy Bundle Resources";
+		};
+		99542592E9780B9225F24AA8 = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1E188EAE0B42CA5036A8DCD3 = {
+			isa = PBXFileReference;
+			includeInIndex = 0;
+			explicitFileType = "wrapper.application";
+			path = "ESToolkit.app";
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FE0A091FDBFB3E9C31B7A1BD = {
+			children = (
+				"1E188EAE0B42CA5036A8DCD3");
+			isa = PBXGroup;
+			name = "Products";
+			sourceTree = "<group>";
+		};
+		E8C543AB96796ECAA2E65C57 = {
+			children = (
+				"2EB56BE3C2D93CDAB0C52E67",
+				"74B182DB50CB5611B5C1C297",
+				"AF39DD055C3EF8226FBE929D",
+				"858FCAB0EB1F29CF8B07677C",
+				"FE0A091FDBFB3E9C31B7A1BD");
+			isa = PBXGroup;
+			name = "ESToolkit";
+			sourceTree = "<group>";
+		};
+		27AA195FF611D45D3F4CC610 = {
+			buildPhases = (
+				"5E618435888B9D49F8540165",
+				"7EF0942E79C014DCEC8976BC");
+			dependencies = (
+				);
+			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59;
+			isa = PBXAggregateTarget;
+			buildRules = (
+);
+			productName = "Qt Preprocess";
+			name = "Qt Preprocess";
+		};
+		26EDCFFE29279B0802F22521 = {
+			isa = PBXTargetDependency;
+			target = "27AA195FF611D45D3F4CC610";
+		};
+		CF2893A5E25F05D6F63A1B95 = {
+			buildPhases = (
+				"F7E50F631C51CD5B5DC0BC43",
+				"D1C883685E82D5676953459A",
+				"9C316F444A62BF296E3E1F25",
+				"30414803F31797EB689AE508",
+				"99542592E9780B9225F24AA8");
+			dependencies = (
+				"26EDCFFE29279B0802F22521");
+			productReference = "1E188EAE0B42CA5036A8DCD3";
+			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59;
+			isa = PBXNativeTarget;
+			buildRules = (
+);
+			productType = "com.apple.product-type.application";
+			name = "ESToolkit";
+			productName = "ESToolkit";
+			productInstallPath = "../../executable/ios_sim/";
+		};
+		3AA6C32AC930069E80220CF1 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=iphoneos*]" = "armv7 arm64";
+				"ARCHS[sdk=iphonesimulator*]" = "i386 x86_64";
+				COPY_PHASE_STRIP = "NO";
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				ENABLE_BITCODE = "YES";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = "YES";
+				GCC_OPTIMIZATION_LEVEL = "0";
+				ONLY_ACTIVE_ARCH = "YES";
+				PRODUCT_NAME = "ESToolkit";
+				"QMAKE_MAC_SDK_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk";
+				"QMAKE_MAC_SDK_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.3.sdk";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform";
+				QT_LIBRARY_SUFFIX = "_debug";
+				SDKROOT = "iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				CC = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang";
+				LDPLUSPLUS = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++";
+				INFOPLIST_FILE = "Info.plist";
+				SYMROOT = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/";
+				INSTALL_DIR = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit//../../executable/ios_sim/";
+				DYLIB_CURRENT_VERSION = "1.0.0";
+				DYLIB_COMPATIBILITY_VERSION = "1.0";
+				IPHONEOS_DEPLOYMENT_TARGET = "8.0";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				HEADER_SEARCH_PATHS = (
+					".",
+					"/Users/falcogirgis/Qt/5.9.2/ios/mkspecs/common/uikit",
+					"../../AssetIO/include",
+					"../../ESGamma/include",
+					"../../ESGamma/include/crtp",
+					"../../ESGamma/include/gui",
+					"../../ESGamma/include/lua",
+					"../../ESGamma/include/system",
+					"../../ESGamma/include/utility",
+					"../../game/include",
+					"../../libGyro/include",
+					"../../libGyro/include/kinetic",
+					"../../Lua5.2/include",
+					"../../OOLua/include",
+					"../../ESGamma/lib/include",
+					"../../Spine/include",
+					"../../libGyro/qtcreator/libGyro",
+					"../../OOLua/qtcreator/OOLua",
+					"../../Lua5.2/qtcreator/Lua5_2",
+					"../../Spine/qtcreator/Spine",
+					"/Users/falcogirgis/Qt/5.9.2/ios/mkspecs/macx-ios-clang");
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../libGyro/qtcreator/libGyro/",
+					"/Users/falcogirgis/Documents/Dev/esdev/libGyro/qtcreator/libGyro/",
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../OOLua/qtcreator/OOLua/",
+					"/Users/falcogirgis/Documents/Dev/esdev/OOLua/qtcreator/OOLua/",
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Lua5.2/qtcreator/Lua5_2/",
+					"/Users/falcogirgis/Documents/Dev/esdev/Lua5.2/qtcreator/Lua5_2/",
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Spine/qtcreator/Spine/",
+					"/Users/falcogirgis/Documents/Dev/esdev/Spine/qtcreator/Spine/",
+					"/System/Library/Frameworks/",
+					"/Users/falcogirgis/Documents/Dev/esdev/libGyro/lib/ios");
+				FRAMEWORK_SEARCH_PATHS = (
+					"../../libGyro/lib/ios");
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-msse3",
+					"-g",
+					"-fobjc-nonfragile-abi",
+					"-fobjc-legacy-dispatch",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DQT_COMPILER_SUPPORTS_SSE2",
+					"-DELYSIAN_ENGINE",
+					"-DQT_NO_KEYWORDS",
+					"-DQT_NO_DYNAMIC_CAST",
+					"-DGYRO_PLATFORM=GYRO_PLATFORM_iOS",
+					"-DGYRO_PLATFORM_iOS_SIMULATOR",
+					"-DGYRO_PLATFORM_iOS_DEVICE",
+					"-DQT_QML_DEBUG");
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-stdlib=libc++",
+					"-Wall",
+					"-Wno-unused-local-typedef",
+					"-Wno-unknown-pragmas",
+					"-Wno-inconsistent-missing-override",
+					"-msse3",
+					"-fno-rtti",
+					"-fno-exceptions",
+					"-stdlib=libc++",
+					"-fno-rtti",
+					"-fno-exceptions",
+					"-std=c++1y",
+					"-Wno-unknown-warning-option",
+					"-Wno-empty-body",
+					"-stdlib=libc++",
+					"-g",
+					"-std=gnu++1y",
+					"-fobjc-nonfragile-abi",
+					"-fobjc-legacy-dispatch",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DQT_COMPILER_SUPPORTS_SSE2",
+					"-DELYSIAN_ENGINE",
+					"-DQT_NO_KEYWORDS",
+					"-DQT_NO_DYNAMIC_CAST",
+					"-DGYRO_PLATFORM=GYRO_PLATFORM_iOS",
+					"-DGYRO_PLATFORM_iOS_SIMULATOR",
+					"-DGYRO_PLATFORM_iOS_DEVICE",
+					"-DQT_QML_DEBUG");
+				OTHER_LDFLAGS = (
+						"-stdlib=libc++",
+						"-Wl,-rpath,@executable_path/Frameworks",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../libGyro/qtcreator/libGyro/",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../OOLua/qtcreator/OOLua/",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Lua5.2/qtcreator/Lua5_2/",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Spine/qtcreator/Spine/",
+						"-lstdc++",
+						"-framework",
+						"OpenGLES",
+						"-framework",
+						"UIKit",
+						"-framework",
+						"CoreMotion",
+						"-F../../libGyro/lib/ios");
+				ARCHS = "armv7 arm64 i386 x86_64";
+			};
+			name = "Debug";
+		};
+		77418F46922677BB04ED38DD = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=iphoneos*]" = "armv7 arm64";
+				"ARCHS[sdk=iphonesimulator*]" = "i386 x86_64";
+				COPY_PHASE_STRIP = "NO";
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				ENABLE_BITCODE = "YES";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = "YES";
+				GCC_OPTIMIZATION_LEVEL = "0";
+				ONLY_ACTIVE_ARCH = "YES";
+				PRODUCT_NAME = "ESToolkit";
+				"QMAKE_MAC_SDK_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk";
+				"QMAKE_MAC_SDK_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.3.sdk";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform";
+				QT_LIBRARY_SUFFIX = "_debug";
+				SDKROOT = "iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = "ESToolkit";
+			};
+			name = "Debug";
+		};
+		339EE1B2CC4FC24589A0EA95 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=iphoneos*]" = "armv7 arm64";
+				"ARCHS[sdk=iphonesimulator*]" = "i386 x86_64";
+				COPY_PHASE_STRIP = "YES";
+				ENABLE_BITCODE = "YES";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = "NO";
+				PRODUCT_NAME = "ESToolkit";
+				"QMAKE_MAC_SDK_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk";
+				"QMAKE_MAC_SDK_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.3.sdk";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform";
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = "iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				CC = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang";
+				LDPLUSPLUS = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++";
+				INFOPLIST_FILE = "Info.plist";
+				SYMROOT = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/";
+				INSTALL_DIR = "/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit//../../executable/ios_sim/";
+				DYLIB_CURRENT_VERSION = "1.0.0";
+				DYLIB_COMPATIBILITY_VERSION = "1.0";
+				IPHONEOS_DEPLOYMENT_TARGET = "8.0";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				HEADER_SEARCH_PATHS = (
+					".",
+					"/Users/falcogirgis/Qt/5.9.2/ios/mkspecs/common/uikit",
+					"../../AssetIO/include",
+					"../../ESGamma/include",
+					"../../ESGamma/include/crtp",
+					"../../ESGamma/include/gui",
+					"../../ESGamma/include/lua",
+					"../../ESGamma/include/system",
+					"../../ESGamma/include/utility",
+					"../../game/include",
+					"../../libGyro/include",
+					"../../libGyro/include/kinetic",
+					"../../Lua5.2/include",
+					"../../OOLua/include",
+					"../../ESGamma/lib/include",
+					"../../Spine/include",
+					"../../libGyro/qtcreator/libGyro",
+					"../../OOLua/qtcreator/OOLua",
+					"../../Lua5.2/qtcreator/Lua5_2",
+					"../../Spine/qtcreator/Spine",
+					"/Users/falcogirgis/Qt/5.9.2/ios/mkspecs/macx-ios-clang");
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../libGyro/qtcreator/libGyro/",
+					"/Users/falcogirgis/Documents/Dev/esdev/libGyro/qtcreator/libGyro/",
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../OOLua/qtcreator/OOLua/",
+					"/Users/falcogirgis/Documents/Dev/esdev/OOLua/qtcreator/OOLua/",
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Lua5.2/qtcreator/Lua5_2/",
+					"/Users/falcogirgis/Documents/Dev/esdev/Lua5.2/qtcreator/Lua5_2/",
+					"/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Spine/qtcreator/Spine/",
+					"/Users/falcogirgis/Documents/Dev/esdev/Spine/qtcreator/Spine/",
+					"/System/Library/Frameworks/",
+					"/Users/falcogirgis/Documents/Dev/esdev/libGyro/lib/ios");
+				FRAMEWORK_SEARCH_PATHS = (
+					"../../libGyro/lib/ios");
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-msse3",
+					"-g",
+					"-fobjc-nonfragile-abi",
+					"-fobjc-legacy-dispatch",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DQT_COMPILER_SUPPORTS_SSE2",
+					"-DELYSIAN_ENGINE",
+					"-DQT_NO_KEYWORDS",
+					"-DQT_NO_DYNAMIC_CAST",
+					"-DGYRO_PLATFORM=GYRO_PLATFORM_iOS",
+					"-DGYRO_PLATFORM_iOS_SIMULATOR",
+					"-DGYRO_PLATFORM_iOS_DEVICE",
+					"-DQT_QML_DEBUG");
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-stdlib=libc++",
+					"-Wall",
+					"-Wno-unused-local-typedef",
+					"-Wno-unknown-pragmas",
+					"-Wno-inconsistent-missing-override",
+					"-msse3",
+					"-fno-rtti",
+					"-fno-exceptions",
+					"-stdlib=libc++",
+					"-fno-rtti",
+					"-fno-exceptions",
+					"-std=c++1y",
+					"-Wno-unknown-warning-option",
+					"-Wno-empty-body",
+					"-stdlib=libc++",
+					"-g",
+					"-std=gnu++1y",
+					"-fobjc-nonfragile-abi",
+					"-fobjc-legacy-dispatch",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DQT_COMPILER_SUPPORTS_SSE2",
+					"-DELYSIAN_ENGINE",
+					"-DQT_NO_KEYWORDS",
+					"-DQT_NO_DYNAMIC_CAST",
+					"-DGYRO_PLATFORM=GYRO_PLATFORM_iOS",
+					"-DGYRO_PLATFORM_iOS_SIMULATOR",
+					"-DGYRO_PLATFORM_iOS_DEVICE",
+					"-DQT_QML_DEBUG");
+				OTHER_LDFLAGS = (
+						"-stdlib=libc++",
+						"-Wl,-rpath,@executable_path/Frameworks",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../libGyro/qtcreator/libGyro/",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../OOLua/qtcreator/OOLua/",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Lua5.2/qtcreator/Lua5_2/",
+						"-L/Users/falcogirgis/Documents/Dev/esdev/ESToolkit/ESToolkit/../../Spine/qtcreator/Spine/",
+						"-lstdc++",
+						"-framework",
+						"OpenGLES",
+						"-framework",
+						"UIKit",
+						"-framework",
+						"CoreMotion",
+						"-F../../libGyro/lib/ios");
+				ARCHS = "armv7 arm64 i386 x86_64";
+			};
+			name = "Release";
+		};
+		6666AA5E688052234F6758D8 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = "NO";
+				"ARCHS[sdk=iphoneos*]" = "armv7 arm64";
+				"ARCHS[sdk=iphonesimulator*]" = "i386 x86_64";
+				COPY_PHASE_STRIP = "YES";
+				ENABLE_BITCODE = "YES";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = "NO";
+				PRODUCT_NAME = "ESToolkit";
+				"QMAKE_MAC_SDK_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk";
+				"QMAKE_MAC_SDK_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.3.sdk";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphoneos*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform";
+				"QMAKE_MAC_SDK_PLATFORM_PATH[sdk=iphonesimulator*]" = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform";
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = "iphoneos";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = "ESToolkit";
+			};
+			name = "Release";
+		};
+		DAC4C1AA5EDEA1C85E9CA5E6 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				"3AA6C32AC930069E80220CF1",
+				"339EE1B2CC4FC24589A0EA95");
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Debug";
+		};
+		6CC3B5D2136C7CD6A5CF5A59 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				"77418F46922677BB04ED38DD",
+				"6666AA5E688052234F6758D8");
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Debug";
+		};
+		6DB9C3763D02B1415CD9D565 = {
+			hasScannedForEncodings = 1;
+			compatibilityVersion = "Xcode 3.2";
+			isa = PBXProject;
+			mainGroup = "E8C543AB96796ECAA2E65C57";
+			productRefGroup = "FE0A091FDBFB3E9C31B7A1BD";
+			buildConfigurationList = "DAC4C1AA5EDEA1C85E9CA5E6";
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				"CF2893A5E25F05D6F63A1B95",
+				"27AA195FF611D45D3F4CC610");
+			attributes = {
+				TargetAttributes = {
+				};
+			};
+		};
+	};
+	rootObject = "6DB9C3763D02B1415CD9D565";
+}
