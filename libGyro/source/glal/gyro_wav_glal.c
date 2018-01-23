@@ -75,10 +75,11 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     _WAVE_Format wave_format;
     _WAVE_RIFF_Header riff_header;
     _WAVE_Chunk wave_chunk;
+    *size = 0;
     unsigned char* data;
 
     if (!gyFileOpen(filename, "rb", &soundFile)) {
-        _gyLog(GY_DEBUG_WARNING, "Could not open WAV file [%s]", filename);
+        _gyLog(GY_DEBUG_ERROR, "Could not open WAV file [%s]", filename);
         return 0;
     }
 
@@ -211,6 +212,7 @@ int _gyAudWavAlloc(GYWav *const wav) {
     _loadWavFile(wav->filename, &payload->buffer, &payload->size, &payload->freq, &payload->format);
 #endif
     wav->_data = payload;
+    wav->bytes = payload->size;
     return 1;
 }
 

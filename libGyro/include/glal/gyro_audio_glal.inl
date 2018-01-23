@@ -54,8 +54,9 @@ static inline int _clearALError(const char* file, int line, const char* func) {
 
     if(error != AL_NO_ERROR) {
         _gyLog(GY_DEBUG_ERROR, "Uncaught OpenAL Error: %d ('%s'), Happened before: [%s:%d (func %s)]", error, _openALError(error), file, line, func);
-        return 1;
+        return 0;
     }
+    return 1;
 
 }
 
