@@ -8,7 +8,7 @@ namespace elysian {
     using DialogScreen  = DialogScreenBase;
 }
 #else
-#   include <tk_dialog_screen.h>
+#   include <AssetIO/tk_dialog_screen.h>
 namespace elysian {
     using DialogScreen  = TkDialogScreen;
 }

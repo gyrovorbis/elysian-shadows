@@ -2,21 +2,21 @@
 #include "gyro_asset_bank.h"
 
 //returns the entry, rather than the payload (with previous entry (for removal))
-static GYAssetBankEntry* _gyAssetBankFindEntry(const GYAssetBank *const bank, const void *const data, GYAssetBankEntry **const prev) {
+GYAssetBankEntry* gyAssetBankFindEntry(const GYAssetBank *const bank, const void *const data, GYAssetBankEntry **const prev) {
 	GYAssetBankEntry *entry = bank->_head;
-	*prev = 0;
+    if(prev) *prev = 0;
 
     if(!entry || !entry->_payload) return NULL;
 
 	if(bank->_comparator) { //user-specified comparator
 		for(; entry; entry = entry->_next) {
 			if(bank->_comparator(entry->_payload, data)) return entry;
-			*prev = entry;
+            if(prev) *prev = entry;
 		}
 	} else { //default pointer comparison
 		for(; entry; entry = entry->_next) {
 			if(entry->_payload == data) return entry;
-			*prev = entry;
+            if(prev) *prev = entry;
 		}
 	}
 	return 0;
@@ -48,36 +48,41 @@ void gyAssetBankInit(GYAssetBank *const bank, int (*comparator)(const void *cons
 void *gyAssetBankInsert(GYAssetBank *const bank, void *const data) {
 	GYAssetBankEntry *entry, *prev;
 	//Check if entry already exists
-	if((entry = _gyAssetBankFindEntry(bank, data, &prev))) {
+    if((entry = gyAssetBankFindEntry(bank, data, &prev))) {
 		++entry->_refCount;
 		return entry->_payload;
 	}
 
 	//Allocate entry
 	entry = malloc(sizeof(GYAssetBankEntry));
-	if(!entry) return 0;
+    if(!entry) return NULL;
 	entry->_next = 0;
 	entry->_refCount = 1;
 	//Invoke allocator to allocate actual payload
 	entry->_payload = (bank->_constructor)? bank->_constructor(data) : data;
 
-	//Insert entry
-	if(bank->_head) {
-		bank->_tail->_next = entry;
-		bank->_tail = entry;
-	} else { //First entry
-		bank->_head = bank->_tail = entry;
-	}
+    if(entry->_payload) {
 
-	++bank->_size;
+        //Insert entry
+        if(bank->_head) {
+            bank->_tail->_next = entry;
+            bank->_tail = entry;
+        } else { //First entry
+            bank->_head = bank->_tail = entry;
+        }
 
-	return entry->_payload;
+        ++bank->_size;
+        return entry->_payload;
+    } else {
+        free(entry);
+        return NULL;
+    }
 }
 
 int gyAssetBankRemove(GYAssetBank *const bank, const void *const payload) {
 	GYAssetBankEntry *entry, *prev;
 
-	if((entry = _gyAssetBankFindEntry(bank, payload, &prev))) {
+    if((entry = gyAssetBankFindEntry(bank, payload, &prev))) {
 		if(--entry->_refCount == 0) {
 			if(prev) {
 				prev->_next = entry->_next;

@@ -4,7 +4,7 @@
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_level.hpp>
-//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
+//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", <ESGamma/tk_map_system.h>)
 #include "elysian_map_system.hpp"
 #include <gyro_shader_api.h>
 #include <cfloat>

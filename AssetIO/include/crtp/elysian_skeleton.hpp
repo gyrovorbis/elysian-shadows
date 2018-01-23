@@ -11,7 +11,7 @@ namespace elysian {
     typedef AnimationTrackBase  AnimationTrack;
 }
 #else
-#   include <tk_skeleton.h>
+#   include <AssetIO/tk_skeleton.h>
 namespace elysian {
     typedef TkSkeleton          Skeleton;
     typedef TkSkeletonAttrib    SkeletonAttrib;

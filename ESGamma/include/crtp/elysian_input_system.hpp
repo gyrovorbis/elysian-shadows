@@ -9,7 +9,7 @@ namespace elysian {
 }
 #else
 
-#   include <estk/tk_input_system.h>
+#   include <ESGamma/tk_input_system.h>
 
 namespace elysian {
     using InputSystem = TkInputSystem;

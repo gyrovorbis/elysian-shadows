@@ -2,12 +2,12 @@
 #define TEST_LEVEL_ASSETS_H
 
 
-#include <tk_level.h>
+#include <AssetIO/tk_level.h>
 #include <QObject>
 #include <test_area_assets.h>
 #include <test_estk.h>
 #include <QDebug>
-#include <tk_project.h>
+#include <ESToolkit/core/tk_project.h>
 
 namespace tktest {
 

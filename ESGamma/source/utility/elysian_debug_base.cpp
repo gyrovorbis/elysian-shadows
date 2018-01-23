@@ -10,7 +10,7 @@
 #include "elysian_debug.hpp"
 #include <crtp/elysian_level_system.hpp>
 #include "elysian_engine.hpp"
-//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
+//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", <ESGamma/tk_map_system.h>)
 #include "elysian_map_system.hpp"
 #include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_character.hpp>

@@ -10,7 +10,7 @@ namespace elysian {
     using LuaTableProxy = LuaTableProxyBase<T, P, Bases...>;
 }
 #else
-#   include <tk_lua_table_proxy.h>
+#   include <AssetIO/tk_lua_table_proxy.h>
 
 namespace elysian {
     template <typename P, typename T, class... Bases>

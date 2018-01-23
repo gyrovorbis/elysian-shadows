@@ -8,7 +8,7 @@ namespace elysian {
     typedef TimerSystemBase TimerSystem;
 }
 #else
-#   include <tk_timer_system.h>
+#   include <ESGamma/tk_timer_system.h>
 namespace elysian {
     typedef TkTimerSystem TimerSystem;
 }

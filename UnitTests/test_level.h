@@ -1,15 +1,15 @@
 #ifndef TEST_SEVERITY
 #define TEST_SEVERITY
 
-#include <tk_level.h>
+#include <AssetIO/tk_level.h>
 #include <QObject>
 #include <test_area.h>
 #include <test_estk.h>
 #include <QDebug>
 #include <tk_tree_node.h>
 #include <QTreeWidgetItem>
-#include <tk_project.h>
-#include <core/tk_file_utilities.h>
+#include <ESToolkit/core/tk_project.h>
+#include <ESToolkit/core/tk_file_utilities.h>
 
 extern "C" void gyDebugSigInit();
 

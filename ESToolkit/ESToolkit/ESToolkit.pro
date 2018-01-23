@@ -62,16 +62,7 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../libGyro/include/kinetic
 
 !ios: !dreamcast: !android{
-    DEPENDPATH += include \
-        include/asset \
-        include/model \
-        include/estk \
-        include/tile_engine \
-        include/core \
-        include/sheet_manager \
-        include/dialog \
-        include/widget \
-        include/delegate
+    DEPENDPATH += include
 }
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
@@ -81,7 +72,14 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/include/gui \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
-    ../../ESGamma/include/utility \
+    ../../ESGamma/include/utility
+
+!ios: !dreamcast: !android {
+    INCLUDEPATH += include
+    #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+}
+#SPLIT UP SO ITS STILL PRIORITIZED!!!
+INCLUDEPATH += \
     ../../game/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic \
@@ -89,20 +87,6 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../OOLua/include \
     ../../ESGamma/lib/include \
     ../../Spine/include
-
-!ios: !dreamcast: !android {
-    INCLUDEPATH += include \
-    include/asset \
-    include/model \
-    include/estk \
-    include/tile_engine \
-    include/core \
-    include/sheet_manager \
-    include/dialog \
-    include/widget
-
-    #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
-}
 
 SOURCES += \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
@@ -218,104 +202,101 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_event_system.cpp \
     ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
-    source/asset/tk_color.cpp \
-    source/delegate/tk_color_swatch_property_item_delegate.cpp \
     ../../ESGamma/source/system/elysian_particle_system_base.cpp \
-    source/estk/tk_particle_system.cpp \
-    source/widget/tk_particle_attrib_preview_dock_widget.cpp \
-    source/widget/tk_2d_vector_widget.cpp
-
 
 !ios: !dreamcast: !android {
 
     SOURCES += \
-        source/asset/tk_area.cpp \
-        source/asset/tk_asset_manager.cpp \
-        source/asset/tk_assets.cpp \
-        source/asset/tk_collidable.cpp \
-        source/asset/tk_combat.cpp \
-        source/asset/tk_elysian_tile_wrapper.cpp \
-        source/asset/tk_entity.cpp \
-        source/asset/tk_level.cpp \
-        source/asset/tk_light_source.cpp \
-        source/asset/tk_lua_table_proxy.cpp \
-        source/asset/tk_map_entry.cpp \
-        source/asset/tk_particle_emitter.cpp \
-        source/asset/tk_project.cpp \
-        source/asset/tk_renderable.cpp \
-        source/core/main.cpp \
-        source/core/tk_debug.cpp \
-        source/core/tk_file_utilities.cpp \
-        source/core/tk_menu_stack.cpp \
-        source/core/tk_tile_sheet_utilities.cpp \
-        source/core/tk_tree_node.cpp \
-        source/core/tk_undo_item.cpp \
-        source/dialog/tk_engine_dialog.cpp \
-        source/dialog/tk_engine_settings_dialog.cpp \
-        source/dialog/tk_lua_explorer_dialog.cpp \
-        source/estk/tk_asset_dock_widget.cpp \
-        source/estk/tk_asset_tree_widget.cpp \
-        source/estk/tk_engine_gl_scene_widget.cpp \
-        source/estk/tk_entity_dock_widget.cpp \
-        source/estk/tk_entity_selectable.cpp \
-        source/estk/tk_entity_tree_widget.cpp \
-        source/estk/tk_estoolkit.cpp \
-        source/estk/tk_layer_dock_widget.cpp \
-        source/estk/tk_lua_manager.cpp \
-        source/estk/tk_lua_wrappers.cpp \
-        source/estk/tk_map_system.cpp \
-        source/estk/tk_map_view.cpp \
-        source/estk/tk_map_view_tile_graphics_item.cpp \
-        source/estk/tk_selection_dock_widget.cpp \
-        source/estk/tk_sheet_dock_widget.cpp \
-        source/estk/tk_sheet_view.cpp \
-        source/estk/tk_sheet_view_tile_graphics_item.cpp \
-        source/estk/tk_tile_selectable.cpp \
-        source/estk/tk_tile_selectable_selection_view_delegate.cpp \
-        source/model/tk_lua_table_stack_model.cpp \
-        source/model/tk_property_stack_model.cpp \
-        source/model/tk_rows_joiner_proxy_model.cpp \
-        source/sheet_manager/tk_sheet_manager.cpp \
-        source/sheet_manager/tk_sheet_manager_asset_manager.cpp \
-        source/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.cpp \
-        source/sheet_manager/tk_sheet_manager_dest_view.cpp \
-        source/sheet_manager/tk_sheet_manager_file_dock_widget.cpp \
-        source/sheet_manager/tk_sheet_manager_source_tile_graphics_Item.cpp \
-        source/sheet_manager/tk_sheet_manager_source_view.cpp \
-        source/tile_engine/tk_source_view.cpp \
-        source/widget/tk_history_dock_widget.cpp \
-        source/widget/tk_documentation_browser.cpp \
-        source/model/tk_task_monitor.cpp \
-        source/widget/tk_pie_chart_view.cpp \
-        source/dialog/tk_task_monitor_dialog.cpp \
-        source/core/tk_network_access_manager.cpp \
-        source/asset/tk_lua_behavior.cpp \
-        source/estk/tk_timer_system.cpp \
-        source/dialog/tk_gitlab_dialog.cpp \
-        source/asset/tk_skeleton.cpp \
-        source/asset/tk_rigid_body.cpp \
-        source/asset/tk_character.cpp \
-        source/asset/tk_warp.cpp \
-        source/asset/tk_sprite_attrib.cpp \
-        source/estk/tk_camera_dock_widget.cpp \
-        source/asset/tk_examinable.cpp \
-        source/estk/tk_camera_system.cpp \
-        source/asset/tk_dialog.cpp \
-        source/core/tk_lua_qt_utils.cpp \
-        source/core/tk_mime_data.cpp \
-        source/core/tk_mime_drop_manager.cpp \
-        source/estk/tk_estoolkit_menu_bar_slots.cpp \
-        source/estk/tk_level_system.cpp \
-        source/delegate/tk_property_item_delegate.cpp \
-        source/delegate/tk_enum_dropdown_property_item_delegate.cpp \
-        source/delegate/tk_file_browser_property_item_delegate.cpp \
-        source/delegate/tk_spinbox_property_item_delegate.cpp \
-        source/delegate/tk_property_item_proxy_delegate.cpp \
-        source/delegate/tk_combobox_property_item_delegate.cpp \
-        source/delegate/tk_dynamic_content_property_item_delegate.cpp \
-        source/estk/tk_selection_tree_view.cpp \
-        source/asset/tk_dialog_screen.cpp \
-        source/core/tk_lua_mime_drop_manager.cpp
+        source/AssetIO/tk_area.cpp \
+        source/ESToolkit/core/tk_asset_manager.cpp \
+        source/ESToolkit/core/tk_assets.cpp \
+        source/AssetIO/tk_collidable.cpp \
+        source/AssetIO/tk_combat.cpp \
+        source/AssetIO/tk_elysian_tile_wrapper.cpp \
+        source/AssetIO/tk_entity.cpp \
+        source/AssetIO/tk_level.cpp \
+        source/AssetIO/tk_light_source.cpp \
+        source/AssetIO/tk_lua_table_proxy.cpp \
+        source/AssetIO/tk_map_entry.cpp \
+        source/AssetIO/tk_particle_emitter.cpp \
+        source/ESToolkit/core/tk_project.cpp \
+        source/AssetIO/tk_renderable.cpp \
+        source/AssetIO/tk_skeleton.cpp \
+        source/AssetIO/tk_rigid_body.cpp \
+        source/AssetIO/tk_character.cpp \
+        source/AssetIO/tk_warp.cpp \
+        source/AssetIO/tk_sprite_attrib.cpp \
+        source/AssetIO/tk_examinable.cpp \
+        source/AssetIO/tk_lua_behavior.cpp \
+        source/AssetIO/tk_dialog.cpp \
+        source/AssetIO/tk_color.cpp \
+        source/AssetIO/tk_dialog_screen.cpp \
+        source/ESToolkit/ui/dock/tk_camera_dock_widget.cpp \
+        source/ESToolkit/core/main.cpp \
+        source/ESToolkit/core/tk_debug.cpp \
+        source/ESToolkit/core/tk_file_utilities.cpp \
+        source/QESTkUtils/tk_menu_stack.cpp \
+        source/ESToolkit/core/tk_tile_sheet_utilities.cpp \
+        source/ESToolkit/ui/item/tk_tree_node.cpp \
+        source/ESToolkit/core/tk_undo_item.cpp \
+        source/ESToolkit/ui/dialog/tk_engine_dialog.cpp \
+        source/ESToolkit/ui/dialog/tk_engine_settings_dialog.cpp \
+        source/ESToolkit/ui/dock/asset/tk_asset_dock_widget.cpp \
+        source/ESToolkit/ui/widget/tk_engine_gl_scene_widget.cpp \
+        source/ESToolkit/ui/dock/tk_entity_dock_widget.cpp \
+        source/ESToolkit/core/tk_entity_selectable.cpp \
+        source/ESToolkit/ui/widget/tk_entity_tree_widget.cpp \
+        source/ESToolkit/ui/tk_estoolkit.cpp \
+        source/ESToolkit/ui/dock/tk_layer_dock_widget.cpp \
+        source/ESGamma/tk_lua_manager.cpp \
+        source/ESGamma/tk_lua_wrappers.cpp \
+        source/ESGamma/tk_map_system.cpp \
+        source/ESToolkit/ui/widget/tk_map_view.cpp \
+        source/ESToolkit/ui/item/tk_map_view_tile_graphics_item.cpp \
+        source/ESToolkit/ui/dock/tk_selection_dock_widget.cpp \
+        source/ESToolkit/ui/dock/tk_sheet_dock_widget.cpp \
+        source/ESToolkit/ui/widget/tk_sheet_view.cpp \
+        source/ESToolkit/ui/item/tk_sheet_view_tile_graphics_item.cpp \
+        source/ESToolkit/core/tk_tile_selectable.cpp \
+        source/ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.cpp \
+        source/QESTkUtils/model/tk_lua_table_stack_model.cpp \
+        source/QESTkUtils/model/tk_property_stack_model.cpp \
+        source/QESTkUtils/model/tk_rows_joiner_proxy_model.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager_asset_manager.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager_dest_view.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager_file_dock_widget.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager_source_tile_graphics_Item.cpp \
+        source/ESToolkit/sheet_manager/tk_sheet_manager_source_view.cpp \
+        source/QESTkUtils/tile_engine/tk_source_view.cpp \
+        source/ESToolkit/ui/dock/tk_history_dock_widget.cpp \
+        source/QESTkUtils/ui/widget/tk_documentation_browser.cpp \
+        source/QESTkUtils/ui/widget/tk_pie_chart_view.cpp \
+        source/ESToolkit/ui/dialog/tk_task_monitor_dialog.cpp \
+        source/QESTkUtils/tk_network_access_manager.cpp \
+        source/ESGamma/tk_timer_system.cpp \
+        source/QESTkUtils/ui/widget/tk_gitlab_dialog.cpp \
+        source/ESGamma/tk_camera_system.cpp \
+        source/QESTkUtils/tk_lua_qt_utils.cpp \
+        source/QESTkUtils/tk_mime_data.cpp \
+        source/QESTkUtils/tk_mime_drop_manager.cpp \
+        source/ESToolkit/ui/tk_estoolkit_menu_bar_slots.cpp \
+        source/ESGamma/tk_level_system.cpp \
+        source/QESTkUtils/ui/delegate/tk_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_property_item_proxy_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.cpp \
+        source/ESToolkit/ui/widget/tk_selection_tree_view.cpp \
+        source/QESTkUtils/tk_lua_mime_drop_manager.cpp \
+        source/ESGamma/tk_particle_system.cpp \
+        source/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.cpp \
+        source/QESTkUtils/ui/widget/tk_2d_vector_widget.cpp \
+        source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp
+
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -467,19 +448,14 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_input_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_input_system.hpp \
     ../../game/include/behavior/elysian_playable_behavior.hpp \
-    include/core/tk_lua_table_selectable.h \
     ../../AssetIO/include/utility/elysian_lua_stack.hpp \
     ../../AssetIO/include/utility/elysian_functional.hpp \
-    include/core/tk_mime_data.h \
-    include/core/tk_mime_drop_manager.h \
     ../../ESGamma/include/crtp/elysian_level_system.hpp \
     ../../ESGamma/include/system/elysian_level_system_base.hpp \
-    include/estk/tk_level_system.h \
     ../../game/include/behavior/elysian_state_machine_behavior.hpp \
     ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
     ../../ESGamma/include/system/elysian_gui_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_gui_system.hpp \
-    include/estk/tk_gui_system.h \
     ../../ESGamma/include/gui/elysian_widget.hpp \
     ../../ESGamma/include/gui/elysian_layout.hpp \
     ../../ESGamma/include/gui/elysian_entity_widget.hpp \
@@ -493,144 +469,144 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_event_system.hpp \
     ../../game/include/elysian_pause_menu.hpp \
     ../../ESGamma/include/utility/elysian_performance_monitor.hpp \
-    include/model/tk_performance_monitor.hpp \
     ../../AssetIO/include/crtp/elysian_color.hpp \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
-    include/asset/tk_color.h \
-    include/delegate/tk_color_swatch_property_item_delegate.h \
     ../../ESGamma/include/system/elysian_particle_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_particle_system.hpp \
-    include/estk/tk_particle_system.h \
-    include/widget/tk_particle_attrib_preview_dock_widget.h \
-    include/widget/tk_2d_vector_widget.h
+    ../../ESGamma/include/crtp/elysian_particle_system.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
-        include/asset/tk_area.h \
-        include/asset/tk_asset_manager.h \
-        include/asset/tk_assets.h \
-        include/asset/tk_audio_source.h \
-        include/asset/tk_behavior.h \
-        include/asset/tk_character.h \
-        include/asset/tk_collidable.h \
-        include/asset/tk_combat.h \
-        include/asset/tk_component.h \
-        include/asset/tk_elysian_tile_wrapper.h \
-        include/asset/tk_entity.h \
-        include/asset/tk_examinable.h \
-        include/asset/tk_level.h \
-        include/asset/tk_light_source.h \
-        include/asset/tk_lua_table_proxy.h \
-        include/asset/tk_map_entry.h \
-        include/asset/tk_particle_emitter.h \
-        include/asset/tk_project.h \
-        include/asset/tk_renderable.h \
-        include/asset/tk_rigid_body.h \
-        include/asset/tk_skeleton.h \
-        include/asset/tk_warp.h \
-        include/core/tk_checkered_alpha_rect_graphics_item.h \
-        include/core/tk_debug.h \
-        include/core/tk_file_utilities.h \
-        include/core/tk_gl_utilities.h \
-        include/core/tk_menu_stack.h \
-        include/core/tk_selectable.h \
-        include/core/tk_selection_scene.h \
-        include/core/tk_tile_image.h \
-        include/core/tk_tile_sheet_utilities.h \
-        include/core/tk_tree_node.h \
-        include/core/tk_undo_item.h \
-        include/dialog/tk_engine_dialog.h \
-        include/dialog/tk_engine_settings_dialog.h \
-        include/dialog/tk_lua_explorer_dialog.h \
-        include/estk/tk_asset_dock_widget.h \
-        include/estk/tk_asset_tree_widget.h \
-        include/estk/tk_engine_gl_scene_widget.h \
-        include/estk/tk_entity_dock_widget.h \
-        include/estk/tk_entity_selectable.h \
-        include/estk/tk_entity_tree_widget.h \
-        include/estk/tk_estoolkit.h \
-        include/estk/tk_layer_dock_widget.h \
-        include/estk/tk_lua_manager.h \
-        include/estk/tk_lua_wrappers.h \
-        include/estk/tk_map_system.h \
-        include/estk/tk_map_view.h \
-        include/estk/tk_map_view_depth_buffer_graphics_item.h \
-        include/estk/tk_map_view_place_tile_group_undo_item.h \
-        include/estk/tk_map_view_tile_graphics_item.h \
-        include/estk/tk_selection_dock_widget.h \
-        include/estk/tk_sheet_dock_widget.h \
-        include/estk/tk_sheet_view.h \
-        include/estk/tk_sheet_view_collider_graphics_item.h \
-        include/estk/tk_sheet_view_tile_graphics_item.h \
-        include/estk/tk_tile_selectable.h \
-        include/estk/tk_tile_selectable_selection_view_delegate.h \
-        include/model/tk_lua_table_stack_model.h \
-        include/model/tk_property_stack_model.h \
-        include/model/tk_property_standard_item.h \
-        include/model/tk_rows_joiner_proxy_model.h \
-        include/sheet_manager/tk_sheet_manager.h \
-        include/sheet_manager/tk_sheet_manager_asset_manager.h \
-        include/sheet_manager/tk_sheet_manager_assets.h \
-        include/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h \
-        include/sheet_manager/tk_sheet_manager_dest_view.h \
-        include/sheet_manager/tk_sheet_manager_file_dock_widget.h \
-        include/sheet_manager/tk_sheet_manager_place_tile_group_undo_item.h \
-        include/sheet_manager/tk_sheet_manager_source_tile_graphics_item.h \
-        include/sheet_manager/tk_sheet_manager_source_view.h \
-        include/sheet_manager/tk_sheet_manager_tile_entry.h \
-        include/sheet_manager/tk_sheet_manager_tile_selection.h \
-        include/tile_engine/tk_dest_view.h \
-        include/tile_engine/tk_selection_item_group.h \
-        include/tile_engine/tk_source_view.h \
-        include/tile_engine/tk_tile_graphics_item.h \
-        include/tile_engine/tk_tile_group_undo_item.h \
-        include/tile_engine/tk_tile_selection.h \
-        include/widget/tk_history_dock_widget.h \
-        include/tile_engine/tk_tile_graphics_item_impl.h \
-        include/tile_engine/tk_dest_view_impl.h \
-        include/core/tk_lua_qt_utils.h \
-        include/widget/tk_documentation_browser.h \
-        include/model/tk_task_monitor.h \
-        include/widget/tk_pie_chart_view.h \
-        include/dialog/tk_task_monitor_dialog.h \
-        include/estk/tk_timer_system.h \
-        include/dialog/tk_gitlab_dialog.h \
-        include/tk_precompiled_headers.h \
-        include/core/tk_network_access_manager.h \
-        include/asset/tk_lua_behavior.h \
-        include/asset/tk_depth_buff_entry.h \
-        include/estk/tk_camera_dock_widget.h \
-        include/estk/tk_camera_system.h \
-        include/asset/tk_sprite_attrib.h \
-        include/asset/tk_dialog_screen.h \
-        include/asset/tk_dialog.h \
-        include/asset/tk_lua_variant.h \
-        include/estk/tk_input_system.h \
-        include/delegate/tk_property_item_delegate.h \
-        include/delegate/tk_spinbox_property_item_delegate.h \
-        include/delegate/tk_file_browser_property_item_delegate.h \
-        include/delegate/tk_enum_dropdown_property_item_delegate.h \
-        include/delegate/tk_property_item_proxy_delegate.h \
-        include/delegate/tk_combobox_property_item_delegate.h \
-        include/delegate/tk_dynamic_content_property_item_delegate.h \
-        include/estk/tk_selection_tree_view.h \
-        include/core/tk_lua_mime_drop_manager.h
+        include/AssetIO/tk_area.h \
+        include/ESToolkit/core/tk_asset_manager.h \
+        include/ESToolkit/core/tk_assets.h \
+        include/AssetIO/tk_audio_source.h \
+        include/AssetIO/tk_behavior.h \
+        include/AssetIO/tk_character.h \
+        include/AssetIO/tk_collidable.h \
+        include/AssetIO/tk_combat.h \
+        include/AssetIO/tk_component.h \
+        include/AssetIO/tk_elysian_tile_wrapper.h \
+        include/AssetIO/tk_entity.h \
+        include/AssetIO/tk_examinable.h \
+        include/AssetIO/tk_level.h \
+        include/AssetIO/tk_light_source.h \
+        include/AssetIO/tk_lua_table_proxy.h \
+        include/AssetIO/tk_map_entry.h \
+        include/AssetIO/tk_particle_emitter.h \
+        include/ESToolkit/core/tk_project.h \
+        include/AssetIO/tk_renderable.h \
+        include/AssetIO/tk_rigid_body.h \
+        include/AssetIO/tk_skeleton.h \
+        include/AssetIO/tk_warp.h \
+        include/AssetIO/tk_lua_behavior.h \
+        include/AssetIO/tk_depth_buff_entry.h \
+        include/AssetIO/tk_sprite_attrib.h \
+        include/AssetIO/tk_dialog_screen.h \
+        include/AssetIO/tk_dialog.h \
+        include/AssetIO/tk_color.h \
+        include/AssetIO/tk_lua_variant.h \
+        include/ESToolkit/ui/item/tk_checkered_alpha_rect_graphics_item.h \
+        include/ESToolkit/core/tk_debug.h \
+        include/ESToolkit/core/tk_file_utilities.h \
+        include/QESTkUtils/tk_gl_utilities.h \
+        include/QESTkUtils/tk_menu_stack.h \
+        include/ESToolkit/core/tk_selectable.h \
+        include/ESToolkit/ui/widget/tk_selection_scene.h \
+        include/ESToolkit/core/tk_tile_image.h \
+        include/ESToolkit/core/tk_tile_sheet_utilities.h \
+        include/ESToolkit/ui/item/tk_tree_node.h \
+        include/ESToolkit/core/tk_undo_item.h \
+        include/ESToolkit/ui/dialog/tk_engine_dialog.h \
+        include/ESToolkit/ui/dialog/tk_engine_settings_dialog.h \
+        include/ESToolkit/ui/dock/asset/tk_asset_dock_widget.h \
+        include/ESToolkit/ui/widget/tk_engine_gl_scene_widget.h \
+        include/ESToolkit/ui/dock/tk_entity_dock_widget.h \
+        include/ESToolkit/core/tk_entity_selectable.h \
+        include/ESToolkit/ui/widget/tk_entity_tree_widget.h \
+        include/ESToolkit/ui/tk_estoolkit.h \
+        include/ESToolkit/ui/dock/tk_layer_dock_widget.h \
+        include/ESGamma/tk_lua_manager.h \
+        include/ESGamma/tk_lua_wrappers.h \
+        include/ESGamma/tk_map_system.h \
+        include/ESToolkit/ui/widget/tk_map_view.h \
+        include/ESToolkit/ui/item/tk_map_view_depth_buffer_graphics_item.h \
+        include/ESToolkit/core/tk_map_view_place_tile_group_undo_item.h \
+        include/ESToolkit/ui/item/tk_map_view_tile_graphics_item.h \
+        include/ESToolkit/ui/dock/tk_selection_dock_widget.h \
+        include/ESToolkit/ui/dock/tk_sheet_dock_widget.h \
+        include/ESToolkit/ui/widget/tk_sheet_view.h \
+        include/ESToolkit/ui/item/tk_sheet_view_collider_graphics_item.h \
+        include/ESToolkit/ui/item/tk_sheet_view_tile_graphics_item.h \
+        include/ESToolkit/core/tk_tile_selectable.h \
+        include/ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.h \
+        include/QESTkUtils/model/tk_lua_table_stack_model.h \
+        include/QESTkUtils/model/tk_property_stack_model.h \
+        include/QESTkUtils/model/tk_property_standard_item.h \
+        include/QESTkUtils/model/tk_rows_joiner_proxy_model.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_asset_manager.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_assets.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_dest_view.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_file_dock_widget.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_place_tile_group_undo_item.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_source_tile_graphics_item.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_source_view.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_tile_entry.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager_tile_selection.h \
+        include/QESTkUtils/tile_engine/tk_dest_view.h \
+        include/QESTkUtils/tile_engine/tk_selection_item_group.h \
+        include/QESTkUtils/tile_engine/tk_source_view.h \
+        include/QESTkUtils/tile_engine/tk_tile_graphics_item.h \
+        include/QESTkUtils/tile_engine/tk_tile_group_undo_item.h \
+        include/QESTkUtils/tile_engine/tk_tile_selection.h \
+        include/ESToolkit/ui/dock/tk_history_dock_widget.h \
+        include/QESTkUtils/tile_engine/tk_tile_graphics_item_impl.h \
+        include/QESTkUtils/tile_engine/tk_dest_view_impl.h \
+        include/QESTkUtils/tk_lua_qt_utils.h \
+        include/QESTkUtils/ui/widget/tk_documentation_browser.h \
+        include/ESGamma/tk_task_monitor.h \
+        include/QESTkUtils/ui/widget/tk_pie_chart_view.h \
+        include/ESToolkit/ui/dialog/tk_task_monitor_dialog.h \
+        include/ESGamma/tk_timer_system.h \
+        include/QESTkUtils/ui/widget/tk_gitlab_dialog.h \
+        include/QESTkUtils//tk_network_access_manager.h \
+        include/ESToolkit/ui/dock/tk_camera_dock_widget.h \
+        include/ESGamma/tk_camera_system.h \
+        include/ESGamma/tk_input_system.h \
+        include/QESTkUtils/ui/delegate/tk_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_property_item_proxy_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h \
+        include/ESToolkit/ui/widget/tk_selection_tree_view.h \
+        include/QESTkUtils/tk_lua_mime_drop_manager.h \
+        include/ESGamma/tk_particle_system.h \
+        include/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.h \
+        include/QESTkUtils/ui/widget/tk_2d_vector_widget.h \
+        include/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h \
+        include/ESToolkit/core/tk_lua_table_selectable.h \
+        include/ESGamma/tk_gui_system.h \
+        include/ESGamma/tk_level_system.h \
+        include/QESTkUtils/tk_mime_data.h \
+        include/QESTkUtils/tk_mime_drop_manager.h
 }
 
 
-FORMS += form/estk/tk_sheet_dock_widget.ui \
-    form/estk/tk_selection_dock_widget.ui \
-    form/estk/tk_layer_dock_widget.ui \
-    form/estk/tk_estoolkit.ui \
-    form/estk/tk_entity_dock_widget.ui \
-    form/estk/tk_asset_dock_widget.ui \
-    form/sheet_manager/tk_sheet_manager.ui \
-    form/widget/tk_history_dock_widget.ui \
-    form/dialog/tk_engine_settings.ui \
-    form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
-    form/dialog/tk_lua_explorer.ui \
-    form/dialog/tk_gitlab_dialog.ui \
-    form/estk/tk_camera_dock_widget.ui
+FORMS += form/ESToolkit/dock/tk_sheet_dock_widget.ui \
+    form/ESToolkit/dock/tk_selection_dock_widget.ui \
+    form/ESToolkit/dock/tk_layer_dock_widget.ui \
+    form/ESToolkit/tk_estoolkit.ui \
+    form/ESToolkit/dock/tk_entity_dock_widget.ui \
+    form/ESToolkit/dock/tk_asset_dock_widget.ui \
+    form/ESToolkit/sheet_manager/tk_sheet_manager.ui \
+    form/ESToolkit/dock/tk_history_dock_widget.ui \
+    form/ESToolkit/tk_engine_settings.ui \
+    form/ESToolkit/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
+    form/QESTkUtils/tk_gitlab_dialog.ui \
+    form/ESToolkit/dock/tk_camera_dock_widget.ui
 
 #docs.target = ESToolkit.qhc
 #docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc

@@ -16,7 +16,13 @@ static void *_WavConstructor(void *const data) {
     wav->bytes = 0;
     strcpy(wav->filename, (const char*)data);
     //Allocate platform-specific wav data
-    if(!_gyAudWavAlloc(wav)) return 0;
+    if(!_gyAudWavAlloc(wav)) {
+        /*free(wav);
+         * Needs to be here to prevent memory leak,
+         * but we're always succeeding with empty wavs for protection
+         * at the higher layers.*/
+        return 0;
+    }
     return wav;
 }
 
@@ -36,6 +42,21 @@ int gyAudWavDestroy(struct GYWav *const wav) {
     return (wav)? gyAssetBankRemove(&_wavBank, wav) : 0;
 }
 
+int gyAudWavReload(struct GYWav * const wav) {
+    unsigned int success = 1;
+    //unsigned int width, height;
+    if(!wav) return 0;
+
+    success &= _gyAudWavAlloc(wav);
+    success &= _gyAudWavFree(wav);
+    return success;
+}
+
+int gyAudWavReloadPath(const char*const path) {
+    const GYWav* wav = gyAssetBankFind(&_wavBank, path);
+    return wav? gyAudWavReload(wav) : 0;
+}
+
 int gyAudWavClear(void) {
     return gyAssetBankClear(&_wavBank);
 }
@@ -44,17 +65,36 @@ unsigned gyAudWavAmount(void) {
     return gyAssetBankSize(&_wavBank);
 }
 
+unsigned int gyAudWavRefCount(const char*const filename) {
+    GYAssetBankEntry* entry = gyAssetBankFindEntry(&_wavBank, filename, NULL);
+    return entry? entry->_refCount : 0;
+}
+
 void gyAudWavWalkthrough(void) {
     unsigned int count = 0;
+    unsigned int totalBytes = 0;
     GYAssetBankEntry *entry = _wavBank._head;
     GYWav *wav;
 
-    gyPrintf("====WAV WALKTHROUGH====\n");
+    //grab the total byteCount first
     for(; entry != 0; entry = entry->_next) {
         wav = entry->_payload;
-        gyPrintf("%d) %s", count, wav->filename);
-        gyPrintf("\tsize - %d, _refCount - %d\n", wav->bytes, entry->_refCount);
+        totalBytes += wav->bytes;
+    }
+
+    _gyLog(GY_DEBUG_VERBOSE, "WAV Bank (%d items, %fMB total)", gyAudWavAmount(), (float)totalBytes/(1024.0f*1024.0f));
+    _gyPush();
+    for(entry = _wavBank._head; entry != 0; entry = entry->_next) {
+        wav = entry->_payload;
+        _gyLog(GY_DEBUG_VERBOSE, "%d) %s", count, wav->filename);
+        _gyPush();
+        _gyLog(GY_DEBUG_VERBOSE, "size - %d bytes", wav->bytes);
+        _gyLog(GY_DEBUG_VERBOSE, "referenceCount - %d", entry->_refCount);
+        if(!wav->bytes) {
+            _gyLog(GY_DEBUG_WARNING, "Error loading file! Falling back to empty WAV.");
+        }
+        _gyPop(1);
         ++count;
     }
-    gyPrintf("====/WAV WALKTHROUGH====\n");
+    _gyPop(1);
 }

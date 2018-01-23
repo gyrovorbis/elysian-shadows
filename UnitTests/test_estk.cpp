@@ -1,7 +1,7 @@
 
 #include <QtTest>
 
-#include <tk_estoolkit.h>
+#include <ESToolkit/ui/tk_estoolkit.h>
 #include <test_estk.h>
 #include <test_project_assets.h>
 #include <test_init.h>

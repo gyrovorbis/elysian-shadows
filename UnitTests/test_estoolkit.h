@@ -3,11 +3,11 @@
 
 #include <test_estk.h>
 #include <QtTest>
-#include <tk_asset_manager.h>
-#include <tk_estoolkit.h>
-#include <tk_level.h>
+#include <ESToolkit/core/tk_asset_manager.h>
+#include <ESToolkit/ui/tk_estoolkit.h>
+#include <AssetIO/tk_level.h>
 #include <tk_area.h>
-#include <tk_project.h>
+#include <ESToolkit/core/tk_project.h>
 #include <QTabBar>
 
 namespace tktest {

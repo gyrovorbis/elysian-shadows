@@ -3,8 +3,8 @@
 
 #include <QTest>
 #include <QObject>
-#include <tk_estoolkit.h>
-#include <tk_asset_manager.h>
+#include <ESToolkit/ui/tk_estoolkit.h>
+#include <ESToolkit/core/tk_asset_manager.h>
 #include <QList>
 #include <QStack>
 #include <gyro_system_api.h>

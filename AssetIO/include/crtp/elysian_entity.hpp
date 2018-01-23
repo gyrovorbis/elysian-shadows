@@ -7,7 +7,7 @@ namespace elysian {
     typedef EntityBase Entity;
 }
 #else
-#   include <tk_entity.h>
+#   include <AssetIO/tk_entity.h>
 namespace elysian {
     typedef TkEntity Entity;
 }

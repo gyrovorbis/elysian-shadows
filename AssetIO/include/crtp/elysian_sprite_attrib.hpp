@@ -8,7 +8,7 @@ namespace elysian {
     typedef SpriteAttribBase SpriteAttrib;
 }
 #else
-#   include <asset/tk_sprite_attrib.h>
+#   include <AssetIO/tk_sprite_attrib.h>
 namespace elysian {
     typedef TkSpriteAttrib SpriteAttrib;
 }

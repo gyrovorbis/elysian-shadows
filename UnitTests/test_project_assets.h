@@ -3,10 +3,10 @@
 
 #include <QTest>
 #include <test_estk.h>
-#include <tk_estoolkit.h>
+#include <ESToolkit/ui/tk_estoolkit.h>
 #include <QDir>
-#include <tk_assets.h>
-#include <tk_project.h>
+#include <ESToolkit/core/tk_assets.h>
+#include <ESToolkit/core/tk_project.h>
 #include <test_level_assets.h>
 
 class Project;

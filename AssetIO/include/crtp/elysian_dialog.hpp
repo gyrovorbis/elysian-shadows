@@ -10,7 +10,7 @@ namespace elysian {
     using DialogPrompt  = DialogPromptBase;
 }
 #else
-#   include <tk_dialog.h>
+#   include <AssetIO/tk_dialog.h>
 namespace elysian {
     using Dialog        = TkDialog;
     using DialogText    = TkDialogText;

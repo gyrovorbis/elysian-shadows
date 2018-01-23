@@ -8,7 +8,7 @@ namespace elysian {
     typedef CollidableAttribBase    CollidableAttrib;
 }
 #else
-#   include <tk_collidable.h>
+#   include <AssetIO/tk_collidable.h>
 namespace elysian {
     typedef TkCollidableAttrib  CollidableAttrib;
     typedef TkCollidable        Collidable;

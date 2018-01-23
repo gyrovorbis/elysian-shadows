@@ -7,7 +7,7 @@ namespace elysian {
     typedef WarpBase Warp;
 }
 #else
-#   include <tk_warp.h>
+#   include <AssetIO/tk_warp.h>
 namespace elysian {
     typedef TkWarp Warp;
 }

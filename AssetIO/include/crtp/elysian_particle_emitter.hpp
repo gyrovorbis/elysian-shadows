@@ -8,7 +8,7 @@ namespace elysian {
     typedef ParticleEmitterBase         ParticleEmitter;
 }
 #else
-#   include <tk_particle_emitter.h>
+#   include <AssetIO/tk_particle_emitter.h>
 namespace elysian {
     typedef TkParticleEmitterAttrib ParticleEmitterAttrib;
     typedef TkParticleEmitter       ParticleEmitter;

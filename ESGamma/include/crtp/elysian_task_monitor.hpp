@@ -7,7 +7,7 @@ namespace elysian {
     typedef TaskMonitorBase TaskMonitor;
 }
 #else
-#   include <tk_task_monitor.h>
+#   include <ESGamma/tk_task_monitor.h>
 namespace elysian {
     typedef TkTaskMonitor TaskMonitor;
 }

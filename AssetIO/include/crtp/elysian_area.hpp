@@ -7,7 +7,7 @@ namespace elysian {
     typedef AreaBase Area;
 }
 #else
-#   include <tk_area.h>
+#   include <AssetIO/tk_area.h>
 namespace elysian {
     typedef TkArea Area;
 }

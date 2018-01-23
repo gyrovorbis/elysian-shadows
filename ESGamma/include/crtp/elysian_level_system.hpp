@@ -8,7 +8,7 @@ namespace elysian {
 }
 #else
 
-#   include <estk/tk_level_system.h>
+#   include <ESGamma/tk_level_system.h>
 
 namespace elysian {
     using LevelSystem = TkLevelSystem;

@@ -51,6 +51,7 @@ int gyAssetBankRemove(GYAssetBank *const bank, const void *const payload);
 /*O(n) - Searches for entry based on VALUE by invoking user-registered
 		 COMPARATOR function (or using pointer comparison if NULL)*/
 void *gyAssetBankFind(const GYAssetBank *const bank, void *const data);
+GYAssetBankEntry* gyAssetBankFindEntry(const GYAssetBank *const bank, const void *const data, GYAssetBankEntry **const prev);
 //O(n)
 int gyAssetBankClear(GYAssetBank *const bank);
 

@@ -2,7 +2,7 @@
 #define TEST_MAP_VIEW_H
 
 #include <QObject>
-#include <tk_asset_manager.h>
+#include <ESToolkit/core/tk_asset_manager.h>
 
 namespace tktest {
 

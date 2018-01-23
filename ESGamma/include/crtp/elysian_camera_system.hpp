@@ -8,7 +8,7 @@ namespace elysian {
     typedef CameraSystemBase CameraSystem;
 }
 #else
-#   include <tk_camera_system.h>
+#   include <ESGamma/tk_camera_system.h>
 namespace elysian {
     typedef TkCameraSystem CameraSystem;
 }

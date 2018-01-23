@@ -7,7 +7,7 @@ namespace elysian {
     typedef LevelBase Level;
 }
 #else
-#   include <tk_level.h>
+#   include <AssetIO/tk_level.h>
 namespace elysian {
     typedef TkLevel Level;
 }

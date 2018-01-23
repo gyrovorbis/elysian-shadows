@@ -43,10 +43,9 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     }
 
     QImage pixmap(fileName);
-    tex->width = pixmap.width();
+    tex->width  = pixmap.width();
     tex->height = pixmap.height();
-
-
+    tex->bpp    = pixmap.depth();
 
     if(pixmap.isNull()) {
         tex->_data = 0;
@@ -74,8 +73,8 @@ int _gyVidTexAlloc(GYTexture *const tex) {
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
-    (void)tex;
     if(!tex) return 0;
+    static_cast<QGLWidget*>(_initParams.glWidget)->deleteTexture((GLuint)(uintptr_t)tex->_data);
    // QOpenGLTexture* qgl = _qTextures[(GLuint)(uintptr_t)tex->_data];
    // qgl->destroy();
    // _qTextures.remove((GLuint)(uintptr_t)tex->_data);

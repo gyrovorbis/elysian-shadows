@@ -7,7 +7,7 @@ namespace elysian {
     typedef LuaManagerBase LuaManager;
 }
 #else
-#   include <tk_lua_manager.h>
+#   include <ESGamma/tk_lua_manager.h>
 namespace elysian {
     typedef TkLuaManager LuaManager;
 }

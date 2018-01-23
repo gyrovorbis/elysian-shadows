@@ -7,7 +7,7 @@ namespace elysian {
     using LuaVariant = LuaVariantBase;
 }
 #else
-#   include <asset/tk_lua_variant.h>
+#   include <AssetIO/tk_lua_variant.h>
 
 namespace elysian {
     using LuaVariant = LuaVariantBase;
