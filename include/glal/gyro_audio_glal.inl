@@ -4,6 +4,12 @@
 #include "gyro_al.h"
 #include "../gyro_system_api.h"
 
+#define GY_AL_CLEAR_ERROR() \
+    (_clearALError(__FILE__, __LINE__, __func__))
+
+#define GY_AL_CHECK_ERROR() \
+    (_checkALError(__FILE__, __LINE__, __func__))
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,14 +39,24 @@ static inline const char* _openALError(const int err) {
     }
 }
 
-static inline int _checkALError(const char* context) {
+static inline int _checkALError(const char* file, int line, const char* func) {
     int error = alGetError();
 
     if(error != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_WARNING, "OpenAL Error raised from [%s]: %s", context, _openALError(error));
+        _gyLog(GY_DEBUG_ERROR, "OpenAL Error: %d ('%s') [%s:%d (func %s)]", error, _openALError(error), file, line, func);
         return 1;
     }
     return 0;
+}
+
+static inline int _clearALError(const char* file, int line, const char* func) {
+    int error = alGetError();
+
+    if(error != AL_NO_ERROR) {
+        _gyLog(GY_DEBUG_ERROR, "Uncaught OpenAL Error: %d ('%s'), Happened before: [%s:%d (func %s)]", error, _openALError(error), file, line, func);
+        return 1;
+    }
+
 }
 
 #ifdef __cplusplus
