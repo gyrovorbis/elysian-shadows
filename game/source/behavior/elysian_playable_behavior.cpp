@@ -19,8 +19,11 @@ void PlayableBehavior::onUpdate(void) {
     auto* cont              = Singletons::getInputSys()->getController(_playerNum);
     const float deltaTime   = Singletons::getTimerSys()->getDeltaTime();
 
+        if(System::getEngineState() == Engine::ENGINE_WARPING) return;
+        if(!System::getProcessInput()) return;
+        if(partySys->getPartyLeader() != partyMember) return;
 
-    if(System::getEngineState() != Engine::ENGINE_WARPING) {
+    if(System::getEngineState() != Engine::ENGINE_WARPING && System::getProcessInput()) {
         _processMovement(deltaTime, cont, partyMember, partySys);
         _processJump(deltaTime, cont, partyMember);
         _processExamine(deltaTime, cont, partyMember, partySys);

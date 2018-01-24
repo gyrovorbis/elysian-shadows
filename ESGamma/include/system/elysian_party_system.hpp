@@ -96,6 +96,8 @@ namespace elysian {
         bool                    _partyActive                = false;
         bool                    _followLogic                = true;
 
+        void _updateCamera(void) const;
+
 	public:
             PartySystem(void);
             ~PartySystem(void);

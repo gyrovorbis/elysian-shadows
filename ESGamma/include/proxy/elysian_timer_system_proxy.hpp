@@ -20,6 +20,8 @@ OOLUA_PROXY(TimerSystem)
     OOLUA_MFUNC_CONST(getDeltaTime)
     OOLUA_MFUNC_CONST(getTotalTime)
     OOLUA_MEM_FUNC(void, startTimerEvent, float, cpp_in_p<EventMonitor*>)
+    OOLUA_MEM_FUNC(void, setSpeedMultiplier, float)
+    OOLUA_MEM_FUNC_CONST(float, getSpeedMultiplier)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_TIMER_SYSTEM_PROXY_HPP

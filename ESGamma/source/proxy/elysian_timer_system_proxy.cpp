@@ -68,6 +68,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
                                 getTotalTicks,
                                 getCurrentFrameTicks,
                                 getDeltaTime,
-                                getTotalTime)
+                                getTotalTime,
+                                getSpeedMultiplier)
 OOLUA_EXPORT_FUNCTIONS(TimerSystem,
-                       startTimerEvent)
+                       startTimerEvent,
+                       setSpeedMultiplier)

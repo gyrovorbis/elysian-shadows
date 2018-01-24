@@ -42,7 +42,7 @@ Engine::Engine(void):
     //gySysInit();
   //  gyVidInit();
     //gyAudInit();
-
+    System::setProcessInput();
     LuaManager::initialize();
 
     //allocate systems

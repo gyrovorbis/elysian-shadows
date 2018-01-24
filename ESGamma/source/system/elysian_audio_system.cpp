@@ -440,6 +440,8 @@ namespace elysian {
 
 	void AudioSystem::setBgmTrackLooping(const bool val) {
 		_bgmLooping = val;
+        gyAudOggStreamSetLooping(_channels[AudioChannel::BGM_1].src, val);
+        gyAudOggStreamSetLooping(_channels[AudioChannel::BGM_1_TRAN].src, val);
 	}
 
 	const char* AudioSystem::getBgmTrackPath(const unsigned track) const {
@@ -693,11 +695,16 @@ namespace elysian {
 	}
 
 	void AudioSystem::setAuxTrackLooping(const unsigned track, const bool val) {
-		if(track == 0)
-			_aux1Looping = val;
-		else
+        if(track == 0) {
+            gyAudOggStreamSetLooping(_channels[AudioChannel::AUX_1].src, val);
+            gyAudOggStreamSetLooping(_channels[AudioChannel::AUX_1_TRAN].src, val);
+            _aux1Looping = val;
+        } else {
+            gyAudOggStreamSetLooping(_channels[AudioChannel::AUX_2].src, val);
+            gyAudOggStreamSetLooping(_channels[AudioChannel::AUX_2_TRAN].src, val);
 			_aux2Looping = val;
-	}
+        }
+    }
 
 	void AudioSystem::setAuxTrackGain(const unsigned track, const float val) {
 		if(track == 0) {

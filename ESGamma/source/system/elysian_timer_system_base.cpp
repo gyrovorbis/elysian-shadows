@@ -102,6 +102,8 @@ void TimerSystemBase::update(void) {
 
 	_totalTime += _deltaTime;
 
+    _deltaTime *= _speedMultiplier;
+
 #if 1
    // _deltaTime = _deltaTime/((1.0f/60.0f));
 #endif

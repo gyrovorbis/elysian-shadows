@@ -169,13 +169,13 @@ void PartySystem::addCharacterToParty(Entity* entity) {
     if(!entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME)) {
         auto* behav = new game::PlayableBehavior(*entity);
         entity->addBehavior(behav);
-        behav->setPlayerNum(_characterParty.size());
+        behav->setPlayerNum(0);
     }
 
     Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity->getName());
     _characterParty.push_back(entity);
     if(_characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
-    if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
+    _updateCamera();
 
     if(_characterParty.size() > 1) {
         getCameraSys()->addEntity(entity);
@@ -218,6 +218,7 @@ bool PartySystem::removeCharacterFromParty(const unsigned int slot) {
     for(unsigned int i = _characterParty.size()-1; i > slot; --i) _characterParty[i]->_transform._pos = _characterParty[i-1]->_transform._pos;
   _characterParty.erase(_characterParty.begin() + slot);
   _resizePartyPathPoints();
+    _updateCamera();
   //for(unsigned int i = slot; i < _characterParty.size(); ++i) _characterParty[i]->transform.setPosition(_partyPathPoint[_partyPathPoint.size()-2]);
   return true;
 }
@@ -364,6 +365,9 @@ void PartySystem::checkExamine(Entity* const entity) const {
   }
 }
 
+void PartySystem::_updateCamera(void) const {
+    getCameraSys()->setFollowEntity(getPartyLeader());
+}
 
 // =========== PLAYER ==========
 void Player::_processMovement(const float /*deltaTime*/, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
@@ -527,6 +531,8 @@ void Player::processInput(const Controller* const cont, PartySystem*const partyS
     _processExamine(deltaTime, cont, partyMember, partySys);
     _processPickup(deltaTime, cont, partyMember, partySys);
 }
+
+
 
 
 }

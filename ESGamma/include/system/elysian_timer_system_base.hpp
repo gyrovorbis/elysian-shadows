@@ -56,6 +56,7 @@ namespace elysian {
         int64_t         _curFrameTicks			= 0;
 		float           _deltaTime				= 0.0f;
 		float           _realDeltaTime			= 0.0f;
+        float           _speedMultiplier        = 1.0f;
 		double          _totalTime				= 0.0f;
 		bool            _enableMaxFramerate		= ENABLE_MAX_FRAMERATE;
 		bool            _enableMinFramerate		= ENABLE_MIN_FRAMERATE;
@@ -80,6 +81,8 @@ namespace elysian {
         double          getTotalTime(void) const;
         float           getDeltaTime(void) const;
         float           getFramerate(void) const;
+        float           getSpeedMultiplier(void) const;
+        void            setSpeedMultiplier(float mult);
 
         void            startTimerEvent(const float duration, EventMonitor* monitor);
 
@@ -123,6 +126,9 @@ namespace elysian {
     }
     inline float TimerEventSubprocess::getElapsedTime(void) const { return _elapsedTime; }
     inline void TimerEventSubprocess::setDuration(const float time) { _duration = time; }
+
+    inline float TimerSystemBase::getSpeedMultiplier(void) const { return _speedMultiplier; }
+    inline void  TimerSystemBase::setSpeedMultiplier(float mult) { _speedMultiplier = mult; }
 	
 }
 
