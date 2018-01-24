@@ -16,7 +16,7 @@ namespace elysian {
 		enum STATE { CHECK_WARP, FADE_OUT, WARP, FADE_IN, PAUSE };
 		
 		WarpSystem(void); 
-		void initialize(void);
+        void initialize(void);
 		void update(void);
 		void render(void);
 
@@ -31,7 +31,7 @@ namespace elysian {
 		void Enable(void);
 
         STATE   getState(void) const;
-        const Warp& getCurrentWarp(void) const;
+        Warp& getCurrentWarp(void);
 
 
 	private:
@@ -43,6 +43,7 @@ namespace elysian {
 		bool _renderWarps		= true;
 		bool _enabled			= true;
 		float _timer			= 0.0f;
+        float _walkForce        = 0.0f;
 		STATE _state			= CHECK_WARP;
 		Warp _currentWarp;
 		
@@ -57,7 +58,7 @@ namespace elysian {
 
     inline auto WarpSystem::getState(void) const -> STATE { return _state; }
 
-    inline const Warp& WarpSystem::getCurrentWarp(void) const { return _currentWarp; }
+    inline Warp& WarpSystem::getCurrentWarp(void) { return _currentWarp; }
 
 }
 

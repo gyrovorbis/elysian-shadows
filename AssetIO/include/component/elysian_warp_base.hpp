@@ -46,7 +46,6 @@ namespace elysian {
 
         void                    setToPos(const float x, const float y, const float z);
         Vector3                 getToPosVec(void);
-        Vector3                 getToPosVec(void) const;
         void                    setToPosVec(const Vector3& pos);
         const char*             getAreaPath(void) const;
         void                    setAreaPath(const char *name);
@@ -99,10 +98,6 @@ namespace elysian {
     inline Vector3 WarpBase::getToPosVec(void) {
         return Vector3(&_toPosition);
 	}
-
-    inline Vector3 WarpBase::getToPosVec(void) const {
-        return Vector3(_toPosition.x, _toPosition.y, _toPosition.z);
-    }
 
     inline void WarpBase::setToPosVec(const Vector3 &pos) {
         _toPosition = pos;

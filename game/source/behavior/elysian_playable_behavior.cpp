@@ -7,7 +7,7 @@
 #include <system/elysian_audio_system.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <gyro_input_api.h>
-
+#include <system/elysian_engine.hpp>
 
 namespace elysian {
 
@@ -20,10 +20,12 @@ void PlayableBehavior::onUpdate(void) {
     const float deltaTime   = Singletons::getTimerSys()->getDeltaTime();
 
 
-    _processMovement(deltaTime, cont, partyMember, partySys);
-    _processJump(deltaTime, cont, partyMember);
-    _processExamine(deltaTime, cont, partyMember, partySys);
-    _processPickup(deltaTime, cont, partyMember, partySys);
+    if(System::getEngineState() != Engine::ENGINE_WARPING) {
+        _processMovement(deltaTime, cont, partyMember, partySys);
+        _processJump(deltaTime, cont, partyMember);
+        _processExamine(deltaTime, cont, partyMember, partySys);
+        _processPickup(deltaTime, cont, partyMember, partySys);
+    }
 }
 
 void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {

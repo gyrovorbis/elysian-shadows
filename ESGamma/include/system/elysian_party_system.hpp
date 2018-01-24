@@ -83,7 +83,7 @@ namespace elysian {
         std::vector<Entity*> _characterParty;
 		
 		std::vector<GYVector2> _partyPathPoint;
-		static const unsigned int _pointsPerCharacter = 15;
+        static const unsigned int _pointsPerCharacter = 30;
 		
 		void _resizePartyPathPoints(void);
 

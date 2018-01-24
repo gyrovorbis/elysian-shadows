@@ -123,7 +123,7 @@ void CharacterBase::animateWalk(const GYVector2 &moveVec) {
     Direction::DIR4 dir = Direction::fromVector2(moveVec);
 
   //  if(_animate) {
-    playAnimation(dir);
+    setFaceDir(dir);
 
     //_faceDir = dir;
     //gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));

@@ -34,7 +34,7 @@ void WarpSystem::render(void) {
 }
 
 void WarpSystem::update(void) {
-	unsigned width, height;
+    unsigned width, height;
 
 	//Update overlay size to match the current screen resolution
 	getGuiSys()->getResolution(width, height);
@@ -51,7 +51,6 @@ void WarpSystem::update(void) {
 		case WARP:
 			if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
 			if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
-            getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
 			_state = FADE_IN;
 			if(_currentWarp._obliqueTran) {
 				CameraKeyFrame fr = getCameraSys()->getKeyFrame();

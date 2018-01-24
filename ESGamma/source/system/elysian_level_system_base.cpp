@@ -173,12 +173,13 @@ bool LevelSystemBase::switchArea(const char *const path) {
     Vector3 pos;
     if(getWarpSys()->getState() == WarpSystem::WARP) {
         pos = getWarpSys()->getCurrentWarp().getToPosVec();
+                Debug::printf(Debug::LOG_VERBOSE, "VECTORZ - <%f, %f, %f>", pos.getX(), pos.getY(), pos.getZ());
     } else {
         pos = area->getStartPosition();
     }
 
     for(unsigned i = 0; i < getPartySys()->getPartySize(); ++i) {
-        getPartySys()->getPartyMember(i)->getTransform().setPos(pos);
+        getPartySys()->getPartyMember(i)->getTransform().setPos(pos.getX(), pos.getY(), pos.getZ());
     }
 
   //              getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);

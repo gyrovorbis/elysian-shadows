@@ -275,12 +275,14 @@ void PartySystem::updatePartyPaths(void) {
   if(_playableParty.size() == 1 && _characterParty.size() == 0) return;
 
   //Keep distance between party
+#if 0
   if(_playableParty.size()) {
-        if(fabs(_partyPathPoint[0].x - _playableParty[0]->_transform._pos.x) < 2.50f && fabs(_partyPathPoint[0].y - _playableParty[0]->_transform._pos.y) < 2.0f) return;
+        if(fabs(_partyPathPoint[0].x - _playableParty[0]->_transform._pos.x) < 2.0f && fabs(_partyPathPoint[0].y - _playableParty[0]->_transform._pos.y) < 2.0f) return;
   }
   else if(_characterParty.size()) {
         if(fabs(_partyPathPoint[0].x - _characterParty[0]->_transform._pos.x) < 2.0f && fabs(_partyPathPoint[0].y - _characterParty[0]->_transform._pos.y) < 2.0f) return;
   }
+#endif
 
   //update chain of points
   for(i = _partyPathPoint.size()-1; i > 0; --i) {
@@ -288,7 +290,9 @@ void PartySystem::updatePartyPaths(void) {
   }
 
   //add leader's current position
-    _partyPathPoint[0] = (_playableParty.size() > 0)? GYVector2{_playableParty[0]->_transform._pos.x, _playableParty[0]->_transform._pos.y } : GYVector2 {_characterParty[0]->_transform._pos.x, _characterParty[0]->_transform._pos.y };
+    _partyPathPoint[0] = (_playableParty.size() > 0)?
+                GYVector2{_playableParty[0]->_transform._pos.x, _playableParty[0]->_transform._pos.y } :
+                GYVector2 {_characterParty[0]->_transform._pos.x, _characterParty[0]->_transform._pos.y };
 
   unsigned int currentIndex = 2;
   //update playables
