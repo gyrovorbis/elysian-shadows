@@ -4,6 +4,7 @@
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_depth_buff_entry.hpp>
+#include <system/elysian_warp_system.hpp>
 #include "elysian_map_system.hpp"
 #include "elysian_party_system.hpp"
 #include "elysian_behavior_system.hpp"
@@ -168,6 +169,20 @@ bool LevelSystemBase::switchArea(const char *const path) {
 
     _curArea = area;
     _curArea->activate();
+
+    Vector3 pos;
+    if(getWarpSys()->getState() == WarpSystem::WARP) {
+        pos = getWarpSys()->getCurrentWarp().getToPosVec();
+    } else {
+        pos = area->getStartPosition();
+    }
+
+    for(unsigned i = 0; i < getPartySys()->getPartySize(); ++i) {
+        getPartySys()->getPartyMember(i)->getTransform().setPos(pos);
+    }
+
+  //              getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
+
     _onAreaEnter();
     return true;
 }

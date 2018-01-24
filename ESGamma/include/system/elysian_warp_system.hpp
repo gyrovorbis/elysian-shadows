@@ -30,6 +30,9 @@ namespace elysian {
 		void Disable(void);
 		void Enable(void);
 
+        STATE   getState(void) const;
+        const Warp& getCurrentWarp(void) const;
+
 
 	private:
 		void UpdateCheckWarp(void);
@@ -46,6 +49,17 @@ namespace elysian {
 		Sprite _screenRect;
 	}; 
 	
+
+
+
+
+//======= INLINEZ =======
+
+    inline auto WarpSystem::getState(void) const -> STATE { return _state; }
+
+    inline const Warp& WarpSystem::getCurrentWarp(void) const { return _currentWarp; }
+
 }
+
 
 #endif

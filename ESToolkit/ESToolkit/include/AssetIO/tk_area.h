@@ -45,6 +45,7 @@ class TkArea: /*public PropertyStackModel,*/ public elysian::AreaBase, public Tr
 
 ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
     ELYSIAN_LUA_PROXY_FIELD(dirName, getDirName)
+    ELYSIAN_LUA_PROXY_FIELD(startPosition, getStartPosition, setStartPosition)
    // ELYSIAN_LUA_PROXY_FIELD(name, )
     //ELYSIAN_LUA_PROXY_FIELD(path, )
 ELYSIAN_LUA_PROXY_FIELDS_END()
@@ -59,6 +60,7 @@ private:
     static bool                             _inactiveTransparency;
 
     QVector<MapChange>  _mapChanges;
+    elysian::Vector3    _defaultStartPosition;
     QUndoStack          _undoStack;
     QString             _location;
     mutable
@@ -117,6 +119,8 @@ public:
     bool                saveAs(const QString dir);
     auto                getCameraKeyFrame(void) const -> const elysian::CameraKeyFrame&;
     void                setCameraKeyFrame(const elysian::CameraKeyFrame& keyframe);
+    elysian::Vector3&   getStartPosition(void);
+    void                setStartPosition(const elysian::Vector3& pos);
 
     QString             getLocation(void) const;
     unsigned short      getMapWidth(void) const;
@@ -258,6 +262,9 @@ inline SelectionScene* TkArea::getEditorScene(void) { return _editorScene; }
 
 inline auto TkArea::getType(void) const -> TYPE { return Selectable::AREA; }
 inline auto TkArea::getTreeWidgetItemType(void) -> ITEM_TYPE { return ITEM_AREA; }
+
+inline elysian::Vector3& TkArea::getStartPosition(void) { return _defaultStartPosition; }
+inline void TkArea::setStartPosition(const elysian::Vector3& pos) { _defaultStartPosition = pos; }
 
 
 

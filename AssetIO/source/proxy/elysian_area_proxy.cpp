@@ -406,4 +406,6 @@ OOLUA_EXPORT_FUNCTIONS(Area,
                                 getAmbientColor,
                                 setAmbientColor,
                                 setBgmOggByTrack,
-                                setAuxOggByTrack)
+                                setAuxOggByTrack,
+                                getStartPosition,
+                                setStartPosition)

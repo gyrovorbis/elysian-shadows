@@ -41,6 +41,10 @@ OOLUA_PROXY(Area)
     OOLUA_MEM_FUNC_CONST(const char*, getPath)
     OOLUA_MEM_FUNC(void, setDirName, const char*)
     OOLUA_MEM_FUNC(void, setNameString, const char*)
+#ifndef ELYSIAN_ENGINE
+    OOLUA_MEM_FUNC(Vector3&, getStartPosition)
+    OOLUA_MEM_FUNC(void, setStartPosition, const Vector3&)
+#endif
     OOLUA_MEM_FUNC_CONST(const char*, getNameString)
     OOLUA_MEM_FUNC_CONST(TileEntry, getTileEntry, const unsigned, const unsigned, const unsigned)
     OOLUA_MEM_FUNC(void, setTileEntry, unsigned, unsigned, unsigned, TileEntry)

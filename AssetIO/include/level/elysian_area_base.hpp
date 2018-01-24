@@ -100,6 +100,8 @@ namespace elysian {
                 ELYSIAN_LUA_PROXY_ARRAY_FIELD(aux,      getAuxOggByTrack,       setAuxOggByTrack,       getAuxOggTrackCount)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
 
+            ELYSIAN_LUA_PROXY_FIELD(startPosition, getStartPosition, setStartPosition)
+
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(activeEntities,   getActiveEntityByIndex,     setActiveEntityByIndex,     getActiveEntityCount)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(inactiveEntities, getInactiveEntityByIndex,   setInactiveEntityByIndex,   getInactiveEntityCount)
         ELYSIAN_LUA_PROXY_FIELDS_END()
