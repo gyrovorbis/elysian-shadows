@@ -109,10 +109,17 @@ void CharacterBase::walk(const GYVector2 &dir) {
 
 void CharacterBase::moveByDist(const GYVector2 &dist) {
     _entity->_transform.translate(dist);
-    animateWalk(dist);
+    if(gyVec2Magnitude(&dist) < 0.01f) return;
+    _movedThisFrame = true;
+    replaceState(STATE_STAND, STATE_WALK);
 
-    _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
-    gyVec2Normalize((GYVector2*)&_lastMoveDir);
+    Direction::DIR4 dir = Direction::fromVector2(dist);
+
+  //  if(_animate) {
+    setFaceDir(dir);
+
+        _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
+        gyVec2Normalize((GYVector2*)&_lastMoveDir);
 }
 
 void CharacterBase::animateWalk(const GYVector2 &moveVec) {
