@@ -80,12 +80,31 @@ typedef struct __LightingShaderProgram {
     GLint						attribLoc[GLAL_SHADER_ATTRIB_MAX];
     GLint						uniformLoc[GLAL_SHADER_UNIFORM_MAX];
     GLint						lightsUniformLoc[GYRO_VIDEO_LIGHT_SOURCES_MAX][GLAL_SHADER_LIGHT_UNIFORMS_MAX];
+    GLuint                      lightingUBOIndex;
 } _LightingShaderProgram;
 
 typedef struct __LightInternals {
     GLuint fbo;
     GLuint shadowMap;
 } _LightInternals;
+
+typedef struct LightingUBOLightSource {
+    GYMatrix4 projViewMat;
+    GYVector4       position;
+    //GYVector4       ambientColor;
+    GYVector4       diffuseColor;
+    GYVector4       specularColor;
+    GYVector3       direction;
+    float           pad1;
+    GYVector3       attenuationFactors;
+    float           spotExponent;
+    float           spotCutoffAngle;
+} LightingUBOLightSource;
+
+typedef struct LightingUBOData {
+    GLint                   count;
+    LightingUBOLightSource  sources[32];
+} LightingUBOData;
 
 typedef struct LightSourceUniforms {
     GYMatrix4       projViewMat;
@@ -108,6 +127,7 @@ extern _LightingShaderProgram		glalShadowMapShader;
 extern _LightingShaderProgram*		glalCurLightShader;
 extern const GYMatrix4				glalShadowTexCoordBiasMat;
 extern GYMatrix4                    glalPointShadowFaceMatrices[];
+extern LightingUBOData              glalLightingUBOData;
 
 extern GYLightSource*               glalLightSources[];
 extern unsigned                     glalLightSourceCount;
@@ -121,6 +141,7 @@ extern int                          glalNormalMappingEnabled;
 extern int                          glalSpecularMappingEnabled;
 extern int                          glalNormalMapActive;
 extern int                          glalSpecularMapActive;
+extern GLuint                       glalLightingUBO;
 
 void glalLoadDefaultShaders(void);
 void glalDefaultShadersLoadUniforms(void);
