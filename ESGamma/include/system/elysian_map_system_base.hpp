@@ -197,7 +197,7 @@ namespace elysian {
                enableDepthTest();
             }
 
-           //gyVidDepthTest(true);
+           gyVidDepthTest(true);
             gyVidBlendMode(newBlend);
             gyVidAlphaLevel(newAlpha);
             gyVidRectPlaneType(newPlane);

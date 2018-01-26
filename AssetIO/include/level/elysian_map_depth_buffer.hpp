@@ -226,7 +226,7 @@ namespace elysian {
         //Clear depth buffer counters
         memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
         memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
-       // _enableDepthTest();
+        _enableDepthTest();
         _processTiles();
 
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ====
@@ -296,7 +296,7 @@ namespace elysian {
 
 
         //Iterate through depth buffers and render from lowest to highest z coord
-        for(unsigned l = 0; l < _depthBuffMaxHeight; ++l) {
+        for(int l = _depthBuffMaxHeight; l >= 0; --l) {
             unsigned i = (_isShadowPass())? _depthBuffMaxHeight-l-1 : l;
             i = l;
 //_enableDepthTest();

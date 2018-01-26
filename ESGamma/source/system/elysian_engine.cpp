@@ -326,7 +326,7 @@ void Engine::render(void) {
             shadowPassMonitor.start();
             _lightSystem->shadowRenderPasses();
             shadowPassMonitor.stop();
-            //_lightSystem->addLightSourcesToScene();
+            _lightSystem->addLightSourcesToScene();
 
             lightPassMonitor.start();
             _mapSystem->render();

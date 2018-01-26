@@ -217,6 +217,7 @@ void LightSystem::addLightSourcesToScene(void) {
     for(auto it : sources) {
         gyVidLightSourceAdd(it);
     }
+    gyVidLightSourceAdd(nullptr);
 }
 
 void LightSystem::removeLightSourcesFromScene(void) {
