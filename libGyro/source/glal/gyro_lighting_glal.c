@@ -2,6 +2,7 @@
 #include <gyro_shader_api.h>
 #include <gyro_defines.h>
 #include <glal/gyro_shaders_glal.h>
+#include <glal/gyro_gl_utils.h>
 #include <glal/gyro_video_glal.h>
 #include <gyro_system_api.h>
 #include <stdio.h>
@@ -18,6 +19,30 @@ static int          _firstShadowPass                                    = 0;
 
 int gyVidShadowPass(void) {
     return _shadowPass;
+}
+
+
+void _lightSourceToLightingUBOLightsource(const GYLightSource* lightSrc, LightingUBOLightSource* uboSrc) {
+    memcpy(uboSrc->projViewMat,         lightSrc->camera->projViewMat,                sizeof(GYMatrix4));
+    memcpy(&uboSrc->position,            &lightSrc->position,                         sizeof(GYVector4));
+    memcpy(&uboSrc->diffuseColor,        &lightSrc->properties->diffuseColor,         sizeof(GYVector4));
+    memcpy(&uboSrc->specularColor,       &lightSrc->properties->specularColor,        sizeof(GYVector4));
+    memcpy(&uboSrc->direction,           &lightSrc->direction,                        sizeof(GYVector3));
+    memcpy(&uboSrc->attenuationFactors,  &lightSrc->properties->attenuationFactors,   sizeof(GYVector3));
+    uboSrc->spotExponent    =           lightSrc->properties->spotExponent;
+    uboSrc->spotCutoffAngle =           lightSrc->spotCutoffAngle;
+}
+
+void _updateLightingUBO(void) {
+        GY_GL_CHECK_ERROR();
+    glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
+            GY_GL_CHECK_ERROR();
+    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+            GY_GL_CHECK_ERROR();
+    memcpy(p, &glalLightingUBOData, sizeof(LightingUBOData));
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
+            GY_GL_CHECK_ERROR();
+   // glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void gyVidLightingSetEnable(const int enabled) {
@@ -166,6 +191,7 @@ void gyVidLightSourceUninit(GYLightSource* const light) {
 
 void _addLightUniform(const unsigned index, const GYLightSource*const light) {
     if(gyVidShadowPass()) return;
+    gyVidVertexBatchFlush();
 
     int flushed = 0;
 
@@ -340,6 +366,13 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 //	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
+    if(!light) { //hax. lolz.
+        _updateLightingUBO();
+        return;
+    }
+
+    _lightSourceToLightingUBOLightsource(light, &glalLightingUBOData.sources[glalLightingUBOData.count++]);
+#if 0
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i] == 0) {
             _addLightUniform(i, light);
@@ -349,6 +382,7 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
             return;
         }
     }
+#endif
 }
 
 void gyVidLightSourceRemove(const GYLightSource* const light) {
@@ -384,6 +418,8 @@ void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const 
 void gyVidLightSourceClear(void) {
     if(gyVidShadowPass()) return;
     gyVidVertexBatchFlush();
+    glalLightingUBOData.count = 0;
+    _updateLightingUBO();
     glalLightSourceCount = 0;
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i]) {

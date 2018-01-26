@@ -301,6 +301,20 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glalLoadDefaultShaders();
         glalVidInitializeBloom();
         gyVidSetDefaultShaderProgram();
+        _gyLog(GY_DEBUG_VERBOSE, "Creating UBOs");
+        GY_GL_CHECK_ERROR();
+        glGenBuffers(1, &glalLightingUBO);
+        GY_GL_CHECK_ERROR();
+        glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
+        GY_GL_CHECK_ERROR();
+        glalLightingUBOData.count = 0;
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(LightingUBOData), &glalLightingUBOData, GL_DYNAMIC_DRAW);
+        GY_GL_CHECK_ERROR();
+        glBindBufferBase(GL_UNIFORM_BUFFER, 0, glalLightingUBO);
+        GY_GL_CHECK_ERROR();
+        glUniformBlockBinding(glalLightingShader.program->program, glalLightingShader.lightingUBOIndex, 0);
+        GY_GL_CHECK_ERROR();
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
         glalDefaultShadersLoadUniforms();
         //HAVE TO SET DEFAULT GL STATES OR THE STATE CACHES WILL BE DIRTY
         glDisable(GL_CULL_FACE);
@@ -322,6 +336,8 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             &glalLightingShader,
             &glalShadowMapShader
         };
+
+
 
         _gyLog(GY_DEBUG_VERBOSE, "Creating VAOs and VBOs.");
 
@@ -561,8 +577,8 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 }
 
 void gyVidQuadListEnd(void) {
-    _flushStreamVertices(NULL);
-    gyVidVertexBatchEnd();
+   // _flushStreamVertices(NULL);
+  //  gyVidVertexBatchEnd();
     //gyVidTexCoordArray(_stripTexCoords);
     //gyVidNormalArray(_stripNormals);
     //gyVidTangentArray(_stripTangents);

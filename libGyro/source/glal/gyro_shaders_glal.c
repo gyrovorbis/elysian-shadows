@@ -99,6 +99,8 @@ GYShaderProgram*			glalCurShaderProg                               = NULL;
 _LightingShaderProgram		glalLightingShader;
 _LightingShaderProgram		glalShadowMapShader;
 _LightingShaderProgram*		glalCurLightShader                              = &glalLightingShader;
+LightingUBOData             glalLightingUBOData;
+GLuint                      glalLightingUBO                                 = 0;
 
 // ====== PUBLIC LIGHTING API =======
 
@@ -315,6 +317,14 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     char buff[100];
 
     if(!shader->program) return;
+
+    //UNIFORM BUFFER OBJECTS
+    shader->lightingUBOIndex                                = glGetUniformBlockIndex(shader->program->program, "LightingUBO");
+
+    if(shader->lightingUBOIndex == GL_INVALID_INDEX) {
+
+        _gyLog(GY_DEBUG_WARNING, "FUCKING CHRIST");
+    }
 
     //SHARED SHADER ATTRIBS/UNIFORMS
     shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition", 0);
