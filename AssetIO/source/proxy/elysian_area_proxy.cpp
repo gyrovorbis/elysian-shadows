@@ -214,6 +214,12 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
  * indoor locations.
  * \sa getAmbientColor(), setAmbientColor()
  */
+/*!
+ * \qmlproperty Vector3 Area::startPosition
+ * 3D default starting position used when a user swaps to the Area within ESTk. This is only for the Toolkit, as for standalone Engine builds,
+ * the player would be entering the Area to a position specified by a \l{Warp}.
+ * \sa getStartPosition(), setStartPosition()
+ */
 
 /*!
  * \qmlmethod string Area::getDirName()
@@ -373,6 +379,16 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
  * \qmlmethod int Area::getAuxOggTrackCount()
  * Returns the number of auxiliary sound OGG tracks per Area supported by the engine. This should always return 3.
  * \sa AudioSystem
+ */
+/*!
+ * \qmlmethod Vector3& Area::getStartPosition()
+ * Returns the starting location for the Area when a user swaps to it within ESTk rather than warping.
+ * \sa setStartPosition
+ */
+/*!
+ * \qmlmethod void Area::getStartPosition(const Vector3&)
+ * Sets the starting location for the Area when a user swaps to it within ESTk rather than warping.
+ * \sa getStartPosition
  */
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Area,

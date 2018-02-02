@@ -83,7 +83,7 @@ std::pair<QStandardItem*, QStandardItem*> TkParticleSystem::getStdItems(void) {
     return std::pair<QStandardItem*, QStandardItem*>(_labelItem, _parentItem);
 }
 
-void  TkParticleSystem::emitPreview(ParticleEmitterAttrib* attrib) {
+void  TkParticleSystem::emitPreview(std::shared_ptr<ParticleEmitterAttrib> attrib) {
     if(attrib) setAttrib(_tkEmitterIndex, attrib); //otherwise use whatever-the-fuck we were using!
 
     _emitters[_tkEmitterIndex].emitFromPointInDir(_previewProperties.pos,
@@ -100,7 +100,7 @@ void TkParticleSystem::_createItems(void) {
 
 }
 
-void TkParticleSystem::popDockWidget(ParticleEmitterAttrib *attrib) {
+void TkParticleSystem::popDockWidget(std::shared_ptr<ParticleEmitterAttrib> attrib) {
    _previewWidget->show();
    _previewWidget->setVisible(true);
    //_previewWidget->getVector2DWidget()->show();

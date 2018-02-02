@@ -101,17 +101,20 @@ void MenuWidget::onCancel(void) {
 
 void MenuWidget::_onCurrentChange(Widget* prevSel, Widget* nextSel) {
    // if(_currentChangeCb) _currentChangeCb(prevSel, nextSel);
-   // else onCurrentChange(prevSel, nextSel);
+    //else
+    onCurrentChange(prevSel, nextSel);
 }
 
 void MenuWidget::_onSelectionChange(MenuSelection* sel) {
      //if(_selectionChangeCb) _selectionChangeCb(sel);
-    //else onSelectionChange(sel);
+    //else
+    onSelectionChange(sel);
 }
 
 void MenuWidget::_onCancel(void) {
     //if(_cancelCb) _cancelCb();
-    //else onCancel();
+    //else
+    onCancel();
 }
 
 
@@ -134,10 +137,13 @@ void MenuWidget::controllerEvent(const Controller &cont) {
         MenuSelection sel;
         MenuSelection::Entry entry(_currentWidget, MenuSelectionData{_currentIndex[axis]});
         sel.addEntry(entry);
-        if(cont.getButtonState(GY_CONTROLLER_BUT_X)) setSelection(sel);
+        if(cont.getButtonState(GY_CONTROLLER_BUT_X) == GY_BUT_STATE_TAPPED) setSelection(sel);
 
         //check for going backwards
-        if(cont.getButtonState(GY_CONTROLLER_BUT_CIRCLE)) _enabled = false;
+        if(cont.getButtonState(GY_CONTROLLER_BUT_CIRCLE) == GY_BUT_STATE_TAPPED) {
+            _enabled = false;
+            _onCancel();
+        }
     }
 
     GroupWidget::controllerEvent(cont);
@@ -177,6 +183,11 @@ void MenuWidget::virtualDPadEvent(const VirtualDPad &dpad) {
 void MenuWidget::setSelection(MenuSelection selection) {
     _selection = std::move(selection);
     _onSelectionChange(&_selection);
+}
+
+int MenuWidget::getCurrentIndex(void) const {
+    const auto axis = _layout->getGroupingAxis();
+    return _currentIndex[axis];
 }
 
 

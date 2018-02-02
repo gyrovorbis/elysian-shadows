@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,15 +35,15 @@ namespace OOLUA
 		{
 			if (pcall_result == 0)return true;
 
-#if OOLUA_STORE_LAST_LOG_ERROR == 1
+#if OOLUA_STORE_LAST_ERROR == 1
 			if (pcall_result != LUA_ERRMEM)set_error_from_top_of_stack_and_pop_the_error(vm);
 #elif OOLUA_USE_EXCEPTIONS == 1
 			if (pcall_result == LUA_ERRRUN)
-				throw OOLUA::Runtime_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
-			else if (pcall_result == LUA_ERRMEM)
-				throw OOLUA::Memory_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
+				throw OOLUA::Runtime_error(vm, (OOLUA::ERROR::PopTheStack*)0);
+			else if (pcall_result == LUA_ERRMEM) // LCOV_EXCL_LINE
+				throw OOLUA::Memory_error(vm, (OOLUA::ERROR::PopTheStack*)0); //LCOV_EXCL_LINE
 			else if (pcall_result == LUA_ERRERR)
-				throw OOLUA::Runtime_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
+				throw OOLUA::Runtime_error(vm, (OOLUA::ERROR::PopTheStack*)0);
 #elif OOLUA_DEBUG_CHECKS == 1
 			(void)vm;
 			if (pcall_result == LUA_ERRRUN)
@@ -62,15 +62,15 @@ namespace OOLUA
 		bool load_buffer_check_result(lua_State* vm, int result)
 		{
 			if (result == 0)return true;
-#if OOLUA_STORE_LAST_LOG_ERROR == 1
+#if OOLUA_STORE_LAST_ERROR == 1
 			if (result != LUA_ERRMEM)set_error_from_top_of_stack_and_pop_the_error(vm);
 #elif OOLUA_USE_EXCEPTIONS == 1
 			if (result == LUA_ERRFILE)
-				throw OOLUA::File_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
+				throw OOLUA::File_error(vm, (OOLUA::ERROR::PopTheStack*)0);
 			else if (result == LUA_ERRSYNTAX)
-				throw OOLUA::Syntax_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
-			else if (result == LUA_ERRMEM )
-				throw OOLUA::Memory_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
+				throw OOLUA::Syntax_error(vm, (OOLUA::ERROR::PopTheStack*)0);
+			else if (result == LUA_ERRMEM ) // LCOV_EXCL_LINE
+				throw OOLUA::Memory_error(vm, (OOLUA::ERROR::PopTheStack*)0); // LCOV_EXCL_LINE
 #elif OOLUA_DEBUG_CHECKS == 1
 			(void)vm;
 			if (result == LUA_ERRSYNTAX)

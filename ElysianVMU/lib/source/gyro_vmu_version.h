@@ -7,9 +7,9 @@ extern "C" {
 
 #define GYRO_VMU_VERSION_MAJOR  0
 #define GYRO_VMU_VERSION_MINOR  3
-#define GYRO_VMU_VERSION_PATCH  0
+#define GYRO_VMU_VERSION_PATCH  1
 
-#define GYRO_VMU_VERSION_STRING "0.3.0"
+#define GYRO_VMU_VERSION_STRING "0.3.1"
 
 /* Use GYRO_VMU_VERSION_STRING for compile-time version.
  * Use gyVmuVersion() for run-time version.

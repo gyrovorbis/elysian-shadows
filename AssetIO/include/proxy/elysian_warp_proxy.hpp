@@ -12,6 +12,8 @@ OOLUA_PROXY(Warp, Component)
         No_public_constructors,
         No_public_destructor
     )
+    OOLUA_MFUNC(getCameraBoundaryRect)
+    OOLUA_MFUNC(setCameraBoundaryRect)
     OOLUA_MEM_FUNC(Vector3, getToPosVec)
     OOLUA_MEM_FUNC(void, setToPosVec, const Vector3&)
     OOLUA_MEM_FUNC(void, setAreaPath, const char*)

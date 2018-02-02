@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Resource object code
 **
-** Created by: The Resource Compiler for Qt version 5.8.0
+** Created by: The Resource Compiler for Qt version 5.9.2
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -8339,7 +8339,7 @@ int QT_RCC_MANGLE_NAMESPACE(qInitResources_resource)();
 int QT_RCC_MANGLE_NAMESPACE(qInitResources_resource)()
 {
     QT_RCC_PREPEND_NAMESPACE(qRegisterResourceData)
-        (0x02, qt_resource_struct, qt_resource_name, qt_resource_data);
+        (0x2, qt_resource_struct, qt_resource_name, qt_resource_data);
     return 1;
 }
 
@@ -8347,7 +8347,7 @@ int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_resource)();
 int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_resource)()
 {
     QT_RCC_PREPEND_NAMESPACE(qUnregisterResourceData)
-       (0x02, qt_resource_struct, qt_resource_name, qt_resource_data);
+       (0x2, qt_resource_struct, qt_resource_name, qt_resource_data);
     return 1;
 }
 

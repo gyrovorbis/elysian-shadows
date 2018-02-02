@@ -92,9 +92,9 @@ void MapView::onEngineInitialize(void) {
     _cursorEntity = new TkEntity(false);
     _cursorEntity->setPlaneType(GY_RECT_PLANE_BOTTOM);
     auto* collid = _cursorEntity->addCollidable();
-    auto* colAttrib = new elysian::CollidableAttrib();
+    auto colAttrib = std::make_shared<elysian::CollidableAttrib>();
     auto* render = _cursorEntity->addRenderable();
-    auto* sprAttrib = new elysian::SpriteAttrib;
+    auto sprAttrib = std::make_shared<elysian::SpriteAttrib>();
     auto* mat = new elysian::Material;
     mat->setEmissiveColor(GYVector4 {4.0f, 0.0f, 0.0f, 0.0f});
     sprAttrib->setMaterial(mat);
@@ -135,14 +135,14 @@ void MapView::_entitySceneSelectionUpdate(void) {
         entity->setName("_ESTkEntitySelection");
         auto* collid = entity->addCollidable();
         auto* render = entity->addRenderable();
-        auto* sprAttrib = new elysian::SpriteAttrib;
+        auto sprAttrib = std::make_shared<elysian::SpriteAttrib>();
         sprAttrib->setColor(GYColor4{ 0, 255, 255, 25});
         render->setSpriteAttrib(sprAttrib);
         auto* mat = new elysian::Material;
         mat->setEmissiveColor(GYVector4{0.0f, 1.0f, 1.0f, 0.0f});
         sprAttrib->setMaterial(mat);
 
-        auto* const colAttrib = new elysian::CollidableAttrib;
+        auto colAttrib = std::make_shared<elysian::CollidableAttrib>();
 
         colAttrib->getFlags()->setType(0);
         colAttrib->getFlags()->getType().setValue(elysian::CollisionFlags::CURSOR);
@@ -802,7 +802,7 @@ void MapView::_registerDropEventCallbacks(void) {
                             DbgEvent dbg("Drop Event: Instantiating Entity from image file [%s].", Q_CSTR(path));
                             auto* entity = createBasicEntity(info.fileName(), event);
                             Renderable* render = entity->addRenderable();
-                            SpriteAttrib* attrib = new SpriteAttrib();
+                            auto attrib = std::make_shared<SpriteAttrib>();
                             attrib->setTexPath(Q_CSTR(FileUtilities::getAssetRelativePath(path)));
                             GYTexture* tex = attrib->getTexture();
                             render->setSpriteAttrib(attrib);
@@ -825,7 +825,7 @@ void MapView::_registerDropEventCallbacks(void) {
 
                             auto* entity = createBasicEntity(info.fileName(), event);
                             Skeleton* skeleton = entity->addSkeleton();
-                            SkeletonAttrib* attrib = new SkeletonAttrib;
+                            auto attrib = std::make_shared<SkeletonAttrib>();
 
                             if(QFile::exists(jsonPath)) {
                                dbgprintf("Loading .json file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));

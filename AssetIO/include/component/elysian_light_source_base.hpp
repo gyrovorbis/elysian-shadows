@@ -80,9 +80,10 @@ namespace elysian {
         friend class    Engine;
         friend          LightSource;
 
-        Camera              _camState;
-        GYVector3           _relPos         = { 0.0f, 0.0f, 0.0f };
-        bool                _shadowCaster   = false;
+        Camera                          _camState;
+        std::shared_ptr<LightAttrib>    _attrib;
+        GYVector3                       _relPos         = { 0.0f, 0.0f, 0.0f };
+        bool                            _shadowCaster   = false;
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(shadowCaster,       isShadowCaster,     setShadowCaster)
@@ -94,10 +95,10 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             LightSourceBase(void) = default;
-                            LightSourceBase(Entity& entity, const LightSourceBase*const prefab=nullptr);
+                            LightSourceBase(Entity& entity, LightSourceBase*const prefab=nullptr);
                             ~LightSourceBase(void);
 
-         LightSourceBase&   operator=(const LightSourceBase& rhs);
+         LightSourceBase&   operator=(LightSourceBase& rhs);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::LIGHT_SOURCE;
@@ -105,14 +106,14 @@ namespace elysian {
         void                setLightType(const GY_LIGHT_TYPE _type);
         void                setDirection(const GYVector3& dir);
         void                setSpotCutoffAngle(const float angle);
-        void                setAttrib(const LightAttrib* const attrib);
+        void                setAttrib(std::shared_ptr<LightAttrib> attrib);
         void                setShadowCaster(const bool val);
         void                setRelativePos(const float x, const float y, const float z);
 
         GY_LIGHT_TYPE       getLightType(void) const;
         bool                isShadowCaster(void) const;
         const GYVector4&    getPosition(void) const;
-        LightAttrib*        getAttrib(void);
+        auto                getAttrib(void) const -> std::shared_ptr<LightAttrib>;
         void                getDirection(GYVector3& dir) const;
         float               getSpotCutoffAngle(void) const;
         void                getRelativePos(GYVector3& pos) const;
@@ -164,7 +165,7 @@ namespace elysian {
     inline Vector4 LightAttrib::getSpecular(void) { return Vector4(&specularColor); }
     inline Vector3 LightAttrib::getAttenuation(void) { return Vector3(&attenuationFactors); }
 
-    inline LightSourceBase::LightSourceBase(Entity& entity, const LightSourceBase*const prefab):
+    inline LightSourceBase::LightSourceBase(Entity& entity, LightSourceBase*const prefab):
 		Component(entity),
 		GYLightSource({
 			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
@@ -183,7 +184,7 @@ namespace elysian {
             *this = *prefab;              //absorb the other fucker's config and attrib
         }
     }
-    inline LightSourceBase& LightSourceBase::operator=(const LightSourceBase& rhs) {
+    inline LightSourceBase& LightSourceBase::operator=(LightSourceBase& rhs) {
         _camState       = rhs._camState;
         _relPos         = rhs._relPos;
         _shadowCaster   = rhs._shadowCaster;
@@ -194,16 +195,15 @@ namespace elysian {
         setLightType(rhs.type);
         return *this;
     }
-    inline void LightSourceBase::setAttrib(const LightAttrib* const attrib) {
-        if(properties != &LightAttrib::defaultAttrib)
-            //delete properties;
-            properties = (GYLightProperties*)(attrib);
+    inline void LightSourceBase::setAttrib(std::shared_ptr<LightAttrib> attrib) {
+        _attrib = attrib;
+        properties = (GYLightProperties*)(attrib.get());
     }
     inline void LightSourceBase::setDirection(const GYVector3& dir) { direction = dir; gyVec3Normalize(&direction); }
     inline void LightSourceBase::setSpotCutoffAngle(const float angle) { spotCutoffAngle = (type == GY_LIGHT_SPOT)? angle : 360.0f; }
     inline auto LightSourceBase::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
     inline const GYVector4& LightSourceBase::getPosition(void) const { return position; }
-    inline LightAttrib* LightSourceBase::getAttrib(void) { return static_cast<LightAttrib*>(properties); }
+    inline std::shared_ptr<LightAttrib> LightSourceBase::getAttrib(void) const { return _attrib; }
     inline void LightSourceBase::setShadowCaster(const bool val) { _shadowCaster = val; }
     inline bool LightSourceBase::isShadowCaster(void) const { return _shadowCaster; }
     inline void LightSourceBase::setRelativePos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; }

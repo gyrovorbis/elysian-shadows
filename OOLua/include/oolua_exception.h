@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -91,53 +91,49 @@ THE SOFTWARE.
 
 	namespace OOLUA
 	{
-		namespace LOG_ERROR
+		namespace ERROR
 		{
 			struct PopTheStack{};
 			enum exception_buffer {size = 512};
-		} // namespace LOG_ERROR
+		} // namespace ERROR
 
 		struct Exception : std::exception
 		{
 			Exception(lua_State* vm);
-			Exception(lua_State* vm, LOG_ERROR::PopTheStack*);
+			Exception(lua_State* vm, ERROR::PopTheStack*);
 			Exception(char const* msg);
 			Exception(Exception const& rhs);
 			Exception& operator = (Exception const& rhs) throw();
 			char const* what() const throw();
 
 			size_t m_len;
-			char m_buffer[LOG_ERROR::size];
+			char m_buffer[ERROR::size];
 		};
 
 		struct Syntax_error : Exception
 		{
-			Syntax_error(lua_State* vm);
-			Syntax_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
+			Syntax_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 
 		struct Runtime_error : Exception
 		{
-			Runtime_error(lua_State* vm);
-			Runtime_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
+			Runtime_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 			Runtime_error(char const* msg);
 		};
 
-		struct Memory_error : Exception
+		struct Memory_error : Exception // LCOV_EXCL_LINE
 		{
-			Memory_error(lua_State* vm);
-			Memory_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
+			Memory_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 
 		struct File_error : Exception
 		{
-			File_error(lua_State* vm);
-			File_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
+			File_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 
 		struct Type_error : Exception
 		{
-			Type_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
+			Type_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 
 	} // namespace OOLUA // NOLINT

@@ -36,7 +36,7 @@ namespace game {
         VerticalLayout*     _vLayoutRight;
         HorizontalLayout*   _hLayoutEcho;
 
-        EntityWidget*        _groupLeft;
+        GroupWidget*        _groupLeft;
         GroupWidget*         _groupRight;
         GroupWidget*         _groupEcho;
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_chunk.h
-	\brief Provides methods for running and loading chunks.
+	\brief Provides methods for loading and running chunks.
 */
 #ifndef OOLUA_CHUNK_H_
 #	define OOLUA_CHUNK_H_

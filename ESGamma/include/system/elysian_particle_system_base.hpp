@@ -14,9 +14,9 @@ namespace elysian {
 
     class ParticleSystemBase: public System {
     protected:
-        ParticleEmitterInternals*	_emitters;
-        ParticleEmitterAttrib**		_defaultAttribs;
-        const unsigned              _emitterCount;
+        ParticleEmitterInternals*               _emitters;
+        std::shared_ptr<ParticleEmitterAttrib>*	_defaultAttribs;
+        const unsigned                          _emitterCount;
 
 	public:
         ParticleSystemBase(unsigned emitterCount=ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_DEFAULT_COUNT);
@@ -29,8 +29,8 @@ namespace elysian {
 
         //Internal particle emitters
         void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
-		ParticleEmitterAttrib *getAttrib(const unsigned index) const;
-		void setAttrib(const unsigned index, ParticleEmitterAttrib*const attrib);
+        std::shared_ptr<ParticleEmitterAttrib> getAttrib(const unsigned index) const;
+        void setAttrib(const unsigned index, std::shared_ptr<ParticleEmitterAttrib> attrib);
 		void resizePool(const unsigned index, const unsigned size);
 	};
 
@@ -38,12 +38,12 @@ namespace elysian {
 
 	// ==== INLINEZ =====
 
-    inline ParticleEmitterAttrib* ParticleSystemBase::getAttrib(const unsigned index) const {
+    inline std::shared_ptr<ParticleEmitterAttrib> ParticleSystemBase::getAttrib(const unsigned index) const {
         GY_ASSERT(index < _emitterCount);
         return _emitters[index].getAttrib();
 	}
 
-    inline void ParticleSystemBase::setAttrib(const unsigned index, ParticleEmitterAttrib * const attrib) {
+    inline void ParticleSystemBase::setAttrib(const unsigned index, std::shared_ptr<ParticleEmitterAttrib> attrib) {
         GY_ASSERT(index < _emitterCount);
         _emitters[index].setAttrib((attrib)? attrib : _defaultAttribs[index]);
 	}

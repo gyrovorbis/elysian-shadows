@@ -27,7 +27,8 @@ public:
     static bool         initialize(void);
     static bool         uninitialize(void);
     static bool         getMetatable(const int index);
-    static elysian::LuaVariant   getParent(const elysian::LuaVariant& t);
+    static auto         getParent(const elysian::LuaVariant& t) -> elysian::LuaVariant;
+    static void         setParent(const elysian::LuaVariant& t, const elysian::LuaVariant& p);
 
     static QStringList  getUdTypeNames(void);
 

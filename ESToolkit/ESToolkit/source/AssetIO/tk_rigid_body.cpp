@@ -12,7 +12,7 @@ bool TkRigidBody::validate(QString &str) const {
         }
     };
 
-    cAssert(_attrib, "LOG_ERROR: RigidBody component has no attrib field.");
+    cAssert(_attrib.get(), "LOG_ERROR: RigidBody component has no attrib field.");
     return success;
 }
 
@@ -22,9 +22,9 @@ QMenu* TkRigidBody::createContextMenu(void) {
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new elysian::RigidBodyAttrib : nullptr);
+            setAttrib(checked? std::make_shared<elysian::RigidBodyAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 

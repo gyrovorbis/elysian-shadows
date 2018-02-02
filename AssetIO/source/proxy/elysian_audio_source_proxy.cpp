@@ -1,6 +1,5 @@
 #include <proxy/elysian_entity_proxy.hpp>
 
-
 /*!
     \qmltype GYWav
     \since 1.6.0
@@ -50,6 +49,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
 
 
+
 /*!
     \qmltype AudioSource
     \inherits Component
@@ -67,7 +67,7 @@ EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
     to 15 AudioSources can be playing WAVs simultaneously before a channel must be recycled and its
     playback is interrupted for the next sound. For more information, see \l{Audio Channels}.
 
-    \sa {AudioSystem}, GYWav
+    \sa {AudioSystem}
 */
 /*!
  * \qmlmethod void AudioSource::stop()
@@ -140,14 +140,25 @@ EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
  */
 
 OOLUA_EXPORT_FUNCTIONS(AudioSource,
-                                    setWav,
-                                    playWav,
+                                    setWavFile,
+                                    setRolloffFactor,
+                                    setBasePath,
                                     play,
                                     stop,
+                                    setWav,
+                                    playWav,
                                     setGain,
                                     setPitch,
-                                    setLooping)
+                                    setLooping,
+                                    setStartLooping,
+                                    setStartWavFile)
 OOLUA_EXPORT_FUNCTIONS_CONST(AudioSource,
+                             getWavFile,
+                             getRolloffFactor,
+                             getBasePath,
                             getLooping,
                             getPitch,
-                            getGain)
+                            getGain,
+                             isPlaying,
+                             getStartLooping,
+                             getStartWavFile)

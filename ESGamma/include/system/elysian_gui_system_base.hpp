@@ -110,7 +110,7 @@ namespace elysian {
         float                       _fgFadeAlphaStart       = 1.0f;
 
 
-        bool                        _menuActive         = false;
+        bool                        _pauseMenuActive         = false;
         ::game::PauseMenu*         _menuWidget          = nullptr;
 
         void            _printDebugLine(const char*title, const char*str, ...);
@@ -156,6 +156,8 @@ namespace elysian {
 
         void            fadeFgLayer(const float time, const bool enabled=false); // doesn't affect AdventureLog!
         FADE_STATE      getFgFadeState(void) const;
+
+        void            setPauseMenuActive(bool val);
 
         Font			verdana;
         Font			twcen;
@@ -236,6 +238,8 @@ namespace elysian {
     inline auto GuiSystem::getFgFadeState(void) const -> FADE_STATE { return _fgFadeState; }
 
     inline AdventureLog& GuiSystem::getAdvLog(void) { return adventureLog; }
+
+
 
 
 }

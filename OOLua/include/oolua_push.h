@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "oolua_stack_fwd.h"
 #include "oolua_traits_fwd.h"
 #include "oolua_string.h"
+#include "oolua_config.h"
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
 
@@ -45,6 +46,9 @@ namespace OOLUA
 		//fwd
 		template<typename Raw, typename TypeMaybeConst>
 		void push_pointer_which_has_a_proxy_class(lua_State * vm, TypeMaybeConst * const ptr, Owner owner);
+
+		template<typename Underlying_pointer_type, template <typename> class Shared_pointer_class>
+		void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const & instance);
 		//fwd
 
 		template<typename T, int is_integral, int is_convertable_to_int>
@@ -60,7 +64,7 @@ namespace OOLUA
 			{
 				//enumeration type so a static cast must be allowed.
 				//enums will be stronger in C++0x so this will need revisiting then
-				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1];
+				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1] OOLUA_UNUSED;
 				lua_pushinteger(vm, static_cast<lua_Integer>(value) );
 				return true;
 			}
@@ -85,15 +89,38 @@ namespace OOLUA
 			}
 		};
 
+		//either a C++11 scoped enum or a string class
 		template<typename T>
 		struct push_basic_type<T, 0, 0>
 		{
 			static bool push(lua_State* const vm, T const& value)
 			{
+				return push_imp(vm, value, LVD::Int2type<is_scoped_enum<T>::value>());
+			}
+
+			static bool push_imp(lua_State* const vm, T const& value, LVD::Int2type<1>)
+			{
+				//C++11 scoped enum
+				lua_pushinteger(vm, static_cast<lua_Integer>(value));
+				return true;
+			}
+
+			static bool push_imp(lua_State* const vm, T const& value, LVD::Int2type<0>)
+			{
 				return OOLUA::STRING::push(vm, value);
 			}
 		};
 
+		template<typename Ptr_type, template <typename> class Shared_pointer_class>
+		struct push_basic_type<Shared_pointer_class<Ptr_type>, 0, 0>
+		{
+			static bool push(lua_State* const vm, Shared_pointer_class<Ptr_type> const& value)
+			{
+				assert(vm && value);
+				push_shared_pointer(vm, value);
+				return true;
+			}
+		};
 
 
 		template<typename T>
@@ -177,7 +204,7 @@ namespace OOLUA
 	}
 
 	template<typename T>
-	inline bool push(lua_State* const vm, OOLUA::lua_acquire_ptr<T>&  value)
+	inline bool push(lua_State* const vm, OOLUA::lua_acquire_ptr<T> const&  value)
 	{
 		assert(vm && value.m_ptr);
 		INTERNAL::push_pointer_which_has_a_proxy_class<typename OOLUA::lua_acquire_ptr<T>::raw>(vm, value.m_ptr, Lua);

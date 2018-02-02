@@ -302,6 +302,8 @@ namespace elysian {
     void LuaManagerBase::_registerWrappers(void) {
 
 		//Register classes and structs
+        _mainState->register_class<Recti>();
+        Recti::registerProxyMetaTable(*_mainState);
         _mainState->register_class<BitMask32>();
         BitMask32::registerProxyMetaTable(*_mainState);
         _mainState->register_class<BitMask64>();

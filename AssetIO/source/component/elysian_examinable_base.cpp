@@ -8,7 +8,7 @@ namespace elysian {
 
     ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ExaminableBase)
 
-    void ExaminableBase::setDialog(Dialog* const dialog) {
+    void ExaminableBase::setDialog(std::shared_ptr<Dialog> dialog) {
 		_dialog = dialog;
 		_dialog->setTriggerEntity(_entity);
 	}

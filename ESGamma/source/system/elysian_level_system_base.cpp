@@ -12,6 +12,7 @@
 #include "elysian_audio_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_debug.hpp"
+#include <crtp/elysian_camera_system.hpp>
 
 namespace elysian {
 
@@ -173,7 +174,6 @@ bool LevelSystemBase::switchArea(const char *const path) {
     Vector3 pos;
     if(getWarpSys()->getState() == WarpSystem::WARP) {
         pos = getWarpSys()->getCurrentWarp().getToPosVec();
-                Debug::printf(Debug::LOG_VERBOSE, "VECTORZ - <%f, %f, %f>", pos.getX(), pos.getY(), pos.getZ());
     } else {
         pos = area->getStartPosition();
     }
@@ -194,6 +194,7 @@ void LevelSystemBase::_onAreaEnter(void) {
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
     getCollisionSys()->onAreaEnter();
     getAudioSys()->update();
+    getCameraSys()->update();
     getCombatSys()->onAreaEnter();
 }
 

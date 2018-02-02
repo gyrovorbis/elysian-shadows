@@ -48,16 +48,19 @@ void WarpSystem::update(void) {
 		case FADE_OUT:
 			UpdateFadeOut();
 			break;
-		case WARP:
-			if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
-			if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
-			_state = FADE_IN;
-			if(_currentWarp._obliqueTran) {
-				CameraKeyFrame fr = getCameraSys()->getKeyFrame();
-                fr._orient.x = 0.0f;
-                fr.setScale(1.0f, 1.0f, 1.0f);
-				getCameraSys()->moveToKeyFrame(fr, 1.0f);
-			}
+        case WARP: {
+                if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
+                if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
+                _state = FADE_IN;
+                auto&rect = _currentWarp.getCameraBoundaryRect();
+                getCameraSys()->setBoundaries(rect.top, rect.bottom, rect.left, rect.right);
+                if(_currentWarp._obliqueTran) {
+                    CameraKeyFrame fr = getCameraSys()->getKeyFrame();
+                    fr._orient.x = 0.0f;
+                    fr.setScale(1.0f, 1.0f, 1.0f);
+                    getCameraSys()->moveToKeyFrame(fr, 1.0f);
+                }
+            }
 			break;
 		case FADE_IN:
 			UpdateFadeIn();

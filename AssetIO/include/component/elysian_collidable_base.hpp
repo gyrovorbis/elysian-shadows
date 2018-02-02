@@ -14,6 +14,7 @@
 #include <primitive/elysian_instance_transform.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <utility/elysian_bit_mask.hpp>
+#include <memory>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1u<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1u<<1)
@@ -109,7 +110,6 @@ namespace elysian {
 
         CollisionFlags          flags;
 
-        virtual                 ~CollidableAttribBase(void);
                                 CollidableAttribBase(void) = default;
         GY_COLLIDER_TYPE        getColliderType(void) const;
         void                    setColliderType(const GY_COLLIDER_TYPE type);
@@ -156,17 +156,17 @@ namespace elysian {
     protected:
         static CollisionSystem* _colSys;
 
-        GYVector3               _worldSize          = { 1.0f, 1.0f, 1.0f, };
-        CollidableAttrib*       _attrib				= nullptr;
-        SortSweepCollidable*    _sortSweepAABB      = nullptr;
+        GYVector3                           _worldSize          = { 1.0f, 1.0f, 1.0f, };
+        std::shared_ptr<CollidableAttrib>   _attrib;
+        SortSweepCollidable*                _sortSweepAABB      = nullptr;
 
-        unsigned                _contactCount		= 0;
-        bool                    _stackedOnGround    = false;
-        bool                    _restingOnBody      = false;
-        bool                    _resolvePen			= true;
-        bool                    _active				= true;
-        bool                    _worldSpace         = true;
-        uint32_t                _eventMonitorMask	= 0;
+        unsigned                            _contactCount		= 0;
+        bool                                _stackedOnGround    = false;
+        bool                                _restingOnBody      = false;
+        bool                                _resolvePen			= true;
+        bool                                _active				= true;
+        bool                                _worldSpace         = true;
+        uint32_t                            _eventMonitorMask	= 0;
 
         union {
             GYCollider          col;
@@ -175,8 +175,8 @@ namespace elysian {
             GYCirCollider       cir;
         }                       _collider;
 
-                                CollidableBase(Entity &parent, const CollidableBase*const prefab=nullptr);
-        virtual                 ~CollidableBase(void) = default;
+                                CollidableBase(Entity &parent, CollidableBase*const prefab=nullptr);
+                                ~CollidableBase(void) = default;
         void                    _updateSortSweepAABB(void);
 
     public:
@@ -193,8 +193,8 @@ namespace elysian {
         void                    deactivate(void);
 
         unsigned                getContactCount(void) const;
-        void                    setAttrib(CollidableAttrib *attrib);
-        CollidableAttrib*       getAttrib(void) const;
+        void                    setAttrib(std::shared_ptr<CollidableAttrib> attrib);
+        auto                    getAttrib(void) const -> std::shared_ptr<CollidableAttrib>;
         const GYVector3&        getCenterWorldPos(void) const;
         void                    setResolvePenetration(const bool v);
         bool                    getResolvePenetration(void) const;
@@ -219,7 +219,7 @@ namespace elysian {
         bool                    checkAABBCollision(Collidable* col);
         bool                    checkFullCollision(Collidable* col);
 
-        CollidableBase&         operator= (const CollidableBase& other);
+        CollidableBase&         operator= (CollidableBase& other);
 
     };
 
@@ -282,7 +282,6 @@ namespace elysian {
     inline void CollisionFlags::setType(const BitMask32 flags) { _type = flags; }
     inline void CollisionFlags::setTypeAgainst(const BitMask32 flags) { _typeAgainst = flags; }
 
-    inline  CollidableAttribBase::~CollidableAttribBase(void) { printf("~CollidabAttrib - YOU STILL NEED TO FUCKING FIX ME!!!!\n"); }
     inline GY_COLLIDER_TYPE CollidableAttribBase::getColliderType(void) const { return _type; }
     inline void CollidableAttribBase::setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
     inline void CollidableAttribBase::setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
@@ -294,12 +293,12 @@ namespace elysian {
     inline CollisionFlags* CollidableAttribBase::getFlags(void) { return &flags; }
     inline void CollidableAttribBase::setRelSizeVec(const Vector3& size) { _relSize = size; }
     inline void CollidableAttribBase::setRelPosVec(const Vector3& pos) { _relPos = pos; }
-    inline CollidableBase::CollidableBase(Entity &parent, const CollidableBase*const prefab): Component(parent) {
+    inline CollidableBase::CollidableBase(Entity &parent, CollidableBase*const prefab): Component(parent) {
         if(prefab) *this = *prefab;
     }
     inline unsigned CollidableBase::getContactCount(void) const { return _contactCount; }
-    inline void CollidableBase::setAttrib(CollidableAttrib *attrib) { /*delete _attrib;*/ _attrib = attrib; }
-    inline CollidableAttrib* CollidableBase::getAttrib(void) const { return _attrib; }
+    inline void CollidableBase::setAttrib(std::shared_ptr<CollidableAttrib> attrib) { _attrib = attrib; }
+    inline std::shared_ptr<CollidableAttrib> CollidableBase::getAttrib(void) const { return _attrib; }
     inline const GYVector3& CollidableBase::getCenterWorldPos(void) const { return _collider.col.worldPos; }
     inline void CollidableBase::setResolvePenetration(const bool v) { _resolvePen = v; }
     inline bool CollidableBase::getResolvePenetration(void) const { return _resolvePen; }
@@ -375,7 +374,7 @@ namespace elysian {
 */
 
     }
-    inline CollidableBase& CollidableBase::operator=(const CollidableBase& rhs) {
+    inline CollidableBase& CollidableBase::operator=(CollidableBase& rhs) {
         _worldSize          = rhs._worldSize;
         _attrib             = rhs._attrib;
         _resolvePen         = rhs._resolvePen;

@@ -45,6 +45,7 @@ class EngineGLSceneWidget;
 class CameraDockWidget;
 class GitlabDialog;
 class HelpDockWidget;
+class VMUMainWindow;
 class TkArea;
 
 namespace Ui {
@@ -80,6 +81,7 @@ public:
 
 protected:
     virtual void    changeEvent(QEvent *e) override;
+    //virtual bool    event(QEvent* event) override;
     virtual void    closeEvent(QCloseEvent *event) override;
 
     void            _onGYSysSegFault();
@@ -127,8 +129,10 @@ private:
     HistoryDockWidget*      _historyDockWidget;
     CameraDockWidget*       _cameraDockWidget;
     QDockWidget*            _bottomDockWidget;
+    QDockWidget*            _vmuDockWidget;
     QTabWidget*             _bottomTabWidget;
 
+    VMUMainWindow*          _evmuWindow = nullptr;
     EngineDialog*           _engineDialog;
     EngineSettingsDialog*   _engineSettingsDialog;
     SheetManager*           _sheetManager;

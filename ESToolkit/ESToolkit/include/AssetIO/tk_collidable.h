@@ -15,7 +15,7 @@ class TkCollidable: public elysian::CollidableBase {
 friend class TkEntity;
 friend class elysian::EntityBase;
 protected:
-                    TkCollidable(Entity& parent, const TkCollidable*const prefab=nullptr);
+                    TkCollidable(Entity& parent, TkCollidable*const prefab=nullptr);
     virtual         ~TkCollidable(void) = default;
 
 public:
@@ -31,7 +31,7 @@ public:
 
 
 // ========== INLINEZ ================
-inline TkCollidable::TkCollidable(Entity &parent, const TkCollidable*const prefab): elysian::CollidableBase(parent, prefab) {}
+inline TkCollidable::TkCollidable(Entity &parent, TkCollidable*const prefab): elysian::CollidableBase(parent, prefab) {}
 
 
 #endif // TKCOLLIDABLE_H

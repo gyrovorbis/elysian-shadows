@@ -46,14 +46,11 @@
  * Retrieves the total number of seconds that have elapsed since the engine began running.
  * \sa getTotalTicks
  */
-
 /*!
  * \qmlmethod float TimerSystem::getDeltaTime()
  * Retrieves the total number of seconds that have elapsed since the previous frame. Use this value
  * to scale all framerate-independent calculations and movement.
  */
-
-
 /*!
  * \qmlmethod float TimerSystem::startTimerEvent(float duration, EventMonitor* monitor)
  * Starts a timer counting until the number of seconds supplied by \a{duration} elapses before
@@ -63,6 +60,23 @@
  *
  * \sa EventMonitor
  */
+/*!
+ * \qmlmethod void TimerSystem::setSpeedMultiplier(float scalar)
+ * Allows you to either speed up or slow down time by multiplying each frame's \l{deltaTime}
+ * value by \la{scalar}. The default value is 1.0, meaning \l{deltaTime} does not change.
+ * A value of greater than 1.0 will result in increased playback speed while a value of less
+ * than 1.0 will result in slowing down time.
+ *
+ * \sa getSpeedMultiplier
+ */
+/*!
+ * \qmlmethod float TimerSystem::getSpeedMultiplier()
+ * Returns the floating point scalar value which is applied to \l{deltaTime} each frame to
+ * either speed up or slow down the speed of the engine, subsystems, and any time-dependent
+ * logic.
+ * \sa setSpeedMultiplier
+ */
+
 
 OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
                                 getTotalTicks,

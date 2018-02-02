@@ -6,6 +6,7 @@
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <primitive/elysian_quad_sprite_attrib.hpp>
 #include <proxy/elysian_instance_transform_proxy.hpp>
+#include <primitive/elysian_rect.hpp>
 
 namespace OOLUA {
     typedef elysian::Color4             Color4;
@@ -13,6 +14,7 @@ namespace OOLUA {
     typedef elysian::SpriteAttrib       SpriteAttrib;
     typedef elysian::QuadSpriteAttrib   QuadSpriteAttrib;
     typedef elysian::Material           Material;
+    typedef elysian::Recti              Recti;
 
     //template<>                          class Proxy_class<SpriteAttrib>;
     //template<>                          class Proxy_class<QuadSpriteAttrib>;
@@ -59,6 +61,7 @@ OOLUA_PROXY(PrimAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(SpriteAttrib, PrimAttrib)
+    OOLUA_TAGS(Shared)
     OOLUA_MEM_FUNC(void, setFrame, unsigned)
     OOLUA_MEM_FUNC_CONST(int, getFrame)
     OOLUA_MEM_FUNC(void, setColor, unsigned char, unsigned char, unsigned char, unsigned char)
@@ -80,11 +83,22 @@ OOLUA_PROXY(SpriteAttrib, PrimAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
+    OOLUA_TAGS(Shared)
     OOLUA_MEM_FUNC(void, setVertexColor4, const unsigned short, const Color4&)
     OOLUA_MEM_FUNC(Color4, getVertexColor4, const unsigned short)
     OOLUA_MEM_FUNC(void, setVerticesAlpha, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(Recti)
+    OOLUA_MFUNC(setTop)
+    OOLUA_MFUNC(setBottom)
+    OOLUA_MFUNC(setLeft)
+    OOLUA_MFUNC(setRight)
+    OOLUA_MFUNC_CONST(getTop)
+    OOLUA_MFUNC_CONST(getBottom)
+    OOLUA_MFUNC_CONST(getLeft)
+    OOLUA_MFUNC_CONST(getRight)
+OOLUA_PROXY_END
 
 
 

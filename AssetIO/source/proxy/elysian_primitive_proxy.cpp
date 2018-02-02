@@ -449,3 +449,16 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Material,
                              getSpecularColor,
                              getEmissiveColor,
                              getShininess)
+
+
+OOLUA_EXPORT_FUNCTIONS(Recti,
+                       setTop,
+                       setBottom,
+                       setLeft,
+                       setRight)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Recti,
+                       getTop,
+                       getBottom,
+                       getLeft,
+                       getRight)

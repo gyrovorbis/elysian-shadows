@@ -40,11 +40,11 @@ PlayablePane::PlayablePane(void) {
     Entity* entity2 = new Entity;
    entity2->getTransform().setSize(0, 0, 0);
     Renderable* renderable2 = entity2->addRenderable();
-    SpriteAttrib* attrib2 = new SpriteAttrib;
+    auto attrib2 = std::make_shared<SpriteAttrib>();
     attrib2->setColor(0, 255, 0, 100);
     renderable2->setSpriteAttrib(attrib2);
 
-    _groupLeft      = new EntityWidget(entity2);
+    _groupLeft      = new GroupWidget;
     _groupLeft->setLayout(_vLayoutLeft);
    // _groupLeft->setSize(X, 30);
 
@@ -87,8 +87,9 @@ PlayablePane::PlayablePane(void) {
     //entity->getTransform().setSize(10, 10, 10);
     //entity->getTransform().setPos(400, 400);
     Renderable* renderable = entity->addRenderable();
-    SpriteAttrib* attrib = new SpriteAttrib;
-    attrib->setColor(0, 0, 200, 100);
+    auto attrib = std::make_shared<SpriteAttrib>();
+    attrib->setColor(Color4::aqua);
+    attrib->setAlpha(0);
     renderable->setSpriteAttrib(attrib);
     setEntity(entity);
 

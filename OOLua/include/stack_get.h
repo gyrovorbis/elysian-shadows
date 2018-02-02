@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "oolua_string.h"
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
+#include "oolua_config.h"
 
 namespace OOLUA
 {
@@ -48,6 +49,11 @@ namespace OOLUA
 		template<typename T>
 		T* check_index_no_const(lua_State * vm, int index);
 
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct stack_checker;
+#endif
+
 
 		namespace PULL
 		{
@@ -57,7 +63,6 @@ namespace OOLUA
 
 		namespace LUA_CALLED
 		{
-
 			void get_class_type_error(lua_State* const vm, char const* expected_type);
 			void get_error(lua_State* vm, int idx, char const* expected_type);
 
@@ -89,7 +94,7 @@ namespace OOLUA
 				{
 					//enumeration type so a static cast should be allowed else this
 					//is being called with the wrong type
-					typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1];
+					typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1] OOLUA_UNUSED;
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "enum type");
 #endif
@@ -111,22 +116,52 @@ namespace OOLUA
 				static void get(lua_State* const vm, int idx, T &  value)
 				{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-					if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "integer compatabile type");
+					if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "integer compatible type");
 #endif
 					value = static_cast<T>(lua_tointeger(vm, idx));
 				}
 			};
 
-			template<typename StringType>
-			struct get_basic_type<StringType, 0, 0>
+			//either a C++11 scoped enum or a string class
+			template<typename T>
+			struct get_basic_type<T, 0, 0>
 			{
-				static void get(lua_State* const vm, int idx, StringType &  value)
+				static void get(lua_State* const vm, int idx, T &  value)
+				{
+					return get_imp(vm, idx, value, LVD::Int2type<STRING::is_integral_string_class<T>::value>());
+				}
+				static void get_imp(lua_State* const vm, int idx, T& value, LVD::Int2type<0>)
+				{
+					//C++11 scoped enum
+					get_basic_type<T, 1, 1>::get(vm, idx, value);
+				}
+				static void get_imp(lua_State* const vm, int idx, T& value, LVD::Int2type<1>)
 				{
 					OOLUA::STRING::get(vm, idx, value);
 				}
 			};
 
-
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T, template <typename> class Shared_pointer_class>
+		struct get_basic_type<Shared_pointer_class<T>, 0, 0>
+		{
+			typedef typename LVD::remove_const<T>::type raw;
+			static void get(lua_State* const vm, int idx, Shared_pointer_class<T> & value)
+			{
+				value = !LVD::is_const<T>::value
+							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, idx)
+							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, idx);
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if (!value)
+				{
+					get_class_type_error(vm, LVD::is_const<T>::value
+											  ? Proxy_class<raw>::class_name_const
+											  : Proxy_class<raw>::class_name);
+				}
+#endif
+			}
+		};
+#endif
 			template<typename T, int is_integral>
 			struct get_ptr;
 
@@ -139,7 +174,6 @@ namespace OOLUA
 					stack_class_type<typename OOLUA::INTERNAL::param_type<T>::raw
 													, OOLUA::INTERNAL::param_type<T*>::is_constant
 												>::get(vm, idx, class_ptr);
-
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					if(!class_ptr)
 					{
@@ -148,7 +182,6 @@ namespace OOLUA
 											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 					}
 #endif
-
 					value = class_ptr;
 				}
 			};
@@ -160,7 +193,7 @@ namespace OOLUA
 #if OOLUA_DEBUG_CHECKS == 1
 					if(!value)
 					{
-						get_error(vm, idx, "pulling pointer to integral type and was passed NULL. OOLua can not dereference it");
+						get_error(vm, idx, "pulling pointer to integral type and was passed NULL. OOLua can not dereference it"); // LCOV_EXCL_LINE
 					}
 #endif
 					LUA_CALLED::get(vm, idx, *value);
@@ -201,7 +234,6 @@ namespace OOLUA
 										  : Proxy_class<raw>::class_name);
 				}
 #endif
-
 				INTERNAL::PULL::set_index_gc_value_to_false(vm, idx);
 			}
 

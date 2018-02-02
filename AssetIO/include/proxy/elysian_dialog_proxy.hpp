@@ -47,6 +47,7 @@ OOLUA_PROXY(DialogPrompt, DialogScreen)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Dialog)
+    OOLUA_TAGS(Shared)
     OOLUA_MEM_FUNC(DialogText*, addTextScreen, const char*)
     OOLUA_MEM_FUNC(DialogPrompt*, addPromptScreen, const char*)
     OOLUA_MEM_FUNC(void, setScreen, const unsigned, cpp_in_p<DialogScreen*>)

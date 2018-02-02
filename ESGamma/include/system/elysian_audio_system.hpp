@@ -8,14 +8,15 @@
 #include <system/elysian_system.hpp>
 #include <utility/elysian_subprocess_manager.hpp>
 
-#define ELYSIAN_AUDIO_CHANNELS			32
-#define ELYSIAN_AUDIO_REFERENCE_DIST	10
-#define ELYSIAN_AUDIO_ZSCALE			32.0f
-#define ELYSIAN_AUDIO_BGM_OGGS          6
-#define ELYSIAN_AUDIO_AUX_OGGS          4
-#define ELYSIAN_AUDIO_BGM_TRACKS        3
-#define ELYSIAN_AUDIO_AUX_TRACKS        2
-#define ELYSIAN_AUDIO_SFX_CHANNELS      26
+#define ELYSIAN_AUDIO_CHANNELS              32
+#define ELYSIAN_AUDIO_REFERENCE_DIST        32
+#define ELYSIAN_AUDIO_ZSCALE                1.0f
+#define ELYSIAN_AUDIO_BGM_OGGS              6
+#define ELYSIAN_AUDIO_AUX_OGGS              4
+#define ELYSIAN_AUDIO_BGM_TRACKS            3
+#define ELYSIAN_AUDIO_AUX_TRACKS            2
+#define ELYSIAN_AUDIO_SFX_CHANNELS          26
+#define ELYSIAN_AUDIO_SFX_CHANNEL_INVALID   -1
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(AudioSource)
@@ -28,7 +29,7 @@ namespace elysian {
     {
       protected:
         const GYWav*      _wav      = nullptr;
-        int               _channel  = -1;
+        int               _channel  = ELYSIAN_AUDIO_SFX_CHANNEL_INVALID;
         GYAudioSource*    _src      = nullptr;
 
       public:
@@ -65,13 +66,13 @@ namespace elysian {
     //WAV SFX API
     //accept -1 for dynamic channel
     void            playSfxChannel(const int channel, const GYWav& wav, EventMonitor* monitor=nullptr);
-    void            stopSfxChannel(const unsigned channel) const;
-    bool            isSfxChannelPlaying(const unsigned channel) const;
-    void            setSfxChannelGain(const unsigned channel, const float val) const;
-    void            setSfxChannelPitch(const unsigned channel, const float val) const;
-    void            setSfxChannelLooping(const unsigned channel, const bool val) const;
-    void            setSfxChannelRolloffFactor(const unsigned channel, const float val) const;
-    void            setSfxChannelPos(const unsigned channel, const float x, const float y, const float z) const;
+    void            stopSfxChannel(const int channel) const;
+    bool            isSfxChannelPlaying(const int channel) const;
+    void            setSfxChannelGain(const int channel, const float val) const;
+    void            setSfxChannelPitch(const int channel, const float val) const;
+    void            setSfxChannelLooping(const int channel, const bool val) const;
+    void            setSfxChannelRolloffFactor(const int channel, const float val) const;
+    void            setSfxChannelPos(const int channel, const float x, const float y, const float z) const;
 
     //OGG BGM API
     void            loadBgmTrack(const unsigned track, const char*const path);
@@ -117,8 +118,8 @@ namespace elysian {
     //Internal
     GYAudioSource*	reserveChannel(AudioSource*const comp = nullptr);
     void			releaseChannel(const GYAudioSource* const src);
-    int             sourceToIndex(const GYAudioSource* src) const;
-    void            _playSfxChannel(const unsigned channel, const GYWav& wav);
+    int             sourceToChannelIndex(const GYAudioSource* src) const;
+    void            _playSfxChannel(const int channel, const GYWav& wav);
 
     //called from Component
     struct AudioChannel {
@@ -207,9 +208,9 @@ namespace elysian {
     inline bool AudioSystem::isEnabled(void) const { return _enabled; }
 
     inline void WavPlaybackSubProcess::_start(AudioSystem* sys) {
-        if(_channel == -1) {
+        if(_channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) {
             _src = sys->reserveChannel();
-            _channel = sys->sourceToIndex(_src);
+            _channel = sys->sourceToChannelIndex(_src);
         }
         sys->setSfxChannelRolloffFactor(_channel, 0.0f);
         sys->setSfxChannelGain(_channel, 1.0f);
@@ -222,7 +223,7 @@ namespace elysian {
             sys->releaseChannel(_src);
             _src = nullptr;
         }
-        _channel = -1;
+        _channel = ELYSIAN_AUDIO_SFX_CHANNEL_INVALID;
         _wav = nullptr;
     }
     inline void WavPlaybackSubProcess::_update(AudioSystem* sys, const float) {

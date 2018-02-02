@@ -5,6 +5,17 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+macx {
+# -mmacosx-version-min=10.8
+    QMAKE_CXXFLAGS +=-stdlib=libc++
+    LIBS +=-stdlib=libc++
+
+    #CONFIG(release, debug|release) {
+     #  QMAKE_POST_LINK = "macdeployqt TARGET"
+    #}
+}
+
+
 INCLUDEPATH += ../../include \
 	../../../Lua5.2/include
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 
 #	include "oolua_table.h"
-//#	include "oolua_exception.h"
 #	include "oolua_stack_fwd.h"
 
 namespace OOLUA
@@ -44,6 +43,12 @@ namespace OOLUA
 	Table::Table(Table const& rhs)
 		:m_table_ref(rhs.m_table_ref)
 	{}
+
+	Table& Table::operator = (Table const& rhs)
+	{
+		m_table_ref = rhs.m_table_ref;
+		return *this;
+	}
 
 	void Table::bind_script(lua_State*  const vm)
 	{
@@ -162,6 +167,16 @@ namespace OOLUA
 		t.pull_from_stack(vm);
 		return t;
 	}
+	/** \cond INTERNAL*/
+	namespace INTERNAL
+	{
+		int l_new_table(lua_State* vm)
+		{
+			lua_createtable(vm, static_cast<int>(luaL_optinteger(vm, 1, 0)), static_cast<int>(luaL_optinteger(vm, 2, 0)));
+			return 1;
+		}
+	} //namespace INTERNAL
+	/** \endcond */
 
 } // namespace OOLUA
 

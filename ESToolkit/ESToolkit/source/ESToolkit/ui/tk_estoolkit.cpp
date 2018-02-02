@@ -35,6 +35,8 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
+#include <gyro_vmu_main_window.hpp>
+#include <ui_gyro_vmu_main_window.h>
 
 
 #ifdef ESTK_UNIT_TESTS
@@ -153,6 +155,26 @@ ESToolkit::ESToolkit(QWidget *parent):
     _selectionDockWidget = new SelectionDockWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, _selectionDockWidget);
 
+    // another QMainWindow you want to embed
+#if 0
+        _evmuWindow = new VMUMainWindow(this);	// no parent
+        //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
+        //evmuWindow->setWindowFlags(Qt::Widget);
+       _evmuWindow->setFocusPolicy(Qt::ClickFocus);
+
+        //subMainWindow->setUnifiedTitleAndToolBarOnMac(true); _vmuDockWidget = new QDockWidget(nullptr);
+       _vmuDockWidget = new QDockWidget(this);
+        _vmuDockWidget->setWindowTitle("VMU View");
+        _evmuWindow->menuBar()->setNativeMenuBar(false);
+
+
+       _vmuDockWidget->setWidget(_evmuWindow);
+//dock->setMouseTracking(false);
+       //evmuWindow->setParent(dock) ;	// here
+
+        addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
+#endif
+
     // create/initialize HISTORY dock and widget
     _historyDockWidget = new HistoryDockWidget(this);
     _historyDockWidget->SetActiveGroup(&_undoGroup);
@@ -240,8 +262,31 @@ ESToolkit::ESToolkit(QWidget *parent):
 
     setMouseTracking(true);
 }
+#if 0
+bool ESToolkit::event(QEvent *event) {
+    switch(event->type()) {
+    case QEvent::Shortcut: {
+        auto* shortcutEvent = static_cast<QShortcutEvent*>(event);
+        if(shortcutEvent->isAmbiguous()) {
+            if(_evmuWindow && _evmuWindow->hasFocus()) {
+                shortcutEvent->accept();
+                return true;
+            }
+
+        }
+        break;
+    }
+
+
+    default: break;
+    }
+    return QMainWindow::event(event);
+}
+#endif
+
 
 ESToolkit::~ESToolkit(void) {
+    _ui->mapView->setEnabled(false);
     _assets.setCurrentArea(nullptr);
     _assets.setCurrentProject(nullptr);
     _assets.setCurrentLevel(nullptr);

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,9 +46,19 @@ namespace OOLUA
 		inline void push_pointer_which_has_a_proxy_class(lua_State * vm, TypeMaybeConst * const ptr, Owner owner)
 		{
 			if_check_enabled_check_type_is_registered(vm, Proxy_class<Raw>::class_name);
-			Lua_ud* ud(find_ud(vm, (Raw*)ptr, !!LVD::is_const<TypeMaybeConst>::value));//NOLINT
+			Lua_ud* ud(find_ud<Raw,Raw>(vm, (Raw*)ptr,(Raw*)ptr, !!LVD::is_const<TypeMaybeConst>::value));//NOLINT
 			if(!ud) ud = add_ptr(vm, (Raw*)ptr, !!(LVD::is_const<TypeMaybeConst>::value), owner);//NOLINT
 			else set_owner_if_change(owner, ud);
+		}
+
+		template<typename Underlying_pointer_type, template <typename> class Shared_pointer_class>
+		inline void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const& instance)
+		{
+			typedef Shared_pointer_class<Underlying_pointer_type> shared_type;
+			typedef typename LVD::remove_const<Underlying_pointer_type>::type raw_type;
+			if_check_enabled_check_type_is_registered(vm, Proxy_class<raw_type>::class_name);
+			Lua_ud* ud(find_ud<shared_type,raw_type>(vm, &instance, (raw_type*)(instance.get()), !!LVD::is_const<Underlying_pointer_type>::value));//NOLINT
+			if(!ud) ud = add_ptr(vm, instance, !!(LVD::is_const<Underlying_pointer_type>::value), Lua/*ignored parameter*/);//NOLINT
 		}
 
 	} // namespace INTERNAL // NOLINT

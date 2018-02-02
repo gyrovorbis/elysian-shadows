@@ -52,6 +52,8 @@ namespace elysian {
                     Vector3(const Vector3& other);
                     ~Vector3(void) = default;
 
+        Vector3&    operator=(const Vector3& rhs);
+
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
 
@@ -283,15 +285,21 @@ namespace elysian {
         gyVec2Normalize(_ptr);
     }
 
+
+
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
     inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}), _ptr(this) {}
     inline Vector3::Vector3(const Vector3 &other) : LuaTableProxy<Vector3>() {
-        if(other._ptr != &other) {
+        *this = other;
+    }
+    inline Vector3& Vector3::operator =(const Vector3& other) {
+        if(other._ptr != static_cast<const GYVector3*>(&other)) {
             _ptr = other._ptr;
         } else {
-            *(GYVector3*)this = *(const GYVector3*)&other;
+            setX(other.getX()); setY(other.getY()); setZ(other.getZ());
             _ptr = this;
         }
+        return *this;
     }
     inline Vector3::Vector3(GYVector3 * const vec3): _ptr(vec3) {}
     inline float Vector3::getX(void) const { return _ptr->x; }
@@ -304,23 +312,26 @@ namespace elysian {
         GY_ASSERT(index >= 0 || index <= 2);
         switch(index) {
         case 0:
-            return x;
+            return _ptr->x;
         case 1:
-            return y;
+            return _ptr->y;
         default:
         case 2:
-            return z;
+            return _ptr->z;
         }
     }
     inline void Vector3::setValueByIndex(int index, float value) {
         GY_ASSERT(index >= 0 || index <= 2);
         switch(index) {
         case 0:
-            x = value;
+            _ptr->x = value;
+            break;
         case 1:
-            y = value;
+            _ptr->y = value;
+            break;
         case 2:
-            z = value;
+            _ptr->z = value;
+            break;
         }
     }
 

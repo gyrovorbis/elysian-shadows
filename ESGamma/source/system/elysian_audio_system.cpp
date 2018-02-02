@@ -11,7 +11,7 @@ namespace elysian {
 	AudioSystem::AudioSystem(void) {
 		AudioSource::setAudioSys(this);
 		gyAudSetReferenceDistance(ELYSIAN_AUDIO_REFERENCE_DIST);
-		//gyAudSetZScale(ELYSIAN_AUDIO_ZSCALE);
+        gyAudSetZScale(ELYSIAN_AUDIO_ZSCALE);
 
 		//Allocate audio channels
 		//and initialize channel data
@@ -57,7 +57,7 @@ namespace elysian {
 	}
 
     void AudioSystem::setEnabled(const bool val) {
-        gyAudListenerSetGain(val? 1.0f : 0.0f);
+        gyAudListenerSetGain(val? 0.999f : 0.0f);
     }
 
     void AudioSystem::setListenerGain(const float gain) {
@@ -270,7 +270,7 @@ namespace elysian {
 	//===== INTERNAL ======
 
 	GYAudioSource* AudioSystem::reserveChannel(AudioSource* const comp) {
-		signed channel = -1;
+        signed channel = ELYSIAN_AUDIO_SFX_CHANNEL_INVALID;
 
 		for(unsigned i = AudioChannel::DYN_1; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
 			if(_channels[i].owner == AudioChannel::FREE) {
@@ -280,7 +280,7 @@ namespace elysian {
 		}
 
 		//There was no free channel. Steal the bitch.
-		if(channel == -1) {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) {
 			//Find channel to steal, and KINDA be fair about it
 			if(++_lastStolenChannel == ELYSIAN_AUDIO_CHANNELS) _lastStolenChannel = AudioChannel::DYN_1;
 			if(_channels[_lastStolenChannel].comp) _channels[_lastStolenChannel].comp->stop();
@@ -300,27 +300,30 @@ namespace elysian {
 	}
 
 	void AudioSystem::releaseChannel(const GYAudioSource* const src) {
-        const int i = sourceToIndex(src);
+        if(!src) return;
+        const int i = sourceToChannelIndex(src);
         GY_ASSERT(i >= AudioChannel::DYN_1 && i < ELYSIAN_AUDIO_CHANNELS);
-        if(i != -1) {
+        if(i != ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) {
             _channels[i].comp = nullptr;
             _channels[i].owner = AudioChannel::FREE;
         } //else uhhhh.... You're dumb as hell, but okay.
 	}
 
-    int AudioSystem::sourceToIndex(const GYAudioSource *src) const {
-        for(int i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-            if(_channels[i].src == src) {
-                return i;
+    int AudioSystem::sourceToChannelIndex(const GYAudioSource *src) const {
+        if(src) {
+            for(int i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
+                if(_channels[i].src == src) {
+                    return i;
+                }
             }
         }
-        return -1;
+        return ELYSIAN_AUDIO_SFX_CHANNEL_INVALID;
     }
 
 	//========= SFX WAV API =======
 
-	bool AudioSystem::isSfxChannelPlaying(const unsigned channel) const {
-		return gyAudSourceIsPlaying(_channels[channel].src);
+    bool AudioSystem::isSfxChannelPlaying(const int channel) const {
+        return (channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID)? false : gyAudSourceIsPlaying(_channels[channel].src);
 	}
 
     void AudioSystem::playSfxChannel(const int channel, const GYWav& wav, EventMonitor* monitor) {
@@ -334,35 +337,43 @@ namespace elysian {
         subProc.start(this);
     }
 
-    void AudioSystem::_playSfxChannel(const unsigned channel, const GYWav& wav) {
+    void AudioSystem::_playSfxChannel(const int channel, const GYWav& wav) {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
         GY_ASSERT(channel < ELYSIAN_AUDIO_CHANNELS);
         gyAudSourcePlayWav(_channels[channel].src, &wav);
 	}
 
-	void AudioSystem::stopSfxChannel(const unsigned channel) const {
+    void AudioSystem::stopSfxChannel(const int channel) const {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
 		gyAudSourceStop(_channels[channel].src);
 	}
 
-	void AudioSystem::setSfxChannelGain(const unsigned channel, const float val) const {
+    void AudioSystem::setSfxChannelGain(const int channel, const float val) const {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
 		gyAudSourceSetf(_channels[channel].src, GY_SOURCE_GAIN, val);
 	}
 
-	void AudioSystem::setSfxChannelPitch(const unsigned channel, const float val) const {
+    void AudioSystem::setSfxChannelPitch(const int channel, const float val) const {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
 		gyAudSourceSetf(_channels[channel].src, GY_SOURCE_PITCH, val);
 	}
 
-	void AudioSystem::setSfxChannelLooping(const unsigned channel, const bool val) const {
+    void AudioSystem::setSfxChannelLooping(const int channel, const bool val) const {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
 		gyAudSourceSeti(_channels[channel].src, GY_SOURCE_LOOPING, static_cast<int>(val));
 	}
 
-    void AudioSystem::setSfxChannelPos(const unsigned channel, const float x, const float y, const float z) const {
+    void AudioSystem::setSfxChannelPos(const int channel, const float x, const float y, const float z) const {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
         //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLLOG_OFF_FACTOR, 1.0f);
         //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
         GYVector3 pos3 = { x, y, z };
 		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos3);
 	}
 
-    void AudioSystem::setSfxChannelRolloffFactor(const unsigned channel, const float val) const {
+    void AudioSystem::setSfxChannelRolloffFactor(const int channel, const float val) const {
+        if(channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID) return;
+        //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, (val == 0.0f)? 0 : 1);
         gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, val);
     }
 

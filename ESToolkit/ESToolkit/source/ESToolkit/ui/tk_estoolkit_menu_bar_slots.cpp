@@ -753,9 +753,11 @@ void ESToolkit::on_actionAdd_Player_triggered()
 
 void ESToolkit::on_actionRemove_Player_triggered()
 {
-  //  --players;
-
-
+    auto* partySys = _assets.getEngine()->getPartySys();
+    unsigned count = partySys->getPartySize();
+    if(count > 1) {
+        partySys->removeCharacterFromParty(partySys->getPartyMember(count-1));
+    }
 }
 
 void ESToolkit::on_actionLua_Manager_Dump_triggered()

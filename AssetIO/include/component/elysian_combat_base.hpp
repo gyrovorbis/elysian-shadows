@@ -22,9 +22,9 @@ namespace elysian {
          ELYSIAN_LUA_PROXY_FIELDS_END()
     private:
         //GYColor4				_particleColor		= { 255, 255, 255, 255 };
-        BitMask32				_typeFlags			;//= BitMask32(~0x0);
-        BitMask32				_typeAgainstFlags	;//= BitMask32(~0x0);
-        ParticleEmitterAttrib*	_particleAttrib		= nullptr;
+        BitMask32                               _typeFlags;//= BitMask32(~0x0);
+        BitMask32                               _typeAgainstFlags;//= BitMask32(~0x0);
+        std::shared_ptr<ParticleEmitterAttrib>	_particleAttrib;
 
     public:
 
@@ -32,8 +32,8 @@ namespace elysian {
         BitMask32&                  getTypeAgainstFlags(void);
         void                        setTypeFlags(const BitMask32 flags);
         void                        setTypeAgainstFlags(const BitMask32 flags);
-        ParticleEmitterAttrib*      getParticleAttrib(void) const;
-        void                        setParticleAttrib(ParticleEmitterAttrib*const attrib);
+        auto                        getParticleAttrib(void) const -> std::shared_ptr<ParticleEmitterAttrib>;
+        void                        setParticleAttrib(std::shared_ptr<ParticleEmitterAttrib> attrib);
         //GYColor4 getParticleColor(void) const;
         //void setParticleColor(const GYColor4 color);
     };
@@ -119,24 +119,24 @@ namespace elysian {
 
     private:
 
-        OOLUA::Lua_table_ref	_selfTable;
-        OOLUA::Lua_table_ref	_actionTable;
+        OOLUA::Lua_table_ref            _selfTable;
+        OOLUA::Lua_table_ref            _actionTable;
 
-        CombatStatus			_status;
-        CombatAttrib*			_attrib			= nullptr;
-        DMG_TYPE				_dmgType		= DMG_NONE;
-        BitMask32				_collisionFlags	= ON_COLLISION_ENTER;
-        float                   _aggroDist      = ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT;
-        float                   _deaggroDist    = ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT;
-        TARGET_TYPE             _targetType     = TARGET_NONE;
-        bool					_dmgActive		= true;
-        bool                    _inCombat       = false;
+        CombatStatus                    _status;
+        std::shared_ptr<CombatAttrib>	_attrib;
+        DMG_TYPE                        _dmgType		= DMG_NONE;
+        BitMask32                       _collisionFlags	= ON_COLLISION_ENTER;
+        float                           _aggroDist      = ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT;
+        float                           _deaggroDist    = ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT;
+        TARGET_TYPE                     _targetType     = TARGET_NONE;
+        bool                            _dmgActive		= true;
+        bool                            _inCombat       = false;
     public:
                                 CombatBase(void) = default;
-                                CombatBase(Entity& entity, const CombatBase*const prefab=nullptr);
+                                CombatBase(Entity& entity, CombatBase*const prefab=nullptr);
                                 ~CombatBase(void) = default;
 
-        CombatBase&             operator=(const CombatBase& rhs);
+        CombatBase&             operator=(CombatBase& rhs);
 
 		//reimplemented from component
         static constexpr const  Component::TYPE componentType = Component::COMBAT;
@@ -148,8 +148,8 @@ namespace elysian {
 
 		DMG_TYPE				getDmgType(void) const;
 		void					setDmgType(const DMG_TYPE type);
-		CombatAttrib*			getAttrib(void) const;
-		void					setAttrib(CombatAttrib* attrib);
+        auto        			getAttrib(void) const -> std::shared_ptr<CombatAttrib>;
+        void					setAttrib(std::shared_ptr<CombatAttrib> attrib);
         void					setCollisionFlags(const BitMask32 flags);
         BitMask32&				getCollisionFlags(void);
 		bool					getDmgActive(void) const;
@@ -176,8 +176,8 @@ namespace elysian {
     inline BitMask32& CombatAttrib::getTypeAgainstFlags(void) { return _typeAgainstFlags; }
     inline void CombatAttrib::setTypeFlags(const BitMask32 flags) { _typeFlags = flags; }
     inline void CombatAttrib::setTypeAgainstFlags(const BitMask32 flags) { _typeAgainstFlags = flags; }
-    inline ParticleEmitterAttrib* CombatAttrib::getParticleAttrib(void) const { return _particleAttrib; }
-    inline void CombatAttrib::setParticleAttrib(ParticleEmitterAttrib* attrib) { _particleAttrib = attrib; }
+    inline std::shared_ptr<ParticleEmitterAttrib> CombatAttrib::getParticleAttrib(void) const { return _particleAttrib; }
+    inline void CombatAttrib::setParticleAttrib(std::shared_ptr<ParticleEmitterAttrib> attrib) { _particleAttrib = attrib; }
     //inline GYColor4 CombatAttrib::getParticleColor(void) const { return _particleColor; }
     //inline void CombatAttrib::setParticleColor(const GYColor4 color) { _particleColor = color; }
 
@@ -223,11 +223,11 @@ namespace elysian {
     inline void	CombatBase::setActionTable(OOLUA::Lua_table_ref self) { _actionTable = self; }
     inline OOLUA::Lua_table_ref& CombatBase::getActionTable(void) { return _actionTable; }
 
-    inline CombatBase::CombatBase(Entity &entity, const CombatBase*const prefab): Component(entity) {
+    inline CombatBase::CombatBase(Entity &entity, CombatBase*const prefab): Component(entity) {
         if(prefab) *this = *prefab;
     }
 
-    inline CombatBase& CombatBase::operator=(const CombatBase& rhs) {
+    inline CombatBase& CombatBase::operator=(CombatBase& rhs) {
         _status             = rhs._status;
         _attrib             = rhs._attrib;
         _dmgType            = rhs._dmgType;
@@ -241,8 +241,8 @@ namespace elysian {
     inline auto	CombatBase::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
     inline auto CombatBase::getTargetType(void) const ->TARGET_TYPE { return _targetType; }
     inline void CombatBase::setTargetType(const TARGET_TYPE type) { _targetType = type; }
-    inline CombatAttrib* CombatBase::getAttrib(void) const { return _attrib; }
-    inline void CombatBase::setAttrib(CombatAttrib* attrib) { _attrib = attrib; }
+    inline std::shared_ptr<CombatAttrib> CombatBase::getAttrib(void) const { return _attrib; }
+    inline void CombatBase::setAttrib(std::shared_ptr<CombatAttrib> attrib) { _attrib = attrib; }
     inline void CombatBase::setCollisionFlags(const BitMask32 flags) { _collisionFlags = flags; }
     inline BitMask32& CombatBase::getCollisionFlags(void) { return _collisionFlags; }
     inline bool CombatBase::getDmgActive(void) const { return _dmgActive; }

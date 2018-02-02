@@ -15,16 +15,25 @@ OOLUA_PROXY(GYWav)
     )
 OOLUA_PROXY_END
 
-
-
 OOLUA_PROXY(AudioSource, Component)
      OOLUA_TAGS (
          No_public_constructors,
          No_public_destructor
      )
-    OOLUA_MEM_FUNC(void, setWav, const GYWav*)
-    OOLUA_MEM_FUNC(void, playWav, const GYWav*)
-    OOLUA_MEM_FUNC(void, play)
+    OOLUA_MFUNC(setWavFile)
+    OOLUA_MFUNC_CONST(getWavFile)
+    OOLUA_MFUNC(setBasePath)
+    OOLUA_MFUNC_CONST(getBasePath)
+    OOLUA_MFUNC(setRolloffFactor)
+    OOLUA_MFUNC_CONST(getRolloffFactor)
+    OOLUA_MFUNC_CONST(isPlaying)
+    OOLUA_MFUNC(setWav)
+    OOLUA_MFUNC(playWav)
+    OOLUA_MFUNC(play)
+    OOLUA_MFUNC(setStartLooping)
+    OOLUA_MFUNC_CONST(getStartLooping)
+    OOLUA_MFUNC(setStartWavFile)
+    OOLUA_MFUNC_CONST(getStartWavFile)
     OOLUA_MEM_FUNC(void, stop)
     OOLUA_MEM_FUNC(void, setGain, float)
     OOLUA_MEM_FUNC(void, setPitch, float)

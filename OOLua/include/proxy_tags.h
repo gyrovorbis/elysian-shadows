@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -111,7 +111,38 @@ a class which is to be proxied.
 	\details
 	The class has enums which are specified inside the OOLUA_ENUMS block, these
 	entries will be registered with a lua_State when the proxy type is.
+
+	\addtogroup SharedTags Shared Tags
+	@{
+		\brief Tags to override the default behaviour the library was compiled with.
+
+	\struct OOLUA::Shared
+	\brief Overrides the configuration behaviour when creating proxied types
+	\details
+	When the library is compiled with \ref OOLUA_USE_SHARED_PTR "shared pointer support"
+	and it is not configured to create shared pointers by
+	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag
+	overrides that behaviour for the proxy type.
+	\note If the library is configured to use the shared pointer type by default
+	then this tag is ignored when present in a proxy \ref OOLUA_TAGS "tag block".
+	\see OOLUA_USE_SHARED_PTR
+	\see OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+
+	\struct OOLUA::No_shared
+	\brief Overrides the configuration behaviour when creating proxied types
+	\details
+	When the library is compiled with \ref OOLUA_USE_SHARED_PTR "shared pointer support"
+	and it is also configured to create shared pointers by
+	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag
+	overrides that behaviour for the proxy type.
+	\note If the library is configured to not use the shared pointer type by default
+	then this tag is ignored when present in a proxy \ref OOLUA_TAGS "tag block".
+	\see OOLUA_USE_SHARED_PTR
+	\see OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+
+	@}
 */
+
 namespace OOLUA
 {
 
@@ -128,7 +159,8 @@ namespace OOLUA
 	struct No_public_constructors{};
 	struct No_public_destructor{};
 	struct Register_class_enums{};
-    struct Instanced_Metatable{};
+	struct Shared{};
+	struct No_shared{};
 } // namespace OOLUA
 /**@}*/
 #endif //OOLUA_PROXY_TAGS_H_

@@ -31,8 +31,8 @@ PauseMenu::PauseMenu(void):
     //entity->getTransform().setSize(300, 800, 0);
     entity->getTransform().setPos(400, 400);
     Renderable* renderable = entity->addRenderable();
-    SpriteAttrib* attrib = new SpriteAttrib;
-    attrib->setColor(255, 0, 0, 200);
+    auto attrib = std::make_shared<SpriteAttrib>();
+    attrib->setColor(0, 0, 0, 100);
     renderable->setSpriteAttrib(attrib);
     setEntity(entity);
 }
@@ -64,12 +64,14 @@ void PauseMenu::onOptionsPaneSelect(elysian::MenuSelection* selection) {
 }
 
 void PauseMenu::onOptionsPaneCancel(void) {
+    setFocus(false);
     //CLOSE/EXIT/DEACTIVATE!!!! SAME THING AS PUSHING PAUSE!!!
 }
 
 void PauseMenu::controllerEvent(const Controller& cont) {
     if(cont.isTapped(GY_CONTROLLER_BUT_START)) {
-         //quit
+        // setFocus(false);
+         return;
     }
     EntityWidget::controllerEvent(cont);
 }
@@ -80,6 +82,11 @@ void PauseMenu::keyboardEvent(const Keyboard& keybd) {
         //quit
     }
 
+}
+
+void PauseMenu::onMainFrameCancel(void) {
+    _layout->getWidget(FRAME_RIGHT)->setFocus(false);
+    _optionsPane->setFocus();
 }
 
 
@@ -98,16 +105,19 @@ OptionsMenu::OptionsMenu(void) {
 }
 
 void OptionsMenu::onSelectionChange(elysian::MenuSelection* sel) {
+    static_cast<PauseMenu*>(getParentWidget())->onOptionsPaneSelect(sel);
+}
 
-
+void OptionsMenu::onCancel(void) {
+    static_cast<PauseMenu*>(getParentWidget())->onOptionsPaneCancel();
 }
 
 void OptionsMenu::onCurrentChange(Widget* prev, Widget* next) {
     auto* prevLabel = static_cast<LabelWidget*>(prev);
     auto* nextLabel = static_cast<LabelWidget*>(next);
+
     if(prevLabel) prevLabel->setColor(Color4::white);
     if(nextLabel) nextLabel->setColor(Color4::aqua);
-
 }
 
 PartyMenu::PartyMenu(void) {
@@ -126,24 +136,72 @@ void PartyMenu::update(void) {
     MenuWidget::update();
 }
 
+void PartyMenu::onCurrentChange(Widget* prev, Widget* next) {
+    auto* prevPlayablePane = static_cast<PlayablePane*>(prev);
+    auto* nextPlayablePane = static_cast<PlayablePane*>(next);
+
+    for(unsigned i = 0; i < getLayout()->getWidgetCount(); ++i) {
+        auto* widget = getLayout()->getWidget(i);
+        auto* entity = static_cast<EntityWidget*>(widget)->getEntity();
+        auto sprAttrib = entity->getRenderable()->getSpriteAttrib();
+        char alpha = 0;
+
+        if(hasFocus()) {
+            if(widget == next) {
+                if(_selectState == SELECT_FIRST) alpha = 100;
+                else if(_selectState == SELECT_SECOND) alpha = 200;
+            } else if(_selectState == SELECT_SECOND && i == _firstPartyIndex) {
+                alpha = 100;
+            }
+
+        }
+#if 0
+            if(_selectState == SELECT_FIRST) {
+               if(next == widget) alpha += 100;
+            } else {
+                if(i == _firstPartyIndex && _selectState != SELECT_BULLSHIT) {
+                    alpha += 100;
+                }
+                if(widget == next && _selectState == SELECT_SECOND) {
+                    alpha += 100;
+                }
+            }
+        }
+#endif
+
+        sprAttrib->setAlpha(alpha);
+    }
+
+}
+
 void PartyMenu::onSelectionChange(MenuSelection *next) {
     unsigned secondPartyIndex = 0;
     if(!next) return;
 
     switch(_selectState) {
+    case SELECT_BULLSHIT:
+        _selectState = SELECT_FIRST;
+        setCurrentIndex(0);
+         onCurrentChange(nullptr, getCurrentWidget());
+        break;
     case SELECT_FIRST: //select a party member!
         _firstPartyIndex = next->getEntry(0)->second.index;
         //Do something to render this fucker differently!!!!11
         _selectState = SELECT_SECOND;
+        onCurrentChange(nullptr, getCurrentWidget());
         break;
     case SELECT_SECOND:
         secondPartyIndex = next->getEntry(0)->second.index;
         if(secondPartyIndex == _firstPartyIndex) {
+            dbgprintf("Just tried to do shit to same shit [%d]", secondPartyIndex);
             //activate/deactivate character!!!
         } else {
+            dbgprintf("Just tried to swap slots [%d, %d]", _firstPartyIndex, secondPartyIndex);
             //swap character positions
         }
         _selectState = SELECT_FIRST;
+        _firstPartyIndex = secondPartyIndex;
+        onCurrentChange(nullptr, getCurrentWidget());
         break;
     default: GY_ASSERT(false);
 
@@ -156,9 +214,13 @@ void PartyMenu::onCancel(void) {
     case SELECT_SECOND: //select a party member!
         //stop rendering firstPartyIndex as selection!
         _selectState = SELECT_FIRST;
+        onCurrentChange(nullptr, getCurrentWidget());
         break;
     case SELECT_FIRST:
-        //exit();
+        _selectState = SELECT_BULLSHIT;
+        setFocus(false);
+        onCurrentChange(nullptr, nullptr);
+        static_cast<PauseMenu*>(getParentWidget())->onMainFrameCancel();
         break;
     default: GY_ASSERT(false);
     }

@@ -14,7 +14,7 @@ bool TkCombat::validate(QString& str) const {
         }
     };
 
-    cAssert(_attrib, "LOG_ERROR: Combat component has no attrib field.");
+    cAssert(_attrib.get(), "LOG_ERROR: Combat component has no attrib field.");
     return success;
 }
 
@@ -23,9 +23,9 @@ QMenu* TkCombat::createContextMenu(void) {
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new elysian::CombatAttrib : nullptr);
+            setAttrib(checked? std::make_shared<elysian::CombatAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 

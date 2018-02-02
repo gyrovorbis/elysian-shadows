@@ -36,19 +36,26 @@ bool TkSkeleton::validate(QString &str) const {
         }
     };
 
-    cAssert(_attrib, "LOG_ERROR: Skeleton component has no attrib field.");
+    cAssert(_attrib.get(), "LOG_ERROR: Skeleton component has no attrib field.");
     return success;
 }
+void TkSkeleton::setAttrib(std::shared_ptr<SkeletonAttrib> attrib) {
+    _attrib->disconnect(this);
 
+    connect(attrib.get(), SIGNAL(atlasChanged()), this, SLOT(onAtlasChanged()));
+    connect(attrib.get(), SIGNAL(jsonChanged()), this, SLOT(onJsonChanged()));
+
+    elysian::SkeletonBase::setAttrib(attrib);
+}
 
 QMenu* TkSkeleton::createContextMenu(void) {
     MenuStack menuStack("Skeleton");
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new SkeletonAttrib : nullptr);
+            setAttrib(checked? std::make_shared<SkeletonAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 
@@ -460,4 +467,9 @@ void TkSkeleton::printSlotData(void) const {
     } else {
         warnprintf("Skeleton component has no attributes!");
     }
+}
+
+TkSkeleton::~TkSkeleton(void) {
+    dbgprintf("Deleting SkeletonAttrib: %d references remaining!", _attrib.use_count()-1);
+
 }

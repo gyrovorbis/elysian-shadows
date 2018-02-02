@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file class_from_stack.cpp
-	\brief Implement none inline index_is_userdata functions and error generator
+	\brief Implement the non inline index_is_userdata functions and error generator
 */
 #include "class_from_stack.h"
 #include "lua_includes.h"
@@ -73,7 +73,7 @@ namespace OOLUA
 			luaL_error(vm, "%s \"%s\" %s", "Tried to pull a none constant"
 						, pulling_class_type
 						, "pointer from a const pointer");
-		}
+		} // LCOV_EXCL_LINE
 
 	} // namespace INTERNAL //NOLINT
 } // namespace OOLUA

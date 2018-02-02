@@ -76,24 +76,51 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
 
     gyVidResolution(&width, &height);
 
-	int boundTop = (_topBoundary == -1)? -16 : _topBoundary*32-16;
+    int boundTop = (_topBoundary == -1)? -16 : _topBoundary*32-16;
     int boundBottom = (_bottomBoundary == -1)? getCurrentArea()->height*32-16 : _bottomBoundary*32-16;
-	int boundLeft = (_leftBoundary == -1)? -16 : _leftBoundary*32-16;
+    int boundLeft = (_leftBoundary == -1)? -16 : _leftBoundary*32-16;
     int boundRight = (_rightBoundary == -1)? getCurrentArea()->width*32-16 : _rightBoundary*32-16;
+
+    int boundHeight = boundBottom - boundTop;
+    int boundWidth  = boundRight - boundLeft;
+   // if(boundHeight < height) {
+        float minScaleY = (float)height/(float)boundHeight;
+   // }
+   // if(boundWidth < width) {
+        float minScaleX = (float)width/(float)boundWidth;
+    //}
+
+    state->minScale = max(minScaleY, minScaleX);
+   // dbgprintf("MinScale - %f", state->minScale);
+
 
     float maxHeight = boundBottom	- boundTop;
     float maxWidth	= boundRight	- boundLeft;
+
+    if(_boundByMap) {
+        if(state->baseScale < state->minScale) state->baseScale = state->minScale;
+        if(state->getScaleX() < state->minScale || state->getScaleY() < state->minScale) {
+            state->setScaleX(state->minScale);
+            state->setScaleY(state->minScale);
+
+        }
+    }
 
     boundTop    += (float)height/_curState->_scale.y*0.5f;
     boundBottom -= (float)height/_curState->_scale.y*0.5f;
     boundLeft   += (float)width/_curState->_scale.x*0.5f;
     boundRight  -= (float)width/_curState->_scale.x*0.5f;
 
+
     if(_boundByMap) {
-        if(state->_pos.y < boundTop)      _curState->_pos.y = boundTop;
-        if(state->_pos.y > boundBottom)   _curState->_pos.y = boundBottom;
-        if(state->_pos.x < boundLeft)     _curState->_pos.x = boundLeft;
-        if(state->_pos.x > boundRight)    _curState->_pos.x = boundRight;
+        if(state->_pos.y < boundTop)
+            _curState->_pos.y = boundTop;
+        if(state->_pos.y > boundBottom)
+            _curState->_pos.y = boundBottom;
+        if(state->_pos.x < boundLeft)
+            _curState->_pos.x = boundLeft;
+        if(state->_pos.x > boundRight)
+            _curState->_pos.x = boundRight;
     }
 
     if(!_dynamic) {
@@ -153,7 +180,8 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
         const float scaleX = (baseWidth)/(newXDist*2.0f);
         const float scaleY = (baseHeight)/(newYDist*2.0f);
 
-        const float nextScale = (scaleX < scaleY)? scaleX : scaleY;
+        float nextScale = (scaleX < scaleY)? scaleX : scaleY;
+        if(nextScale < state->minScale) nextScale = state->minScale;
 
         //float boundWidth = ;
         //float boundHeight = ;
@@ -162,6 +190,7 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
 
         //Check if we need to bother updating
         if(fabs(nextScale - interp.getEndKeyFrame()._scale.x) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+           // dbgprintf("ScALING!!!");
             //Debug::printf(Debug::LOG_VERBOSE, "SCALE - %f", nextScale);
             //Debug::printf(Debug::LOG_VERBOSE, "<%f, %f>", scaleX, scaleY);
 
@@ -373,7 +402,6 @@ void CameraSystemBase::processInput(const Keyboard* input) {
 
 void CameraSystemBase::update(void) {
     const float deltaTime = getTimerSys()->getDeltaTime();
-    updateSubProcesses(deltaTime);
 
     //Update camera resolution
     getGuiSys()->getResolution(_scrWidth, _scrHeight);
@@ -472,7 +500,7 @@ void CameraSystemBase::update(void) {
 
        // }
     }
-
+    updateSubProcesses(deltaTime);
     //Update camera boundaries
    _curState->updateViewVolumeBoundingRegion();
    _curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);

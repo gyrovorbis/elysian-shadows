@@ -150,6 +150,7 @@ void Engine::update(void) {
             updateRigidBodyMonitor.start();
             _rigidBodySystem->applyForces();
             _rigidBodySystem->integrate();
+            //_mapSystem->update();
             updateRigidBodyMonitor.stop();
 
             updateCollisionMonitor.start();
@@ -224,8 +225,8 @@ void Engine::update(void) {
             _mapSystem->update();
             _guiSystem->update();
         break;
-
-
+        case System::ENGINE_MODAL_MENU:
+            _guiSystem->update();
             break;
         default:
             break;

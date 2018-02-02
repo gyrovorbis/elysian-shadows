@@ -118,6 +118,7 @@ HEADERS += \
     ../../include/kinetic/gyro_kinetic_contact.h \
     ../../include/kinetic/gyro_kinetic_collision.h \
     ../../include/kinetic/gyro_kinetic_collider.h \
+    ../../include/physics/gyro_physics_simulation.h \
     ../../source/common/gyro_asset_bank.h \
     ../../include/glal/gyro_audio_glal.inl \
     ../../include/glal/gyro_texture_glal.inl \

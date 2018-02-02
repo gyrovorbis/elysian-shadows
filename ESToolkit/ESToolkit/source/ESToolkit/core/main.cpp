@@ -29,6 +29,7 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <QPushButton>
+#include <memory>
 #include <crtp/elysian_lua_variant.hpp>
 
 #ifdef ESTK_UNIT_TESTS
@@ -93,6 +94,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     QString level;
     QString area;
 
+   //
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QSurfaceFormat fmt;

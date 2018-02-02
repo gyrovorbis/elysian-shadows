@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ THE SOFTWARE.
 	using the DSL.
 */
 #ifndef OOLUA_DSL_EXPORT_H_
-#	define OOLUA_DS_EXPORT_H_
+#	define OOLUA_DSL_EXPORT_H_
 
 #	include "proxy_function_exports.h"
 #	include "oolua_stack.h"

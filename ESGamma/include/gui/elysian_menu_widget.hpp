@@ -88,6 +88,7 @@ namespace elysian {
         Widget*         getCurrentWidget(void) const;
         void            setCurrentWidget(Widget* selection);
         void            setCurrentIndex(int index);
+        int             getCurrentIndex(void) const;
 
         auto            getSelection(void) -> const MenuSelection*;
         auto            getSelection(void) const -> const MenuSelection*;

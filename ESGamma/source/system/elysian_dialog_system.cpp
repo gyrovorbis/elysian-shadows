@@ -360,7 +360,8 @@ void DialogSystem::_nextScreen(void) {
 }
 
 void DialogSystem::_checkModal(void) const {
-	setEngineState((_curScreen.screen->getScreenType() == DialogScreen::SCREEN_PROMPT)? System::ENGINE_MODAL_CONVERSATION : System::ENGINE_CONVERSATION);
+    //setEngineState((_curScreen.screen->getScreenType() == DialogScreen::SCREEN_PROMPT)? System::ENGINE_MODAL_CONVERSATION : System::ENGINE_CONVERSATION);
+    setEngineState(System::ENGINE_MODAL_CONVERSATION);
 }
 
 void DialogSystem::_facePlayer(void) const {
@@ -419,7 +420,7 @@ void DialogSystem::_splitText(void) {
 	for(; lineCount < ELYSIAN_DIALOG_SYSTEM_MAX_LINES; ++lineCount) _textLines[lineCount][0] = 0;
 }
 
-void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor) {
+void DialogSystem::startDialog(std::shared_ptr<Dialog> dialog, EventMonitor*const monitor) {
 	closeDialog();
 
     if(dialog->getScreenCount() == 0) {
@@ -521,7 +522,7 @@ void ConversationSystem::Close(void) {
 
 #endif
 
-Dialog *DialogSystem::getDialog(void) const {
+std::shared_ptr<Dialog> DialogSystem::getDialog(void) const {
 	return _curDialog;
 }
 

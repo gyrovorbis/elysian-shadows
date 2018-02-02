@@ -25,7 +25,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -66,6 +66,10 @@ THE SOFTWARE.
 #include "char_arrays.h"
 #include "lvd_types.h"
 
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
+
 
 namespace OOLUA
 {
@@ -73,10 +77,9 @@ namespace OOLUA
 		\brief Registers the class type T and it's bases with an instance of lua_State
 		\tparam T Class type to register with OOLua
 		\details Registers a class type T for which there is a Proxy_class and also
-		registers it's bases, if it has any, with OOLua. It preforms a check to see
-		if the type has already been registered with the instance.
-		This is safe to be called multiple times with a Lua universe and safe to be
-		called with a Proxy_class which has no base classes.
+		registers it's bases, if it has any. The function preforms a check to see
+		if the type has already been registered with the instance and is safe to be
+		called multiple times with a Lua universe.
 		\param[in] vm Universe to register the class with.
 	*/
 	template<typename T>void register_class(lua_State * vm);
@@ -89,7 +92,7 @@ namespace OOLUA
 		\tparam V Value
 		\param[in] vm lua_State
 		\param[in] key Key to register in type T,
-		\param[in] value The data to assocaite with key in the class type T.
+		\param[in] value The data to associate with key in the class type T.
 	*/
 	template<typename T, typename K, typename V>
 	void register_class_static(lua_State * const vm, K const& key, V const& value);
@@ -143,13 +146,111 @@ namespace OOLUA
 	{
 
 		template<typename T>
+		inline void shared_delete(T* p)
+		{
+			p->~T();
+		}
+
+		//userdata is at index 1
+		//weak table is at index 2
+		inline void gc_clean_table(lua_State* vm, void* ptr)
+		{
+			lua_pushlightuserdata(vm, ptr);
+			lua_rawget(vm, 2);
+			if (lua_type(vm, 3) == LUA_TTABLE)
+			{
+				lua_pushnil(vm);
+				if (lua_next(vm, 3) == 0)
+				{
+					//then table is empty and needs cleaning up
+					lua_pushlightuserdata(vm, ptr);
+					lua_pushnil(vm);
+					lua_rawset(vm, 2);
+
+					lua_pushnil(vm);
+					lua_rawset(vm, 2);
+				}
+			}
+			lua_settop(vm, 2);
+		}
+
+		template<typename T, typename TL, int Index, typename Base>
+		struct gc_table_cleaner;
+
+		//usersdata is at index 1
+		//weak table is at index 2
+		template<typename T, typename TL, int Index, typename Base>
+		struct gc_table_cleaner
+		{
+			static void clean(lua_State* vm, T* ptr)
+			{
+				//is there is an offset
+				if (static_cast<void*>(ptr) != static_cast<void*>(static_cast<Base*>(ptr)))
+				{
+					//there is a separate caching of the base pointer
+					gc_clean_table(vm, static_cast<Base*>(ptr));
+				}
+				//clean next base
+				gc_table_cleaner<T
+								, TL
+								, Index + 1
+								, typename TYPELIST::At_default<TL, Index + 1, TYPE::Null_type>::Result
+								>::clean(vm, ptr);
+				//move to the bases of base
+				gc_table_cleaner<Base
+								, typename Proxy_class<Base>::Bases
+								, 0
+								, typename TYPELIST::At_default<typename Proxy_class<Base>::Bases, 0, TYPE::Null_type>::Result
+								>::clean(vm, ptr);
+			}
+		};
+
+		template<typename T, typename Bases, int Index>
+		struct gc_table_cleaner<T, Bases, Index, TYPE::Null_type>
+		{
+			static void clean(lua_State* /*vm*/, T* /*ptr*/){}
+		};
+
+		template<typename T>
 		struct garbage_collect
 		{
 			static int gc(lua_State * vm)
 			{
 				Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(vm, 1));
-				if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
+				cleanup_collision_tables(vm, ud);
+#if OOLUA_USE_SHARED_PTR == 1
+				if( ud->flags & SHARED_FLAG)
+					shared_delete(reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object));
+				else
+#endif
+					if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
 				return 0;
+			}
+			static int gc_no_destructor(lua_State * vm)
+			{
+				cleanup_collision_tables(vm, static_cast<Lua_ud*>(lua_touserdata(vm, 1)));
+				return 0;
+			}
+			static void cleanup_collision_tables(lua_State * vm, Lua_ud *ud)
+			{
+				if( ud->flags & COLLISION_FLAG )
+				{
+					Weak_table::getWeakTable(vm);
+#if OOLUA_USE_SHARED_PTR == 1
+					//let's not depend on how shared_ptr is implemented
+					void* void_class_ptr = ud->flags & SHARED_FLAG ?
+								static_cast<OOLUA_SHARED_TYPE<T>* >(ud->void_class_ptr)->get()
+								: ud->void_class_ptr;
+#else
+					void* void_class_ptr = ud->void_class_ptr;
+#endif
+					gc_clean_table(vm, void_class_ptr);
+					gc_table_cleaner<T
+								, typename Proxy_class<T>::Bases
+								, 0
+								, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type>::Result
+								>::clean(vm, static_cast<T*>(void_class_ptr));
+				}
 			}
 		};
 
@@ -171,6 +272,7 @@ namespace OOLUA
 		template<typename TL, int Index, typename T>
 		struct info_getter;
 
+		// LCOV_EXCL_START
 		template<typename T>
 		inline int top(lua_State* vm)
 		{
@@ -178,6 +280,7 @@ namespace OOLUA
 			lua_pushstring(vm, Proxy_class<T>::class_name);
 			return 1;
 		}
+		// LCOV_EXCL_STOP
 
 		template<typename T, int HasNoPublicDestructor>
 		struct set_delete_function
@@ -191,7 +294,10 @@ namespace OOLUA
 		template<typename T>
 		struct set_delete_function<T, 1>
 		{
-			static void set(lua_State* /*vm*/, int /*methods*/){}//no op
+			static void set(lua_State* vm, int methods)
+			{
+				set_function_in_table(vm, "__gc", &INTERNAL::garbage_collect<T>::gc_no_destructor, methods);
+			}
 		};
 
 
@@ -218,6 +324,7 @@ namespace OOLUA
 			}
 		};
 
+		// LCOV_EXCL_START
 		template<typename T>
 		inline int middle(lua_State* vm)
 		{
@@ -228,6 +335,7 @@ namespace OOLUA
 						>::add(vm);
 				return TYPELIST::Length<typename Proxy_class<T>::Bases>::value + 1;
 		}
+		// LCOV_EXCL_STOP
 
 		template<typename T, typename Bases, int Index>
 		struct R_Base_looker<T, Bases, Index, TYPE::Null_type>
@@ -247,6 +355,7 @@ namespace OOLUA
 									, TYPE::Null_type>::Result >::findInBase(vm);
 		}
 
+		// LCOV_EXCL_START
 		template<typename T>
 		static int bottom(lua_State* vm)
 		{
@@ -257,6 +366,7 @@ namespace OOLUA
 						>::add(vm);
 			return TYPELIST::Length<typename Proxy_class<T>::AllBases>::value + 1;
 		}
+		// LCOV_EXCL_STOP
 
 		template<typename T>
 		int search_in_base_classes_yet_prevent_new(lua_State* vm)
@@ -392,6 +502,7 @@ namespace OOLUA
 			enum { value = ctor_block_is_same<T, class_or_base_has_ctor_block<T>::value >::value  };
 		};
 
+		// LCOV_EXCL_START
 		template<typename TL, int Index, typename T>
 		struct info_getter
 		{
@@ -408,9 +519,10 @@ namespace OOLUA
 		template<typename TL, int Index>
 		struct info_getter<TL, Index, TYPE::Null_type>
 		{
-			static void add(lua_State* /*vm*/)
+			static void add(lua_State* /*vm*/) //NOLINT(readability/casting)
 			{}
 		};
+		// LCOV_EXCL_STOP
 
 		template<typename T, bool IsAbstractOrNoConstructors>
 		struct set_create_function

@@ -17,7 +17,7 @@ OOLUA_PROXY(DialogSystem)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, startDialog, Dialog*, cpp_in_p<EventMonitor*>)
+    OOLUA_MEM_FUNC(void, startDialog, std::shared_ptr<Dialog>, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 

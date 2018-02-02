@@ -196,4 +196,10 @@ void Widget::setMinSize(Vector2 size) {
     setSizePolicy(MINIMUM, MINIMUM);
 }
 
+Widget* Widget::getParentWidget(void) const {
+    const Layout* layout = getParentLayout();
+    if(layout) return layout->getParent();
+    else return nullptr;
+}
+
 }

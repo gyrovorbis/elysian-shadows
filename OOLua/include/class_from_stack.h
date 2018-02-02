@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@ THE SOFTWARE.
 /** \cond INTERNAL*/
 /**
 	@file class_from_stack.h
-	\brief Retrieves a typed pointer from a potential userdata on the stack
-	\details Preforms error config dependant checks in a attempt to return a
+	\brief Retrieves a typed pointer from a potential userdata on the stack.
+	\details Preforms configuration dependent checks in a attempt to return a
 	typed pointer from a userdata which resides on the stack.
 */
 /** \endcond */
@@ -38,6 +38,7 @@ THE SOFTWARE.
 #	include "proxy_class.h"
 #	include "proxy_userdata.h"
 #	include "oolua_config.h"
+#	include "lvd_type_traits.h"
 
 #	include "proxy_base_checker.h"
 
@@ -56,7 +57,7 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 		/**
-			\brief Uses a config dependant check to verify "index" is a library created userdata
+			\brief Uses a config dependent check to verify "index" is a library created userdata
 			\tparam T Requested type wanted from the stack
 			\param[in] vm Lua virtual machine on which to operate
 			\param[in] index Stack index at which the potential userdata is located
@@ -66,7 +67,7 @@ namespace OOLUA
 		T* check_index(lua_State * vm, int index);
 
 		/**
-			\brief Uses config dependant checks to verify "index" is a library created userdata
+			\brief Uses config dependent checks to verify "index" is a library created userdata
 			\details Preforms an extra check that the stack type is not constant, throws a Lua
 			error if the type is.
 			\tparam T Requested type wanted from the stack
@@ -78,7 +79,7 @@ namespace OOLUA
 		T* check_index_no_const(lua_State * vm, int index);
 
 		/**
-			\brief Uses config dependant checks to verify "index" is a library created userdata
+			\brief Uses config dependent checks to verify "index" is a library created userdata
 			\param[in] vm Lua virtual machine on which to operate
 			\param[in] index Stack index to check
 			\param[out] ud If verification is successful then it points to the userdata on the stack
@@ -137,7 +138,11 @@ namespace OOLUA
 		template<typename T>
 		T* valid_base_ptr_or_null(Lua_ud const* stack_ud)
 		{
+#if OOLUA_USE_SHARED_PTR == 1
+			Lua_ud requested_ud = {{0}, 0, &register_class_imp<T>, 0, 0};
+#else
 			Lua_ud requested_ud = {0, 0, &register_class_imp<T>, 0};
+#endif
 			stack_ud->base_checker(&requested_ud, stack_ud);
 			return static_cast<T* >(requested_ud.void_class_ptr);
 		}
@@ -153,6 +158,118 @@ namespace OOLUA
 			}
 			return static_cast<T* >(ud->void_class_ptr);
 		}
+#if OOLUA_USE_SHARED_PTR == 1
+
+		namespace
+		{
+			template<typename T>
+			struct pointer_type
+			{
+				typedef T* ptr;
+				typedef T raw;
+				enum {ud_flag = 0};
+			};
+
+			template<typename T>
+			struct pointer_type<OOLUA_SHARED_TYPE<T> >
+			{
+				typedef OOLUA_SHARED_TYPE<T> ptr;
+				typedef T raw;
+				enum {ud_flag = SHARED_FLAG};
+				typedef char never_call_with_const_type_always_raw_type[LVD::is_const<T>::value ? -1 : 1];
+			};
+
+			template<typename T>
+			inline T** ud_member_cast(Lua_ud* ud, T*&)
+			{
+				return reinterpret_cast<T**>(&ud->void_class_ptr);
+			}
+
+			template<typename T, template <typename> class Shared_pointer_class>
+			inline Shared_pointer_class<T>* ud_member_cast(Lua_ud* ud, Shared_pointer_class<T>&)
+			{
+				return reinterpret_cast<Shared_pointer_class<T>*>(ud->shared_object);
+			}
+
+			template<typename T>
+			inline T* ptr_null(T**) // NOLINT(readability/casting)
+			{
+				return NULL;
+			}
+
+			template<typename T, template <typename> class Shared_pointer_class>
+			inline Shared_pointer_class<T> ptr_null(Shared_pointer_class<T>*)
+			{
+				return Shared_pointer_class<T>();
+			}
+			template<typename T>
+			inline void destroy_ud_ptr(T** /*ud_ptr*/) // NOLINT(readability/casting)
+            {}
+
+			template<typename T, template <typename> class Shared_pointer_class>
+			inline void destroy_ud_ptr(Shared_pointer_class<T>* ud_ptr)
+			{
+                typedef Shared_pointer_class<T> Shared;
+                ud_ptr->~Shared();
+			}
+		} // namespace //NOLINT(readability/namespace)
+
+		template<typename T>
+		struct stack_checker
+		{
+			typedef pointer_type<T> type;
+			typedef typename type::ptr ptr_type;
+			typedef typename type::raw raw_type;
+
+			static ptr_type& valid_base_ptr_or_null(Lua_ud const* stack_ud, ptr_type& ptr )
+			{
+#if OOLUA_USE_SHARED_PTR == 1
+				Lua_ud requested_ud = {{0}, 0, &register_class_imp<raw_type>, 0, type::ud_flag};
+#else
+				Lua_ud requested_ud = {0, 0, &register_class_imp<raw_type>, 0};
+#endif
+				stack_ud->base_checker(&requested_ud, stack_ud);
+
+				//this may not be a void class pointer but if found it will have some
+				//value other than NULL. C99 TR3 allows this type casting
+				if (requested_ud.void_class_ptr)
+				{
+					ptr_type* result = ud_member_cast(&requested_ud, ptr);
+					ptr = *result;
+					destroy_ud_ptr(result);
+				}
+				return ptr;
+			}
+			static ptr_type check_index(lua_State * vm, int index)
+			{
+				Lua_ud * ud;
+				ptr_type ptr(ptr_null(static_cast<ptr_type*>(NULL)));
+				if( !index_is_userdata(vm, index, ud))return ptr;
+				if( !ud_is_type<raw_type>(ud))
+				{
+					return valid_base_ptr_or_null(ud, ptr);
+				}
+				return *ud_member_cast(ud, ptr);
+			}
+			static ptr_type check_index_no_const(lua_State * vm, int index)
+			{
+				Lua_ud * ud;
+				ptr_type ptr(ptr_null(static_cast<ptr_type*>(NULL)));
+				if( !index_is_userdata(vm, index, ud))return ptr;
+				if( userdata_is_constant(ud) )
+				{
+					report_error_userdata_is_constant(vm, OOLUA::Proxy_class<raw_type>::class_name);
+					//does not return
+				}
+				if( !ud_is_type<raw_type>(ud))
+				{
+					return valid_base_ptr_or_null(ud, ptr);
+				}
+				return *ud_member_cast(ud, ptr);
+			}
+		};
+
+#endif
 
 		template<typename T>
 		T* check_index_no_const(lua_State * vm, int index)

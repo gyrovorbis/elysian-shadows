@@ -91,6 +91,7 @@ namespace elysian {
         void            setParentLayout(Layout* layout);
         Widget*         findChildWidget(const char* name);
         Widget*         getChildWidget(unsigned index);
+        Widget*         getParentWidget(void) const;
 
         bool            isEnabled(void) const;
         void            setEnabled(bool enabled=true);
@@ -158,6 +159,7 @@ namespace elysian {
 
     //========== INLINEZ =============
     inline Layout* Widget::getLayout(void) const { return _layout; }
+    inline Layout* Widget::getParentLayout(void) const { return _parentLayout; }
     inline Vector2 Widget::getPosition(void) const { return Vector2(getPosition(X), getPosition(Y)); }
     inline void Widget::setPosition(Vector2 pos) { setPosition(X, pos.x); setPosition(Y, pos.y); }
     inline Vector2 Widget::getSize(void) const { return Vector2(getSize(X), getSize(Y)); }

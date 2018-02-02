@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_DIALOG_SYSTEM_HPP
 #define ELYSIAN_DIALOG_SYSTEM_HPP
 
-#include "elysian_system.hpp"
+#include <system/elysian_system.hpp>
 #include <crtp/elysian_dialog.hpp>
 #include <elysian_quad_sprite.hpp>
 #include <gyro_wav_api.h>
@@ -49,7 +49,7 @@ namespace elysian {
 		// ==== USER STATE =====
         int                         _currentOption          = 0;
 
-        Dialog*                     _curDialog              = nullptr;
+        std::shared_ptr<Dialog>     _curDialog;
 		union Screen {
             DialogScreen*           screen                  = nullptr;
             //DialogText*           text;
@@ -98,13 +98,13 @@ namespace elysian {
         void                        openTextScreen(DialogText& screen);
         void                        openPromptScreen(DialogPrompt& screen);
 
-        void                        startDialog(Dialog*const dialog, EventMonitor*const monitor=nullptr);
+        void                        startDialog(std::shared_ptr<Dialog> dialog, EventMonitor*const monitor=nullptr);
         void                        pauseDialog(void);   //stops, but keeps state information to resume later
         void                        closeDialog(void);
 
 	   // unsigned getActiveScreenCount();
         void                        setEnabled(const bool val);
-        Dialog*                     getDialog(void) const;
+        std::shared_ptr<Dialog>     getDialog(void) const;
         bool                        isOpen(void) const;
 
 	};

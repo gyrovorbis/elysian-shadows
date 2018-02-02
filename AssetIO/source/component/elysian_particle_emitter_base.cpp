@@ -66,7 +66,7 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
         part->clearKinetic();
 
         part->resting = false;
-        part->attrib = _attrib;
+        part->attrib = _attrib.get();
         part->flat = (rand()%2 == 1);
         part->position.x = pos.x + ((rand() % 6) - 3);
         part->position.y = pos.y + ((rand() % 6) - 3);
@@ -312,18 +312,6 @@ void ParticleEmitterBase::emitFromEntity(const GYVector3 &pos, const float angle
     emitFromPoint(((GYVectorPunned*)&worldPos)->vec3, angle, intensity);
 
 }
-
-
-ParticleEmitterAttrib* ParticleEmitterInternals::getAttrib(void) const {
-    return _attrib;
-}
-
-void ParticleEmitterInternals::setAttrib(ParticleEmitterAttrib * const attrib) {
-    //delete _attrib;
-  _attrib = attrib;
-}
-
-ParticleEmitterInternals::~ParticleEmitterInternals(void) {}
 
 
 

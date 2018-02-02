@@ -3,6 +3,7 @@
 
 #include <system/elysian_system.hpp>
 #include <gyro_matrix_api.h>
+#include <memory>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(LightSource)
@@ -13,39 +14,39 @@ namespace elysian {
 
 	class DaySystem: public System {
 	private:
-		GYVector3		_axis			= GYVector3 { 0.0f, 1.0f, -1.0f };
-        GYVector4		_baseDir		= GYVector4 { -1.0f, 0.0f, 0.0f, 1.0f };
-//		float			_angle			= 0.0f;
-		float			_time			= 0.0f;
+        GYVector3                       _axis			= GYVector3 { 0.0f, 1.0f, -1.0f };
+        GYVector4                       _baseDir		= GYVector4 { -1.0f, 0.0f, 0.0f, 1.0f };
+//		float                           _angle			= 0.0f;
+        float                           _time			= 0.0f;
 
 		//time configuration
-//		float			_dayDutyCycle	= 0.65f;
-		float			_hoursPerDay	= 24.0f;
+//		float                           _dayDutyCycle	= 0.65f;
+        float                           _hoursPerDay	= 24.0f;
 
 		//cached internal shit
-		float			_secsPerHour	= 60.0f*60.0f;
-		float			_secsPerDay		= _secsPerHour*_hoursPerDay;
-		float			_curSecs		= 0.0f;
+        float                           _secsPerHour	= 60.0f*60.0f;
+        float                           _secsPerDay		= _secsPerHour*_hoursPerDay;
+        float                           _curSecs		= 0.0f;
 
 		//running game time
-		unsigned		_days			= 0;
-		unsigned		_hours			= 0;
-		unsigned		_minutes		= 0;
+        unsigned                        _days			= 0;
+        unsigned                        _hours			= 0;
+        unsigned                        _minutes		= 0;
 
-		float			_timeSpeed		= 60.0f;
+        float                           _timeSpeed		= 60.0f;
 
-		Entity*			_sunEntity		= nullptr;
-		LightSource*	_sunLightSrc	= nullptr;
-		LightAttrib*	_sunLightAttrib	= nullptr;
-//		bool			_sunEnabled		= true;
-		bool			_sunActive		= false;
+        Entity*                         _sunEntity		= nullptr;
+        LightSource*                    _sunLightSrc	= nullptr;
+        std::shared_ptr<LightAttrib>	_sunLightAttrib	= nullptr;
+//		bool                            _sunEnabled		= true;
+        bool                            _sunActive		= false;
 
 
 	public:
 						DaySystem(void);
 						~DaySystem(void);
 
-		LightAttrib*	getSunLightAttrib(void) const;
+        auto            getSunLightAttrib(void) const -> std::shared_ptr<LightAttrib>;
         //void			setSunEnabled(const bool val);
 		void			setTimeDilation(const float multiplier);
         void            setTimeOfDay(const float time);
@@ -68,7 +69,7 @@ namespace elysian {
 
 	//===== INLINEZ =====
 
-	inline LightAttrib* DaySystem::getSunLightAttrib(void) const {
+    inline std::shared_ptr<LightAttrib> DaySystem::getSunLightAttrib(void) const {
 		return _sunLightAttrib;
 	}
 

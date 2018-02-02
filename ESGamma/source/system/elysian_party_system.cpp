@@ -25,9 +25,11 @@ PartySystem::PartySystem(void) {
 }
 
 PartySystem::~PartySystem(void) {
-    for(auto&& entity : _playables) {
+#if 1
+    for(auto* entity : _playables) {
         delete entity;
     }
+#endif
 }
 
 void PartySystem::update(void) {//VOIDICATE
@@ -241,6 +243,15 @@ Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
   return _characterParty[slot];
 }
 
+void PartySystem::_resetPartyPathPoints(void) {
+    auto* leader = getPartyLeader();
+    if(leader) {
+        for(int i = 0; i < _partyPathPoint.size(); ++i) {
+            _partyPathPoint[i] = GYVector2 { leader->getTransform().getPosX(), leader->getTransform().getPosY() };
+        }
+    }
+}
+
 void PartySystem::_resizePartyPathPoints(void) {
   int pathPointAmount = 0;
   //check if even necessary
@@ -334,10 +345,22 @@ void PartySystem::removePartyFromArea(void) {
 
 void PartySystem::addPartyToArea(void) {
     if(!_partyActive) {
+        auto* leader = getPartyLeader();
+
+        auto addToArea = [&](Entity* partyMember) {
+            if(partyMember != leader) {
+                partyMember->getTransform().setPos(leader->getTransform().getPos());
+            }
+            _curArea->addEntity(partyMember);
+        };
+
         for(unsigned int i = 0; i < _playableParty.size(); ++i)
-            _curArea->addEntity(_playableParty[i]);
+            addToArea(_playableParty[i]);
         for(unsigned int i = 0; i < _characterParty.size(); ++i)
-            _curArea->addEntity(_characterParty[i]);
+            addToArea(_characterParty[i]);
+
+        _resetPartyPathPoints();
+        _updateCamera();
         _partyActive = true;
     }
 }

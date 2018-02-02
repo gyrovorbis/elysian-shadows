@@ -19,7 +19,7 @@ bool TkParticleEmitter::validate(QString& str) const {
         }
     };
 
-    cAssert(_attrib, "LOG_ERROR: ParticleEmitter component has no attrib field.");
+    cAssert(_attrib.get(), "LOG_ERROR: ParticleEmitter component has no attrib field.");
     return success;
 }
 
@@ -28,9 +28,9 @@ QMenu* TkParticleEmitter::createContextMenu(void) {
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new elysian::ParticleEmitterAttrib : nullptr);
+            setAttrib(checked? std::make_shared<elysian::ParticleEmitterAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 
@@ -71,7 +71,7 @@ void TkParticleEmitterAttrib::initializeDelegates(void) {
     typeDelegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaPlay), [](ESTkStandardItem* item) {
         auto* luaItem = LuaTableFieldItem::fromStandardItem(item);
         if(luaItem) {
-            auto* attrib = luaItem->getVariant().getValue<ParticleEmitterAttrib*>();
+            auto attrib = luaItem->getVariant().getValue<std::shared_ptr<ParticleEmitterAttrib>>();
             if(attrib) {
                 elysian::System::getPartSys()->emitPreview(attrib);
             }

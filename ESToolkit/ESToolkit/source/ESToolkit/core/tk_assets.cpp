@@ -461,6 +461,8 @@ Project* Assets::reloadProject(void) {
 
     _engine->setEngineState(engineState);
     if(partyLeader) _engine->getPartySys()->getPartyLeader()->_transform._pos = playerPos;
+    setCurrentLayer(getCurrentLayer());
+
     return proj;
 }
 

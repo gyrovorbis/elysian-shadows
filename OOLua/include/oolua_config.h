@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,12 @@ THE SOFTWARE.
 #ifndef OOLUA_CONFIG_H_
 #	define OOLUA_CONFIG_H_
 
+#define OOLUA_USE_SHARED_PTR 1
+#define OOLUA_SHARED_HEADER <memory>
+#define OOLUA_SHARED_TYPE std::shared_ptr
+#define OOLUA_SHARED_CONST_CAST std::const_pointer_cast
+
+
 /** \addtogroup OOLuaConfig
 @{ */
 
@@ -37,10 +43,10 @@ THE SOFTWARE.
 		\brief
 		Defines how any errors are reported
 		\details Errors can be reported either by using exceptions or storing
-		a retreivable error string, only one of these methods is allowed
+		a retrievable error string. Only one of these methods is allowed
 		and this condition is enforced, yet also neither are required. If both
-		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
-		any error will be reported
+		options are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to
+		whether any error will be reported.
 	*/
 
 	/**	\def OOLUA_USE_EXCEPTIONS
@@ -50,7 +56,7 @@ THE SOFTWARE.
 		Throws exceptions from C++ code.
 		This could be the return of a pcall, or from pulling an incorrect type
 		off the stack when \ref OOLUA_RUNTIME_CHECKS_ENABLED is enabled. It also
-		prevents exceptions escaping from function proxied by the library, enabling
+		prevents exceptions escaping from functions proxied by the library, enabling
 		calls to such functions to be caught with pcall in Lua code.
 		\param 0 Disabled
 		\param 1 Enabled
@@ -60,23 +66,23 @@ THE SOFTWARE.
 #	endif
 
 
-	/** \def OOLUA_STORE_LAST_LOG_ERROR
+	/** \def OOLUA_STORE_LAST_ERROR
 		\hideinitializer
 		\brief \b Default: Enabled
 		\details
-		Stores an error message in the registery overwriting any previous error,
-		the last error to have occured is retrievable via \ref OOLUA::get_last_error
+		Stores an error message in the registry which overwrites any previously stored error.
+		The last error to have occurred is retrievable via \ref OOLUA::get_last_error.
 		\see OOLUA::get_last_error
 		\see OOLUA::reset_error_value
 		\param 0 Disabled
 		\param 1 Enabled
 	*/
-//#define OOLUA_STORE_LAST_LOG_ERROR 0
-#	ifndef OOLUA_STORE_LAST_LOG_ERROR
-#		define OOLUA_STORE_LAST_LOG_ERROR 1
+//#define OOLUA_STORE_LAST_ERROR 0
+#	ifndef OOLUA_STORE_LAST_ERROR
+#		define OOLUA_STORE_LAST_ERROR 1
 #	endif
 
-#	if OOLUA_USE_EXCEPTIONS == 1 && OOLUA_STORE_LAST_LOG_ERROR == 1
+#	if OOLUA_USE_EXCEPTIONS == 1 && OOLUA_STORE_LAST_ERROR == 1
 #		error Only one of these settings can be on
 #	endif
 
@@ -147,10 +153,12 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Enabled when DEBUG or _DEBUG is defined
 		\details
-			\li Adds Checks for NULL pointers
-			\li Adds a stack trace to errors reported by pcall
-			\li Calls assert on errors if both \ref OOLUA_USE_EXCEPTIONS and
-				\ref OOLUA_STORE_LAST_LOG_ERROR are both disabled
+		Provides the following
+			\li asserts on NULL pointers
+			\li adds a stack trace to errors reported by pcall
+			\li asserts on errors if both \ref OOLUA_USE_EXCEPTIONS and
+				\ref OOLUA_STORE_LAST_ERROR are both disabled
+
 		\param 0 Disabled
 		\param 1 Enabled
 	*/
@@ -185,15 +193,17 @@ THE SOFTWARE.
 
 //if neither are set then default to storing errors
 #		if defined OOLUA_USE_EXCEPTIONS && OOLUA_USE_EXCEPTIONS == 0 \
-				&& defined OOLUA_STORE_LAST_LOG_ERROR && OOLUA_STORE_LAST_LOG_ERROR == 0
-#			undef OOLUA_STORE_LAST_LOG_ERROR
-#			define OOLUA_STORE_LAST_LOG_ERROR 1
+				&& defined OOLUA_STORE_LAST_ERROR && OOLUA_STORE_LAST_ERROR == 0
+#			undef OOLUA_STORE_LAST_ERROR
+#			define OOLUA_STORE_LAST_ERROR 1
 #		endif
 #	endif
 
 	/**@}*/
 
 
+	/** \addtogroup OOLuaStringConfig
+	@{*/
 	/** \def OOLUA_STD_STRING_IS_INTEGRAL
 		\hideinitializer
 		\brief \b Default: Enabled
@@ -206,7 +216,120 @@ THE SOFTWARE.
 #	ifndef OOLUA_STD_STRING_IS_INTEGRAL
 #		define OOLUA_STD_STRING_IS_INTEGRAL 1
 #	endif
+	/**@}*/
 
+
+	/** \addtogroup OOLuaSharedPtrSupport Shared Pointer
+	@{
+		\brief Enable and configure library support for a shared pointer type.
+		\details
+		Requirements for the shared pointer type.
+		\li The type must be non intrusive to the underlying type
+		\li Have a "get" member function which returns a raw pointer
+		\li Be constructable from a more derived shared_ptr
+		\li Have a constructor which enables construction of shared<foo const> from shared<foo>
+		\li Be of uniform size
+		\li Have a const cast template function
+		<p>
+		Defaults for the configuration options in this category only apply when shared pointer
+		support is enabled.
+	*/
+/**
+	\def OOLUA_USE_SHARED_PTR
+		\hideinitializer
+		\brief \b Default: Disabled
+		\details
+		Configuration option to enable or disable the support of a shared pointer type for
+		OOLua proxies.
+
+		When enabled the library supports:
+		\li pushing a shared pointer to the stack
+		\li pulling a shared pointer from the stack(only defined when it is a shared pointer)
+		\li pulling a raw pointer from a stack that contains a shared pointer(It is
+			up to the user of the library to ensure the type will not be garbage collected)
+		\li functions that return a shared pointer
+		\li functions that return a shared pointer and have the \ref OOLUA::maybe_null trait
+		\li functions that take a shared pointer as a parameter
+		\li decaying of a shared pointer to a raw pointer for functions parameters(The raw
+			pointer is defined to be valid for the duration of the call)
+		\note The \ref OOLUA::Shared and \ref OOLUA::No_shared tags maybe ignored, as they are
+			dependent on the value of \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+		\param 0 Disabled
+		\param 1 Enabled
+*/
+
+/**
+	\def OOLUA_SHARED_HEADER
+		\hideinitializer
+		\brief \b Default: MSC: \<memory\> other compilers: \<tr1/memory\>
+		\details <p>
+		Header file for the shared pointer type, library code will include
+		the header using :
+		\code{.cpp}
+		#include OOLUA_SHARED_HEADER
+		\endcode
+*/
+
+/**
+	\def OOLUA_SHARED_TYPE
+		\hideinitializer
+		\brief \b Default: std::tr1::shared_ptr
+		\details
+		The templated shared pointer type.
+*/
+
+/**
+	\def OOLUA_SHARED_CONST_CAST
+		\hideinitializer
+		\brief \b Default: std::tr1::const_pointer_cast
+		\details
+		Templated function which casts away constness for the shared pointer type.
+*/
+
+/**
+	\def OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+		\hideinitializer
+		\brief \b Default: Disabled
+		\details
+		When compiled with support for a shared pointer type (\ref OOLUA_USE_SHARED_PTR)
+		and in a situation that requires the allocation of a proxy type, then how the
+		situation is handled depends upon this configuration value and possibly
+		\ref SharedTags defined for the proxy. The resulting pointer can either be a
+		'Raw' pointer or a 'Shared' pointer that retains shared ownership . Allocation
+		of a proxy occurs for functions and operators that return a non-integral on the
+		C stack and constructors.
+
+		| Configuration value | Has Shared tag | Has No_shared tag | Pointer type |
+		| :-----------------: | :------------: | :---------------: | :----------: |
+		|      Disabled       |       No       |         X         |      Raw     |
+		|      Disabled       |      Yes       |         X         |    Shared    |
+		|      Enabled        |       X        |        No         |    Shared    |
+		|      Enabled        |       X        |        Yes        |      Raw     |
+
+		\param 0 Disabled
+		\param 1 Enabled
+		\see OOLUA_USE_SHARED_PTR
+		\see OOLUA::Shared
+		\see OOLUA::No_shared
+*/
+	/*@}*/
+
+#	ifndef OOLUA_USE_SHARED_PTR
+#		define OOLUA_USE_SHARED_PTR 0
+#	else
+#		if OOLUA_USE_SHARED_PTR == 1
+#ifdef _MSC_VER
+#			define OOLUA_SHARED_HEADER <memory>
+#else
+#			//define OOLUA_SHARED_HEADER <tr1/memory>
+#endif
+#		//	define OOLUA_SHARED_TYPE std::tr1::shared_ptr
+#		//	define OOLUA_SHARED_CONST_CAST std::tr1::const_pointer_cast
+#			ifndef OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+#				define OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE 0
+#			endif
+#		endif
+#	endif
 /**@}*/
 
 /** \cond INTERNAL */
@@ -215,11 +338,11 @@ THE SOFTWARE.
 #	define MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 __pragma(warning(push)) /*NOLINT*/ \
 __pragma(warning(disable : 4127)) /*NOLINT*/
-#	define MSC_POP_COMPILER_LOG_WARNING_OOLUA \
+#	define MSC_POP_COMPILER_WARNING_OOLUA \
 __pragma(warning(pop)) /*NOLINT*/
 #else
 #	define MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
-#	define MSC_POP_COMPILER_LOG_WARNING_OOLUA
+#	define MSC_POP_COMPILER_WARNING_OOLUA
 #endif
 
 
@@ -264,26 +387,32 @@ However using a 4.6 version of GCC and the above code does not prevent the warni
 
 
 
-#	define GCC_VERSION_OOLUA (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHSEVERITY__)
+#	define GCC_VERSION_OOLUA (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 //	SShhhhhhhhh stops gcc generating warnings about the variadic macros
 #	define GCC_PRAGMA_DO(x) _Pragma(#x)
 #	define GCC_PRAGMA(x) GCC_PRAGMA_DO(GCC x)
 
 #	if GCC_VERSION_OOLUA >= 40600
-#		define GCC_PUSH_DISABLE_VA_LOG_WARNINGS_OOLUA \
+#		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA \
 			GCC_PRAGMA(diagnostic push) \
 			GCC_PRAGMA(diagnostic ignored "-Wvariadic-macros")
-#		define GCC_POP_VA_LOG_WARNINGS_OOLUA GCC_PRAGMA(diagnostic pop)
+#		define GCC_POP_VA_WARNINGS_OOLUA GCC_PRAGMA(diagnostic pop)
 #	else
-//#		define GCC_PUSH_DISABLE_VA_LOG_WARNINGS_OOLUA GCC_PRAGMA_DO(system_header)
-//#		define GCC_PUSH_DISABLE_VA_LOG_WARNINGS_OOLUA _Pragma("GCC system_header") //doesn't work boooooooooo
-#		define GCC_POP_VA_LOG_WARNINGS_OOLUA
+//#		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA GCC_PRAGMA_DO(system_header)
+//#		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA _Pragma("GCC system_header") //doesn't work boooooooooo
+#		define GCC_POP_VA_WARNINGS_OOLUA
 #	endif
 #else
-#	define GCC_PUSH_DISABLE_VA_LOG_WARNINGS_OOLUA
-#	define GCC_POP_VA_LOG_WARNINGS_OOLUA
+#	define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA
+#	define GCC_POP_VA_WARNINGS_OOLUA
 #endif
 
+//prevents g++ warning about locally defined yet unused typedefs i.e. static asserts
+#if GCC_VERSION_OOLUA >= 40800
+#	define OOLUA_UNUSED __attribute__((unused))
+#else
+#	define OOLUA_UNUSED
+#endif
 
 #if OOLUA_USE_EXCEPTIONS == 1
 #	if defined __GNUC__ && ( ( !defined __EXCEPTIONS) || (defined __EXCEPTIONS && __EXCEPTIONS != 1) )

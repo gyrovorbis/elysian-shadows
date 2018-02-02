@@ -224,7 +224,7 @@ void SkeletonBase::setAnimTrackByName(const int trackIndex, const char* animatio
 }
 
 
-void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
+void SkeletonBase::setAttrib(std::shared_ptr<SkeletonAttrib> attrib) {
     DbgEvent event("SkeletonBase setting attributes.");
 
     //REMOVE ALL ATTACHMENTS
@@ -383,9 +383,12 @@ void EntityAttachment::update(void) {
     });
 
     if(slot->bone->data->inheritRotation) {
-        transform.setOrient(0.0f, 0.0f, 1.0f);
-        transform.setAngle(slot->bone->worldRotation*(M_PI/180.0f));
+        if(entity->getPlaneType() == GY_RECT_PLANE_BOTTOM) {
+            transform.setOrient(0.0f, 0.0f, 1.0f);
+            transform.setAngle(slot->bone->worldRotation*(M_PI/180.0f));
+        }
     }
+
 
 #else
 

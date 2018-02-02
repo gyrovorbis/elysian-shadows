@@ -17,12 +17,12 @@ namespace elysian {
         public LuaTableProxy<ExaminableBase, Examinable>
     {
 	private:
-		Dialog*			_dialog				= nullptr;
-		bool			_isDialogActive		= false;
-		bool			_enabled			= false;
-		float			_maxDist			= 48.0f;
-		Direction::DIR4 _dir				= Direction::DIR4_ANY;
-        bool            _hasDesc            = true;
+        std::shared_ptr<Dialog>	_dialog;
+        bool                    _isDialogActive		= false;
+        bool                    _enabled			= false;
+        float                   _maxDist			= 48.0f;
+        Direction::DIR4         _dir				= Direction::DIR4_ANY;
+        bool                    _hasDesc            = true;
 
 	public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -33,15 +33,15 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(dialog,         getDialog,      setDialog)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                        ExaminableBase(Entity& parent, const ExaminableBase*const prefab=nullptr);
+                        ExaminableBase(Entity& parent, ExaminableBase*const prefab=nullptr);
                         ExaminableBase(void) = default;
-        ExaminableBase& operator=(const ExaminableBase& rhs);
+        ExaminableBase& operator=(ExaminableBase& rhs);
 
 		//overridden from Component
         static constexpr const Component::TYPE componentType = Component::EXAMINABLE;
 
-		void			setDialog(Dialog* const dialog);
-		Dialog*			getDialog(void) const;
+        void			setDialog(std::shared_ptr<Dialog> dialog);
+        auto			getDialog(void) const -> std::shared_ptr<Dialog>;
 		void			setMaxDist(const float dist);
 		float			getMaxDist(void) const;
 		bool			isDialogActive(void) const;
@@ -59,10 +59,10 @@ namespace elysian {
 
 
 	// ====== INLINEZ =======
-    inline ExaminableBase::ExaminableBase(Entity& parent, const ExaminableBase*const prefab): Component(parent) {
+    inline ExaminableBase::ExaminableBase(Entity& parent, ExaminableBase*const prefab): Component(parent) {
         if(prefab) *this = *prefab;
     }
-    inline ExaminableBase& ExaminableBase::operator=(const ExaminableBase& rhs) {
+    inline ExaminableBase& ExaminableBase::operator=(ExaminableBase& rhs) {
         _dialog     = rhs._dialog;
         _enabled    = rhs._enabled;
         _maxDist    = rhs._maxDist;
@@ -72,7 +72,7 @@ namespace elysian {
     }
     inline bool ExaminableBase::hasDescription(void) const { return _hasDesc; }
     inline void ExaminableBase::setHasDescription(const bool val) { _hasDesc = val; }
-    inline Dialog* ExaminableBase::getDialog(void) const { return _dialog; }
+    inline std::shared_ptr<Dialog> ExaminableBase::getDialog(void) const { return _dialog; }
     inline bool ExaminableBase::isDialogActive(void) const { return _isDialogActive; }
     inline void ExaminableBase::setEnabled(const bool en) { _enabled = en; }
     inline bool ExaminableBase::isEnabled(void) const { return _enabled; }

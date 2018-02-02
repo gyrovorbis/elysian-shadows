@@ -72,7 +72,7 @@ void DaySystem::onAreaExit(void) {
 
 DaySystem::DaySystem(void) {
   GYVector3 dir3 = { _baseDir.x, _baseDir.y, _baseDir.z };
-  _sunLightAttrib = new LightAttrib;
+  _sunLightAttrib = std::make_shared<LightAttrib>();
   _sunLightAttrib->setAmbientColor(GYVector4{0.5f, 0.5f, 0.5f, 1.0f});
   _sunLightAttrib->setDiffuseColor(GYVector4{0.5f, 0.5f, 0.5f, 1.0f});
   _sunLightAttrib->setSpecularColor(GYVector4{1.0f, 1.0f, 1.0f, 1.0f});
@@ -88,7 +88,6 @@ DaySystem::DaySystem(void) {
 
 DaySystem::~DaySystem(void) {
   delete _sunEntity;
-  delete _sunLightAttrib;
 }
 
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,10 +41,12 @@ namespace OOLUA
 		static const char lua_owns_str[] = "Lua_owns";
 		static const char cpp_owns_str[] = "Cpp_owns";
 		static const char weak_lookup_name [] = "__weak_lookup";
+		static const char collision_mt_lookup_name [] = "__weak_collision_mt_lookup";
 		static const char new_str [] = "new";
 		static const char oolua_str [] = "OOLua";
-	} // namespace INTERNAL
-} // namespace OOLUA
+		static const char lua_new_table [] = "new_table";
+	} // namespace INTERNAL // NOLINT
+} // namespace OOLUA // NOLINT
 
 #define OOLUA_PUSH_CARRAY(lua, carray) lua_pushlstring(lua, carray, sizeof(carray)-1)
 

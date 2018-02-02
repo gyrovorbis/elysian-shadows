@@ -57,4 +57,24 @@ void GLMapSystemCrtp::_drawElements(void) {
 }
 
 
+//safety mechanism to keep shit from accidentally winding up off of the maps!
+void MapSystemBase::update(void) {
+    MapSystemCrtp<MapSystem, MapDepthBuffEntryImpl, EntityDepthBuffEntryImpl>::update();
+    for(size_t i = 0; i < _curArea->entities.size(); ++i) {
+        auto* entity = _curArea->entities[i];
+        if(entity->getCollidable()) {
+            auto& xform = entity->getTransform();
+            if(xform.getPosX() < 0) xform.setPosX(0);
+            else if(xform.getPosX() > (_curArea->width-1) * ELYSIAN_TILE_WIDTH) xform.setPosX((_curArea->width-1)*ELYSIAN_TILE_WIDTH);
+            if(xform.getPosY() < 0) xform.setPosY(0);
+            else if(xform.getPosY() > (_curArea->height-1) * ELYSIAN_TILE_HEIGHT) xform.setPosY((_curArea->width-1)*ELYSIAN_TILE_HEIGHT);
+        }
+
+    }
+
+
+
+}
+
+
 }

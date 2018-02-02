@@ -86,6 +86,7 @@ namespace elysian {
         static const unsigned int _pointsPerCharacter = 30;
 		
 		void _resizePartyPathPoints(void);
+        void _resetPartyPathPoints(void);
 
 		//footstep SFX
         float                   _footStepTimer              = 0.0f;

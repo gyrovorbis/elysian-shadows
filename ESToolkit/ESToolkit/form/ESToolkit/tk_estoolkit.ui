@@ -423,6 +423,9 @@
    <property name="shortcut">
     <string>Ctrl+L</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
   </action>
   <action name="actionFileCloseProject">
    <property name="text">
@@ -1095,6 +1098,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionAdvance_Frame">

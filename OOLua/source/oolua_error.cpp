@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "oolua_error.h"
 #include "oolua_config.h"
 
-#if OOLUA_STORE_LAST_LOG_ERROR == 1
+#if OOLUA_STORE_LAST_ERROR == 1
 
 #	include "lua_includes.h"
 
@@ -47,8 +47,12 @@ namespace OOLUA
 		push_error_id_str(vm);
 		lua_gettable(vm, LUA_REGISTRYINDEX);
 		std::string error;
-		if ( (!lua_isnil(vm, -1)) && (lua_type(vm, -1) == LUA_TSTRING) )
-			error = lua_tolstring(vm, -1, 0);
+		if ( lua_type(vm, -1) == LUA_TSTRING )
+		{
+			size_t len(0);
+			char const* str = lua_tolstring(vm, -1, &len);
+			error = std::string(str, len);
+		}
 		lua_pop(vm, 1);
 		return error;
 	}
@@ -70,6 +74,7 @@ struct lua_State;
 
 namespace OOLUA
 {
+	// LCOV_EXCL_START
 	void reset_error_value(lua_State* /*vm*/) // NOLINT
 	{}
 
@@ -82,6 +87,7 @@ namespace OOLUA
 		void set_error_from_top_of_stack_and_pop_the_error(lua_State* /*vm*/) // NOLINT
 		{}
 	} // namespace INTERNAL
+	// LCOV_EXCL_STOP
 } // namespace OOLUA
 
 #endif

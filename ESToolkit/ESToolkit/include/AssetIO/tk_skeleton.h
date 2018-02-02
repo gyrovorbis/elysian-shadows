@@ -37,8 +37,9 @@ class TkSkeleton: public elysian::SkeletonBase {
 public:
                     TkSkeleton(TkEntity& parent, const TkSkeleton*const prefab=nullptr);
                     TkSkeleton(void) = default;
+                    ~TkSkeleton(void);
 
-    void            setAttrib(SkeletonAttrib * const attrib);
+    void            setAttrib(std::shared_ptr<SkeletonAttrib> attrib);
 
     void            printSlotData(void) const;
 
@@ -83,16 +84,6 @@ inline void TkSkeletonAttrib::reloadAtlas(void) {
 inline void TkSkeletonAttrib::reloadJson(void) {
     _loadJson();
     Q_EMIT jsonChanged();
-}
-
-
-inline void TkSkeleton::setAttrib(SkeletonAttrib * const attrib) {
-    _attrib->disconnect(this);
-
-    connect(attrib, SIGNAL(atlasChanged()), this, SLOT(onAtlasChanged()));
-    connect(attrib, SIGNAL(jsonChanged()), this, SLOT(onJsonChanged()));
-
-    elysian::SkeletonBase::setAttrib(attrib);
 }
 
 

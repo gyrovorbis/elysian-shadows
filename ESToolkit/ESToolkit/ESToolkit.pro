@@ -78,6 +78,15 @@ INCLUDEPATH += ../../AssetIO/include \
     INCLUDEPATH += include
     #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 }
+
+vmu_child_app {
+    INCLUDEPATH += ../../ElysianVMU/qtcreator/ElysianVMU \
+        ../../ElysianVMU/lib/source
+
+    DEPENDPATH += ../../ElysianVMU/qtcreator/ElysianVMU \
+        ../../ElysianVMU/lib/source
+}
+
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
 INCLUDEPATH += \
     ../../game/include \
@@ -472,7 +481,8 @@ HEADERS += \
     ../../AssetIO/include/crtp/elysian_color.hpp \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
     ../../ESGamma/include/system/elysian_particle_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_particle_system.hpp
+    ../../ESGamma/include/crtp/elysian_particle_system.hpp \
+    ../../AssetIO/include/primitive/elysian_rect.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -626,8 +636,8 @@ FORMS += form/ESToolkit/dock/tk_sheet_dock_widget.ui \
 
 #Required to get C++11x to work on OSX
 macx {
-    QMAKE_CXXFLAGS += -mmacosx-version-min=10.8 -stdlib=libc++
-    LIBS += -mmacosx-version-min=10.8 -stdlib=libc++
+    QMAKE_CXXFLAGS +=  -stdlib=libc++
+    LIBS += -stdlib=libc++
 
     #CONFIG(release, debug|release) {
      #  QMAKE_POST_LINK = "macdeployqt TARGET"
@@ -867,3 +877,10 @@ else:linux {
 DISTFILES += \
     ESToolkit.qdocconf \
     ESToolkit.qhcp
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
+else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/ -lElysianVMU
+
+INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
