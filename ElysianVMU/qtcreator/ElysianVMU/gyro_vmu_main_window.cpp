@@ -38,6 +38,9 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <cmath>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QGraphicsSceneDragDropEvent>
 
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
 #ifdef VMU_DEBUG
@@ -56,6 +59,69 @@
 
 #define FRAME_ADVANCE_TICKS  ((1.0f/5.0f)*1000000000.0f)
 
+
+bool VMUMainWindow::eventFilter(QObject *watched, QEvent *event) {
+    if(watched == _ui->graphicsView->scene()) {
+    switch(event->type()) {
+        case QEvent::GraphicsSceneDragEnter: {
+            QGraphicsSceneDragDropEvent* sceneEvent = static_cast<QGraphicsSceneDragDropEvent*>(event);
+            auto* mime = sceneEvent->mimeData();
+            if(mime->hasUrls()) {
+                for(auto&& url : mime->urls()) {
+                    if(url.isLocalFile()) {
+                        QFileInfo info(url.toLocalFile());
+                        QString suff = info.suffix().toLower();
+                        if(suff == "vms" || suff == "lcd" ||
+                                suff == "vmi" || suff == "vmu") {
+                            sceneEvent->setAccepted(true);
+                            return true;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        case QEvent::GraphicsSceneDragMove: {
+                event->setAccepted(true);
+                return true;
+        }
+        case QEvent::GraphicsSceneDrop: {
+            QGraphicsSceneDragDropEvent* sceneEvent = static_cast<QGraphicsSceneDragDropEvent*>(event);
+            auto* mime = sceneEvent->mimeData();
+            if(mime->hasUrls()) {
+                for(auto&& url : mime->urls()) {
+                    if(url.isLocalFile()) {
+                        QFileInfo info(url.toLocalFile());
+                        QString suff = info.suffix().toLower();
+                        if(suff == "vms" || suff == "lcd" ||
+                                suff == "vmi" || suff == "vmu") {
+                            sceneEvent->acceptProposedAction();
+                            loadRom(info.absoluteFilePath());
+                            return true;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        case QEvent::DragEnter:
+            break;
+        case QEvent::Drop:
+            break;
+        default: break;
+        }
+    } else if(watched == _ui->graphicsView) {
+        switch(event->type()) {
+            case QEvent::KeyPress:
+            case QEvent::KeyRelease:
+                event->ignore();
+                return true;
+        default: break;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
+}
 
 FILE* VMUMainWindow::_logFile = nullptr;
 int VMUMainWindow::_logDepth = 0;
@@ -85,6 +151,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _ui->setupUi(this);
     setAcceptDrops(true);
     _iconLabel->setMargin(0);
+    _iconLabel->setFixedSize(21, 21);
     _recordingLabel->setMargin(0);
     _ui->statusbar->layout()->setSpacing(0);
     _ui->statusbar->insertPermanentWidget(0, _recordingLabel);
@@ -93,16 +160,27 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
 
     //Create framebuffer label and layouts for centering and managing its size
-    _fbLabel = new QLabel;
+
+    //_fbLabel = new QLabel;
     QVBoxLayout* vertLayout = qobject_cast<QVBoxLayout*>(centralWidget()->layout());
     Q_ASSERT(vertLayout);
-    vertLayout->addWidget(_fbLabel);
-    vertLayout->setAlignment(_fbLabel, Qt::AlignHCenter);
-    _fbLabel->setPixmap(_fb);
-    _fbLabel->setMargin(0);
-    _fbLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    //vertLayout->addWidget(_fbLabel);
+    //vertLayout->setAlignment(_fbLabel, Qt::AlignHCenter);
+    //_fbLabel->setPixmap(_fb);
+    //_fbLabel->setMargin(0);
+    //_fbLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     vertLayout->setMargin(0);
     vertLayout->setSpacing(0);
+
+    QGraphicsScene* scene = new QGraphicsScene();
+    scene->installEventFilter(this);
+    _pixmapItem = new QGraphicsPixmapItem(_iconES);
+    scene->addItem(_pixmapItem);
+    _ui->graphicsView->setAcceptDrops(true);
+    _ui->graphicsView->setScene(scene);
+    _ui->graphicsView->installEventFilter(this);
+
+
 
     //Initialize libGyro File API, working directory, and log file
     GYFileInitParams fileParams;
@@ -261,6 +339,10 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
     });
 }
 
+auto VMUMainWindow::getUi(void) const -> Ui::VMUMainWindow* {
+    return _ui;
+}
+
 void VMUMainWindow::_onLoadGameAboutToShow(void) {
     _gyLog(GY_DEBUG_VERBOSE, "LOAD SHOW");
 }
@@ -357,37 +439,44 @@ void VMUMainWindow::_update(void) {
         if(!_dev->lcdFile) _updatePConRegister();
         else _updateLcdAnimStatusMessage();
         _updateIcon();
-        repaint();
+
+        _updateScene();
     }
 }
 
 
-void VMUMainWindow::paintEvent(QPaintEvent*) {
+void VMUMainWindow::_updateScene(void) {
     bool updatedFb = false;
 
     //Update framebuffer texture based on VMU LCD screen state
     {
         QPainter painter(&_fb);
-        if(!gyVmuDisplayEnabled(_dev)) {
+        if(!gyVmuDisplayEnabled(_dev) && _displayWasEnabled) {
             painter.drawPixmap(QPoint(0,0), _iconES);
+            _displayWasEnabled = false;
             updatedFb = true;
-        } else if(gyVmuDisplayUpdateEnabled(_dev) && _dev->display.screenChanged) {
-            for(int y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {
-                for(int x = 0; x < VMU_DISP_PIXEL_WIDTH; ++x) {
-                    int col = gyVmuDisplayPixelGhostValue(_dev, x, y);
-                    painter.fillRect(x, y, 1, 1, QBrush(QColor(col, col, col, 255)));
-                    updatedFb = true;
+        } else if(gyVmuDisplayUpdateEnabled(_dev)) {
+            _displayWasEnabled = true;
+            if(_dev->display.screenChanged) {
+                for(int y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {
+                    for(int x = 0; x < VMU_DISP_PIXEL_WIDTH; ++x) {
+                        int col = gyVmuDisplayPixelGhostValue(_dev, x, y);
+                        painter.fillRect(x, y, 1, 1, QBrush(QColor(col, col, col, 255)));
+                    }
                 }
+                updatedFb = true;
+                if(_recording) _addAnimFrame(_fb);
+                _dev->display.screenChanged = 0;
             }
-            if(_recording) _addAnimFrame(_fb);
-            _dev->display.screenChanged = 0;
         }
     }
 
     //Resize framebuffer to the viewport size to produce final image
-    int width = centralWidget()->width();
-    int height = centralWidget()->height();
-    //if(updatedFb || width != _prevFbWidth || height != _prevFbHeight) {
+    int width = _ui->graphicsView->viewport()->width();//centralWidget()->width();
+    int height = _ui->graphicsView->viewport()->height();//centralWidget()->height();
+
+    if(!updatedFb && width == _prevFbWidth && height == _prevFbHeight) return;
+
     QPixmap scaledFb = _fb.scaled(width, height,
                                   _ui->actionPreserve_Aspect_Ratio->isChecked()?
                                       Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
@@ -420,13 +509,14 @@ void VMUMainWindow::paintEvent(QPaintEvent*) {
     }
 
     //Update the pixmap within the central widget
-    _fbLabel->setPixmap(scaledFb);
+    //_fbLabel->setPixmap(scaledFb);
+    _pixmapItem->setPixmap(scaledFb);
+    _ui->graphicsView->setSceneRect(0, 0, frameWidth, frameHeight);
+    //QPainter painter(this);
+    //painter.drawPixmap(0, 0, scaledFb);
 
     _prevFbWidth = width;
     _prevFbHeight = height;
-
-  //  }
-
 }
 
 bool VMUMainWindow::loadRom(QString filepath) {
@@ -752,6 +842,7 @@ void VMUMainWindow::_pushRecentRom(QString path) {
 }
 
 void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
+#if 0
     auto* mime = event->mimeData();
     if(mime->hasUrls()) {
         for(auto&& url : mime->urls()) {
@@ -766,10 +857,12 @@ void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
             }
         }
     }
+#endif
     QMainWindow::dragEnterEvent(event);
 }
 
 void VMUMainWindow::dropEvent(QDropEvent* event) {
+#if 0
     auto* mime = event->mimeData();
     if(mime->hasUrls()) {
         for(auto&& url : mime->urls()) {
@@ -785,6 +878,7 @@ void VMUMainWindow::dropEvent(QDropEvent* event) {
             }
         }
     }
+#endif
     QMainWindow::dropEvent(event);
 }
 
@@ -1034,10 +1128,25 @@ void VMUMainWindow::on_actionPreserve_Aspect_Ratio_toggled(bool arg1)
 }
 
 void VMUMainWindow::_resizeWindowFromScreenZoom(int level) {
-    _fbLabel->resize(VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
-    _fbLabel->setMinimumSize(VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
+    _ui->graphicsView->setSceneRect(0, 0, VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
+    _updateScene();
+    _ui->graphicsView->resize(VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
+    _ui->graphicsView->setMinimumSize(VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
+    _ui->graphicsView->adjustSize();
+
+    centralWidget()->resize(_ui->graphicsView->size());
+    //resize(_ui->graphicsView->size());
+    centralWidget()->setMinimumSize(_ui->graphicsView->size());
+    //setMinimumSize(sizeHint());
+    centralWidget()->adjustSize();
+
+    //centralWidget()->resize(centralWidget()->sizeHint());
+    setMinimumSize(0, 0);
+    //resize(frameSize());
     adjustSize();
-    _fbLabel->setMinimumSize(0, 0);
+    _ui->graphicsView->setMinimumSize(0, 0);
+    centralWidget()->setMinimumSize(0, 0);
+    setMinimumSize(0, 0);
 }
 
 void VMUMainWindow::on_action1x_triggered()

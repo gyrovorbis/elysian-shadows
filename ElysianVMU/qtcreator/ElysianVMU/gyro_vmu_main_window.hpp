@@ -33,6 +33,7 @@ struct  GYAudBuffer;
 struct  VMUDevice;
 struct  VMSFileInfo;
 class   VmuTcpDialog;
+class   QGraphicsPixmapItem;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 class   VmuComDialog;
 #endif
@@ -51,17 +52,18 @@ public:
 
     bool                loadRom(QString filepath);
     void                resetCpu(void);
+    auto                getUi(void) const -> Ui::VMUMainWindow*;
 
-private:
-
-    virtual void        paintEvent(QPaintEvent* event) override;
+    //virtual void        paintEvent(QPaintEvent* event) override;
     virtual bool        event(QEvent* event) override;
     virtual void        closeEvent(QCloseEvent* event) override;
     virtual void        dragEnterEvent(QDragEnterEvent* event) override;
     virtual void        dropEvent(QDropEvent* event) override;
+    virtual bool        eventFilter(QObject *watched, QEvent *event) override;
 
 protected Q_SLOTS:
     void                _update(void);
+    void                _updateScene(void);
     void                _onLoadGameAboutToShow(void);
     void                _onLoadGameAboutToHide(void);
     void                _onSaveGameAboutToShow(void);
@@ -145,6 +147,7 @@ private:
     QLabel*             _recordingLabel     = nullptr;
     QMenu*              _loadGameMenu       = nullptr;
     QMenu*              _saveGameMenu       = nullptr;
+    QGraphicsPixmapItem*    _pixmapItem     = nullptr;
     VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;
@@ -165,6 +168,7 @@ private:
     bool                _contAttached       = false;
     bool                _recording          = false;
     bool                _ghostingWasEnabled = false;
+    bool                _displayWasEnabled  = true;
 
     static FILE*        _logFile;
     static int          _logDepth;

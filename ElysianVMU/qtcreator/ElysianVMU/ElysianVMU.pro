@@ -1,5 +1,10 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
-TEMPLATE = app
+vmu {
+    TEMPLATE = app
+}
+vmu_child_app {
+    TEMPLATE = lib
+}
 TARGET = ElysianVMU
 QT += gui opengl
 
@@ -25,7 +30,7 @@ macx {
 
 ICON = resource/images/vmu_icon.icns
 
-SOURCES += ../../console/main.cpp \
+SOURCES += \
     ../../lib/source/gyro_vmu_cpu.c \
     ../../lib/source/gyro_vmu_bios.c \
     ../../lib/source/gyro_vmu_device.c \
@@ -58,6 +63,11 @@ SOURCES += ../../console/main.cpp \
     gif/gif_hash.c \
     gif/gifalloc.c \
     gif/quantize.c
+
+!vmu_child_app {
+    SOURCES += ../../console/main.cpp
+}
+
 
 !raspberrypi {
     SOURCES += gyro_vmu_com_dialog.cpp
