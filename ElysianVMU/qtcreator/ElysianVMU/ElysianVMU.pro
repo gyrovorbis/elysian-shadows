@@ -13,12 +13,15 @@ QT += gui opengl
     QT += serialport
 }
 
-win32 {
-    DESTDIR = ../../../executable
-}
 
-linux {
-    DESTDIR = ../../../executable
+!vmu_child_app {
+    win32 {
+        DESTDIR = ../../../executable
+    }
+
+    linux {
+        DESTDIR = ../../../executable
+    }
 }
 
 QMAKE_CFLAGS += -std=c99
