@@ -23,10 +23,12 @@ linux {
 
 QMAKE_CFLAGS += -std=c99
 
-macx {
-    #DESTDIR = ../../executable
-    #    CONFIG(release, debug|release):
-    release: QMAKE_POST_LINK = "sh ./macdeployvmu.sh"
+vmu {
+    macx {
+        #DESTDIR = ../../executable
+        #    CONFIG(release, debug|release):
+        release: QMAKE_POST_LINK = "sh ./macdeployvmu.sh"
+    }
 }
 
 ICON = resource/images/vmu_icon.icns
