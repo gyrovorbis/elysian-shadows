@@ -4,6 +4,7 @@ vmu {
 }
 vmu_child_app {
     TEMPLATE = lib
+    CONFIG += staticlib
 }
 TARGET = ElysianVMU
 QT += gui opengl

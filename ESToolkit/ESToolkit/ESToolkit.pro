@@ -80,11 +80,9 @@ INCLUDEPATH += ../../AssetIO/include \
 }
 
 vmu_child_app {
-    INCLUDEPATH += ../../ElysianVMU/qtcreator/ElysianVMU \
-        ../../ElysianVMU/lib/source
+    INCLUDEPATH += ../../ElysianVMU/lib/source
 
-    DEPENDPATH += ../../ElysianVMU/qtcreator/ElysianVMU \
-        ../../ElysianVMU/lib/source
+    DEPENDPATH += ../../ElysianVMU/lib/source
 }
 
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
@@ -761,6 +759,22 @@ else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PW
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/debug/Spine.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
 
+vmu_child_app {
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
+    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU -lElysianVMU
+
+    INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+    DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/libElysianVMU.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/libElysianVMU.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ElysianVMU.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ElysianVMU.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/libElysianVMU.a
+}
+
 tests {
 
     win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../UnitTests/release/ -lUnitTests
@@ -877,10 +891,3 @@ else:linux {
 DISTFILES += \
     ESToolkit.qdocconf \
     ESToolkit.qhcp
-
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
-else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/ -lElysianVMU
-
-INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
-DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU

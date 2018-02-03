@@ -102,6 +102,7 @@ SkeletonAttribBase::~SkeletonAttribBase(void) {
 SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {
     _animTimeScale = other._animTimeScale;
     setAttrib(other._attrib);
+    setSkin(other.getSkin());
     return *this;
 }
 

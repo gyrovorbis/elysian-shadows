@@ -423,6 +423,8 @@ void DialogSystem::_splitText(void) {
 void DialogSystem::startDialog(std::shared_ptr<Dialog> dialog, EventMonitor*const monitor) {
 	closeDialog();
 
+    if(!dialog) return;
+
     if(dialog->getScreenCount() == 0) {
         errprintf("Cannot start a dialog with 0 screens!");
         return;

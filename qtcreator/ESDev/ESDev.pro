@@ -16,12 +16,12 @@ tests {
     SUBDIRS += ../../UnitTests
 }
 
-estk {
-    SUBDIRS += ../../ESToolkit/ESToolkit
-}
-
 vmu_child_app {
     SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
+}
+
+estk {
+    SUBDIRS += ../../ESToolkit/ESToolkit
 }
 
 vmu {
@@ -56,4 +56,5 @@ vmu {
 
 vmu_child_app {
     ElysianVMU.depends += libGyro
+    ESToolkit.depends += ElysianVMU
 }
