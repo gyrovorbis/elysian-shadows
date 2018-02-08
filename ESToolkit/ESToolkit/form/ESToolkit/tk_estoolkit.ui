@@ -192,6 +192,7 @@
     <addaction name="actionEntity_View"/>
     <addaction name="actionCamera_View"/>
     <addaction name="actionHistory_View"/>
+    <addaction name="actionVMU_View"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Layout"/>
     <addaction name="separator"/>
@@ -1659,6 +1660,14 @@
   <action name="actionPerformance_Monitor_Dump">
    <property name="text">
     <string>Performance Monitor Dump</string>
+   </property>
+  </action>
+  <action name="actionVMU_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>VMU View</string>
    </property>
   </action>
  </widget>

@@ -161,9 +161,9 @@ namespace elysian {
     inline Layout* Widget::getLayout(void) const { return _layout; }
     inline Layout* Widget::getParentLayout(void) const { return _parentLayout; }
     inline Vector2 Widget::getPosition(void) const { return Vector2(getPosition(X), getPosition(Y)); }
-    inline void Widget::setPosition(Vector2 pos) { setPosition(X, pos.x); setPosition(Y, pos.y); }
+    inline void Widget::setPosition(Vector2 pos) { setPosition(X, pos.getX()); setPosition(Y, pos.getY()); }
     inline Vector2 Widget::getSize(void) const { return Vector2(getSize(X), getSize(Y)); }
-    inline void Widget::setSize(Vector2 size) { setSize(X, size.x); setSize(Y, size.y); }
+    inline void Widget::setSize(Vector2 size) { setSize(X, size.getX()); setSize(Y, size.getY()); }
     inline Vector2 Widget::getSizeHint(void) const { return _sizeHint; }
     inline void Widget::setSizeHint(Vector2 size) { _sizeHint = size; }
     inline float Widget::getSizeHint(AXIS axis) const { return _sizeHint[axis]; }

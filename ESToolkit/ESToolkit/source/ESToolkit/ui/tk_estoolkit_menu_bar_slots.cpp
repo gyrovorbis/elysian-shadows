@@ -34,7 +34,7 @@
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>
 #include <proxy/elysian_entity_proxy.hpp>
-
+#include <gyro_vmu_main_window.hpp>
 
 
 
@@ -791,5 +791,31 @@ void ESToolkit::on_actionPerformance_Monitor_Dump_triggered()
 
 void ESToolkit::on_actionAudio_Dump_triggered() {
     _assets.getEngine()->getAudioSys()->dumpDebugInfo();
-
 }
+
+void ESToolkit::on_actionVMU_View_triggered(bool checked) {
+    if(checked) {
+        if(!_evmuWindow) {
+
+            _evmuWindow = new VMUMainWindow(this);	// no parent
+            //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
+            //evmuWindow->setWindowFlags(Qt::Widget);
+           _evmuWindow->setFocusPolicy(Qt::ClickFocus);
+
+            //subMainWindow->setUnifiedTitleAndToolBarOnMac(true); _vmuDockWidget = new QDockWidget(nullptr);
+           _vmuDockWidget = new QDockWidget(this);
+            _vmuDockWidget->setWindowTitle("VMU View");
+            _evmuWindow->menuBar()->setNativeMenuBar(false);
+
+
+           _vmuDockWidget->setWidget(_evmuWindow);
+        //dock->setMouseTracking(false);
+           //evmuWindow->setParent(dock) ;	// here
+            addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
+        }
+    }
+
+    _vmuDockWidget->setVisible(checked);
+    _ui->actionVMU_View->setChecked(checked);
+}
+

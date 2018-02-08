@@ -13,6 +13,7 @@
 #include <QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h>
+#include <QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h>
 
 
 namespace OOLUA
@@ -62,6 +63,9 @@ OOLUA_PROXY(DynamicContentPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ColorSwatchPropertyItemDelegate, PropertyItemDelegate)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(QESTkUtils::PlainTextEditPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 

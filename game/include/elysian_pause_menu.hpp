@@ -7,6 +7,11 @@
 #include <system/elysian_party_system.hpp>
 
 #define ELYSIAN_MENU_OPTIONS_PANE_OPTION_COUNT  10
+#define ELYSIAN_PAUSE_MENU_SFX_OPEN_PATH        "/assets/audio/sfx/UI/menu_select_01.wav"
+#define ELYSIAN_PAUSE_MENU_SFX_CLOSE_PATH       "/assets/audio/sfx/UI/menu_select_00.wav"
+#define ELYSIAN_PARTY_MENU_SFX_SWAP_PATH        "/assets/audio/sfx/UI/menu_select_02.wav"
+#define ELYSIAN_PARTY_MENU_SFX_ACTIVATE_PATH    "/assets/audio/sfx/UI/menu_select_04.wav"
+#define ELYSIAN_PARTY_MENU_SFX_DEACTIVATE_PATH  "/assets/audio/sfx/UI/menu_select_03.wav"
 
 namespace elysian {
     class VerticalLayout;
@@ -51,6 +56,9 @@ namespace game {
 
     class PartyMenu: public elysian::MenuWidget, public elysian::System {
         PlayablePane*               _playablePane[ELYSIAN_PARTY_SLOTS_MAX];
+        GYWav*                      _swapWav        = nullptr;
+        GYWav*                      _activateWav    = nullptr;
+        GYWav*                      _deactivateWav  = nullptr;
 
         enum SELECT_STATE {
             SELECT_BULLSHIT,
@@ -58,15 +66,17 @@ namespace game {
             SELECT_SECOND
         } _selectState = SELECT_BULLSHIT;
 
-        unsigned _firstPartyIndex = 0;
+        unsigned        _firstPartyIndex = 0;
 
-        virtual void update(void) override;
-        virtual void onSelectionChange(elysian::MenuSelection* sel) override;
-        virtual void onCurrentChange(Widget* prev, Widget* next) override;
-        virtual void onCancel(void) override;
+        virtual void    update(void) override;
+        virtual void    onSelectionChange(elysian::MenuSelection* sel) override;
+        virtual void    onCurrentChange(Widget* prev, Widget* next) override;
+        virtual void    onCancel(void) override;
+        virtual void    deactivate(void) override;
         //virtual void activate(void) override;
     public:
-        PartyMenu(void);
+                        PartyMenu(void);
+                        ~PartyMenu(void);
 
     };
 
@@ -78,11 +88,10 @@ namespace game {
             FRAME_RIGHT
         };
 
-        OptionsMenu*                _optionsPane;
-
-
-        PartyMenu*       _partyMenu;
-
+        OptionsMenu*    _optionsPane;
+        PartyMenu*      _partyMenu;
+        GYWav*          _openWav    = nullptr;
+        GYWav*          _closeWav   = nullptr;
 
 
         elysian::Widget*             _mainFrameWidgets[ELYSIAN_MENU_OPTIONS_PANE_OPTION_COUNT] = { nullptr };
@@ -90,9 +99,12 @@ namespace game {
 
     public:
                         PauseMenu(void);
+    virtual             ~PauseMenu(void);
+
     void                setCurrentMenuOption(MAIN_MENU_OPTION_TYPE type);
 
     virtual void        activate(void) override;
+    virtual void        deactivate(void) override;
 
     virtual void        controllerEvent(const elysian::Controller& cont) override;
     virtual void        keyboardEvent(const elysian::Keyboard& keybd) override;

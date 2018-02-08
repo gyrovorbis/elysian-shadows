@@ -24,16 +24,16 @@ void TkExaminable::initializeDelegates(void) {
         if(luaFieldItem) {
             auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
             if(dialog) {
+                QString errorMsg;
+                const bool valid = dialog->validate(errorMsg);
                 unsigned count = dialog->getScreenCount();
-                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
-                option.text = QString("[%1 items]").arg(count);
-            } else {
-                option.palette.setColor(QPalette::Text, QColor(Qt::black));
-                option.text = QString("nil");
+                option.text = QString("[%1 screens]").arg(count);
+                option.palette.setColor(QPalette::Text, QColor(valid? Qt::gray : Qt::red));
+                luaFieldItem->setToolTip(errorMsg);
             }
         }
-
     });
+    dialogDelegate->setReadOnly();
 
     dialogDelegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaPlay), [](ESTkStandardItem* item) {
         auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
@@ -43,19 +43,30 @@ void TkExaminable::initializeDelegates(void) {
         }
     });
 
-    dialogDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), [](ESTkStandardItem* item) {
-        auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
-        if(luaFieldItem) {
-            auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
-            if(!dialog) {
-                auto* examinableItem = luaFieldItem->getAncestorLuaItem({"examinable"});
-                if(examinableItem) {
-                    auto* examinableComp = examinableItem->getVariant().getValue<TkExaminable*>();
-                    examinableComp->setDialog(std::make_shared<TkDialog>());
+    dialogDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH),
+        [](ESTkStandardItem* item) {
+            auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+            if(luaFieldItem) {
+                auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
+                if(!dialog) {
+                    auto* examinableItem = luaFieldItem->getAncestorSiblingLuaItem({"examinable"}, 1);
+                    if(examinableItem) {
+                        auto* examinableComp = examinableItem->getVariant().getValue<TkExaminable*>();
+                        examinableComp->setDialog(std::make_shared<TkDialog>());
+                    }
                 }
             }
+        },
+        false,
+        [](ESTkStandardItem* item) -> bool {
+            auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+            if(luaFieldItem) {
+                auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
+                return !dialog.get();
+            }
+            return false;
         }
-    });
+    );
 
     dialogDelegate->setDeleteCallback([](ESTkStandardItem* item) {
         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
@@ -63,17 +74,45 @@ void TkExaminable::initializeDelegates(void) {
             auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
 
             if(dialog) {
-                auto* examinableItem = luaFieldItem->getAncestorLuaItem({"examinable"});
+                auto* examinableItem = luaFieldItem->getAncestorSiblingLuaItem({"examinable"}, 1);
                 if(examinableItem) {
                     auto* examinableComp = examinableItem->getVariant().getValue<TkExaminable*>();
                     if(examinableComp) {
                         examinableComp->setDialog(nullptr);
                     }
                     examinableItem->setDirty();
+                    luaFieldItem->setToolTip(""); //reset any errors in tooltip
                 }
             }
         }
     });
+
+    dialogDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_MINUS_PATH),
+        [](ESTkStandardItem* item) {
+            auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+            if(luaFieldItem) {
+                auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
+                if(dialog) {
+                    auto* examinableItem = luaFieldItem->getAncestorSiblingLuaItem({"examinable"}, 1);
+                    if(examinableItem) {
+                        auto* examinableComp = examinableItem->getVariant().getValue<TkExaminable*>();
+                        examinableComp->setDialog(nullptr);
+                        luaFieldItem->setDirty(true);
+                        luaFieldItem->setToolTip(""); //reset any errors in tooltip
+                    }
+                }
+            }
+        },
+        false,
+        [](ESTkStandardItem* item) -> bool {
+            auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+            if(luaFieldItem) {
+                auto dialog = luaFieldItem->getVariant().getValue<std::shared_ptr<TkDialog>>();
+                return dialog.get();
+            }
+            return false;
+        }
+    );
 
 
 #if 0

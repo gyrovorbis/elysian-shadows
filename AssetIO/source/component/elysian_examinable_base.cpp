@@ -10,7 +10,9 @@ namespace elysian {
 
     void ExaminableBase::setDialog(std::shared_ptr<Dialog> dialog) {
 		_dialog = dialog;
-		_dialog->setTriggerEntity(_entity);
-	}
+        if(_dialog) {
+            _dialog->setTriggerEntity(_entity);
+        }
+    }
 
 }

@@ -210,6 +210,7 @@ SOURCES += \
     ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
     ../../ESGamma/source/system/elysian_particle_system_base.cpp \
+    source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp
 
 !ios: !dreamcast: !android {
 
@@ -480,7 +481,8 @@ HEADERS += \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
     ../../ESGamma/include/system/elysian_particle_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_particle_system.hpp \
-    ../../AssetIO/include/primitive/elysian_rect.hpp
+    ../../AssetIO/include/primitive/elysian_rect.hpp \
+    include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

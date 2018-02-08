@@ -6,6 +6,7 @@
 #include <crtp/elysian_renderable.hpp>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <crtp/elysian_combat.hpp>
+#include <system/elysian_party_system.hpp>
 
 namespace game {
 
@@ -14,14 +15,25 @@ PlayablePane::PlayablePane(void) {
         LuaVariant pref = LuaManager::getPrefab(name);
         Entity* en1 = pref.getValue<Entity*>();
         GY_ASSERT(!pref.isNil());
-        Entity* entity = (*pref["new"])(pref).getValue<Entity*>();
+        Entity* entity = new elysian::Entity(pref.getValue<Entity*>());//(*pref["new"])(pref).getValue<Entity*>();
         GY_ASSERT(entity);
         GY_ASSERT(en1 != entity);
         dbgprintf("NEW ENTITY: %x", entity);
         return entity;
     };
 
+    _indentWidget   = new GroupWidget();
+    _indentWidget->setSize(Widget::X, ELYSIAN_PLAYABLE_PANE_INDENT_SIZE);
+    _indentWidget->setHorizontalSizePolicy(Widget::FIXED);
+
     _portrait       = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_PORTRAIT_PREFAB));
+    auto portraitSpriteAttrib = std::make_shared<elysian::SpriteAttrib>();
+    _portrait->getEntity()->getRenderable()->setSpriteAttrib(portraitSpriteAttrib);
+    GYVector3 size = _portrait->getEntity()->getTransform().getSize();
+    size.x *= 2.0f;
+    size.y *= 2.0f;
+    _portrait->getEntity()->getTransform().setSize(size.x, size.y);
+    _portrait->setSizePolicy(Widget::FIXED, Widget::FIXED);
 
     _levelText      = new LabelWidget();
     _nameText       = new LabelWidget();
@@ -101,6 +113,7 @@ void PlayablePane::update(void) {
     char buff[50];
     EntityWidget::update();
     if(_playable) {
+
         CombatStatus& stats = _playable->getCombat()->getStatus();
 
         sprintf(buff, "Lv. %d", _combatTable["stats"]["level"].getVariant().getValue<int>());
@@ -108,6 +121,12 @@ void PlayablePane::update(void) {
 
         sprintf(buff, "Hp %d/%d", stats.getHp(), stats.getMaxHp());
         _hpText->setText(buff);
+
+        if(stats.getHp() <= 0) {
+            _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setColor(255, 0, 0, 255);
+        } else {
+            _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setColor(255, 255, 255, 255);
+        }
 
         _hpFg->getEntity()->getTransform().setScaleX((float)stats.getHp()/(float)stats.getMaxHp());
 
@@ -120,6 +139,14 @@ void PlayablePane::update(void) {
         _mpText->setText(buff);
 
         _mpFg->getEntity()->getTransform().setScaleX((float)stats.getMp()/(float)stats.getMaxMp());
+
+        if(!System::getPartySys()->isPartyMemberActive(System::getPartySys()->getPartySlot(_playable))) {
+            _layout->insertWidget(0, _indentWidget);
+            _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setAlpha(100);
+        } else {
+            _layout->insertWidget(3, _indentWidget);
+            _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setAlpha(255);
+        }
 
     }
 }

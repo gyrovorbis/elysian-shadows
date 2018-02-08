@@ -106,24 +106,28 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
         }
     }
 
-    boundTop    += (float)height/_curState->_scale.y*0.5f;
-    boundBottom -= (float)height/_curState->_scale.y*0.5f;
-    boundLeft   += (float)width/_curState->_scale.x*0.5f;
-    boundRight  -= (float)width/_curState->_scale.x*0.5f;
 
 
-    if(_boundByMap) {
-        if(state->_pos.y < boundTop)
-            _curState->_pos.y = boundTop;
-        if(state->_pos.y > boundBottom)
-            _curState->_pos.y = boundBottom;
-        if(state->_pos.x < boundLeft)
-            _curState->_pos.x = boundLeft;
-        if(state->_pos.x > boundRight)
-            _curState->_pos.x = boundRight;
-    }
 
     if(!_dynamic) {
+#if 0
+        boundTop    += (float)height/_curState->_scale.y*0.5f;
+        boundBottom -= (float)height/_curState->_scale.y*0.5f;
+        boundLeft   += (float)width/_curState->_scale.x*0.5f;
+        boundRight  -= (float)width/_curState->_scale.x*0.5f;
+
+
+        if(_boundByMap) {
+            if(state->_pos.y < boundTop)
+                _curState->_pos.y = boundTop;
+            if(state->_pos.y > boundBottom)
+                _curState->_pos.y = boundBottom;
+            if(state->_pos.x < boundLeft)
+                _curState->_pos.x = boundLeft;
+            if(state->_pos.x > boundRight)
+                _curState->_pos.x = boundRight;
+        }
+#endif
         return;
     }
 
@@ -161,7 +165,7 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
             float yDist = fabs(entity->_transform._pos.y-state->_pos.y);
 
             //we can fit this fucker onscreen
-            if(xDist <= maxXDist && yDist <= maxYDist) {
+             if(xDist <= maxXDist && yDist <= maxYDist) {
 
                 if(xDist > newXDist) newXDist = xDist;
                 if(yDist > newYDist) newYDist = yDist;
@@ -181,23 +185,80 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
         const float scaleY = (baseHeight)/(newYDist*2.0f);
 
         float nextScale = (scaleX < scaleY)? scaleX : scaleY;
+       /*
+        if(nextScale >= state->minScale) {
+            if(fabs(nextScale - interp.getEndKeyFrame()._scale.x) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+                setScale(nextScale, 4.0f);
+            }
+        } else {
+            setScale(state->minScale);
+        }*/
+
         if(nextScale < state->minScale) nextScale = state->minScale;
+
+
+
+
+        if(fabs(nextScale - interp.getEndKeyFrame()._scale.x) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+                   // dbgprintf("ScALING!!!");
+                    //Debug::printf(Debug::LOG_VERBOSE, "SCALE - %f", nextScale);
+                    //Debug::printf(Debug::LOG_VERBOSE, "<%f, %f>", scaleX, scaleY);
+
+                    //startScaleInterp(_keyFrame._scale, nextScale, 4.0f);
+                    setScale(nextScale, 4.0f);
+        }
+
+                    boundTop    += (float)height/_curState->_scale.y*0.5f;
+                    boundBottom -= (float)height/_curState->_scale.y*0.5f;
+                    boundLeft   += (float)width/_curState->_scale.x*0.5f;
+                    boundRight  -= (float)width/_curState->_scale.x*0.5f;
+
+
+                    if(_boundByMap) {
+                        if(state->_pos.y < boundTop)
+                            _curState->_pos.y = boundTop;
+                        if(state->_pos.y > boundBottom)
+                            _curState->_pos.y = boundBottom;
+                        if(state->_pos.x < boundLeft)
+                            _curState->_pos.x = boundLeft;
+                        if(state->_pos.x > boundRight)
+                            _curState->_pos.x = boundRight;
+                    }
+
+                    if(_boundByMap) {
+                        auto& pos = interp.getEndKeyFrame()._pos;
+                        if(pos.y < boundTop)
+                            pos.y = boundTop;
+                        if(pos.y > boundBottom)
+                            pos.y = boundBottom;
+                        if(pos.x < boundLeft)
+                            pos.x = boundLeft;
+                        if(pos.x > boundRight)
+                            pos.x = boundRight;
+                    }
+
+
+               // }
+
+        //setScale(nextScale);
 
         //float boundWidth = ;
         //float boundHeight = ;
 
         //Debug::printf(Debug::LOG_VERBOSE, "%f, %f - NEWSCALE - %f", scaleX, scaleY, nextScale);
 
+
         //Check if we need to bother updating
-        if(fabs(nextScale - interp.getEndKeyFrame()._scale.x) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+        //if(fabs(nextScale - interp.getEndKeyFrame()._scale.x) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
            // dbgprintf("ScALING!!!");
             //Debug::printf(Debug::LOG_VERBOSE, "SCALE - %f", nextScale);
             //Debug::printf(Debug::LOG_VERBOSE, "<%f, %f>", scaleX, scaleY);
 
             //curInterp.startScaleInterp(_keyFrame._scale, nextScale, 4.0f);
-            setScale(nextScale, 4.0f);
+            //setScale(nextScale, 4.0f);
 
-        }
+       // }
+
 
     }
 
@@ -403,8 +464,10 @@ void CameraSystemBase::processInput(const Keyboard* input) {
 void CameraSystemBase::update(void) {
     const float deltaTime = getTimerSys()->getDeltaTime();
 
+
     //Update camera resolution
     getGuiSys()->getResolution(_scrWidth, _scrHeight);
+                    updateSubProcesses(deltaTime);
 
     if(_customState) return;
 
@@ -424,6 +487,7 @@ void CameraSystemBase::update(void) {
       //  gyVec3AddAccum(&_curState->_keyFrame._pos, &_curState->_keyFrame._offset);
 
         //if(_dynamic) {
+
 			_updateState(_curState, deltaTime);
         //    _curState->updateBoundingRegions(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
 	//	}
@@ -500,7 +564,6 @@ void CameraSystemBase::update(void) {
 
        // }
     }
-    updateSubProcesses(deltaTime);
     //Update camera boundaries
    _curState->updateViewVolumeBoundingRegion();
    _curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
@@ -572,6 +635,19 @@ bool CameraSystemBase::isOnscreen(const Entity &entity) {
 
 void CameraSystemBase::centerOnEntity(const Entity& entity, float time, EventMonitor*const monitor) {
     moveToPosition(entity._transform._pos.x, entity._transform._pos.y, entity._transform._pos.z, time, monitor);
+}
+
+inline void CameraSystemBase::setScale(const float factor, const float time, EventMonitor*const monitor) {
+    auto &interp = get<SUBPROC_KEY_FR_INTERP> ( static_cast<SubProcParent&>(*this));
+
+    if(interp.getProcState() == PROC_STATE_RUNNING && System::getEngineState() == System::ENGINE_WARPING) return;
+
+    CameraKeyFrame frame = getKeyFrame();
+    frame.setScale(factor, factor);
+    interp.setKeyFrames(_curState, frame);
+    interp.setTimeInterval(time);
+    interp.setEventMonitor(monitor);
+    interp.start(this);
 }
 
 

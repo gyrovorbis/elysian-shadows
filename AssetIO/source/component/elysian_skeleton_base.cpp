@@ -200,11 +200,11 @@ void SkeletonAttribBase::setAnimation(const unsigned index, Animation *anim) {
     if(index == _animations.size()) {                       //insert
         _animations.push_back(anim);
     } else if(index < _animations.size()) {
+        delete _animations[index];
         if(!anim) {
             _animations.erase(_animations.begin()+index);   //remove
         } else {
-            delete _animations[index];                      //reassign
-            _animations[index] = anim;
+            _animations[index] = anim; //reassign
         }
     }
 }

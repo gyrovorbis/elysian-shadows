@@ -278,6 +278,7 @@ private Q_SLOTS:
     void on_actionPerformance_Monitor_Dump_triggered();
     void on_actionAudio_Dump_triggered();
     void on_actionTexture_Dump_triggered();
+    void on_actionVMU_View_triggered(bool checked);
 };
 
 

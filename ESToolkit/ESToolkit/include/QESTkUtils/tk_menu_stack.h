@@ -6,6 +6,7 @@
 
 class QMenu;
 class QAction;
+class QPoint;
 
 /* Once you've created the stack, calling takeTopLevel() relinquishes ownership of the menus on the stack.
  * If you do not call takeTopLevel() and assume ownership, the QMenus will be deleted with the MenuStack object.
@@ -29,6 +30,8 @@ public:
     QMenu*      current(void) const;
     QMenu*      first(void) const;
     QMenu*      takeTopLevel(void);
+
+    void        execDeleteLater(const QPoint& pos, QAction *at = nullptr);
 
 };
 

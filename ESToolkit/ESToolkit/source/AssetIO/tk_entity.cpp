@@ -467,7 +467,7 @@ void TkEntity::initializeDelegates(void) {
     OOLUA::push(*_mainState, elevDelegate);
     lua_setfield(*_mainState, -2, "elev");
 
-    DynamicContentPropertyItemDelegate* behavDelegate = new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+    DynamicContentPropertyItemDelegate* behavDelegate = new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
     behavDelegate->setMimeDropManager(new MimeDropManager(QVector<MimeDropManager::Handler> {
         {
             MimeDropManager::TYPE_URLS,

@@ -68,6 +68,16 @@ namespace elysian {
 
 	class PartySystem: public System { 
     private:
+
+        struct PartyMember {
+            Entity* entity;
+            bool    active = true;
+            PartyMember(Entity* e): entity(e), active(true) {}
+             operator Entity*() const { return entity; }
+            bool operator ==(const Entity* e) const { return e == entity; }
+            Entity* operator->() const { return entity; }
+        };
+
         Player _players[ELYSIAN_PARTY_SLOTS_MAX];
 
 		unsigned int _activePlayablePartySize	= 3;
@@ -78,9 +88,9 @@ namespace elysian {
         std::vector<Entity*> _playables;
 
 		//< _activePartySize is active
-        std::vector<Entity*> _playableParty;
+        std::vector<PartyMember> _playableParty;
 		//ONLY active and can only contain up to _characterPartySize
-        std::vector<Entity*> _characterParty;
+        std::vector<PartyMember> _characterParty;
 		
 		std::vector<GYVector2> _partyPathPoint;
         static const unsigned int _pointsPerCharacter = 30;
@@ -125,8 +135,13 @@ namespace elysian {
         void    setPartyLeader(Entity* entity);
         Entity *getPlayablePartyMember(const char *name) const;
         Entity *getPartyMember(const unsigned int slot) const;
+        void    swapPartyMemberSlots(unsigned int slot1, unsigned int slot2);
         Entity *getCharacterPartyMember(const char *name) const;
         Entity *getCharacterPartyMember(const unsigned int slot) const;
+        bool    isPartyMemberActive(unsigned slot) const;
+        void    setPartyMemberActive(unsigned slot, bool active=true);
+
+        unsigned getActivePartyMemberCount(void) const;
 
         unsigned getPartySize(void) const;
 
@@ -157,6 +172,8 @@ namespace elysian {
      inline unsigned PartySystem::getPartySize(void) const { return _characterParty.size(); }
     inline unsigned PartySystem::getPlayableCount(void) const { return _playables.size(); }
     inline void PartySystem::setFollowLogicEnabled(bool val) { _followLogic = val; }
+    inline bool PartySystem::isPartyMemberActive(unsigned slot) const { return _characterParty[slot].active; }
+
 
 
      inline unsigned Player::getPlayerNum(void) const { return _playerNum; }

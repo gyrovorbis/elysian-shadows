@@ -15,6 +15,7 @@ namespace elysian {
     enum EVENT_TYPE {
         EVENT_COLLISION_ENTER,
         EVENT_COLLISION_EXIT,
+        EVENT_LUA,
         EVENT_TYPE_COUNT
     };
 
@@ -27,6 +28,14 @@ namespace elysian {
                         Event(EventTypeFlags type);
         EventTypeFlags& getEventType(void);
         auto            getEventType(void) const -> const EventTypeFlags&;
+    };
+
+    class LuaEvent: public Event {
+        LuaVariant  _luaVariant;
+        //BitMask32 _subType?
+    public:
+                    LuaEvent(LuaVariant v);
+        LuaVariant  getVariant(void) const;
     };
 
 
@@ -82,11 +91,11 @@ namespace elysian {
     private:
         std::vector<EventMonitor*> _monitors[EVENT_TYPE_COUNT];
     public:
-        EventSystem(void) = default;
-        void triggerEvent(Event* event) const;
-        void registerEventMonitor(EventMonitor* monitor);
-        void removeEventMonitor(EventMonitor* monitor);
-        void clearEventMonitors(void);
+                EventSystem(void) = default;
+        void    triggerEvent(Event* event) const;
+        void    registerEventMonitor(EventMonitor* monitor);
+        void    removeEventMonitor(EventMonitor* monitor);
+        void    clearEventMonitors(void);
 
     };
 

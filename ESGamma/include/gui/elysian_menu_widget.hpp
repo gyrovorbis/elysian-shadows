@@ -118,7 +118,6 @@ inline Widget* MenuWidget::getCurrentWidget(void) const {
 
 inline void MenuWidget::setCurrentIndex(int index) {
     int wrapIndex = _toWrapIndex(index);
-    dbgprintf("INDEX - %d, WRAPINDEX - %d", index, wrapIndex);
     _setCurrent(_getWidgetFromIndex(wrapIndex), wrapIndex);
 }
 

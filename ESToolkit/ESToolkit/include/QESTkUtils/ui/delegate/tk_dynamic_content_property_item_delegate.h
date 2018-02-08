@@ -16,21 +16,28 @@ class DynamicContentPropertyItemDelegate: public PropertyItemDelegate {
 public:
     using TextCallbackType      = std::function<void(ESTkStandardItem*, QStyleOptionViewItem&)>;
     using ButtonCallbackType    = std::function<void(ESTkStandardItem*)>;
+    using UseButtonCallbackType = std::function<bool(ESTkStandardItem*)>;
     using DeleteCallbackType    = std::function<void(ESTkStandardItem*)>;
 
 private:
     struct Button {
-        QIcon               icon;
-        ButtonCallbackType  callback;
-        bool                persistent;
+        QIcon                   icon;
+        ButtonCallbackType      callback;
+        UseButtonCallbackType   useButtonCallback;
+        bool                    persistent;
     };
 
     QVector<Button>         _buttons;
     TextCallbackType        _textCallback;
     DeleteCallbackType      _deleteCallback;
 
+    static void             _luaArraySizeTextCallback(ESTkStandardItem* item, QStyleOptionViewItem& option, bool emptyInvalid=false);
+
+    QVector<bool>           _getUseButtonData(ESTkStandardItem* item, unsigned& useButtonCount) const;
+
 public:
 
+    template <bool EmptyInvalid=false>
     static void             luaArraySizeTextCallback(ESTkStandardItem* item, QStyleOptionViewItem& option);
     template<typename T>
     static void             luaAddItemButtonCallback(ESTkStandardItem* item);
@@ -41,7 +48,8 @@ public:
 
     void                    setTextCallback(TextCallbackType callback);
     void                    setDeleteCallback(DeleteCallbackType callback);
-    void                    addButton(QIcon icon, ButtonCallbackType callback, bool persistent=false);
+    void                    addButton(QIcon icon, ButtonCallbackType callback, bool persistent=false, UseButtonCallbackType useCallback=UseButtonCallbackType());
+    DeleteCallbackType      getDeleteCallback(void) const;
 
     virtual void            paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     virtual bool            editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
@@ -66,10 +74,15 @@ inline void DynamicContentPropertyItemDelegate::setDeleteCallback(DeleteCallback
     _deleteCallback = std::move(callback);
 }
 
-inline void DynamicContentPropertyItemDelegate::addButton(QIcon icon, ButtonCallbackType callback, bool persistent) {
+inline auto DynamicContentPropertyItemDelegate::getDeleteCallback(void) const -> DeleteCallbackType {
+    return _deleteCallback;
+}
+
+inline void DynamicContentPropertyItemDelegate::addButton(QIcon icon, ButtonCallbackType callback, bool persistent, UseButtonCallbackType useCallback) {
     _buttons.push_back(Button {
                             std::move(icon),
                             std::move(callback),
+                            std::move(useCallback),
                             persistent
                        });
 
@@ -81,6 +94,12 @@ inline void DynamicContentPropertyItemDelegate::luaAddItemButtonCallback(ESTkSta
     const LuaVariant& table = luaItem->getTableData()->getTableRef();
     table[table.getLength()+1].setVariant(new T);
 }
+
+template<bool EmptyInvalid>
+inline void DynamicContentPropertyItemDelegate::luaArraySizeTextCallback(ESTkStandardItem *item, QStyleOptionViewItem& option) {
+    _luaArraySizeTextCallback(item, option, EmptyInvalid);
+}
+
 
 #endif // TK_DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_H
 

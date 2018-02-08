@@ -15,7 +15,7 @@ void EntityWidget::setPosition(AXIS axis, float pos) {
     if(_entity) {
         if(axis == X) _entity->getTransform().setPosX(pos);
         else _entity->getTransform().setPosY(pos);
-    }
+    } else GY_ASSERT(false);
 }
 
 float EntityWidget::getSize(AXIS axis) const {

@@ -32,3 +32,9 @@ QAction* MenuStack::insertCheckableAction(const QString text, const std::functio
     action->blockSignals(false);
     return action;
 }
+
+void MenuStack::execDeleteLater(const QPoint &pos, QAction *at) {
+    auto* topLevel = takeTopLevel();
+    QObject::connect(topLevel, &QMenu::triggered, topLevel, &QMenu::deleteLater);
+    topLevel->exec(pos, at);
+}

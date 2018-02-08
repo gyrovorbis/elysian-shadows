@@ -49,6 +49,7 @@ namespace elysian {
                     ~Layout(void);
 
         void        addWidget(Widget* widget);
+        void        insertWidget(unsigned index, Widget* widget);
         Widget*     removeWidget(Widget* widget);   //Returns widget given as argument (for owernship change in Lua API).
         void        clearWidgets(void);
         void        setWidget(unsigned index, Widget* widget);

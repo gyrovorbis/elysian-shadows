@@ -41,7 +41,7 @@ protected:
     QVector<QString>        _supportedUserData;
     MimeDropManager*        _mimeDropManager    = nullptr;
     int                     _completerMode;
-    bool                    _readOnly;
+    bool                    _readOnly           = false;
 
     //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
     //virtual void    setEditorData(QWidget *editor, const QModelIndex &index) const = 0;

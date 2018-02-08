@@ -193,7 +193,7 @@ namespace elysian {
     inline void SpriteAttribBase::getSpriteSize(unsigned& spriteWidth, unsigned& spriteHeight) const { spriteWidth = _tex->_coord->spriteWidth; spriteHeight = _tex->_coord->spriteHeight; }
     inline const char* SpriteAttribBase::getTexPath(void) const { return _tex? _tex->filename : ""; }
     inline void SpriteAttribBase::setTexPath(const char*const path) {
-        delete _tex;
+        gyVidTexDestroy(_tex);
         if(strcmp(path, "") != 0) _tex = gyVidTexCreate(path);
 
     }

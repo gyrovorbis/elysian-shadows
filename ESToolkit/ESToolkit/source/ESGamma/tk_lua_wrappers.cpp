@@ -162,6 +162,13 @@ OOLUA_EXPORT_FUNCTIONS(DynamicContentPropertyItemDelegate)
 OOLUA_EXPORT_FUNCTIONS_CONST(ColorSwatchPropertyItemDelegate)
 OOLUA_EXPORT_FUNCTIONS(ColorSwatchPropertyItemDelegate)
 
+/*!
+    \qmltype PlainTextEditPropertyItemDelegate
+    \since 1.6.1
+    \inmodule Toolkit
+    \brief Delegate
+*/
+OOLUA_EXPORT_NO_FUNCTIONS(QESTkUtils::PlainTextEditPropertyItemDelegate)
 
 void TkLuaManager::_registerWrappers(void) {
     elysian::LuaManagerBase::_registerWrappers();

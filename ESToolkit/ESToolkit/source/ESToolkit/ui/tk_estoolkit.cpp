@@ -155,26 +155,6 @@ ESToolkit::ESToolkit(QWidget *parent):
     _selectionDockWidget = new SelectionDockWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, _selectionDockWidget);
 
-    // another QMainWindow you want to embed
-#if 0
-        _evmuWindow = new VMUMainWindow(this);	// no parent
-        //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
-        //evmuWindow->setWindowFlags(Qt::Widget);
-       _evmuWindow->setFocusPolicy(Qt::ClickFocus);
-
-        //subMainWindow->setUnifiedTitleAndToolBarOnMac(true); _vmuDockWidget = new QDockWidget(nullptr);
-       _vmuDockWidget = new QDockWidget(this);
-        _vmuDockWidget->setWindowTitle("VMU View");
-        _evmuWindow->menuBar()->setNativeMenuBar(false);
-
-
-       _vmuDockWidget->setWidget(_evmuWindow);
-//dock->setMouseTracking(false);
-       //evmuWindow->setParent(dock) ;	// here
-
-        addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
-#endif
-
     // create/initialize HISTORY dock and widget
     _historyDockWidget = new HistoryDockWidget(this);
     _historyDockWidget->SetActiveGroup(&_undoGroup);
@@ -1284,3 +1264,4 @@ void ESToolkit::on_actionTexture_Dump_triggered()
 {
     gyVidTexWalkthrough();
 }
+

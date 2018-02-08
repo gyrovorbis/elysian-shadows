@@ -163,7 +163,7 @@ void TkSkeletonAttrib::initializeDelegates(void) {
     lua_setfield(*_mainState, -2, "jsonPath");
 
     DynamicContentPropertyItemDelegate* animDelegate =
-            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
     animDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<elysian::Animation>);
     animDelegate->setMimeDropManager(new LuaMimeDropManager(QMap<QString, LuaMimeDropManager::LuaHandler> {
         {
@@ -310,7 +310,7 @@ void TkAnimation::initializeDelegates(void) {
     lua_setfield(*_mainState, -2, "name");
 
     DynamicContentPropertyItemDelegate* tracksDelegate =
-            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
     tracksDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<AnimationTrack>);
 
     OOLUA::push(*_mainState, tracksDelegate);

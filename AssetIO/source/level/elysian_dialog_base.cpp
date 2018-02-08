@@ -22,14 +22,15 @@ DialogOption* DialogPromptBase::getOption(const unsigned index) const {
 
 void DialogPromptBase::addOption(const char*const text, const int nextIndex) { _options.push_back(new DialogOption(text, nextIndex)); }
 void DialogPromptBase::setOption(const unsigned index, DialogOption* option) {
-    if(index == _options.size()) {
+    if(index == _options.size()) {                       //insert
         _options.push_back(option);
-    } else {
-        //qDebug() << "REALLOC WITH SIZE " << _options.size();
-        //if(_options[index]) {
-         //   delete _options[index];
-         //   _options[index] = option;
-       // }
+    } else if(index < _options.size()) {
+        delete _options[index];
+        if(!option) {
+            _options.erase(_options.begin()+index);   //remove
+        } else {
+            _options[index] = option;
+        }
     }
 }
 DialogPromptBase::~DialogPromptBase(void) { for(auto it: _options) delete it; }
@@ -38,16 +39,15 @@ DialogPromptBase::~DialogPromptBase(void) { for(auto it: _options) delete it; }
 DialogBase::~DialogBase(void) { for(auto it : _screens) delete it; }
 
 void DialogBase::setScreen(const unsigned index, DialogScreen*const screen) {
-    if(index == _screens.size()) {
+    if(index == _screens.size()) {                       //insert
         _screens.push_back(screen);
-        screen->setIndex(_screens.size());
-    } else {
-        GY_ASSERT(false);
-       // qDebug() << "REALLOC SHIT" << (void*)screen;
-      //  if(_screens[index]) {
-      //      delete _screens[index];
-    //        _screens[index] = screen;
-       // }
+    } else if(index < _screens.size()) {
+        delete _screens[index];
+        if(!screen) {
+            _screens.erase(_screens.begin()+index);   //remove
+        } else {
+            _screens[index] = screen;
+        }
     }
 }
 

@@ -7,6 +7,7 @@
 #include <crtp/elysian_renderable.hpp>
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_input_system.hpp>
+#include <system/elysian_audio_system.hpp>
 #include <gyro_input_api.h>
 
 namespace game {
@@ -15,7 +16,9 @@ using namespace elysian;
 
 PauseMenu::PauseMenu(void):
     _optionsPane(new OptionsMenu),
-    _partyMenu(new PartyMenu)
+    _partyMenu(new PartyMenu),
+    _openWav(gyAudWavCreate(ELYSIAN_PAUSE_MENU_SFX_OPEN_PATH)),
+    _closeWav(gyAudWavCreate(ELYSIAN_PAUSE_MENU_SFX_CLOSE_PATH))
 {
 
     HorizontalLayout* mainLayout = new HorizontalLayout(std::vector<Widget*>{
@@ -37,6 +40,12 @@ PauseMenu::PauseMenu(void):
     setEntity(entity);
 }
 
+PauseMenu::~PauseMenu(void) {
+    gyAudWavDestroy(_openWav);
+    gyAudWavDestroy(_closeWav);
+}
+
+
 void PauseMenu::setCurrentMenuOption(MAIN_MENU_OPTION_TYPE type) {
     _layout->setWidget(FRAME_RIGHT, _mainFrameWidgets[type]);
     _optionsPane->setCurrentIndex(type);
@@ -47,15 +56,26 @@ void PauseMenu::activate(void) {
     setCurrentMenuOption(MAIN_MENU_OPTION_PARTY);
     _optionsPane->setFocus();
     _optionsPane->setCurrentIndex(0);
+    System::getAudioSys()->playSfxChannel(-1, *_openWav);
     Widget::activate();
+}
+
+void PauseMenu::deactivate(void) {
+    _layout->getWidget(FRAME_RIGHT)->setFocus(false);
+    System::getAudioSys()->playSfxChannel(-1, *_closeWav);
+    Widget::deactivate();
 }
 
 void PauseMenu::onOptionsPaneSelect(elysian::MenuSelection* selection) {
     if(selection) {
         GY_ASSERT(selection->getCount());
-        setCurrentMenuOption((MAIN_MENU_OPTION_TYPE)selection->getEntry(0)->second.index);
-        _layout->getWidget(FRAME_RIGHT)->setFocus(true);
-        _optionsPane->setFocus(false);
+        const int index = selection->getEntry(0)->second.index;
+        if(_mainFrameWidgets[index]) {
+            setCurrentMenuOption((MAIN_MENU_OPTION_TYPE)index);
+            _layout->getWidget(FRAME_RIGHT)->setFocus(true);
+            _optionsPane->setFocus(false);
+            System::getAudioSys()->playSfxChannel(-1, *_openWav);
+        }
     } else {
         setCurrentMenuOption(MAIN_MENU_OPTION_PARTY);
         _optionsPane->setFocus();
@@ -86,6 +106,7 @@ void PauseMenu::keyboardEvent(const Keyboard& keybd) {
 
 void PauseMenu::onMainFrameCancel(void) {
     _layout->getWidget(FRAME_RIGHT)->setFocus(false);
+    System::getAudioSys()->playSfxChannel(-1, *_closeWav);
     _optionsPane->setFocus();
 }
 
@@ -120,9 +141,19 @@ void OptionsMenu::onCurrentChange(Widget* prev, Widget* next) {
     if(nextLabel) nextLabel->setColor(Color4::aqua);
 }
 
-PartyMenu::PartyMenu(void) {
+PartyMenu::PartyMenu(void):
+    _swapWav(gyAudWavCreate(ELYSIAN_PARTY_MENU_SFX_SWAP_PATH)),
+    _activateWav(gyAudWavCreate(ELYSIAN_PARTY_MENU_SFX_ACTIVATE_PATH)),
+    _deactivateWav(gyAudWavCreate(ELYSIAN_PARTY_MENU_SFX_DEACTIVATE_PATH))
+{
     for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _playablePane[i] = new PlayablePane();
     setLayout(new VerticalLayout);
+}
+
+PartyMenu::~PartyMenu(void) {
+    gyAudWavDestroy(_swapWav);
+    gyAudWavDestroy(_activateWav);
+    gyAudWavDestroy(_deactivateWav);
 }
 
 //GET RID OF THIS BULLSHIT AND CHANGE TO
@@ -185,6 +216,7 @@ void PartyMenu::onSelectionChange(MenuSelection *next) {
          onCurrentChange(nullptr, getCurrentWidget());
         break;
     case SELECT_FIRST: //select a party member!
+        System::getAudioSys()->playSfxChannel(-1, *_swapWav);
         _firstPartyIndex = next->getEntry(0)->second.index;
         //Do something to render this fucker differently!!!!11
         _selectState = SELECT_SECOND;
@@ -193,11 +225,12 @@ void PartyMenu::onSelectionChange(MenuSelection *next) {
     case SELECT_SECOND:
         secondPartyIndex = next->getEntry(0)->second.index;
         if(secondPartyIndex == _firstPartyIndex) {
-            dbgprintf("Just tried to do shit to same shit [%d]", secondPartyIndex);
-            //activate/deactivate character!!!
+            bool active = System::getPartySys()->isPartyMemberActive(secondPartyIndex);
+            System::getAudioSys()->playSfxChannel(-1, active? *_deactivateWav : *_activateWav);
+            System::getPartySys()->setPartyMemberActive(secondPartyIndex, !active);
         } else {
-            dbgprintf("Just tried to swap slots [%d, %d]", _firstPartyIndex, secondPartyIndex);
-            //swap character positions
+            System::getAudioSys()->playSfxChannel(-1, *_swapWav);
+            System::getPartySys()->swapPartyMemberSlots(_firstPartyIndex, secondPartyIndex);
         }
         _selectState = SELECT_FIRST;
         _firstPartyIndex = secondPartyIndex;
@@ -206,6 +239,11 @@ void PartyMenu::onSelectionChange(MenuSelection *next) {
     default: GY_ASSERT(false);
 
     }
+}
+
+void PartyMenu::deactivate(void) {
+    _selectState = SELECT_BULLSHIT;
+    onCurrentChange(nullptr, nullptr);
 }
 
 void PartyMenu::onCancel(void) {

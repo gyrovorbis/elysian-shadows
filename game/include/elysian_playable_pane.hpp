@@ -13,6 +13,7 @@
 #define ELYSIAN_PLAYABLE_PANE_MP_BG_PREFAB      "menu_partyMemberPane_mpBg"
 #define ELYSIAN_PLAYABLE_PANE_MP_FG_PREFAB      "menu_partyMemberPane_mpFg"
 #define ELYSIAN_PLAYABLE_PANE_ECHO_ICON_PREFAB  "menu_partyMemberPane_echoIcon"
+#define ELYSIAN_PLAYABLE_PANE_INDENT_SIZE       48
 
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
@@ -36,7 +37,7 @@ namespace game {
         VerticalLayout*     _vLayoutRight;
         HorizontalLayout*   _hLayoutEcho;
 
-        GroupWidget*        _groupLeft;
+        GroupWidget*         _groupLeft;
         GroupWidget*         _groupRight;
         GroupWidget*         _groupEcho;
 
@@ -49,6 +50,7 @@ namespace game {
         LabelWidget*        _mpText;
         LabelWidget*        _mpMaxText;
 
+        GroupWidget*        _indentWidget;
         EntityWidget*       _portrait;
         EntityWidget*       _hpBg;
         EntityWidget*       _mpBg;
