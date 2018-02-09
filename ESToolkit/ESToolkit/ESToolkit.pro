@@ -80,6 +80,8 @@ INCLUDEPATH += ../../AssetIO/include \
 }
 
 vmu_child_app {
+    QT += serialport
+
     INCLUDEPATH += ../../ElysianVMU/lib/source
 
     DEPENDPATH += ../../ElysianVMU/lib/source
