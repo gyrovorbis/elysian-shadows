@@ -84,7 +84,8 @@ vmu_child_app {
 
     INCLUDEPATH += ../../ElysianVMU/lib/source
 
-    DEPENDPATH += ../../ElysianVMU/lib/source
+    DEPENDPATH += ../../ElysianVMU/lib/source \
+        ../../ElysianVMU/qtcreator/ElysianVMU
 }
 
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
@@ -211,8 +212,7 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_event_system.cpp \
     ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
-    ../../ESGamma/source/system/elysian_particle_system_base.cpp \
-    source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp
+    ../../ESGamma/source/system/elysian_particle_system_base.cpp
 
 !ios: !dreamcast: !android {
 
@@ -305,7 +305,8 @@ SOURCES += \
         source/ESGamma/tk_particle_system.cpp \
         source/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.cpp \
         source/QESTkUtils/ui/widget/tk_2d_vector_widget.cpp \
-        source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp
+        source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp
 
 
 } else {
@@ -483,8 +484,7 @@ HEADERS += \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
     ../../ESGamma/include/system/elysian_particle_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_particle_system.hpp \
-    ../../AssetIO/include/primitive/elysian_rect.hpp \
-    include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h
+    ../../AssetIO/include/primitive/elysian_rect.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -603,7 +603,8 @@ HEADERS += \
         include/ESGamma/tk_gui_system.h \
         include/ESGamma/tk_level_system.h \
         include/QESTkUtils/tk_mime_data.h \
-        include/QESTkUtils/tk_mime_drop_manager.h
+        include/QESTkUtils/tk_mime_drop_manager.h \
+        include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h
 }
 
 
@@ -709,6 +710,21 @@ linux {
 }
 
 
+vmu_child_app {
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
+    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU -lElysianVMU
+
+    INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+    DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/libElysianVMU.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/libElysianVMU.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ElysianVMU.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ElysianVMU.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/libElysianVMU.a
+}
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/ -llibGyro
@@ -762,22 +778,6 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../S
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/release/Spine.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/debug/Spine.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
-
-vmu_child_app {
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
-    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU -lElysianVMU
-
-    INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
-    DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
-
-    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/libElysianVMU.a
-    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/libElysianVMU.a
-    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ElysianVMU.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ElysianVMU.lib
-    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/libElysianVMU.a
-}
 
 tests {
 
