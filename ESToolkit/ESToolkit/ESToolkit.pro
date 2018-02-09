@@ -812,6 +812,8 @@ win32 {
         -lSDL2 \
         -lSDL2Main \
         -lSDL2.dll \
+        -lSDL2_net \
+        -lSDL2_net.dll \
        # -lmingw32 \
         -logg \
         -lvorbis \
