@@ -50,6 +50,7 @@ namespace elysian {
         void                setStartWavFile(const char* filepath);
         const char*         getBasePath(void) const;
         void                play(EventMonitor* monitor=nullptr);
+        void                playLua(LuaVariant v=LuaVariant());
         void                stop(void);
         void                setGain(const float val);
         void                setPitch(const float val);

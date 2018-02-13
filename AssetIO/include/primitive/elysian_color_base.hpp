@@ -163,7 +163,7 @@ namespace elysian {
 
 inline Color4Base::Color4Base(void): GYColor4 { 255, 255, 255, 255 }, _ptr(this) {}
 inline Color4Base::Color4Base(unsigned char c): GYColor4 { c, c, c, c }, _ptr(this) {}
-inline Color4Base::Color4Base(GYColor4* color): _ptr(color) {}
+inline Color4Base::Color4Base(GYColor4* color):GYColor4 { color->r, color->g, color->b, color->a }, _ptr(color) {}
 inline Color4Base::Color4Base(const GYColor4& other): GYColor4 { other.r, other.g, other.b, other.a }, _ptr(this) {}
 inline Color4Base::Color4Base(GYColor4 &&other): GYColor4 { other.r, other.g, other.b, other.a }, _ptr(this) {}
 inline Color4Base::Color4Base(const Color4Base& color) : LuaTableProxy<Color4>() {
@@ -186,7 +186,8 @@ inline Color4Base& Color4Base::operator =(const Color4Base& rhs) {
 }
 
 inline Color4Base& Color4Base::operator =(GYColor4& rhs) {
-    _ptr = &rhs;
+    *(GYColor4*)this = rhs;
+    _ptr = this;
     return *this;
 }
 

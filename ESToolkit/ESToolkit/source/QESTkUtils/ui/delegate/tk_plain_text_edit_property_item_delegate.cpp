@@ -1,5 +1,6 @@
 #include <QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h>
-#include <QPlainTextEdit>
+#include <QTextEdit>
+
 #include <QFontMetrics>
 #include <QScrollBar>
 #include <system/elysian_dialog_system.hpp>
@@ -14,11 +15,13 @@ class DisableScrollFilter: public QObject {
     virtual bool    eventFilter(QObject *object, QEvent *event) override {
         //auto* editor = qobject_cast<QPlainTextEdit*>(object);
         //if(!editor) return false;
-
+#if 0
         if(event->type() == QEvent::Scroll) {
             event->accept();
             return true;
         }
+#endif
+
         return QObject::eventFilter(object, event);
     }
 };
@@ -27,11 +30,12 @@ static DisableScrollFilter _disableFilter;
 
 
 QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& option, const QModelIndex& /*index*/) const {
-    QPlainTextEdit* editor = new QPlainTextEdit(parent);
+    QTextEdit* editor = new QTextEdit(parent);
     editor->setFrameShape(QFrame::NoFrame);
     //editor->setContentsMargins(0, 0, 0, 0);
     editor->setAutoFillBackground(true);
     editor->document()->setDocumentMargin(0);
+    editor->setWordWrapMode(QTextOption::NoWrap);
     editor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     QFontMetrics m (editor->font());
     int rowHeight = m.lineSpacing();
@@ -40,13 +44,102 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
     rect.setHeight(rowHeight*3);
     editor->setGeometry(rect);
   //  QCursor cur = editor->setCursorRect
-    editor->setCenterOnScroll(false);
+    //editor->setCenterOnScroll(false);
     editor->verticalScrollBar()->setEnabled(false);
     editor->installEventFilter(&_disableFilter);
-    editor->verticalScrollBar()->installEventFilter(&_disableFilter);
+    //editor->verticalScrollBar()->installEventFilter(&_disableFilter);
     //editor->setEditable(true);
    // editor->setFocusPolicy(Qt::WheelFocus);
+
+#if 1
+    QObject::connect(editor, &QTextEdit::textChanged, [=]() {
+        char buff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE] = { '\0' };
+        char tempBuff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE];
+
+        QTextCursor cursor = editor->textCursor();
+        strncpy(buff, Q_CSTR(editor->toPlainText()), ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE-1);
+
+        auto&           font = System::getDialogSys()->getTextFont();
+        unsigned        length     = strlen(buff);
+        unsigned        lineIdx    = 0;
+        unsigned        wordIdx    = 0;
+        unsigned        i          = 0;
+        unsigned        curLine    = 0;
+        unsigned        curOffset  = 0;
+
+        for(; i < length; ++i) {
+            for(unsigned j = lineIdx; j < i; ++j) tempBuff[j-lineIdx] = buff[i];
+            tempBuff[i-lineIdx+1] = '\0';
+
+            if(font.getStringPixelWidth(tempBuff) > 560) {
+                if(wordIdx != lineIdx) {
+                    if(curLine != ELYSIAN_DIALOG_SYSTEM_MAX_LINES-1) {
+                        lineIdx = wordIdx;
+                        //wordIdx = 0;
+                        buff[wordIdx-1] = '\n';
+                        wordIdx = i+1;
+                    }
+                    ++curLine;
+
+                } else {
+                    if(curLine != ELYSIAN_DIALOG_SYSTEM_MAX_LINES-1) {
+                        //one single fucking word is too long
+                        const char temp = buff[i];
+                        buff[i] = '\n';
+                        buff[i+1] = temp;
+                        for(unsigned j = i+3; j < ELYSIAN_DIALOG_SYSTEM_MAX_LINES-1; ++j) buff[j-1] = buff[j];
+                        if(cursor.position() >= i) ++curOffset;
+                        //if(cursor.position() >= (int)strlen(tempBuff)) {
+                          //  cursor.setPosition(cursor.position()+1);
+                       // }
+                        //lineIdx = wordIdx;
+                        //wordIdx = 0;
+                        ++length;
+                    } else ++curLine;
+                }
+            }
+
+            if(curLine >= ELYSIAN_DIALOG_SYSTEM_MAX_LINES) {
+                buff[i] = '\0';
+                break;
+            }
+
+            switch(buff[i]) {
+            case '\n':
+                ++curLine;
+                lineIdx = i+1;
+            case ' ':
+                wordIdx = i+1;
+                break;
+            default:
+                break;
+            }
+
+        }
+
+
+        const int newLen = strlen(buff);
 #if 0
+        if(cursor.position() >= newLen) {
+            cursor.setPosition(newLen-1);
+
+        }
+#endif
+#if 0
+        if(cursor.position() == oldLen) {
+            cursor.setPosition(oldLen + (newLen-oldLen));
+         }
+#endif
+
+        auto pos = cursor.position();
+        editor->blockSignals(true);
+        editor->setPlainText(buff);
+        editor->blockSignals(false);
+        cursor.setPosition(pos);//+curOffset);
+        editor->setTextCursor(cursor);
+    });
+
+#else
     QObject::connect(editor, &QPlainTextEdit::textChanged, [=]() {
         char buff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE] = { '\0' };
 
@@ -90,7 +183,7 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
 
 
 void PlainTextEditPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-    QPlainTextEdit* edit = static_cast<QPlainTextEdit*>(editor);
+    QTextEdit* edit = static_cast<QTextEdit*>(editor);
 
     auto* item = modelIndexToESTkStandardItem(index);
 
@@ -99,7 +192,7 @@ void PlainTextEditPropertyItemDelegate::setEditorData(QWidget *editor, const QMo
 
 
 void PlainTextEditPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-    QPlainTextEdit* edit = static_cast<QPlainTextEdit*>(editor);
+    QTextEdit* edit = static_cast<QTextEdit*>(editor);
 
     auto* item = modelIndexToESTkStandardItem(index);
     item->setData(edit->toPlainText(), Qt::EditRole);

@@ -29,7 +29,7 @@ OOLUA_PROXY(AudioSource, Component)
     OOLUA_MFUNC_CONST(isPlaying)
     OOLUA_MFUNC(setWav)
     OOLUA_MFUNC(playWav)
-    OOLUA_MFUNC(play)
+    OOLUA_MEM_FUNC(void, playLua, LuaVariant)
     OOLUA_MFUNC(setStartLooping)
     OOLUA_MFUNC_CONST(getStartLooping)
     OOLUA_MFUNC(setStartWavFile)
@@ -41,6 +41,7 @@ OOLUA_PROXY(AudioSource, Component)
     OOLUA_MEM_FUNC_CONST(float, getPitch)
     OOLUA_MEM_FUNC_CONST(float, getGain)
     OOLUA_MEM_FUNC_CONST(bool, getLooping)
+    OOLUA_MEM_FUNC_RENAME(play, void, playLua, LuaVariant)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_AUDIO_SOURCE_PROXY_HPP

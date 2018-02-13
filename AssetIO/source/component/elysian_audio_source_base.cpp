@@ -6,6 +6,7 @@
 #include <utility/elysian_asset_typedefs.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_area.hpp>
+#include <proxy/elysian_event_monitor_proxy.hpp>
 
 namespace elysian {
 
@@ -48,6 +49,10 @@ namespace elysian {
             _src = nullptr;
             _channelIndex = -1;
         }
+    }
+
+    void AudioSourceBase::playLua(LuaVariant v) {
+        play(v.getValue<EventMonitor*>());
     }
 
     void AudioSourceBase::play(EventMonitor* monitor) {

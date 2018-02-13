@@ -69,7 +69,7 @@ DialogSystem::DialogSystem(void) {
     _border[1]._transform._pos.x = ELYSIAN_DIALOG_SYSTEM_WIDTH+1.0f;
     _border[1].setVertexColor(3, borderColor);
 
-    _textFrameSize = Vector2(ELYSIAN_DIALOG_SYSTEM_WIDTH - _marginSize.getX(), ELYSIAN_DIALOG_SYSTEM_HEIGHT - _marginSize.getY());
+    _textFrameSize = Vector2(ELYSIAN_DIALOG_SYSTEM_WIDTH - _marginSize.getX()*2, ELYSIAN_DIALOG_SYSTEM_HEIGHT - _marginSize.getY()*2);
 
     _curScreen.screen = nullptr;
 }

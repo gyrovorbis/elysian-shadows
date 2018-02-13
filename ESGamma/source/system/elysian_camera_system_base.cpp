@@ -467,11 +467,12 @@ void CameraSystemBase::update(void) {
 
     //Update camera resolution
     getGuiSys()->getResolution(_scrWidth, _scrHeight);
-                    updateSubProcesses(deltaTime);
+
 
     if(_customState) return;
 
     if(_curState->projType == GY_PROJECTION_ORTHO) {
+        updateSubProcesses(deltaTime);
         //Follow entities
         if(_followEnabled && _curState->focalEntity) {
             _curState->_pos = GYVector3 {
@@ -518,8 +519,8 @@ void CameraSystemBase::update(void) {
         if(_curState->focalEntity) {
             _curState->_pos = GYVector3 {
                 _curState->focalEntity->_transform._pos.x,
-                _curState->focalEntity->_transform._pos.y +200.0f,
-                /*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase+200.0f,
+                _curState->focalEntity->_transform._pos.y +1000.0f,
+                /*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase+400.0f+ _curState->focalEntity->_transform._pos.z,
                 //0.0f
             };
         }
@@ -551,7 +552,7 @@ void CameraSystemBase::update(void) {
 
         gyMatScale(1.0f, 1.0f, -1.0f);
 
-       gyMatShearZ(0.0f, -1.0f);
+        gyMatShearZ(0.0f, -1.0f);
 
         gyMatTranslate(-worldPos.x, -worldPos.y, -worldPos.z);
         gyMatStore(&_curState->viewMat);
@@ -560,7 +561,7 @@ void CameraSystemBase::update(void) {
         gyMatMultMat(_curState->projViewMat, _curState->projMat, _curState->viewMat);
 
         gyVidSetCamWorldPos(&worldPos);
-
+        updateSubProcesses(deltaTime);
 
        // }
     }

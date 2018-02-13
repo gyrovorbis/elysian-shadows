@@ -89,7 +89,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(shadowCaster,       isShadowCaster,     setShadowCaster)
             ELYSIAN_LUA_PROXY_FIELD(type,               getLightType,       setLightType)
             ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib,          setAttrib)
-            ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPos)
+            ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPos,          setRelPos)
             ELYSIAN_LUA_PROXY_FIELD(dir,                getDir)
             ELYSIAN_LUA_PROXY_FIELD(spotCutoffAngle,    getSpotCutoffAngle, setSpotCutoffAngle)
         ELYSIAN_LUA_PROXY_FIELDS_END()
@@ -110,6 +110,7 @@ namespace elysian {
         void                setShadowCaster(const bool val);
         void                setRelativePos(const float x, const float y, const float z);
 
+
         GY_LIGHT_TYPE       getLightType(void) const;
         bool                isShadowCaster(void) const;
         const GYVector4&    getPosition(void) const;
@@ -118,6 +119,7 @@ namespace elysian {
         float               getSpotCutoffAngle(void) const;
         void                getRelativePos(GYVector3& pos) const;
         Vector3             getRelPos(void);
+        void                setRelPos(const Vector3& pos);
         Vector3             getDir(void);
 
         void                updateBoundingVolume(const Camera*const cam, const GY_CUBE_MAP_FACE face);
@@ -207,6 +209,7 @@ namespace elysian {
     inline void LightSourceBase::setShadowCaster(const bool val) { _shadowCaster = val; }
     inline bool LightSourceBase::isShadowCaster(void) const { return _shadowCaster; }
     inline void LightSourceBase::setRelativePos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; }
+    inline void LightSourceBase::setRelPos(const Vector3 &pos) { _relPos = pos; }
     inline void LightSourceBase::getDirection(GYVector3& dir) const { dir = direction; }
     inline float LightSourceBase::getSpotCutoffAngle(void) const { return spotCutoffAngle; }
     inline void LightSourceBase::getRelativePos(GYVector3 &pos) const { pos = _relPos; }

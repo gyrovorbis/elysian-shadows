@@ -241,7 +241,7 @@ See \l{Types of Dynamic Lights} for detailed descriptions of each.
  * 3D vector representing the positional offset of the light relative to the center of the Entity.
  * The default value is <0, 0, 0>, which is the center of the Entity. This is not used with directional
  * lights.
- * \sa getRelPos()
+ * \sa getRelPos(), setRelPos()
  */
 /*!
  * \qmlproperty Vector3 LightSource::dir
@@ -300,7 +300,13 @@ See \l{Types of Dynamic Lights} for detailed descriptions of each.
  * \qmlmethod Vector3 LightSource::getRelPos()
  *
  * Returns the value of the \l{relPos} property.
- * \sa relPos
+ * \sa relPos, setRelPos
+ */
+/*!
+ * \qmlmethod Vector3 LightSource::getRelPos()
+ *
+ * Sets the value of the \l{relPos} property.
+ * \sa relPos, getRelPos
  */
 /*!
  * \qmlmethod Vector3 LightSource::getDir()
@@ -327,7 +333,8 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
                        setSpotCutoffAngle,
                        setAttrib,
                        setShadowCaster,
-                       setRelativePos,
+                     //  setRelativePos,
+                       setRelPos,
                        getRelPos,
                        getDir)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource,

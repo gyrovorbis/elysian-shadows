@@ -541,6 +541,21 @@ void TkArea::initializeDelegates(void) {
     lua_newtable(*_mainState);
     lua_pushvalue(*_mainState, -1);
     lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+    DynamicContentPropertyItemDelegate* outerDelegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaFieldItem) {
+            TkArea* area = luaFieldItem->getTableRef().getValue<TkArea*>();
+            if(area) {
+                option.text = area->getNameString();
+                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+            }
+        }
+    });
+
+    OOLUA::push(*_mainState, outerDelegate);
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY);
+
     /*
     auto* normalDelegate = new FileBrowserPropertyItemDelegate;
     OOLUA::push(*_mainState, normalDelegate);

@@ -4,6 +4,7 @@
 #include <crtp/elysian_entity.hpp>
 #include "elysian_timer_system.hpp"
 #include <crtp/elysian_area.hpp>
+#include <proxy/elysian_event_monitor_proxy.hpp>
 
 namespace elysian {
 
@@ -325,6 +326,11 @@ namespace elysian {
     bool AudioSystem::isSfxChannelPlaying(const int channel) const {
         return (channel == ELYSIAN_AUDIO_SFX_CHANNEL_INVALID)? false : gyAudSourceIsPlaying(_channels[channel].src);
 	}
+
+    void AudioSystem::playSfxChannelLua(const int channel, const GYWav &wav, LuaVariant v) {
+        EventMonitor* m = v.getValue<EventMonitor*>();
+        playSfxChannel(channel, wav, m);
+    }
 
     void AudioSystem::playSfxChannel(const int channel, const GYWav& wav, EventMonitor* monitor) {
         auto& proc = get<SUBPROC_WAV_PLAYBACK_POOL> ( static_cast<SubProcessManager<AudioSystem,
