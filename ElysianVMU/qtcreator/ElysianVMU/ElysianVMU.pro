@@ -112,7 +112,7 @@ HEADERS += \
     gif/gif_lib_private.h \
     gif/qgifglobal.h \
     gif/qgifimage.h \
-    gif/qgifimage_p.h \
+    gif/qgifimage_p.h
 
 
 !raspberrypi {
