@@ -48,7 +48,7 @@ protected:
     //virtual void    setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const = 0;
 
 public:
-                                PropertyItemDelegate(void) = default;
+                                PropertyItemDelegate(bool readOnly=false);
 
     virtual bool                editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
     virtual QWidget*            createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -73,7 +73,7 @@ public:
 
 
 // ====== INLINEZ ======
-
+inline PropertyItemDelegate::PropertyItemDelegate(bool readOnly): _readOnly(readOnly) {}
 inline void PropertyItemDelegate::addSupportedType(const int luaType) { _supportedTypes.push_back(luaType); }
 inline void PropertyItemDelegate::setContextMenuCallback(MenuCallbackType callback) { _menuCallback = std::move(callback); }
 inline void PropertyItemDelegate::setMimeDropManager(MimeDropManager* mgr) { _mimeDropManager = mgr; }

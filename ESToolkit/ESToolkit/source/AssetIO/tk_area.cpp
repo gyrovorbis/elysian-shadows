@@ -14,6 +14,7 @@
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
 #include <ESGamma/tk_camera_system.h>
 #include <ESGamma/tk_lua_wrappers.h>
+#include <system/elysian_party_system.hpp>
 
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(TkArea)
@@ -537,24 +538,104 @@ void TkArea::removeEntity(Entity *entity) {
     Q_EMIT entityRemoved(this, entity);
 }
 
+#if 0
+void TkColor4::initializeDelegates(void) {
+    auto* typeDelegate = new ColorSwatchPropertyItemDelegate();
+
+    OOLUA::push(*_mainState, typeDelegate);
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY);
+
+    auto* spinBox = new SpinboxPropertyItemDelegate(0, 255);
+    LuaVariant fieldDelegate = {
+        { "r", spinBox },
+        { "g", spinBox },
+        { "b", spinBox },
+        { "a", spinBox }
+    };
+    fieldDelegate.push();
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+}
+#endif
+
 void TkArea::initializeDelegates(void) {
-    lua_newtable(*_mainState);
-    lua_pushvalue(*_mainState, -1);
-    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+ //   lua_newtable(*_mainState);
+   // lua_pushvalue(*_mainState, -1);
+    //lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
 
     DynamicContentPropertyItemDelegate* outerDelegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
         if(luaFieldItem) {
-            TkArea* area = luaFieldItem->getTableRef().getValue<TkArea*>();
+            TkArea* area = luaFieldItem->getVariant().getValue<TkArea*>();
             if(area) {
                 option.text = area->getNameString();
                 option.palette.setColor(QPalette::Text, QColor(Qt::gray));
             }
         }
     });
+    outerDelegate->setReadOnly();
 
     OOLUA::push(*_mainState, outerDelegate);
     lua_setfield(*_mainState, -2, TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY);
+
+    DynamicContentPropertyItemDelegate* sizeDelegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaFieldItem) {
+            TkArea* area = luaFieldItem->getTableRef().getValue<TkArea*>();
+            if(area) {
+                unsigned short w = area->getMapWidth();
+                unsigned short h = area->getMapHeight();
+                option.text = QString("<%1, %2>").arg(w).arg(h);
+                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+            }
+        }
+    });
+    sizeDelegate->setReadOnly();
+
+    DynamicContentPropertyItemDelegate* startPosDelegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaFieldItem) {
+            TkArea* area = luaFieldItem->getTableRef().getValue<TkArea*>();
+            if(area) {
+                elysian::Vector3 pos = area->getStartPosition();
+                option.text = QString("<%1, %2, %3>").arg(pos.getX()).arg(pos.getY()).arg(pos.getZ());
+                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+            }
+        }
+    });
+    startPosDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_POSITION_PATH), [](ESTkStandardItem* item) {
+        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaFieldItem) {
+            TkArea* area = luaFieldItem->getTableRef().getValue<TkArea*>();
+            if(area) {
+                TkEntity* leader = elysian::System::getPartySys()->getPartyLeader();
+                if(leader) {
+                    area->setStartPosition(leader->getTransform().getPos());
+                }
+            }
+        }
+    });
+
+    startPosDelegate->setReadOnly();
+
+    DynamicContentPropertyItemDelegate* entityDelegate = new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
+    entityDelegate->setReadOnly();
+
+
+    LuaVariant v = {
+        { "size",               sizeDelegate },
+        { "path",               new PropertyItemDelegate(true) },
+        { "startPosition",      startPosDelegate },
+        { "activeEntities",     entityDelegate },
+        { "inactiveEntities",   entityDelegate }
+    };
+
+    v.push();
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+
+
 
     /*
     auto* normalDelegate = new FileBrowserPropertyItemDelegate;
@@ -565,7 +646,7 @@ void TkArea::initializeDelegates(void) {
     //OOLUA::push(*_mainState, widthDelegate);
     //lua_setfield(*_mainState, -2, "lkkfsdklj;fsdalk;jasdfl;kj");
 
-    lua_pop(*_mainState, 1);
+   // lua_pop(*_mainState, 1);
 
 }
 

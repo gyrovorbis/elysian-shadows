@@ -62,14 +62,7 @@ namespace elysian {
     inline ExaminableBase::ExaminableBase(Entity& parent, ExaminableBase*const prefab): Component(parent) {
         if(prefab) *this = *prefab;
     }
-    inline ExaminableBase& ExaminableBase::operator=(ExaminableBase& rhs) {
-        _dialog     = rhs._dialog;
-        _enabled    = rhs._enabled;
-        _maxDist    = rhs._maxDist;
-        _dir        = rhs._dir;
-        _hasDesc    = rhs._hasDesc;
-        return *this;
-    }
+
     inline bool ExaminableBase::hasDescription(void) const { return _hasDesc; }
     inline void ExaminableBase::setHasDescription(const bool val) { _hasDesc = val; }
     inline std::shared_ptr<Dialog> ExaminableBase::getDialog(void) const { return _dialog; }

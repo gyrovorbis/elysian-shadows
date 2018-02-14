@@ -49,6 +49,7 @@ namespace elysian {
                     Vector3(void);
                     Vector3(const float x, const float y, const float z);
                     Vector3(GYVector3*const vec3);
+                    Vector3(const GYVector3& vec3);
                     Vector3(const Vector3& other);
                     ~Vector3(void) = default;
 
@@ -289,6 +290,7 @@ namespace elysian {
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
     inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}), _ptr(this) {}
+    inline Vector3::Vector3(const GYVector3& vec3): Vector3(vec3.x, vec3.y, vec3.z) {}
     inline Vector3::Vector3(const Vector3 &other) : LuaTableProxy<Vector3>() {
         *this = other;
     }
@@ -296,8 +298,8 @@ namespace elysian {
         if(other._ptr != static_cast<const GYVector3*>(&other)) {
             _ptr = other._ptr;
         } else {
-            setX(other.getX()); setY(other.getY()); setZ(other.getZ());
             _ptr = this;
+            setX(other.getX()); setY(other.getY()); setZ(other.getZ());
         }
         return *this;
     }

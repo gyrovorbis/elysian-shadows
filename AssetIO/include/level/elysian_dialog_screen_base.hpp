@@ -22,33 +22,37 @@ namespace elysian {
         enum BUBBLE_TYPE { BUBBLE_SPEECH, BUBBLE_THOUGHT };
         enum SCREEN_TYPE { SCREEN_TEXT, SCREEN_PROMPT };
     private:
-        char            _text[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE]   = { 0 };
-        GYVector2		_pos                                            = { 0.0f, 0.0f };
-        Entity*			_srcEntity                                      = nullptr; //array later
-        SCREEN_TYPE		_screenType;
-        int				_index                                          = -1;
-        bool			_trigger                                        = false;
+        char                _text[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE]   = { 0 };
+        GYVector2           _pos                                            = { 0.0f, 0.0f };
+        Entity*             _srcEntity                                      = nullptr; //array later
+        SCREEN_TYPE         _screenType;
+        int                 _index                                          = -1;
+        bool                _trigger                                        = false;
         //BUBBLE_TYPE		_bubbleType	= BUBBLE_SPEECH;
 
     protected:
-                        DialogScreenBase(const SCREEN_TYPE scrType);
-                        DialogScreenBase(const SCREEN_TYPE scrType, const char*const text);
+                            DialogScreenBase(const SCREEN_TYPE scrType);
+                            DialogScreenBase(const SCREEN_TYPE scrType, const char*const text);
+                            DialogScreenBase(const DialogScreenBase& rhs);
+        virtual             ~DialogScreenBase(void)=default;
+
+        DialogScreenBase&   operator=(const DialogScreenBase& rhs);
 
     public:
 
-        void             setText(const char*const text);
-        const char*      getText(void) const;
-        void             addSourceEntity(Entity*const entity);        //supports multiple
-        void             addSourcePos(const GYVector2& pos);          //for non-entity
-        unsigned         getIndex(void) const;					            //location in overall dialog
-        void             setIndex(const unsigned index);
-        void             setTrigger(const bool val);					//Behavior::onDialog(unsigned screen, int option)
-        SCREEN_TYPE      getScreenType(void) const;
-        Entity*          getEntity(void) const;
-        bool             isTrigger(void) const;
+        void                setText(const char*const text);
+        const char*         getText(void) const;
+        void                addSourceEntity(Entity*const entity);        //supports multiple
+        void                addSourcePos(const GYVector2& pos);          //for non-entity
+        unsigned            getIndex(void) const;					            //location in overall dialog
+        void                setIndex(const unsigned index);
+        void                setTrigger(const bool val);					//Behavior::onDialog(unsigned screen, int option)
+        SCREEN_TYPE         getScreenType(void) const;
+        Entity*             getEntity(void) const;
+        bool                isTrigger(void) const;
 
         //LuaTableProxy CRTP override
-        static int       lua_downCast(lua_State*const vm);
+        static int          lua_downCast(lua_State*const vm);
 
     };
 
@@ -58,6 +62,9 @@ namespace elysian {
     inline DialogScreenBase::DialogScreenBase(const SCREEN_TYPE scrType): _screenType(scrType) {}
     inline DialogScreenBase::DialogScreenBase(const SCREEN_TYPE scrType, const char*const text):
         DialogScreenBase(scrType) { strcpy(_text, text); }
+    inline DialogScreenBase::DialogScreenBase(const DialogScreenBase &rhs) {
+        *this = rhs;
+    }
     inline void DialogScreenBase::addSourceEntity(Entity*const entity) { _srcEntity = entity; }
     inline void DialogScreenBase::addSourcePos(const GYVector2& pos) { _pos = pos; }
     inline unsigned DialogScreenBase::getIndex(void) const { return _index; }
@@ -68,6 +75,15 @@ namespace elysian {
     inline const char* DialogScreenBase::getText(void) const { return _text; }
     inline void DialogScreenBase::setText(const char * const text) { strcpy(_text, text); }
     inline bool DialogScreenBase::isTrigger(void) const { return _trigger; }
+    inline DialogScreenBase& DialogScreenBase::operator =(const DialogScreenBase& rhs) {
+        strcpy(_text, rhs._text);
+        _pos        = rhs._pos;
+        _srcEntity  = rhs._srcEntity;
+        _screenType = rhs._screenType;
+        _index      = rhs._index;
+        _trigger    = rhs._trigger;
+        return *this;
+    }
 
 }
 

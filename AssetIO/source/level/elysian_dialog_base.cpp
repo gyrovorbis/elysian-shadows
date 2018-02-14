@@ -16,6 +16,12 @@ namespace elysian {
 
 
 // ====== DIALOG PROMPT =======
+DialogPromptBase& DialogPromptBase::operator =(const DialogPromptBase& rhs) {
+    for(auto& it : _options) delete it;
+    _options.clear();
+    for(auto& it : rhs._options) _options.push_back(new DialogOption(*it));
+}
+
 DialogOption* DialogPromptBase::getOption(const unsigned index) const {
                     return index < _options.size()? _options[index] : nullptr;
     }
@@ -68,6 +74,18 @@ DialogPrompt* DialogBase::addPromptScreen(const char*const text) {
     return screen;
 }
 
+DialogBase& DialogBase::operator =(const DialogBase& rhs) {
+    for(auto& it: _screens) delete it;
+    _screens.clear();
+    for(auto& it : rhs._screens) {
+        if(it->getScreenType() == DialogScreen::SCREEN_TEXT) {
+            _screens.push_back(new DialogText(*static_cast<DialogText*>(it)));
+        } else if(it->getScreenType() == DialogScreen::SCREEN_PROMPT) {
+            _screens.push_back(new DialogPrompt(*static_cast<DialogPrompt*>(it)));
+        } else GY_ASSERT(false);
+    }
+    return *this;
+}
 
 }
 

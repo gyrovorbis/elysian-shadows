@@ -9,8 +9,9 @@
 
 #define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING   2
 #define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN    5
-#define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH   ":/misc/images/plus_icon.ico"
-#define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_MINUS_PATH  ":/misc/images/minus_icon.ico"
+#define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH       ":/misc/images/plus_icon.ico"
+#define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_MINUS_PATH      ":/misc/images/minus_icon.ico"
+#define DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_POSITION_PATH   ":/misc/images/position_icon.png"
 
 class DynamicContentPropertyItemDelegate: public PropertyItemDelegate {
 public:
@@ -60,6 +61,7 @@ public:
 
 
 
+//========== INLINEZ ===========
 
 
 inline DynamicContentPropertyItemDelegate::DynamicContentPropertyItemDelegate(TextCallbackType callback):

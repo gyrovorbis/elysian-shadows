@@ -72,6 +72,7 @@
         <file>images/minus_icon.ico</file>
         <file>images/browse_file_icon.ico</file>
         <file>images/color_swatch_icon.png</file>
+        <file>images/position_icon.png</file>
     </qresource>
     <qresource prefix="/sheetManager">
         <file>images/reservedTile.png</file>

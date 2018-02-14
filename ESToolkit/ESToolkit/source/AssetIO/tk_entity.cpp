@@ -541,6 +541,7 @@ void TkEntity::initializeVirtualTableDelegates(QString property) {
                             }
                         }
                     });
+                    delegate->setReadOnly();
 
                     delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
                         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);

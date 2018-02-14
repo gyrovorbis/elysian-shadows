@@ -1244,6 +1244,7 @@ bool CollisionSystem::resolvePenetration(void) {
 
 void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     Collidable* col[2];
+    RigidBody* rb[2];
     //Collidable *newCol[2];
     float totalInertia = 0.0f;
     float deltaZ[2], linearInertia[2];
@@ -1264,6 +1265,8 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     if(contact->getZDepth() > 0.0f) {
         col[0] = contact->_bodyB;
         col[1] = contact->_bodyA;
+        rb[0] = contact->_bodyB->getEntity()? contact->_bodyB->getEntity()->getRigidBody() : nullptr;
+        rb[1] = contact->_bodyA->getEntity()? contact->_bodyA->getEntity()->getRigidBody() : nullptr;
        // bodyToCol[0] = 1;
        // bodyToCol[1] = 0;
         coeff[0] = -1.0f;
@@ -1271,6 +1274,8 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     } else {
         col[0] = contact->_bodyA;
         col[1] = contact->_bodyB;
+        rb[0] = contact->_bodyA->getEntity()? contact->_bodyA->getEntity()->getRigidBody() : nullptr;
+        rb[1] = contact->_bodyB->getEntity()? contact->_bodyB->getEntity()->getRigidBody() : nullptr;
         //bodyToCol[0] = 0;
         //bodyToCol[1] = 1;
         coeff[0] = 1.0f;
@@ -1298,8 +1303,8 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     }
 
     GYVector3 vel[2];
-    vel[0] = col[0]->getEntity()->getRigidBody()->getVelocity();
-    vel[1] = col[1]->getEntity()->getRigidBody()->getVelocity();
+    vel[0] = rb[0]? rb[0]->getVelocity() : GYVector3 { 0.0f, 0.0f, 0.0f };
+    vel[1] = rb[1]? rb[1]->getVelocity() : GYVector3 { 0.0f, 0.0f, 0.0f };
 
     //bool resting = false;
     if(vel[0].z <= 0.0f /*&& vel[1].z <= 0.0f*/) {
@@ -1312,21 +1317,19 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     }
 
 
-    if(col[0]->getEntity()->getRigidBody()->getAttrib()->isBreakable()) {
+    if(rb[0] && rb[0]->getAttrib()->isBreakable()) {
         const float zImpulse = fabs(vel[1].z /* col[0]->getAttrib()->getStaticAttrib()->damping.z*/);
-        auto* rb = col[0]->getEntity()->getRigidBody();
-        if(zImpulse >= rb->getDurability()) {
-            rb->setDurability(rb->getDurability() - zImpulse);
-            rb->setBreakContact(contact);
+        if(zImpulse >= rb[0]->getDurability()) {
+            rb[0]->setDurability(rb[0]->getDurability() - zImpulse);
+            rb[0]->setBreakContact(contact);
         }
     }
 
-    if(col[1]->getEntity()->getRigidBody()->getAttrib()->isBreakable()) {
+    if(rb[1] && rb[1]->getAttrib()->isBreakable()) {
         const float zImpulse = fabs(vel[0].z /*col[1]->getAttrib()->getStaticAttrib()->damping.z*/);
-        auto* rb = col[1]->getEntity()->getRigidBody();
-        if(zImpulse >= rb->getDurability()) {
-            rb->setDurability(rb->getDurability() - zImpulse);
-            rb->setBreakContact(contact);
+        if(zImpulse >= rb[1]->getDurability()) {
+            rb[1]->setDurability(rb[1]->getDurability() - zImpulse);
+            rb[1]->setBreakContact(contact);
         }
     }
 

@@ -282,11 +282,11 @@ namespace elysian {
     void Layout::insertWidget(unsigned index, Widget *widget) {
         int i = 0;
         //Check if we already contain the bitch at some other index...
-        for(; i < _widgets.size(); ++i) {
+        for(; i < (int)_widgets.size(); ++i) {
             if(_widgets[i] == widget) break;
         }
 
-        if(i < _widgets.size()) {
+        if(i < (int)_widgets.size()) {
             if(i == index) return; //It's already where you wanted it, asswipe.
             else _widgets.erase(_widgets.begin() + i);
         }
