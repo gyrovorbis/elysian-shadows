@@ -58,6 +58,8 @@
        <string notr="true">EntityTreeWidget {
 selection-background-color: rgb(225, 202, 251);
 selection-color: rgb(0,0,0);
+indicator:checked{image: url(:/misc/images/static.png); }
+indicator:unchecked{image: url(:/misc/images/dynamic.png); }
 }</string>
       </property>
       <property name="alternatingRowColors">
@@ -66,12 +68,20 @@ selection-color: rgb(0,0,0);
       <property name="selectionMode">
        <enum>QAbstractItemView::ExtendedSelection</enum>
       </property>
+      <property name="animated">
+       <bool>false</bool>
+      </property>
       <attribute name="headerVisible">
        <bool>false</bool>
       </attribute>
       <column>
        <property name="text">
         <string notr="true">1</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../resource/resource.qrc">
+         <normaloff>:/misc/images/dynamic.png</normaloff>
+         <normalon>:/misc/images/static.png</normalon>:/misc/images/dynamic.png</iconset>
        </property>
       </column>
      </widget>
@@ -86,6 +96,8 @@ selection-color: rgb(0,0,0);
    <header>ESToolkit/ui/widget/tk_entity_tree_widget.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../../resource/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

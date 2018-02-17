@@ -15,6 +15,11 @@
 #include <ESGamma/tk_camera_system.h>
 #include <ESGamma/tk_lua_wrappers.h>
 #include <system/elysian_party_system.hpp>
+#include <QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h>
+#include <QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h>
+#include <ESToolkit/core/tk_file_utilities.h>
+#include <system/elysian_audio_system.hpp>
+#include <QApplication>
 
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(TkArea)
@@ -141,6 +146,25 @@ void Area::setNodeName(const QString str) {
     strcpy(path, _location.toStdString().c_str());
 
     if(_renamed) Q_EMIT renamed(oldName, name);
+}
+
+void TkArea::setBgmOggByTrack(const unsigned index, const char* path) {
+    if(index < ELYSIAN_AREA_BGM_TRACKS) {
+        elysian::AreaBase::setBgmOggByTrack(index, path);
+        QFileInfo fileInfo(FileUtilities::getAbsoluteAssetPath(path));
+        _bgmTracksValid[index] = (fileInfo.exists() && fileInfo.suffix() == "ogg");
+    } else {
+        errprintf("Tried to set invalid BGM OGG Index: %d", index);
+    }
+}
+void TkArea::setAuxOggByTrack(const unsigned index, const char* path) {
+    if(index < ELYSIAN_AREA_AUX_TRACKS) {
+        elysian::AreaBase::setAuxOggByTrack(index, path);
+        QFileInfo fileInfo(FileUtilities::getAbsoluteAssetPath(path));
+        _auxTracksValid[index] = (fileInfo.exists() && fileInfo.suffix() == "ogg");
+    } else {
+        errprintf("Tried to set invalid AUX OGG Index: %d", index);
+    }
 }
 
 bool Area::duplicate(void) {
@@ -615,7 +639,7 @@ void TkArea::initializeDelegates(void) {
                 }
             }
         }
-    });
+    }, "Use Current Player Position");
 
     startPosDelegate->setReadOnly();
 
@@ -628,7 +652,8 @@ void TkArea::initializeDelegates(void) {
         { "path",               new PropertyItemDelegate(true) },
         { "startPosition",      startPosDelegate },
         { "activeEntities",     entityDelegate },
-        { "inactiveEntities",   entityDelegate }
+        { "inactiveEntities",   entityDelegate },
+        { "ambientColor",       new QESTkUtils::ColorSwatchPropertyItemDelegate<elysian::Vector4>() }
     };
 
     v.push();
@@ -651,87 +676,175 @@ void TkArea::initializeDelegates(void) {
 }
 
 void TkArea::initializeVirtualTableDelegates(QString key) {
-#if 0
-    if(key == "bgm" || key == "aux") {
-
-        unsigned arraySize;
-        if(key == "bgm") {
-            arraySize = sizeof(elysian::AreaBase::_bgmOggTracks);
-
-        } else {
-            arraySize = sizeof(elysian::AreaBase::_auxTracks);
-
-        }
-
-#endif
-#if 0
-
-        LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
-            TkAnimation* self = t["__ud"]->getValue<TkArea*>();
-            if(self && k.getType() == LUA_TNUMBER) {
+    if(key == "music") {
+        LuaVariant musicDelegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
+            if(QString(k.getValue<const char*>()) == "gain") {
+                return new QESTkUtils::SliderPropertyItemDelegate();
+            } else return new PropertyItemDelegate();
+        };
+        musicDelegateFunc.push();
+        lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+    } else if(key == "bgm" || key == "aux") {
+        LuaVariant delegateFunc = [=](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
+            TkArea* area = t["__ud"]->getValue<TkArea*>();
+            if(area && k.getType() == LUA_TNUMBER) {
                 unsigned index = k.getValue<unsigned>();
-                if(index <= arraySize) {
-                    DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+                if((key == "bgm" && index <= ELYSIAN_AREA_BGM_TRACKS) || (key == "aux" && index <= ELYSIAN_AREA_AUX_TRACKS)) {
+                    DynamicContentPropertyItemDelegate* musicTrackDelegate = new FileBrowserPropertyItemDelegate();
+                    musicTrackDelegate->setTextCallback([=](ESTkStandardItem* item, QStyleOptionViewItem& option) {
                         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
                         if(luaFieldItem) {
-                            auto parent
-                            if(anim) {
-                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-                                elysian::AnimationTrack* track = anim->getTrack(index);
-                                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
-                                option.text = QString(track->getName());
+                            //luaFieldItem->setToolTip("");
+                            QString oggPath = luaFieldItem->getVariant().getValue<const char*>();
+                            if(!oggPath.isEmpty()) {
+                                TkArea* area = luaFieldItem->getAncestorSiblingLuaItem({"*", "music", "*"}, 1)->getVariant().getValue<TkArea*>();
+                                const unsigned trackIndex   = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                auto* audioSys              = elysian::System::getAudioSys();
+                                bool isPlaying              = false;
+                                bool isValid                = false;
+                                if(area) {
+                                    if(key == "bgm") {
+                                        isValid = area->isBgmOggTrackValid(trackIndex);
+                                        if(isValid) {
+                                            unsigned curBgmTrack = elysian::System::getAudioSys()->getBgmTrack();
+                                            QString curBgmPath = elysian::System::getAudioSys()->getBgmTrackPath(curBgmTrack);
+                                            isPlaying = (audioSys->isBgmTrackPlaying() && trackIndex == curBgmTrack && oggPath == curBgmPath);
+                                        }
+                                    } else if(key == "aux") {
+                                        isValid = area->isAuxOggTrackValid(trackIndex);
+                                        if(isValid) {
+                                            QString auxPath = elysian::System::getAudioSys()->getAuxTrackPath(trackIndex);
+                                            isPlaying = (audioSys->isAuxTrackPlaying(trackIndex) && oggPath == auxPath);
+                                        }
+                                    }
+
+                                    if(isValid) {
+                                        if(isPlaying) {
+                                            option.palette.setColor(QPalette::Text, QColor(Qt::black));
+                                            musicTrackDelegate->setToolTip("Track is active.");
+                                        } else {
+                                            musicTrackDelegate->setToolTip("Track is inactive.");
+                                            option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+                                        }
+                                        QStringList tokens = oggPath.split("/");
+                                        option.text = tokens.last();
+                                    } else {
+                                        musicTrackDelegate->setToolTip("Invalid File!");
+                                        option.palette.setColor(QPalette::Text, QColor(Qt::red));
+                                    }
+                                }
+                            } else {
+                                musicTrackDelegate->setToolTip("No OGG file specified!");
                             }
                         }
                     });
-
-                    delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
+                    musicTrackDelegate->setReadOnly(false);
+                    musicTrackDelegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaPlay), [=](ESTkStandardItem* item) {
                         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
                         if(luaFieldItem) {
-                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
-                            if(anim) {
-                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-
-                                MenuStack stack("AnimationTrack");
-                                stack.insertAction("Delete", [=](bool) {
-                                    anim->setTrack(index, nullptr);
-
-                                    auto* parentItem = luaFieldItem->getAncestorSiblingLuaItem({"tracks", "*"}, 1);
-                                    if(parentItem) parentItem->setDirty();
-
-                                });
-
-                                return stack.first();
+                            QString oggPath = luaFieldItem->getVariant().getValue<const char*>();
+                            TkArea* area = luaFieldItem->getTableRef().getValue<TkArea*>();
+                            if(!oggPath.isEmpty()) {
+                                unsigned track = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                bool changed = false;
+                                if(key == "bgm") {
+                                    if(area) elysian::System::getAudioSys()->setBgmTrackGain(area->getOggGain());
+                                    elysian::System::getAudioSys()->stopBgmTrack();
+                                    elysian::System::getAudioSys()->setBgmTrack(track);
+                                    elysian::System::getAudioSys()->playBgmTrack();
+                                    changed = true;
+                                    //elysian::System::getAudioSys()->fadeIntoBgmTrack(track, 1.0f);
+                                } else if(key == "aux") {
+                                    if(area) elysian::System::getAudioSys()->setAuxTrackGain(track, area->getOggGain());
+                                    elysian::System::getAudioSys()->stopAuxTrack(track);
+                                    elysian::System::getAudioSys()->playAuxTrack(track);
+                                    changed = true;
+                                }
+#if 0
+                                if(changed) {
+                                    auto* parent = luaFieldItem->getParentLuaItem();
+                                    if(parent) parent->setDirty(true);
+                                }
+#endif
                             }
                         }
-                        return nullptr;
-
-                    });
-
-                    delegate->setDeleteCallback([](ESTkStandardItem* item) {
+                    },
+                    "Play Ogg Track",
+                    false,
+                    [=](ESTkStandardItem* item) -> bool {
                         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
                         if(luaFieldItem) {
-                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
-                            if(anim) {
-                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-                                anim->setTrack(index, nullptr);
-
-                                auto* parentItem = luaFieldItem->getAncestorSiblingLuaItem({"tracks", "*"}, 1);
-                                if(parentItem) parentItem->setDirty();
+                            QString oggPath = luaFieldItem->getVariant().getValue<const char*>();
+                            if(!oggPath.isNull()) {
+                                TkArea* area = luaFieldItem->getAncestorSiblingLuaItem({"*", "music", "*"}, 1)->getVariant().getValue<TkArea*>();
+                                unsigned track = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                auto* audioSys = elysian::System::getAudioSys();
+                                if(area) {
+                                    if(key == "bgm") {
+                                        if(area->isBgmOggTrackValid(track)) {
+                                            QString bgmPath = audioSys->getBgmTrackPath(track);
+                                            return !(audioSys->getBgmTrack() == track && oggPath == bgmPath && audioSys->isBgmTrackPlaying());
+                                        } else return false;
+                                    } else if(key == "aux") {
+                                        if(area->isAuxOggTrackValid(track)) {
+                                            QString auxPath = audioSys->getAuxTrackPath(track);
+                                            return !(oggPath == auxPath && audioSys->isAuxTrackPlaying(track));
+                                        } else return false;
+                                    }
+                                }
                             }
                         }
+                        return false;
+                    });
+                    musicTrackDelegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaStop), [=](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            auto* audioSys = elysian::System::getAudioSys();
+                            if(key == "bgm") {
+                                audioSys->stopBgmTrack();
+                            } else if(key == "aux") {
+                                unsigned track = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                audioSys->stopAuxTrack(track);
+                            }
+                        }
+                        return false;
+                    },
+                    "Stop Ogg Track",
+                    false,
+                    [=](ESTkStandardItem* item) -> bool {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            QString oggPath = luaFieldItem->getVariant().getValue<const char*>();
+                            if(!oggPath.isNull()) {
+                                TkArea* area = luaFieldItem->getAncestorSiblingLuaItem({"*", "music", "*"}, 1)->getVariant().getValue<TkArea*>();
+                                unsigned track = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                auto* audioSys = elysian::System::getAudioSys();
+                                if(area) {
+                                    if(key == "bgm") {
+                                        if(area->isBgmOggTrackValid(track)) {
+                                            QString bgmPath = audioSys->getBgmTrackPath(track);
+                                            return (audioSys->getBgmTrack() == track && oggPath == bgmPath && audioSys->isBgmTrackPlaying());
+                                        } else return false;
+                                    } else if(key == "aux") {
+                                        if(area->isAuxOggTrackValid(track)) {
+                                            QString auxPath = audioSys->getAuxTrackPath(track);
+                                            return (oggPath == auxPath && audioSys->isAuxTrackPlaying(track));
+                                        } else return false;
+                                    }
+                                }
+                            }
+                        }
+                        return false;
                     });
 
-                    return delegate;
+                    return musicTrackDelegate;
                 }
             }
             return nullptr;
         };
+
         delegateFunc.push();
         lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
-
-    } else if(key == "aux") {
-
     }
-#endif
 }
 

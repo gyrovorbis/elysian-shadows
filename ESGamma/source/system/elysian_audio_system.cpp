@@ -782,6 +782,14 @@ namespace elysian {
             return (path && strcmp(path, "") != 0);
         };
 
+        const float gain = getCurrentArea()->getOggGain();
+        if(gain != _prevGain) {
+            setBgmTrackGain(gain);
+            setAuxTrackGain(0, gain);
+            setAuxTrackGain(1, gain);
+            _prevGain = gain;
+        }
+
         for(unsigned i = 0; i < ELYSIAN_AUDIO_BGM_TRACKS; ++i) {
             const char* path = getCurrentArea()->getBgmOggByTrack(i);
 

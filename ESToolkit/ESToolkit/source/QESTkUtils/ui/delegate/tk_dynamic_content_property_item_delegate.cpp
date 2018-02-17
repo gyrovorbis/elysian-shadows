@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QToolTip>
 #include <QPainter>
 
 void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
@@ -21,7 +22,6 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
         QStyleOptionViewItem itemOption(option);
        initStyleOption(&itemOption, index);
 
-
        int buttonsW = useButtonCount? DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN+DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING : 0;
 
         for(int i = 0; i < _buttons.size(); ++i) {
@@ -35,6 +35,7 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
         itemOption.viewItemPosition = QStyleOptionViewItem::Beginning;
         itemOption.rect.setWidth(itemOption.rect.width()-buttonsW);
         style->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
+        //        PropertyItemDelegate::paint(painter, option, index);
     } else {
         PropertyItemDelegate::paint(painter, option, index);
     }
@@ -68,27 +69,32 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
 
 bool DynamicContentPropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
 
-    if(event->type() == QEvent::MouseButtonPress) {
+    if(event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseMove) {
+        bool showedToolTip = false;
         auto* item = modelIndexToESTkStandardItem(index);
         unsigned useButtonCount;
         auto useButtons = _getUseButtonData(item, useButtonCount);
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
 
         if(useButtonCount) {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            QPoint mousePos = mouseEvent->pos();
 
-            if(mouseEvent->button() == Qt::LeftButton) {
-                int x = option.rect.x()+option.rect.width() - DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN;
-                int y = option.rect.y();
-                int h = option.rect.height();
-                int w = h;
+            int x = option.rect.x()+option.rect.width() - DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN;
+            int y = option.rect.y();
+            int h = option.rect.height();
+            int w = h;
 
-                for(int i = 0; i < _buttons.size(); ++i) {
-                    if(!useButtons[i]) continue;
-                    auto& it = _buttons[i];
-                    x -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING);
-                    QPoint mousePos = mouseEvent->pos();
+            for(int i = 0; i < _buttons.size(); ++i) {
+                if(!useButtons[i]) continue;
+                auto& it = _buttons[i];
+                x -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING);
 
-                    if(mousePos.x() >= x && mousePos.x() <= x+w && mousePos.y() >= y && mousePos.y() <= y+h) {
+                if(mousePos.x() >= x && mousePos.x() <= x+w && mousePos.y() >= y && mousePos.y() <= y+h) {
+                    if(!it.toolTip.isEmpty()) {
+                        QToolTip::showText(mouseEvent->globalPos(), it.toolTip, nullptr, QRect(), _toolTipTime);
+                        showedToolTip = true;
+                    }
+                    if(mouseEvent->button() == Qt::LeftButton) {
                         auto* item = modelIndexToESTkStandardItem(index);
                         Q_ASSERT(it.callback);
                         if(it.callback) {
@@ -98,6 +104,9 @@ bool DynamicContentPropertyItemDelegate::editorEvent(QEvent *event, QAbstractIte
                     }
                 }
             }
+        }
+        if(!showedToolTip && !_toolTip.isEmpty()) {
+            QToolTip::showText(mouseEvent->globalPos(), _toolTip, nullptr, QRect(), _toolTipTime);
         }
     } else if(event->type() == QEvent::KeyPress) {
         if(_deleteCallback) {

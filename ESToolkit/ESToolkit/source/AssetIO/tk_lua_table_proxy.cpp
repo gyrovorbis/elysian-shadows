@@ -88,7 +88,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const LuaVari
 
     //LuaManager::_cStackDump();
 
-    char keyName[50];
+    char keyName[TK_LUA_TABLE_KEY_MAX_LENGTH];
     size_t strlen;
 
     while (lua_next(l, -2) != 0) {                                       //1) orig table 2) prop table 3) orig table 4) key 5) value
@@ -97,7 +97,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const LuaVari
         //LuaManager::_cStackDump();
         //grab key name
         strcpy(keyName, luaL_tolstring(l, -1, &strlen));
-        GY_ASSERT(strlen < 50);
+        GY_ASSERT(strlen < TK_LUA_TABLE_KEY_MAX_LENGTH);
         lua_pop(l, 1);
         //LuaManager::_cStackDump();
         lua_pushvalue(l, -3);

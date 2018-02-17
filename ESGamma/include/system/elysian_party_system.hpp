@@ -71,8 +71,9 @@ namespace elysian {
 
         struct PartyMember {
             Entity* entity;
-            bool    active = true;
-            PartyMember(Entity* e): entity(e), active(true) {}
+            bool    active          = true;
+            bool    followLogic      = true;
+            PartyMember(Entity* e): entity(e), active(true), followLogic(true) {}
              operator Entity*() const { return entity; }
             bool operator ==(const Entity* e) const { return e == entity; }
             Entity* operator->() const { return entity; }
@@ -158,6 +159,8 @@ namespace elysian {
         void setDashForceMagnitude(const float mag);
         void setDashAnimSpeedMultiplier(const float mult);
         void setFollowLogicEnabled(bool val=true);
+        void setSlotFollowLogicEnabled(const unsigned int slot, bool enabled=true);
+        bool isSlotFollowLogicEnabled(const unsigned int slot) const;
 		
 		//bool SwapPlayablePartyMembersBySlot();
 		//bool SwapLeader();
@@ -172,7 +175,9 @@ namespace elysian {
      inline unsigned PartySystem::getPartySize(void) const { return _characterParty.size(); }
     inline unsigned PartySystem::getPlayableCount(void) const { return _playables.size(); }
     inline void PartySystem::setFollowLogicEnabled(bool val) { _followLogic = val; }
-    inline bool PartySystem::isPartyMemberActive(unsigned slot) const { return _characterParty[slot].active; }
+    inline bool PartySystem::isPartyMemberActive(unsigned slot) const { return (slot < getPartySize())? _characterParty[slot].active : false; }
+    inline bool PartySystem::isSlotFollowLogicEnabled(const unsigned int slot) const { return (slot < getPartySize())? _characterParty[slot].followLogic : false; }
+
 
 
 

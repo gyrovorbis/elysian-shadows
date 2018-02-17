@@ -88,8 +88,6 @@ namespace elysian {
         void        render(void) const;
 
         void        controllerEvent(const Controller& cont);
-        void        keyboardEvent(const Keyboard& keybd);
-        void        mouseEvent(const Mouse& mouse);
         void        touchEvent(const TouchDevice& touch);
         void        virtualDPadEvent(const VirtualDPad& dpad);
     };
@@ -125,8 +123,8 @@ namespace elysian {
         _groupingAxis(groupingAxis){}
 
     inline Widget* Layout::getWidget(unsigned index) const {
-        GY_ASSERT(index < _widgets.size());
-        return _widgets[index];
+        //GY_ASSERT(index < _widgets.size());
+        return (index < _widgets.size())? _widgets[index] : nullptr;
     }
     inline unsigned Layout::getWidgetCount(void) const { return (unsigned)_widgets.size();}
     inline auto Layout::getGroupingAxis(void) const -> AXIS { return _groupingAxis; }

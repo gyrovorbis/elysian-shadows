@@ -8,6 +8,8 @@
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_input_system.hpp>
 #include <system/elysian_audio_system.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <crtp/elysian_gui_system.hpp>
 #include <gyro_input_api.h>
 
 namespace game {
@@ -15,29 +17,59 @@ namespace game {
 using namespace elysian;
 
 PauseMenu::PauseMenu(void):
-    _optionsPane(new OptionsMenu),
+    _infoPane(new PauseMenuInfoPane),
+    _detailsPane(new PauseMenuDetailsPane),
+    _optionsPane(new PauseMenuOptionsMenu),
+    _subOptionsFrame(new PauseMenuSubOptionsFrame),
     _partyMenu(new PartyMenu),
+    _centralGroupWidget(new elysian::GroupWidget),
     _openWav(gyAudWavCreate(ELYSIAN_PAUSE_MENU_SFX_OPEN_PATH)),
     _closeWav(gyAudWavCreate(ELYSIAN_PAUSE_MENU_SFX_CLOSE_PATH))
 {
 
-    HorizontalLayout* mainLayout = new HorizontalLayout(std::vector<Widget*>{
-        _optionsPane,
+    _optionsGroupWidget = new elysian::GroupWidget(
+        new elysian::VerticalLayout({
+            _optionsPane,
+            _subOptionsFrame
+        })
+    );
+
+    _centralLayout = new HorizontalLayout({
+        _optionsGroupWidget,
         _partyMenu
     });
-    setLayout(mainLayout);
+    _centralGroupWidget->setLayout(_centralLayout);
 
     //Store Main Widgets for each Menu Option
     _mainFrameWidgets[MAIN_MENU_OPTION_PARTY] = _partyMenu;
 
     Entity* entity = new Entity;
-    //entity->getTransform().setSize(300, 800, 0);
-    entity->getTransform().setPos(400, 400);
+    entity->getTransform().setSize(600, 440, 0);
+    //setSizePolicy(Widget::FIXED, Widget::FIXED);
+    //entity->getTransform().setPos(400, 400);
     Renderable* renderable = entity->addRenderable();
     auto attrib = std::make_shared<SpriteAttrib>();
     attrib->setColor(0, 0, 0, 100);
     renderable->setSpriteAttrib(attrib);
     setEntity(entity);
+
+    setLayout(new VerticalLayout({
+         _infoPane,
+         _centralGroupWidget,
+         _detailsPane
+     }));
+
+    //SIGNALS/SLOTS
+    System::getEventSys()->addEventObserver(this, EVENT_WIDGET_MENU_CANCEL,     _optionsPane);
+    System::getEventSys()->addEventObserver(this, EVENT_WIDGET_MENU_SELECTION,  _optionsPane);
+    System::getEventSys()->addEventObserver(this, EVENT_WIDGET_MENU_CANCEL,     _partyMenu);
+#if 1 //TESTING
+    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_BUTTON);
+    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_MOVE);
+    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_WHEEL);
+#endif
+
+
 }
 
 PauseMenu::~PauseMenu(void) {
@@ -47,13 +79,15 @@ PauseMenu::~PauseMenu(void) {
 
 
 void PauseMenu::setCurrentMenuOption(MAIN_MENU_OPTION_TYPE type) {
-    _layout->setWidget(FRAME_RIGHT, _mainFrameWidgets[type]);
+    _centralLayout->setWidget(FRAME_RIGHT, _mainFrameWidgets[type]);
     _optionsPane->setCurrentIndex(type);
 }
 
 void PauseMenu::activate(void) {
     //reset menu to default positions and shit!
     setCurrentMenuOption(MAIN_MENU_OPTION_PARTY);
+    _centralGroupWidget->setFocus();
+    _optionsGroupWidget->setFocus();
     _optionsPane->setFocus();
     _optionsPane->setCurrentIndex(0);
     System::getAudioSys()->playSfxChannel(-1, *_openWav);
@@ -61,30 +95,61 @@ void PauseMenu::activate(void) {
 }
 
 void PauseMenu::deactivate(void) {
-    _layout->getWidget(FRAME_RIGHT)->setFocus(false);
+    _centralLayout->getWidget(FRAME_RIGHT)->setFocus(false);
+    _optionsGroupWidget->setFocus(false);
+    _centralGroupWidget->setFocus(false);
     System::getAudioSys()->playSfxChannel(-1, *_closeWav);
     Widget::deactivate();
 }
 
-void PauseMenu::onOptionsPaneSelect(elysian::MenuSelection* selection) {
+void PauseMenu::onObserveEvent(elysian::Event* event, elysian::EventReceiver* receiver) {
+    if(receiver) {
+        if(receiver == _optionsPane) {
+            switch(event->getEventType()) {
+            case EVENT_WIDGET_MENU_CANCEL:
+                onOptionsPaneCancel();
+                return;
+            case EVENT_WIDGET_MENU_SELECTION:
+                onOptionsPaneSelect(_optionsPane->getSelection());
+                return;
+            default: break;
+            }
+        } else if(receiver == _centralLayout->getWidget(FRAME_RIGHT)) {
+            switch(event->getEventType()) {
+            case EVENT_WIDGET_MENU_CANCEL:
+                onMainFrameCancel();
+            default: break;
+            }
+        } else { //dis some global event shit
+
+        }
+    }
+    EntityWidget::onObserveEvent(event, receiver);
+}
+
+void PauseMenu::onOptionsPaneSelect(const elysian::MenuSelection* selection) {
     if(selection) {
         GY_ASSERT(selection->getCount());
         const int index = selection->getEntry(0)->second.index;
         if(_mainFrameWidgets[index]) {
             setCurrentMenuOption((MAIN_MENU_OPTION_TYPE)index);
-            _layout->getWidget(FRAME_RIGHT)->setFocus(true);
+            _centralLayout->getWidget(FRAME_RIGHT)->setFocus(true);
             _optionsPane->setFocus(false);
+            _optionsGroupWidget->setFocus(false);
             System::getAudioSys()->playSfxChannel(-1, *_openWav);
         }
     } else {
         setCurrentMenuOption(MAIN_MENU_OPTION_PARTY);
         _optionsPane->setFocus();
+        _optionsGroupWidget->setFocus(false);
     }
 
 }
 
 void PauseMenu::onOptionsPaneCancel(void) {
     setFocus(false);
+    _optionsGroupWidget->setFocus(false);
+    _optionsPane->setFocus(false);
     //CLOSE/EXIT/DEACTIVATE!!!! SAME THING AS PUSHING PAUSE!!!
 }
 
@@ -96,7 +161,7 @@ void PauseMenu::controllerEvent(const Controller& cont) {
     EntityWidget::controllerEvent(cont);
 }
 
-void PauseMenu::keyboardEvent(const Keyboard& keybd) {
+void PauseMenu::onKeyboardEvent(const Keyboard& keybd) {
     if(keybd.isTapped(GY_KEY_RETURN)) {
 
         //quit
@@ -105,16 +170,75 @@ void PauseMenu::keyboardEvent(const Keyboard& keybd) {
 }
 
 void PauseMenu::onMainFrameCancel(void) {
-    _layout->getWidget(FRAME_RIGHT)->setFocus(false);
+    _centralLayout->getWidget(FRAME_RIGHT)->setFocus(false);
     System::getAudioSys()->playSfxChannel(-1, *_closeWav);
     _optionsPane->setFocus();
+    _optionsGroupWidget->setFocus(true);
 }
 
+PauseMenuInfoPane::PauseMenuInfoPane(void):
+    _helpInfo(new elysian::LabelWidget("Help Information")),
+    _title(new elysian::LabelWidget("Title")),
+    _subTitle(new elysian::LabelWidget("Subtitle")),
+    _customWidgetFrame(new elysian::FrameWidget(nullptr))
+{
+    _helpInfo->setAlignment(LabelWidget::LEFT);
+    _title->setAlignment(LabelWidget::LEFT);
+    //_title->setFont(&System::getGuiSys()->verdana);
+    _subTitle->setAlignment(LabelWidget::LEFT);
+    LuaVariant prefab = LuaManager::getPrefab(ELYSIAN_PAUSE_MENU_INFO_PANE_HELP_ICON_PREFAB);
+    elysian::Entity* helpIconEntity = nullptr;
+    if(!prefab.isNil()) {
+        helpIconEntity = prefab.getValue<elysian::Entity*>();
+    }
+    _helpIcon = new elysian::EntityWidget(helpIconEntity);
+    _helpIcon->setSizePolicy(Widget::FIXED, Widget::FIXED);
 
+    _helpLayout = new HorizontalLayout({ _helpIcon, _helpInfo });
+    auto* helpGroupWidget = new elysian::GroupWidget();
+    helpGroupWidget->setLayout(_helpLayout);
 
-const constexpr char* const OptionsMenu::optionStrings[];
+    _textLayout = new VerticalLayout({ helpGroupWidget, _title, _subTitle });
+    auto* textGroupWidget = new elysian::GroupWidget();
+    textGroupWidget->setLayout(_textLayout);
 
-OptionsMenu::OptionsMenu(void) {
+    _customWidgetFrame->setSizePolicy(Widget::X, Widget::EXPANDING);
+
+    elysian::Layout* mainLayout = new HorizontalLayout({textGroupWidget, _customWidgetFrame});
+    setLayout(mainLayout);
+}
+
+void PauseMenuInfoPane::setHelpInfo(const char* text) const {
+    _helpInfo->setText(text);
+}
+void PauseMenuInfoPane::setTitle(const char* text) const {
+    _title->setText(text);
+}
+void PauseMenuInfoPane::setSubTitle(const char* text) const {
+    _subTitle->setText(text);
+}
+void PauseMenuInfoPane::setCustomWidgetFrameCentralWidget(elysian::Widget* widget) {
+    _customWidgetFrame->setCentralWidget(widget);
+}
+
+PauseMenuDetailsPane::PauseMenuDetailsPane(void) {
+    _textLines[0] = new elysian::LabelWidget("Line 1");
+    _textLines[1] = new elysian::LabelWidget("Line 2");
+    setLayout(new VerticalLayout({
+         _textLines[0],
+         _textLines[1]
+     }));
+}
+
+PauseMenuSubOptionsFrame::PauseMenuSubOptionsFrame(void):
+    FrameWidget(nullptr)
+{
+    setSizePolicy(Widget::Y, Widget::EXPANDING);
+}
+
+const constexpr char* const PauseMenuOptionsMenu::optionStrings[];
+
+PauseMenuOptionsMenu::PauseMenuOptionsMenu(void) {
     std::vector<Widget*> options;
 
     for(unsigned i = 0; i < sizeof(optionStrings)/sizeof(optionStrings[0]); ++i) {
@@ -125,15 +249,8 @@ OptionsMenu::OptionsMenu(void) {
     setLayout(_mainLayout);
 }
 
-void OptionsMenu::onSelectionChange(elysian::MenuSelection* sel) {
-    static_cast<PauseMenu*>(getParentWidget())->onOptionsPaneSelect(sel);
-}
 
-void OptionsMenu::onCancel(void) {
-    static_cast<PauseMenu*>(getParentWidget())->onOptionsPaneCancel();
-}
-
-void OptionsMenu::onCurrentChange(Widget* prev, Widget* next) {
+void PauseMenuOptionsMenu::onCurrentChange(Widget* prev, Widget* next) {
     auto* prevLabel = static_cast<LabelWidget*>(prev);
     auto* nextLabel = static_cast<LabelWidget*>(next);
 
@@ -205,7 +322,7 @@ void PartyMenu::onCurrentChange(Widget* prev, Widget* next) {
 
 }
 
-void PartyMenu::onSelectionChange(MenuSelection *next) {
+void PartyMenu::onSelectionChange(const MenuSelection *next) {
     unsigned secondPartyIndex = 0;
     if(!next) return;
 
@@ -258,7 +375,7 @@ void PartyMenu::onCancel(void) {
         _selectState = SELECT_BULLSHIT;
         setFocus(false);
         onCurrentChange(nullptr, nullptr);
-        static_cast<PauseMenu*>(getParentWidget())->onMainFrameCancel();
+        //static_cast<PauseMenu*>(getParentWidget()->getParentWidget())->onMainFrameCancel();
         break;
     default: GY_ASSERT(false);
     }

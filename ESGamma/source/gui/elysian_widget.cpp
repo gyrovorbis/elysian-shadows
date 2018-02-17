@@ -9,6 +9,19 @@ namespace elysian {
         delete _layout;
     }
 
+    void Widget::setMouseTracking(bool enabled) {
+        if(_mouseTracking && !enabled) {
+            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_BUTTON);
+            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_MOVE);
+            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_WHEEL);
+        } else if(!_mouseTracking && enabled) {
+            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_BUTTON);
+            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_MOVE);
+            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_WHEEL);
+        }
+        _mouseTracking = enabled;
+    }
+
     void Widget::setLayout(Layout *layout) {
         _layout = layout;
         _layout->setParent(this);
@@ -60,18 +73,14 @@ namespace elysian {
             _layout->controllerEvent(cont);
         }
     }
-
+#if 0
     void Widget::keyboardEvent(const Keyboard& keybd) {
         if(_layout) {
             _layout->keyboardEvent(keybd);
         }
     }
+#endif
 
-    void Widget::mouseEvent(const Mouse& mouse) {
-        if(_layout) {
-            _layout->mouseEvent(mouse);
-        }
-    }
 
     void Widget::touchEvent(const TouchDevice& touch) {
         if(_layout) {
@@ -200,6 +209,81 @@ Widget* Widget::getParentWidget(void) const {
     const Layout* layout = getParentLayout();
     if(layout) return layout->getParent();
     else return nullptr;
+}
+
+void Widget::onReceiveEvent(Event* event) {
+    switch(event->getEventType()) {
+    case EVENT_WIDGET_ACTIVE:
+
+    default:
+    return;
+
+    }
+}
+
+void Widget::onObserveEvent(Event *event, EventReceiver *receiver) {
+    if(!receiver) {
+        auto* mouseEvent = static_cast<MouseEvent*>(event);
+        switch(event->getEventType()) {
+
+        case EVENT_MOUSE_BUTTON:
+            onMouseButtonEvent(*mouseEvent->getMouse());
+            break;
+        case EVENT_MOUSE_MOVE:
+            onMouseMoveEvent(*mouseEvent->getMouse());
+            break;
+        case EVENT_MOUSE_WHEEL:
+            onMouseWheelEvent(*mouseEvent->getMouse());
+            break;
+        }
+    } else {
+        KeyboardEventObserver::onObserveEvent(event, receiver);
+    }
+}
+
+void Widget::onMouseButtonEvent(const Mouse &mouse) {
+}
+
+void Widget::onMouseMoveEvent(const Mouse &mouse) {
+}
+
+void Widget::onMouseWheelEvent(const Mouse &mouse) {
+}
+
+
+FrameWidget::FrameWidget(Layout* layout):
+    GroupWidget(layout)
+{}
+
+void Widget::setFocus(bool enabled) {
+    _focus = enabled;
+}
+
+FrameWidget::FrameWidget(Widget* centralWidget) {
+    setLayout(new ELYSIAN_FRAME_WIDGET_LAYOUT_TYPE_DEFAULT());
+    setCentralWidget(centralWidget);
+}
+
+FrameWidget::FrameWidget(std::nullptr_t):
+    FrameWidget((Widget*)nullptr)
+{}
+
+void FrameWidget::setCentralWidget(Widget* centralWidget) {
+    GY_ASSERT(getLayout());
+    GY_ASSERT(getLayout()->getWidgetCount() <= 1);
+
+    //get rid of any existing shit
+    if(getLayout()->getWidgetCount() && getLayout()->getWidget(0) && getLayout()->getWidget(0) != centralWidget) {
+        getLayout()->removeWidget(getLayout()->getWidget(0));
+    }
+
+    //add new shit (if there is new shit)
+    if(centralWidget) getLayout()->addWidget(centralWidget);
+}
+
+Widget* FrameWidget::getCentralWidget(void) const {
+    GY_ASSERT(getLayout());
+    return getLayout()->getWidget(0);
 }
 
 }

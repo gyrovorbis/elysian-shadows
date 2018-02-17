@@ -406,7 +406,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Area,
                                     getBgmOggByTrack,
                                     getAuxOggByTrack,
                                     getBgmOggTrackCount,
-                                    getAuxOggTrackCount)
+                                    getAuxOggTrackCount,
+                                    getOggGain)
 OOLUA_EXPORT_FUNCTIONS(Area,
                                 setTileEntry,
                                 addEntity,
@@ -424,4 +425,5 @@ OOLUA_EXPORT_FUNCTIONS(Area,
                                 setBgmOggByTrack,
                                 setAuxOggByTrack,
                                 getStartPosition,
-                                setStartPosition)
+                                setStartPosition,
+                                setOggGain)

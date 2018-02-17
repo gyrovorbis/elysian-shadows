@@ -35,8 +35,10 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
+#ifdef GYRO_VMU_APP
 #include <gyro_vmu_main_window.hpp>
 #include <ui_gyro_vmu_main_window.h>
+#endif
 
 
 #ifdef ESTK_UNIT_TESTS

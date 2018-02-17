@@ -28,6 +28,8 @@ namespace game {
 
     using namespace elysian;
 
+    class HpMpGaugeWidget;
+
     class PlayablePane: public elysian::EntityWidget, public elysian::LuaManager {
     private:
         Entity*             _playable         = nullptr;
@@ -52,10 +54,8 @@ namespace game {
 
         GroupWidget*        _indentWidget;
         EntityWidget*       _portrait;
-        EntityWidget*       _hpBg;
-        EntityWidget*       _mpBg;
-        EntityWidget*       _hpFg;
-        EntityWidget*       _mpFg;
+        HpMpGaugeWidget*    _hpGauge;
+        HpMpGaugeWidget*    _mpGauge;
         EntityWidget*       _echoIcon;
 
     public:

@@ -53,6 +53,8 @@ public:
     int                             getKeyLuaType(void) const;
     int                             getParentLuaType(void) const;
 
+    QStandardItem*                  getParentItem(void);
+    LuaTableFieldItem*              getParentLuaItem(void);
     QStandardItem*                  getAncestorItem(QStringList keyNames);
     LuaTableFieldItem*              getAncestorLuaItem(QStringList keyNames);
     QStandardItem*                  getAncestorSiblingItem(QStringList keyNames, int col);
@@ -205,6 +207,13 @@ inline LuaTableFieldItem* LuaTableFieldItem::fromModelIndex(const QModelIndex& i
         return fromStandardItem(model->itemFromIndex(index));
     }
     return nullptr;
+}
+
+inline QStandardItem* LuaTableFieldItem::getParentItem(void) {
+    return getAncestorSiblingItem({"*"}, 1);
+}
+inline LuaTableFieldItem* LuaTableFieldItem::getParentLuaItem(void) {
+    return getAncestorSiblingLuaItem({"*"}, 1);
 }
 
 

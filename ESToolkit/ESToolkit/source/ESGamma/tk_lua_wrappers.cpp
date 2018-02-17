@@ -159,8 +159,10 @@ OOLUA_EXPORT_FUNCTIONS(DynamicContentPropertyItemDelegate)
     \inmodule Toolkit
     \brief Delegate
 */
-OOLUA_EXPORT_FUNCTIONS_CONST(ColorSwatchPropertyItemDelegate)
-OOLUA_EXPORT_FUNCTIONS(ColorSwatchPropertyItemDelegate)
+OOLUA_EXPORT_FUNCTIONS_CONST(QESTkUtils::ColorSwatchPropertyItemDelegate<Color4>)
+OOLUA_EXPORT_FUNCTIONS(QESTkUtils::ColorSwatchPropertyItemDelegate<Color4>)
+
+OOLUA_EXPORT_NO_FUNCTIONS(QESTkUtils::ColorSwatchPropertyItemDelegate<Vector4>)
 
 /*!
     \qmltype PlainTextEditPropertyItemDelegate
@@ -170,6 +172,14 @@ OOLUA_EXPORT_FUNCTIONS(ColorSwatchPropertyItemDelegate)
 */
 OOLUA_EXPORT_NO_FUNCTIONS(QESTkUtils::PlainTextEditPropertyItemDelegate)
 
+/*!
+    \qmltype SliderPropertyItemDelegate
+    \since 1.6.1
+    \inmodule Toolkit
+    \brief Delegate
+*/
+OOLUA_EXPORT_NO_FUNCTIONS(QESTkUtils::SliderPropertyItemDelegate)
+
 void TkLuaManager::_registerWrappers(void) {
     elysian::LuaManagerBase::_registerWrappers();
 
@@ -178,7 +188,7 @@ void TkLuaManager::_registerWrappers(void) {
     _mainState->register_class<EnumDropdownPropertyItemDelegate>();
     _mainState->register_class<SpinboxPropertyItemDelegate>();
     _mainState->register_class<FileBrowserPropertyItemDelegate>();
-    _mainState->register_class<ColorSwatchPropertyItemDelegate>();
+    _mainState->register_class<QESTkUtils::ColorSwatchPropertyItemDelegate<Color4>>();
     _mainState->register_class_static<Toolkit>("setSelection", &Toolkit_setSelection);
     _mainState->register_class_static<Toolkit>("getSelection", &ESToolkit::pushSelection);
     _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);

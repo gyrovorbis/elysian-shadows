@@ -57,6 +57,7 @@ void TkExaminable::initializeDelegates(void) {
                 }
             }
         },
+        "Add Dialog",
         false,
         [](ESTkStandardItem* item) -> bool {
             auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
@@ -103,6 +104,7 @@ void TkExaminable::initializeDelegates(void) {
                 }
             }
         },
+        "Remove Dialog",
         false,
         [](ESTkStandardItem* item) -> bool {
             auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);

@@ -10,6 +10,7 @@
 #define TK_LUA_TABLE_PROPERTY_TABLE_FIELD_KEY   "__prop"
 #define TK_LUA_TABLE_DELEGATE_FIELD_KEY         "__delegate"
 #define TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY   "__outerdelegate"
+#define TK_LUA_TABLE_KEY_MAX_LENGTH             500
 
 
 class TkLuaTableUserdata: public QObject {

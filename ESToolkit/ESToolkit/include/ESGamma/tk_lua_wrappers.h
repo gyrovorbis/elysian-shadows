@@ -14,6 +14,8 @@
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h>
+#include <QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h>
+#include <crtp/elysian_color.hpp>
 
 
 namespace OOLUA
@@ -62,10 +64,16 @@ OOLUA_PROXY_END
 OOLUA_PROXY(DynamicContentPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(ColorSwatchPropertyItemDelegate, PropertyItemDelegate)
+OOLUA_PROXY(QESTkUtils::ColorSwatchPropertyItemDelegate<Color4>, PropertyItemDelegate)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(QESTkUtils::ColorSwatchPropertyItemDelegate<Vector4>, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(QESTkUtils::PlainTextEditPropertyItemDelegate, PropertyItemDelegate)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(QESTkUtils::SliderPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 

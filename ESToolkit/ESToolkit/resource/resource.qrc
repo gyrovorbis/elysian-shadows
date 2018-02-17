@@ -73,6 +73,8 @@
         <file>images/browse_file_icon.ico</file>
         <file>images/color_swatch_icon.png</file>
         <file>images/position_icon.png</file>
+        <file>images/dynamic.png</file>
+        <file>images/static.png</file>
     </qresource>
     <qresource prefix="/sheetManager">
         <file>images/reservedTile.png</file>

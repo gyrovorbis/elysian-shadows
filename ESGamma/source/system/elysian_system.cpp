@@ -24,6 +24,7 @@ namespace elysian {
   DialogSystem*		System::_dialogSystem		= nullptr;
   CombatSystem*		System::_combatSystem		= nullptr;
   SkeletonSystem*     System::_skeletonSystem     = nullptr;
+    EventSystem*    System::_eventSystem            = nullptr;
   BehaviorSystem*		System::_behaviorSystem		= nullptr;
   PathfindingSystem*   System::_pathfindingSystem = nullptr;
 }

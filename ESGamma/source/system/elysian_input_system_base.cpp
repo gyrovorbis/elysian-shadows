@@ -1,15 +1,36 @@
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_debug.hpp>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
 
+KeyboardEventObserver::KeyboardEventObserver(void) {
+    System::getEventSys()->addEventObserver(this, EVENT_KEYBOARD_KEY);
+}
+
+void KeyboardEventObserver::onObserveEvent(Event* event, EventReceiver* receiver) {
+    if(!receiver && event->getEventType() == EVENT_KEYBOARD_KEY) {
+        onKeyboardEvent(*System::getInputSys()->getKeyboard());
+    }
+}
+
+void KeyboardEventObserver::onKeyboardEvent(const Keyboard& keybd) {
+
+}
+
 bool Keyboard::pollInput(void) {
     _attached = gyKeyboardPoll(&_gyHandle);
+    if(_attached && _gyHandle->changed) System::getEventSys()->broadcastEvent(Event(EVENT_KEYBOARD_KEY));
     return _attached;
 }
 
 bool Mouse::pollInput(void) {
     _attached = gyMousePoll(&_gyHandle);
+    if(_attached && _gyHandle) {
+        if(_gyHandle->buttonsChanged)       System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_BUTTON, this));
+        if(_gyHandle->screenPosChanged)     System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_MOVE, this));
+        if(_gyHandle->scrollWheelChanged)   System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_WHEEL, this));
+    }
     return _attached;
 }
 
@@ -171,11 +192,11 @@ void InputSystemBase::update(void) {
     else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onKeyboardRemoved();
 
     //update mouse
- //   wasAttached = _mouse.isAttached();
- //   isAttached = _mouse.pollInput();
+    wasAttached = _mouse.isAttached();
+    isAttached = _mouse.pollInput();
 
-   // if(isAttached && !wasAttached)      _onMouseAttached();
-   // else if(!isAttached && wasAttached) _onMouseRemoved();
+    if(isAttached && !wasAttached)      _onMouseAttached();
+    else if(!isAttached && wasAttached) _onMouseRemoved();
 
     //update controllers
     for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) {

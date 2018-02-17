@@ -4,7 +4,7 @@
 #include <ESGamma/tk_lua_wrappers.h>
 
 void TkColor4::initializeDelegates(void) {
-    auto* typeDelegate = new ColorSwatchPropertyItemDelegate();
+    auto* typeDelegate = new QESTkUtils::ColorSwatchPropertyItemDelegate<Color4>();
 
     OOLUA::push(*_mainState, typeDelegate);
     lua_setfield(*_mainState, -2, TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY);

@@ -3,6 +3,7 @@
 
 #include <gyro_video_api.h>
 #include <crtp/elysian_lua_table_proxy.hpp>
+#include <utility/elysian_generic.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Color4)
 
@@ -85,12 +86,20 @@ namespace elysian {
 
     class Color4Base:
             public GYColor4,
+            public VirtualArray<Color4, int, unsigned char>,
             public LuaTableProxy<Color4>
     {
 
         GYColor4*       _ptr;
 
     public:
+
+        enum INDEX_COLOR {
+            INDEX_R,
+            INDEX_G,
+            INDEX_B,
+            INDEX_A
+        };
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(r, getR, setR)
@@ -101,9 +110,9 @@ namespace elysian {
 
                         Color4Base(void);
                         Color4Base(GYColor4* color);
-                        Color4Base(const GYColor4& other);
+                        //Color4Base(const GYColor4& other);
                         Color4Base(const Color4Base& other);
-                        Color4Base(GYColor4&& other);
+                        //Color4Base(GYColor4&& other);
                         Color4Base(unsigned char c);
                         Color4Base(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
@@ -122,13 +131,13 @@ namespace elysian {
 
         bool            isRef(void) const;
 
-        operator        GYColor4*(void);
-        operator        const GYColor4*(void) const;
+        //operator        GYColor4*(void);
+        //operator        const GYColor4*(void) const;
         //operator        const GYColor4Base&(void);
 
         Color4Base&         operator=(const Color4Base& rhs);
-        Color4Base&         operator=(GYColor4& rhs);
-        Color4Base&         operator=(GYColor4&& rhs);
+        //Color4Base&         operator=(GYColor4& rhs);
+        //Color4Base&         operator=(GYColor4&& rhs);
         bool                operator==(const GYColor4& rhs) const;
         bool                operator!=(const GYColor4& rhs) const;
 
@@ -138,6 +147,9 @@ namespace elysian {
         Color4Base&         operator/=(float scalar);
         Color4Base&         operator+=(const GYColor4& rhs);
         Color4Base&         operator-=(const GYColor4& rhs);
+
+        void        setValueByIndex(int index, unsigned char val);
+        auto        getValueByIndex(int index) const -> unsigned char;
 
         static const Color4 white;
         static const Color4 black;
@@ -164,8 +176,8 @@ namespace elysian {
 inline Color4Base::Color4Base(void): GYColor4 { 255, 255, 255, 255 }, _ptr(this) {}
 inline Color4Base::Color4Base(unsigned char c): GYColor4 { c, c, c, c }, _ptr(this) {}
 inline Color4Base::Color4Base(GYColor4* color):GYColor4 { color->r, color->g, color->b, color->a }, _ptr(color) {}
-inline Color4Base::Color4Base(const GYColor4& other): GYColor4 { other.r, other.g, other.b, other.a }, _ptr(this) {}
-inline Color4Base::Color4Base(GYColor4 &&other): GYColor4 { other.r, other.g, other.b, other.a }, _ptr(this) {}
+//inline Color4Base::Color4Base(const GYColor4& other): GYColor4 { other.r, other.g, other.b, other.a }, _ptr(this) {}
+//inline Color4Base::Color4Base(GYColor4 &&other): GYColor4 { other.r, other.g, other.b, other.a }, _ptr(this) {}
 inline Color4Base::Color4Base(const Color4Base& color) : LuaTableProxy<Color4>() {
     *this = color;
 }
@@ -178,13 +190,15 @@ inline bool Color4Base::isRef(void) const { return _ptr != this; }
 inline Color4Base& Color4Base::operator =(const Color4Base& rhs) {
     if(rhs._ptr != &rhs) {
         _ptr = rhs._ptr;
+        setA(rhs.getA()); setR(rhs.getR()); setG(rhs.getG()); setB(rhs.getB());
     } else {
-        *(GYColor4*)this = *(const GYColor4*)&rhs;
+        //*(GYColor4*)this = *(const GYColor4*)&rhs;
         _ptr = this;
+        setA(rhs.getA()); setR(rhs.getR()); setG(rhs.getG()); setB(rhs.getB());
     }
     return *this;
 }
-
+#if 0
 inline Color4Base& Color4Base::operator =(GYColor4& rhs) {
     *(GYColor4*)this = rhs;
     _ptr = this;
@@ -196,7 +210,7 @@ inline Color4Base& Color4Base::operator =(GYColor4&& rhs) {
     _ptr = this;
     return *this;
 }
-
+#endif
 inline bool Color4Base::operator ==(const GYColor4& rhs) const {
     return (_ptr->r == rhs.r && _ptr->g == rhs.g && _ptr->b == rhs.b && _ptr->a == rhs.a);
 }
@@ -218,10 +232,42 @@ inline void Color4Base::setComponents(const unsigned char r, const unsigned char
     setA(a); setR(r); setG(g); setB(b);
 }
 
-inline Color4Base::operator GYColor4*(void) { return _ptr; }
-inline Color4Base::operator const GYColor4*(void) const { return _ptr; }
+//inline Color4Base::operator GYColor4*(void) { return _ptr; }
+//inline Color4Base::operator const GYColor4*(void) const { return _ptr; }
 
+inline void Color4Base::setValueByIndex(int index, unsigned char val) {
+    GY_ASSERT(index >= INDEX_R && index <= INDEX_A);
+    switch(index) {
+    case INDEX_A:
+        setA(val);
+        break;
+    case INDEX_R:
+        setR(val);
+        break;
+    case INDEX_B:
+        setB(val);
+        break;
+    default:
+    case INDEX_G:
+        setG(val);
+        break;
+    }
+}
 
+inline unsigned char Color4Base::getValueByIndex(int index) const {
+    GY_ASSERT(index >= INDEX_R && index <= INDEX_A);
+    switch(index) {
+    case INDEX_A:
+        return getA();
+    case INDEX_R:
+        return getR();
+    case INDEX_B:
+        return getB();
+    default:
+    case INDEX_G:
+        return getG();
+    }
+}
 
 }
 

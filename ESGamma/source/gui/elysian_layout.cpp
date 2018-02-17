@@ -90,14 +90,6 @@ namespace elysian {
         for(auto& widget: _widgets) if(widget->hasFocus()) widget->controllerEvent(cont);
     }
 
-    void Layout::keyboardEvent(const Keyboard &keybd) {
-        for(auto& widget: _widgets) if(widget->hasFocus()) widget->keyboardEvent(keybd);
-    }
-
-    void Layout::mouseEvent(const Mouse &mouse) {
-        for(auto& widget: _widgets) widget->mouseEvent(mouse);
-    }
-
     void Layout::touchEvent(const TouchDevice &touch) {
         for(auto& widget: _widgets) widget->touchEvent(touch);
     }
@@ -287,11 +279,11 @@ namespace elysian {
         }
 
         if(i < (int)_widgets.size()) {
-            if(i == index) return; //It's already where you wanted it, asswipe.
+            if(i == (int)index) return; //It's already where you wanted it, asswipe.
             else _widgets.erase(_widgets.begin() + i);
         }
 
-        if (index < _widgets.size()) {
+        if (index < (unsigned)_widgets.size()) {
             _widgets.insert(_widgets.begin() + index, widget);
         } else { //Either this is what you wanted, or you're a dumbass and that index is too large, so we'll just append it...
             _widgets.push_back(widget);

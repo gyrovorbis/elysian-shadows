@@ -14,6 +14,8 @@
 #define ELYSIAN_AREA_ARRAY_VBO_TYPE                 GL_STATIC_DRAW
 #define ELYSIAN_AREA_ELEMENT_ARRAY_VBO_TYPE         GL_DYNAMIC_DRAW
 
+#define ELYSIAN_AREA_BGM_TRACKS     3
+#define ELYSIAN_AREA_AUX_TRACKS     2
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
 #define ELYSIAN_AREA_MAP_HEIGHT		200
@@ -98,6 +100,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(music)
                 ELYSIAN_LUA_PROXY_ARRAY_FIELD(bgm,      getBgmOggByTrack,       setBgmOggByTrack,       getBgmOggTrackCount)
                 ELYSIAN_LUA_PROXY_ARRAY_FIELD(aux,      getAuxOggByTrack,       setAuxOggByTrack,       getAuxOggTrackCount)
+                ELYSIAN_LUA_PROXY_FIELD(gain,           getOggGain,             setOggGain)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
 
             ELYSIAN_LUA_PROXY_FIELD(startPosition, getStartPosition, setStartPosition)
@@ -159,6 +162,7 @@ namespace elysian {
 
         char                        _bgmOggTracks[3][ELYSIAN_AREA_PATH_SIZE] = {{ 0 }};
         char                        _auxOggTracks[2][ELYSIAN_AREA_PATH_SIZE] = {{ 0 }};
+        float                       _oggGain = 1.0f;
 
                                     AreaBase(void);
                                     ~AreaBase(void);
@@ -185,6 +189,8 @@ namespace elysian {
         const char*                 getAuxOggByTrack(const unsigned index) const;
         void                        setAuxOggByTrack(const unsigned index, const char* path);
         unsigned                    getAuxOggTrackCount(void) const;
+        float                       getOggGain(void) const;
+        void                        setOggGain(float gain);
 
         //Slower than layer-specific accessors, but loop-friendly
         TileEntry                   getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
@@ -376,6 +382,8 @@ namespace elysian {
      inline void AreaBase::setBgmOggByTrack(const unsigned index, const char* path) { strcpy(_bgmOggTracks[index], path); }
      inline const char* AreaBase::getAuxOggByTrack(const unsigned index) const { return _auxOggTracks[index]; }
      inline void AreaBase::setAuxOggByTrack(const unsigned index, const char* path) { strcpy(_auxOggTracks[index], path); }
+     inline float AreaBase::getOggGain(void) const { return _oggGain; }
+     inline void AreaBase::setOggGain(float gain) { _oggGain = gain; }
 
 }
 

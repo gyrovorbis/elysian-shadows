@@ -34,8 +34,9 @@
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>
 #include <proxy/elysian_entity_proxy.hpp>
+#ifdef VMU_CHILD_APP
 #include <gyro_vmu_main_window.hpp>
-
+#endif
 
 
 void ESToolkit::on_actionFileQuit_triggered() {
@@ -794,9 +795,10 @@ void ESToolkit::on_actionAudio_Dump_triggered() {
 }
 
 void ESToolkit::on_actionVMU_View_triggered(bool checked) {
+
     if(checked) {
         if(!_evmuWindow) {
-
+#ifdef VMU_CHILD_APP
             _evmuWindow = new VMUMainWindow(this);	// no parent
             //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
             //evmuWindow->setWindowFlags(Qt::Widget);
@@ -809,6 +811,7 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
 
 
            _vmuDockWidget->setWidget(_evmuWindow);
+#endif
         //dock->setMouseTracking(false);
            //evmuWindow->setParent(dock) ;	// here
             addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);

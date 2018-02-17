@@ -7,8 +7,54 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <crtp/elysian_combat.hpp>
 #include <system/elysian_party_system.hpp>
+#include <crtp/elysian_gui_system.hpp>
 
 namespace game {
+
+class HpMpGaugeWidget: public EntityWidget {
+private:
+    Entity* _fg;
+protected:
+
+    virtual void render(void) const override {
+        EntityWidget::render();
+        _fg->render();
+    }
+
+public:
+    HpMpGaugeWidget(Entity* entity, bool hpGauge):
+        EntityWidget(entity),
+        _fg(new elysian::Entity(entity))
+    {
+        GY_ASSERT(_fg->getRenderable());
+        auto quadAttrib = make_shared<elysian::QuadSpriteAttrib>();
+        if(!hpGauge) {
+            quadAttrib->setVertexColor(0, { 0, 0, 255, 255 });
+            quadAttrib->setVertexColor(2, { 0, 0, 255, 255 });
+            quadAttrib->setVertexColor(1, { 0, 100, 255, 255 });
+            quadAttrib->setVertexColor(3, { 0, 100, 255, 255 });
+        } else {
+            quadAttrib->setVertexColor(0, { 0, 255, 0, 255 });
+            quadAttrib->setVertexColor(2, { 0, 255, 0, 255 });
+            quadAttrib->setVertexColor(1, { 50, 255, 200, 255 });
+            quadAttrib->setVertexColor(3, { 50, 255, 200, 255 });
+        }
+        _fg->getRenderable()->setSpriteAttrib(quadAttrib);
+        setSizePolicy(Widget::FIXED, Widget::FIXED);
+    }
+
+    void updateGauge(float curVal, float maxVal) {
+        _fg->getTransform() = getEntity()->getTransform();
+        float scale = curVal/maxVal;
+        float oldSize = _fg->getTransform().getSizeX();
+        float newSize = oldSize*scale;
+        _fg->getTransform().setSizeX(newSize);
+
+        _fg->getTransform().translate((oldSize-newSize)*-0.5f, 0.0f, 1.0f);
+    }
+
+};
+
 
 PlayablePane::PlayablePane(void) {
     auto newFromPrefab = [](const char* name) {
@@ -37,16 +83,17 @@ PlayablePane::PlayablePane(void) {
 
     _levelText      = new LabelWidget();
     _nameText       = new LabelWidget();
+    //_nameText->setFont(&elysian::System::getGuiSys()->verdana);
     _hpText         = new LabelWidget();
     _hpMaxText      = new LabelWidget();
-    _hpBg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_BG_PREFAB));
-    _hpFg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_FG_PREFAB));
+    _hpGauge        = new HpMpGaugeWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_BG_PREFAB), true);
+    _mpGauge        = new HpMpGaugeWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_BG_PREFAB), false);
 
     _vLayoutLeft    = new VerticalLayout(std::vector<Widget*> {
-        _levelText,
         _nameText,
+        _levelText,
         _hpText,
-        _hpBg
+        _hpGauge
     });
 
     Entity* entity2 = new Entity;
@@ -65,8 +112,6 @@ PlayablePane::PlayablePane(void) {
     _echoNameText   = new LabelWidget();
     _mpText         = new LabelWidget();
     _mpMaxText      = new LabelWidget();
-    _mpBg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_HP_BG_PREFAB));
-    _mpFg           = new EntityWidget(newFromPrefab(ELYSIAN_PLAYABLE_PANE_MP_FG_PREFAB));
 
     _echoIcon->setSizePolicy(Widget::FIXED, Widget::FIXED);
 
@@ -79,10 +124,10 @@ PlayablePane::PlayablePane(void) {
     _groupEcho->setLayout(_hLayoutEcho);
 
     _vLayoutRight   = new VerticalLayout(std::vector<Widget*> {
-        _echoLevelText,
         _groupEcho,
+        _echoLevelText,
         _mpText,
-        _mpFg
+        _mpGauge
     });
 
     _groupRight     = new GroupWidget;
@@ -119,7 +164,7 @@ void PlayablePane::update(void) {
         sprintf(buff, "Lv. %d", _combatTable["stats"]["level"].getVariant().getValue<int>());
         _levelText->setText(buff);
 
-        sprintf(buff, "Hp %d/%d", stats.getHp(), stats.getMaxHp());
+        sprintf(buff, "HP %d/%d", stats.getHp(), stats.getMaxHp());
         _hpText->setText(buff);
 
         if(stats.getHp() <= 0) {
@@ -128,17 +173,18 @@ void PlayablePane::update(void) {
             _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setColor(255, 255, 255, 255);
         }
 
-        _hpFg->getEntity()->getTransform().setScaleX((float)stats.getHp()/(float)stats.getMaxHp());
+        _hpGauge->updateGauge(stats.getHp(), stats.getMaxHp());
+
 
         sprintf(buff, "Lv. %d", _combatTable["echo"]["level"].getVariant().getValue<int>());
         _echoLevelText->setText(buff);
 
         _echoNameText->setText(_combatTable["echo"]["attrib"]["name"].getVariant().getValue<const char*>());
 
-        sprintf(buff, "Mp %d/%d", stats.getMp(), stats.getMaxMp());
+        sprintf(buff, "MP %d/%d", stats.getMp(), stats.getMaxMp());
         _mpText->setText(buff);
 
-        _mpFg->getEntity()->getTransform().setScaleX((float)stats.getMp()/(float)stats.getMaxMp());
+        _mpGauge->updateGauge(stats.getMp(), stats.getMaxMp());
 
         if(!System::getPartySys()->isPartyMemberActive(System::getPartySys()->getPartySlot(_playable))) {
             _layout->insertWidget(0, _indentWidget);
@@ -162,6 +208,7 @@ void PlayablePane::setPartyMember(Entity* entity) {
         _combatTable = _playable->getLuaBehavior(ELYSIAN_PLAYABLE_PANE_COMBAT_BEHAV)->getSelfTable();
         _portrait->enable();
         _portrait->getEntity()->getRenderable()->getSpriteAttrib()->setTexPath(_combatTable["playable"]["portrait"].getVariant().getValue<const char*>());
+        _echoIcon->getEntity()->getRenderable()->getSpriteAttrib()->setTexPath("/assets/graphics/items/health_globe.png");
     } else {
         _combatTable.setNil();
         _nameText->disable();

@@ -17,6 +17,7 @@ tests {
 }
 
 vmu_child_app {
+    DEFINES += VMU_CHILD_APP
     SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
 }
 
@@ -58,3 +59,4 @@ vmu_child_app {
     ElysianVMU.depends += libGyro
     ESToolkit.depends += ElysianVMU
 }
+

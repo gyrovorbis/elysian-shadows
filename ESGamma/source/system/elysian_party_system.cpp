@@ -427,7 +427,7 @@ void Player::_processMovement(const float /*deltaTime*/, const Controller*const 
     auto emitDashParticles = [&](void) {
         partySys->getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
         partySys->getPartSys()->getAttrib(0)->setForceMask(0);
-        partySys->getPartSys()->getAttrib(0)->setEndColor(GYColor4 { 255, 255, 255, 0});
+        partySys->getPartSys()->getAttrib(0)->setEndColor(Color4(255, 255, 255, 0));
         partySys->getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
         partySys->getPartSys()->getAttrib(0)->setMaxLife(30);
         partySys->getPartSys()->getAttrib(0)->setStick(false);
@@ -621,6 +621,13 @@ void PartySystem::setPartyMemberActive(unsigned slot, bool active) {
             follower->getTransform().setPos(leader->getTransform().getPos());
         }
     }
+}
+
+void PartySystem::setSlotFollowLogicEnabled(const unsigned int slot, bool enabled) {
+    if(slot < getPartySize()) {
+        _characterParty[slot].followLogic = enabled;
+
+    } else errprintf("Tried to set invalid slot [%d] follow logic enabled to [%d]", slot, enabled);
 }
 
 

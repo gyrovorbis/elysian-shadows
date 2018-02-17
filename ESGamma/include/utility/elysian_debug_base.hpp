@@ -129,8 +129,6 @@ namespace elysian {
 
 
 
-
-
     //=========INLINEZ=======
     inline void DebugBase::push(void) { ++_stackDepth; }
     inline void DebugBase::pop(const unsigned count) { _stackDepth -= count; }

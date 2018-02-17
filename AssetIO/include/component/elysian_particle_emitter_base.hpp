@@ -190,7 +190,7 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setForceMask(const BitMask32 mask) { _forceMask = mask; }
     inline void ParticleEmitterAttribBase::setStartSize(const unsigned size) { _startSize = size; }
     inline void ParticleEmitterAttribBase::setEndSize(const unsigned size) { _endSize = size; }
-    inline void ParticleEmitterAttribBase::setEndColor(const Color4& color) { _endColor = color; }
+    inline void ParticleEmitterAttribBase::setEndColor(const Color4& color) { _endColor = GYColor4 { color.getR(), color.getG(), color.getB(), color.getA() }; }
 
     inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;

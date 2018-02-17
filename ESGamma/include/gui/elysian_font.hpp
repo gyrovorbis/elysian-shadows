@@ -38,7 +38,7 @@ namespace elysian {
 
         static GYColor4 _colorPalette[ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE];
         unsigned short  _charWidth[128];
-        unsigned short  _charHeight = 32;
+        unsigned short  _charHeight = 28;
         unsigned short  _spacing = ELYSIAN_FONT_SPACING_DEFAULT;
         bool            _batching = false;
 

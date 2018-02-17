@@ -28,6 +28,7 @@ namespace elysian {
   class RigidBodySystem;
   class CombatSystem;
   class SkeletonSystem;
+  class EventSystem;
   class PathfindingSystem;
 
   class System: public LevelManager {
@@ -59,6 +60,7 @@ namespace elysian {
     static DialogSystem		*_dialogSystem;
     static CombatSystem		*_combatSystem;
     static SkeletonSystem   *_skeletonSystem;
+    static EventSystem      *_eventSystem;
     static BehaviorSystem	*_behaviorSystem;
     static PathfindingSystem *_pathfindingSystem;
 
@@ -82,6 +84,7 @@ namespace elysian {
     static DialogSystem*		getDialogSys(void) { return _dialogSystem; }
     static CombatSystem*		getCombatSys(void) { return _combatSystem; }
     static SkeletonSystem*      getSkeletonSys(void) { return _skeletonSystem; }
+    static EventSystem*         getEventSys(void) { return _eventSystem; }
     static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
     static PathfindingSystem* getPathfindingSys(void) { return _pathfindingSystem; }
 

@@ -102,6 +102,8 @@ void GuiSystem::update(void) {
     gyVidResolution(&_projWidth, &_projHeight);
     adventureLog.update();
 
+    _menuWidget->setPosition(Widget::X, _projWidth*0.5f);
+    _menuWidget->setPosition(Widget::Y, _projHeight*0.5f);
     if(!_menuWidget->hasFocus() && _pauseMenuActive) setPauseMenuActive(false);
 
     const float deltaTime = getTimerSys()->getDeltaTime();
@@ -379,6 +381,9 @@ void GuiSystem::setPauseMenuActive(bool val) {
 void GuiSystem::processInput(void) {
     if(getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_START)) {
         setPauseMenuActive(!_pauseMenuActive);
+
+        if(_pauseMenuActive) adventureLog.fade(0.0f, false);
+        else adventureLog.fade(1.0f, true);
 
     }
     if(_pauseMenuActive) {

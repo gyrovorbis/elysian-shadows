@@ -10,14 +10,22 @@
 #include <system/elysian_system.hpp>
 #include <gyro_input_api.h>
 #include <gyro_rumble_api.h>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
+    class Mouse;
 
 
     class TouchDevice {
 
     };
 
+    class KeyboardEventObserver: public EventObserver {
+    public:
+                        KeyboardEventObserver(void);
+        virtual void    onObserveEvent(Event* event, EventReceiver* receiver) override;
+        virtual void    onKeyboardEvent(const Keyboard& keybd);
+    };
 
     class Keyboard {
     private:
@@ -34,6 +42,14 @@ namespace elysian {
         bool                pollInput(void);
     };
 
+
+    class MouseEvent: public Event {
+    private:
+        const Mouse*    _mouse = nullptr;
+    public:
+                        MouseEvent(EventType type, const Mouse* mouse);
+        const Mouse*    getMouse(void) const;
+    };
 
     class Mouse {
     private:
@@ -227,6 +243,12 @@ namespace elysian {
     }
 
     //====== MOUSE INLINEZ ===========
+    inline MouseEvent::MouseEvent(EventType type, const Mouse* mouse):
+        Event(type),
+        _mouse(mouse)
+    {}
+    inline const Mouse* MouseEvent::getMouse(void) const { return _mouse; }
+
     inline bool Mouse::isAttached(void) const { return _attached; }
     inline bool Mouse::isPressed(const GY_MOUSE_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
     inline bool Mouse::isTapped(const GY_MOUSE_BUTTON button) const { return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }

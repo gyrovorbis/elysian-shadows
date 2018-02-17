@@ -8,6 +8,8 @@
 
 namespace elysian {
 
+
+
 //static members
 const constexpr int MenuWidget::InvalidIndex;
 
@@ -91,7 +93,7 @@ void MenuWidget::onCurrentChange(Widget*, Widget*) {
 
     //default implementation doesn't do shit!?
 }
-void MenuWidget::onSelectionChange(MenuSelection* sel) {
+void MenuWidget::onSelectionChange(const MenuSelection* sel) {
     //default implementation doesn't do shit either!?!
     dbgprintf("SELECTION CHANGE - %d", sel->getEntry(0)->second.index);
 }
@@ -102,27 +104,42 @@ void MenuWidget::onCancel(void) {
 void MenuWidget::_onCurrentChange(Widget* prevSel, Widget* nextSel) {
    // if(_currentChangeCb) _currentChangeCb(prevSel, nextSel);
     //else
-    onCurrentChange(prevSel, nextSel);
+    System::getEventSys()->sendEvent(MenuCurrentItemChangedEvent(prevSel, nextSel), this);
+    //onCurrentChange(prevSel, nextSel);
 }
 
-void MenuWidget::_onSelectionChange(MenuSelection* sel) {
+void MenuWidget::_onSelectionChange(MenuSelection*) {
      //if(_selectionChangeCb) _selectionChangeCb(sel);
     //else
-    onSelectionChange(sel);
+    System::getEventSys()->sendEvent(Event(EVENT_WIDGET_MENU_SELECTION), this);
+    //onSelectionChange(sel);
 }
 
 void MenuWidget::_onCancel(void) {
     //if(_cancelCb) _cancelCb();
     //else
-    onCancel();
+    System::getEventSys()->sendEvent(Event(EVENT_WIDGET_MENU_CANCEL), this);
+    //onCancel();
 }
 
-
-#if 0
-void MenuWidget::onFocusChange(bool) {
-    //default implementation doesn't do fuck all in this bitch either...
+void MenuWidget::onReceiveEvent(Event* event) {
+    switch(event->getEventType()) {
+    case EVENT_WIDGET_MENU_CANCEL:
+        onCancel();
+        return;
+    case EVENT_WIDGET_MENU_CURRENT: {
+        auto* menuEvent = static_cast<MenuCurrentItemChangedEvent*>(event);
+        onCurrentChange(menuEvent->getPrevWidget(), menuEvent->getNextWidget());
+        return;
+    }
+    case EVENT_WIDGET_MENU_SELECTION:
+        onSelectionChange(getSelection());
+        return;
+    default:
+        Widget::onReceiveEvent(event);
+        return;
+    }
 }
-#endif
 
 void MenuWidget::controllerEvent(const Controller &cont) {
     GY_ASSERT(_layout);

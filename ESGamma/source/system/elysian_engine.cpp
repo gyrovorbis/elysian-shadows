@@ -28,6 +28,7 @@
 #include "elysian_skeleton_system.hpp"
 #include "elysian_pathfinding_system.hpp"
 #include <crtp/elysian_input_system.hpp>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
 
@@ -46,6 +47,7 @@ Engine::Engine(void):
     LuaManager::initialize();
 
     //allocate systems
+    _eventSystem        = new EventSystem;
     _inputSystem        = new InputSystem;
     _levelSystem		= new LevelSystem;
     _mapSystem			= new MapSystem;
@@ -392,6 +394,7 @@ Engine::~Engine(void) {
     delete _skeletonSystem;
     delete _behaviorSystem;
     delete _pathfindingSystem;
+    delete _eventSystem;
 
     LuaManager::uninitialize();
 

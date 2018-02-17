@@ -71,6 +71,8 @@ private:
     bool                _batchMapUpdate = false;
     elysian::CameraKeyFrame*
                         _cameraKeyFrame = nullptr;
+    bool                _bgmTracksValid[ELYSIAN_AREA_BGM_TRACKS] = { false };
+    bool                _auxTracksValid[ELYSIAN_AREA_AUX_TRACKS] = { false };
 
     void                _connectSlots(Entity *const entity);
     void                _disconnectSlots(Entity*const entity);
@@ -136,6 +138,11 @@ public:
     void                beginMapUpdate(void);
     void                endMapUpdate(void);
     void                setEmitMapChange(const bool value);
+
+    void                setBgmOggByTrack(const unsigned index, const char* path);
+    void                setAuxOggByTrack(const unsigned index, const char* path);
+    bool                isBgmOggTrackValid(const unsigned index) const;
+    bool                isAuxOggTrackValid(const unsigned index) const;
 
 
     Entity*             newEntity(void);
@@ -265,6 +272,9 @@ inline auto TkArea::getTreeWidgetItemType(void) -> ITEM_TYPE { return ITEM_AREA;
 
 inline elysian::Vector3& TkArea::getStartPosition(void) { return _defaultStartPosition; }
 inline void TkArea::setStartPosition(const elysian::Vector3& pos) { _defaultStartPosition = pos; }
+
+inline bool TkArea::isBgmOggTrackValid(const unsigned index) const { return (index < ELYSIAN_AREA_BGM_TRACKS)? _bgmTracksValid[index] : false; }
+inline bool TkArea::isAuxOggTrackValid(const unsigned index) const { return (index < ELYSIAN_AREA_AUX_TRACKS)? _auxTracksValid[index] : false; }
 
 
 

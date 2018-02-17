@@ -181,6 +181,7 @@ namespace elysian {
     //TODO: Get the fuck rid of this shit and make it Tk-specific
     char                _prevBgmPaths[ELYSIAN_AUDIO_BGM_TRACKS][GYRO_PATH_MAX_SIZE];
     char                _prevAuxPaths[ELYSIAN_AUDIO_AUX_TRACKS][GYRO_PATH_MAX_SIZE];
+    float               _prevGain = 1.0f;
 
     struct GlobalState {
         enum STATE {
