@@ -537,7 +537,7 @@ void gyVidDepthTest(const int enable) {
         gyVidVertexBatchFlush();
         if(!enable) glDisable(GL_DEPTH_TEST);
         else glEnable(GL_DEPTH_TEST);
-        //glDepthFunc(GL_LEQUAL);
+        glDepthFunc(GL_LEQUAL);
         glalDepthTest = enable;
         wasShadow = gyVidShadowPass();
     }
