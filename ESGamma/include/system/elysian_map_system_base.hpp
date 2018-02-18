@@ -175,6 +175,7 @@ namespace elysian {
          auto& elemArraySize  = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
          auto* elemArray     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
 
+                    gyVidDepthTest(true);
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
@@ -417,9 +418,9 @@ break;
 
     template<typename P, typename T, typename E>
     inline void MapSystemCrtp<P, T, E>::enableDepthTest(void) {
-        if(gyVidShadowPass()) return;
+        //if(gyVidShadowPass()) return;
       //  flushTileBuffer();
-     //   gyVidDepthTest(true);
+        gyVidDepthTest(true);
       //  glDepthMask(GL_TRUE);
         //glEnable(GL_BLEND);
         //glDisable(GL_BLEND);

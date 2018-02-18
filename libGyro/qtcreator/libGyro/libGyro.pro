@@ -138,7 +138,8 @@ HEADERS += \
     ../../include/gyro_net_api.h \
     ../../include/gyro_rumble_api.h \
     ../../include/gyro_test_api.h \
-    ../../include/glal/gyro_gl_utils.h
+    ../../include/glal/gyro_gl_utils.h \
+    ../../include/x86/gyro_sdl_input.h
 
 
 vulkan {
@@ -200,7 +201,8 @@ SOURCES += \
     ../../source/common/gyro_video.c \
     ../../source/common/gyro_timer.c \
     ../../source/common/gyro_test.c \
-    ../../source/glal/gyro_gl_utils.c
+    ../../source/glal/gyro_gl_utils.c \
+    ../../source/x86/gyro_rumble_sdl_x86.c
 
 vulkan {
     SOURCES += \

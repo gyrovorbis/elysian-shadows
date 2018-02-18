@@ -119,7 +119,7 @@ namespace elysian {
         }
 
         void _enableDepthTest(void) {
-            //static_cast<T*>(this)->enableDepthTest();
+            static_cast<T*>(this)->enableDepthTest();
         }
 
         uint32_t _getLightCount(void) const {
@@ -299,7 +299,7 @@ namespace elysian {
         for(int l = _depthBuffMaxHeight; l >= 0; --l) {
             unsigned i = (_isShadowPass())? _depthBuffMaxHeight-l-1 : l;
             i = l;
-//_enableDepthTest();
+_enableDepthTest();
 
             if(_isShadowPass()) {
 
@@ -367,8 +367,13 @@ namespace elysian {
 
         for(unsigned i = 0; i < onscreenLightCount; ++i) onscreenLights |= (1<<i);
         bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
+#if 0
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
         const unsigned innerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
+#else
+        const unsigned outerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
+        const unsigned innerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
+#endif
 
         if(!_isShadowPass()) _renderCustomPassAtElev(-1, NORMAL_FLAT);
 
@@ -386,7 +391,7 @@ namespace elysian {
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 
 
-            //_enableDepthTest();
+            _enableDepthTest();
             //_beginObjectList();
             for(int j = _scrStartY; j <= _scrEndY; ++j) {
                 for(int i = _scrStartX; i <= _scrEndX; ++i) {

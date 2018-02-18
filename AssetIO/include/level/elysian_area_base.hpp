@@ -14,17 +14,18 @@
 #define ELYSIAN_AREA_ARRAY_VBO_TYPE                 GL_STATIC_DRAW
 #define ELYSIAN_AREA_ELEMENT_ARRAY_VBO_TYPE         GL_DYNAMIC_DRAW
 
-#define ELYSIAN_AREA_MAP_LAYERS		3
-#define ELYSIAN_AREA_MAP_WIDTH		200
-#define ELYSIAN_AREA_MAP_HEIGHT		200
-#define ELYSIAN_AREA_NAME_SIZE		50
-#define ELYSIAN_AREA_STRING_SIZE	50
-#define ELYSIAN_AREA_PATH_SIZE		200
-#define ELYSIAN_AREA_MAP_PATH		"/map.bin"
-#define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
-#define ELYSIAN_AREA_TABLE_PATH     "/area_table.lua"
-#define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
-#define ELYSIAN_TILE_ENTRY_ELEV_MAX	31
+#define ELYSIAN_AREA_MAP_LAYERS         3
+#define ELYSIAN_AREA_MAP_WIDTH          200
+#define ELYSIAN_AREA_MAP_HEIGHT         200
+#define ELYSIAN_AREA_NAME_SIZE          50
+#define ELYSIAN_AREA_STRING_SIZE        50
+#define ELYSIAN_AREA_PATH_SIZE          200
+#define ELYSIAN_AREA_MAP_PATH           "/map.bin"
+#define ELYSIAN_AREA_ENTITY_PATH        "/entity.txt"
+#define ELYSIAN_AREA_TABLE_PATH         "/area_table.lua"
+#define ELYSIAN_AREA_INIT_LUA_PATH      "/area_init.lua"
+#define ELYSIAN_TILE_ENTRY_ELEV_MAX     31
+#define ELYSIAN_AREA_LAYER_Z_EPSILON    0.001f;
 
 //TileEntry properties
 #define ELYSIAN_TILE_ENTRY_ORIENT_BIT_POS	9
