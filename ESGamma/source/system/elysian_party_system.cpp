@@ -22,6 +22,9 @@ namespace elysian {
 
 PartySystem::PartySystem(void) {
     for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _players[i].setPlayerNum(i);
+
+    getEventSys()->addEventObserver(this, EVENT_AREA_ENTER);
+    getEventSys()->addEventObserver(this, EVENT_AREA_EXIT);
 }
 
 PartySystem::~PartySystem(void) {
@@ -38,6 +41,19 @@ void PartySystem::update(void) {//VOIDICATE
  // if(_playableParty.size() < 1) return;
     _updateCamera();
     updatePartyPaths();
+}
+
+void PartySystem::onObserveEvent(Event *event, EventReceiver *receiver) {
+    switch(event->getEventType()) {
+    case EVENT_AREA_ENTER:
+        getPartySys()->addPartyToArea();
+        break;
+    case EVENT_AREA_EXIT:
+        getPartySys()->removePartyFromArea();
+        break;
+
+    }
+
 }
 
 int PartySystem::getPartySlot(const Entity *entity) const {

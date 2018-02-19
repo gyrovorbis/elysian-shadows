@@ -13,6 +13,7 @@
 #include "elysian_day_system.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_camera_system.hpp>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
 
@@ -142,6 +143,7 @@ bool LevelSystemBase::switchArea(const char *const path) {
     }
 
     if(_curArea != nullptr) { //Can't call that if no area has been loaded yet.
+        getEventSys()->broadcastEvent(Event(EVENT_AREA_EXIT));
         _onAreaExit();
     }
 
@@ -184,12 +186,13 @@ bool LevelSystemBase::switchArea(const char *const path) {
 
   //              getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
 
+    getEventSys()->broadcastEvent(Event(EVENT_AREA_ENTER));
     _onAreaEnter();
     return true;
 }
 
 void LevelSystemBase::_onAreaEnter(void) {
-    getPartySys()->addPartyToArea();
+
     _addPersistentEntities();
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
     getCollisionSys()->onAreaEnter();
@@ -201,7 +204,6 @@ void LevelSystemBase::_onAreaEnter(void) {
 void LevelSystemBase::_onAreaExit(void) {
     //Clean up current area
     getBehavSys()->callTriggers(Behavior::ON_EXIT);
-    getPartySys()->removePartyFromArea();
     getDaySys()->onAreaExit();
     _removePersistentEntities();
     _curArea->deactivate();

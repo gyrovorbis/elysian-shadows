@@ -110,6 +110,7 @@ QVariant TkEntity::data(int column, int role) const {
 }
 
 TkEntity::~TkEntity(void) {
+    deactivate();
     delete _luaModel;
 }
 

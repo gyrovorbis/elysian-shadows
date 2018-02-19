@@ -6,6 +6,7 @@
 #include <gyro_wav_api.h>
 #include <system/elysian_system.hpp>
 #include <crtp/elysian_character.hpp>
+#include <level/elysian_event.hpp>
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f
@@ -66,7 +67,7 @@ namespace elysian {
     };
 
 
-	class PartySystem: public System { 
+    class PartySystem: public System, public EventObserver {
     private:
 
         struct PartyMember {
@@ -113,6 +114,8 @@ namespace elysian {
 	public:
             PartySystem(void);
             ~PartySystem(void);
+
+        virtual void onObserveEvent(Event* event, EventReceiver* receiver);
 		
 		void update(void);
 		void updatePartyPaths(void);
