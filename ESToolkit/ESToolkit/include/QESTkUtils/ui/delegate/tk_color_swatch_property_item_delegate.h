@@ -79,7 +79,7 @@ namespace QESTkUtils {
 
             auto* luaItem = modelIndexToLuaTableFieldItem(index);
             if(luaItem) {
-                auto* color = luaItem->getVariant().getValue<ColorType*>();
+                auto* color = luaItem->getVariant().template getValue<ColorType*>();
                 if(color) {
                     QStyleOptionViewItem itemOption(option);
                     initStyleOption(&itemOption, index);
