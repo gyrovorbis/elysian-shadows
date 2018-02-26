@@ -94,8 +94,12 @@ namespace elysian {
         virtual void		onCombatDeath(void) override;
         virtual void		onCombatReceiveStatusModifier(CombatStatus*const modifier) override;
         virtual void		onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) override;
+        virtual void        onReceiveEvent(Event* event) override;
+        virtual void        onObserveEvent(Event *event, EventTarget* target) override;
         //virtual void        onButtonPress(const GameInput::BUTTON button) override;
         //virtual void        onButtonRelease(const GameInput::BUTTON button) override;
+
+
 
         //ESTk triggers
         virtual void        onTkSelect(void) override;

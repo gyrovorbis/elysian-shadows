@@ -42,7 +42,7 @@ namespace QESTkUtils {
     template<typename T,
              typename IndexType>
     struct QtColorConverter<T, IndexType, float> {
-        static T        fromQColor(const QColor& qcolor); //test
+        static T        fromQColor(const QColor& qcolor);
         static QColor   toQColor(const T& color);
     };
 

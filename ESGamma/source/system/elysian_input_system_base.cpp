@@ -8,13 +8,13 @@ KeyboardEventObserver::KeyboardEventObserver(void) {
     System::getEventSys()->addEventObserver(this, EVENT_KEYBOARD_KEY);
 }
 
-void KeyboardEventObserver::onObserveEvent(Event* event, EventReceiver* receiver) {
-    if(!receiver && event->getEventType() == EVENT_KEYBOARD_KEY) {
+void KeyboardEventObserver::onObserveEvent(Event* event, EventTarget* target) {
+    if(!target && event->getEventType() == EVENT_KEYBOARD_KEY) {
         onKeyboardEvent(*System::getInputSys()->getKeyboard());
     }
 }
 
-void KeyboardEventObserver::onKeyboardEvent(const Keyboard& keybd) {
+void KeyboardEventObserver::onKeyboardEvent(const Keyboard&) {
 
 }
 
@@ -73,14 +73,64 @@ bool Controller::pollInput(void) {
 }
 
 
+bool VisualMemoryUnit::readBlock(uint16_t blockNum, uint8_t* buffer) {
+    return _gyHandle? gyVisualMemoryDeviceBlockRead(_gyHandle, buffer, blockNum) : false;
+}
+
+bool VisualMemoryUnit::writeBlock(uint16_t blockNum, const uint8_t* buffer) {
+    return _gyHandle? gyVisualMemoryDeviceBlockWrite(_gyHandle, buffer, blockNum) : false;
+}
+bool VisualMemoryUnit::beep(uint8_t pulseLength, uint8_t dutyCycle) {
+    return _gyHandle? gyVisualMemoryDeviceBeep(_gyHandle, pulseLength, dutyCycle) : false;
+}
+bool VisualMemoryUnit::displayIcon(const char* filePath) {
+    return true;
+}
+bool VisualMemoryUnit::pollDevice(void) {
+    _attached = gyVisualMemoryDevicePoll(_playerIndex, &_gyHandle);
+    return _attached;
+}
+
+bool VisualMemoryUnit::connectToEVMU(const char* hostName, unsigned port) {
+    _tcpSettings = (GYVisualMemoryTCPSettings*)malloc(sizeof(GYVisualMemoryTCPSettings));
+    strcpy(_tcpSettings->hostname, hostName);
+    _tcpSettings->port = port;
+    return gyVisualMemoryDeviceRemoteConnect(_playerIndex, _tcpSettings);
+}
+
+bool VisualMemoryUnit::disconnectFromEVMU(void) {
+    if(_gyHandle) gyVisualMemoryDeviceRemoteDisconnect(_gyHandle);
+    free(_tcpSettings);
+    _tcpSettings = nullptr;
+}
+
+
+
 bool InputSystemBase::_initialized = false;
 bool InputSystemBase::_managedExternally = false;
 const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
 
 InputSystemBase::InputSystemBase(void) {
-    for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) _controllers[i].setPort(i);
+    GYVisualMemoryInitParams vmuInitParams = {
+        4
+    };
+    gyVisualMemoryInit(&vmuInitParams);
+
+    for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) {
+        _controllers[i].setPort(i);
+        _controllers[i].setPlayerIndex(i);
+    }
+    _keyboard.setPlayerIndex(0);
+    _mouse.setPlayerIndex(0);
+    for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
+        _vmus[i].setPlayerIndex(i);
+    }
     //Initial input poll, to initialize controller/mouse/keyboard handles
     update();
+}
+
+InputSystemBase::~InputSystemBase(void) {
+    gyVisualMemoryUninit();
 }
 
 bool InputSystemBase::initialize(const GYInputInitParams*const params) {
@@ -108,10 +158,12 @@ bool InputSystemBase::uninitialize(void) {
 
 void InputSystemBase::_onControllerAttached(const unsigned slot) {
     dbgprintf("InputSystem: Controller Attached! [Port: %d]", slot);
+    getEventSys()->broadcastEvent(ControllerEvent(EVENT_CONTROLLER_ATTACHED, &_controllers[slot]));
 }
 
 void InputSystemBase::_onControllerRemoved(const unsigned slot) {
     dbgprintf("InputSystem: Controller Removed! [Port: %d]", slot);
+    getEventSys()->broadcastEvent(ControllerEvent(EVENT_CONTROLLER_REMOVED, &_controllers[slot]));
 }
 
 void InputSystemBase::_onMouseAttached(void) {
@@ -128,6 +180,14 @@ void InputSystemBase::_onKeyboardAttached(void) {
 
 void InputSystemBase::_onKeyboardRemoved(void) {
     dbgprintf("InputSystem: Keyboard Removed!");
+}
+
+void InputSystemBase::_onVMUAttached(unsigned slot) {
+    dbgprintf("InputSystem: VMU Attached! [Port: %d]", slot);
+}
+
+void InputSystemBase::_onVMURemoved(unsigned slot) {
+    dbgprintf("InputSystem: VMU Removed! [Port: %d]", slot);
 }
 
 void InputSystemBase::_mapKeyboardToController(const int port) {
@@ -208,6 +268,20 @@ void InputSystemBase::update(void) {
 
         if(isAttached && !wasAttached)      static_cast<InputSystem*>(this)->_onControllerAttached(i);
         else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onControllerRemoved(i);
+    }
+
+    //update VMUs
+    for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
+        const auto wasAttached  = _vmus[i].isAttached();
+        const auto isAttached   = _vmus[i].pollDevice();
+
+        if(isAttached && !wasAttached) {
+            static_cast<InputSystem*>(this)->_onVMUAttached(i);
+            getEventSys()->broadcastEvent(VisualMemoryUnitEvent(EVENT_VMU_ATTACHED, &_vmus[i]));
+        } else if(!isAttached && wasAttached) {
+            static_cast<InputSystem*>(this)->_onVMURemoved(i);
+            getEventSys()->broadcastEvent(VisualMemoryUnitEvent(EVENT_VMU_REMOVED, &_vmus[i]));
+        }
     }
 
 

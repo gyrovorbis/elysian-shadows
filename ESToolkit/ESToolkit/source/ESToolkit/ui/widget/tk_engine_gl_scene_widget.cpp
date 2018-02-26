@@ -177,13 +177,13 @@ void EngineGLSceneWidget::paintGL(void) {
 
     _monitor.start();
 
-    getAssets()->getEngine()->render();
+
 
     //doneCurrent();
     //swapBuffers();
-
-    getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
+    getAssets()->getEngine()->update();
+    getAssets()->getEngine()->render();
 
     _monitor.stop();
 

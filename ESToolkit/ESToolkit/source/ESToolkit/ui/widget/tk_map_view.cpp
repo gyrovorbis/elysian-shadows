@@ -767,10 +767,16 @@ void MapView::_registerDropEventCallbacks(void) {
        {
             TkMimeData::TYPE_LUA_VARIANT,
             [=](const QMimeData* data, Qt::DropAction, QDropEvent* event, int, int, const QModelIndex&) {
-                DbgEvent dbg("Drop Event: Instantiating from Entity Prefab.");
+                DbgEvent dbg("[MapView] Drop Event: Instantiating from Entity Prefab.");
                 auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
-                LuaVariant v = tkMimeData->getVariant()["new"].getVariant()(tkMimeData->getVariant());
-                Entity* entity = v.getValue<Entity*>();
+                Entity* prefabEntity = tkMimeData->getVariant().getValue<Entity*>();
+
+                if(!prefabEntity) {
+                    errprintf("[MapView]: Could not instantiate [%s] type prefab!", tkMimeData->getVariant().getTypeString());
+                    return false;
+                }
+
+                Entity* entity = new Entity(prefabEntity);
                 QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
 
                 if(!entity) {

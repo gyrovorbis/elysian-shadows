@@ -34,6 +34,9 @@
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>
 #include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/core/tk_file_utilities.h>
+#include <QStatusBar>
+
 #ifdef VMU_CHILD_APP
 #include <gyro_vmu_main_window.hpp>
 #endif
@@ -45,7 +48,11 @@ void ESToolkit::on_actionFileQuit_triggered() {
 }
 
 void ESToolkit::on_actionFileOpenProject_triggered(void) {
-    openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
+    if(openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks))) {
+        statusBar()->showMessage("Project Opened Successfully!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+    } else {
+        statusBar()->showMessage("Project could not be Opened!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+    }
 }
 
 void ESToolkit::on_actionFileCloseProject_triggered(void) {
@@ -54,10 +61,9 @@ void ESToolkit::on_actionFileCloseProject_triggered(void) {
 }
 
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
-    //check failure!
-    Debug::Log(Debug::LOG_VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
-    Debug::push();
     _assets.getCurrentProject()->save();
+
+    Debug::pop();
     //_assets.getCurrentProject()->ClearUndoStacks();
 }
 
@@ -68,7 +74,14 @@ void ESToolkit::on_actionFileSaveCurrentLevel_triggered() {
 }
 
 void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
-    _assets.getCurrentArea()->save();
+    if(_assets.getCurrentArea()->save()) {
+        statusBar()->showMessage("Area saved successfully!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+
+    } else {
+        statusBar()->showMessage("Error Encountered while Saving Area!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+
+    }
+
     //Force TreeNode to update the '*' for unsaved area
     //_assets.getCurrentArea()->getUndoStack().setClean();
     //_assets.getCurrentArea()->onUndoCleanStateChanged(true);
@@ -523,6 +536,7 @@ void ESToolkit::on_actionPrevious_Project_triggered(void) {
                 auto* area = _assets.getCurrentLevel()->getArea(_prevAreaPath);
                 if(area) {
                     _assets.setCurrentArea(area);
+                            statusBar()->showMessage("Project Reopened Successfully!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
                 }
             }
         }
@@ -660,7 +674,9 @@ void ESToolkit::on_actionReloadProject_triggered(void)
     //gyAudUninit();
    // gyAudInit();
     _assets.setCurrentSelection(nullptr);
-    _assets.reloadProject();
+    if(_assets.reloadProject()) {
+        statusBar()->showMessage("Project reloaded!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+    }
 }
 
 void ESToolkit::on_actionDocumentation_triggered()
@@ -795,10 +811,10 @@ void ESToolkit::on_actionAudio_Dump_triggered() {
 }
 
 void ESToolkit::on_actionVMU_View_triggered(bool checked) {
-
+#ifdef VMU_CHILD_APP
     if(checked) {
         if(!_evmuWindow) {
-#ifdef VMU_CHILD_APP
+
             _evmuWindow = new VMUMainWindow(this);	// no parent
             //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
             //evmuWindow->setWindowFlags(Qt::Widget);
@@ -809,9 +825,10 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
             _vmuDockWidget->setWindowTitle("VMU View");
             _evmuWindow->menuBar()->setNativeMenuBar(false);
 
-
            _vmuDockWidget->setWidget(_evmuWindow);
-#endif
+           _evmuWindow->loadBios(FileUtilities::getAbsoluteAssetPath(ESTOOLKIT_EVMU_BIOS_FILE_PATH));
+           on_actionConnectEVMUTcp_triggered();
+
         //dock->setMouseTracking(false);
            //evmuWindow->setParent(dock) ;	// here
             addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
@@ -820,5 +837,6 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
 
     _vmuDockWidget->setVisible(checked);
     _ui->actionVMU_View->setChecked(checked);
+#endif
 }
 

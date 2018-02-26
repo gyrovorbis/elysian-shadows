@@ -14,6 +14,7 @@
 #define VMU_TRIGGER_SPEED_FACTOR        10.0f
 #define VMU_FB_DEFAULT_ZOOM_LEVEL       8
 #define FILTER_DUPLICATE_LOG_STRINGS    1
+#define VMU_MAIN_WINDOW_SETTINGS_PREFIX "mainWindow"
 
 #define ICON_ES_PATH                    ":/icons/images/vmu_es.png"
 #define ICON_CLOCK_PATH                 ":/icons/images/icon_clock.png"
@@ -24,8 +25,12 @@
 #define ICON_LISTENING_PATH             ":/icons/images/task_bar_yellow.png"
 #define ICON_CONNECTED_PATH             ":/icons/images/task_bar_green.png"
 #define ICON_RECORDING_PATH             ":/icons/images/icon_recording.png"
+#define ICON_TCP_LISTENING_PATH         ":/icons/images/task_bar_listening.png"
+#define ICON_TCP_DISABLED_PATH          ":/icons/images/task_bar_disconnected.png"
+#define ICON_TCP_CONNECTED_PATH         ":/icons/images/task_bar_connected.png"
 
 class   QGifImage;
+class   QSettings;
 class   QLabel;
 class   QTextCodec;
 struct  GYAudioSource;
@@ -47,11 +52,21 @@ class VMUMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum REMOTE_STATE {
+        REMOTE_NONE,
+        REMOTE_DISABLED,
+        REMOTE_LISTENING,
+        REMOTE_CONNECTED
+    };
+
     explicit            VMUMainWindow(QWidget *parent = 0, QString workingDir=QString());
     virtual             ~VMUMainWindow(void);
 
     bool                loadRom(QString filepath);
+    bool                loadBios(QString filepath);
     void                resetCpu(void);
+    bool                saveSettings(QSettings* settings=nullptr);
+    bool                loadSettings(QSettings* settings=nullptr);
     auto                getUi(void) const -> Ui::VMUMainWindow*;
 
     //virtual void        paintEvent(QPaintEvent* event) override;
@@ -106,6 +121,7 @@ private:
     static void         _pop(const unsigned depth);
     static void         _log(GY_DEBUG_SEVERITY level, const char* msg);
 
+    void                _updateStatusbar(void);
     void                _updatePConRegister(void);
     void                _updateLcdAnimStatusMessage(void);
     void                _resizeWindowFromScreenZoom(int level);
@@ -145,6 +161,7 @@ private:
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;
     QLabel*             _recordingLabel     = nullptr;
+    QLabel*             _remoteLabel        = nullptr;
     QMenu*              _loadGameMenu       = nullptr;
     QMenu*              _saveGameMenu       = nullptr;
     QGraphicsPixmapItem*    _pixmapItem     = nullptr;
@@ -169,6 +186,8 @@ private:
     bool                _recording          = false;
     bool                _ghostingWasEnabled = false;
     bool                _displayWasEnabled  = true;
+    REMOTE_STATE        _remoteState        = REMOTE_NONE;
+    bool                _statusBarChanged   = true;
 
     static FILE*        _logFile;
     static int          _logDepth;

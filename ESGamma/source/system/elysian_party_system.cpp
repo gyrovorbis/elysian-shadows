@@ -43,7 +43,7 @@ void PartySystem::update(void) {//VOIDICATE
     updatePartyPaths();
 }
 
-void PartySystem::onObserveEvent(Event *event, EventReceiver *receiver) {
+void PartySystem::onObserveEvent(Event *event, EventTarget*) {
     switch(event->getEventType()) {
     case EVENT_AREA_ENTER:
         getPartySys()->addPartyToArea();

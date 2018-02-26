@@ -151,7 +151,7 @@ namespace game {
     virtual void        onKeyboardEvent(const elysian::Keyboard& keybd) override;
 
     //overridden from EventMonitor
-    virtual void        onObserveEvent(elysian::Event* event, elysian::EventReceiver* receiver);
+    virtual void        onObserveEvent(elysian::Event* event, elysian::EventTarget* receiver);
 
     //SLOTS
 // LISTEN TO EVENT, ONPARTYCHANGE!!!!

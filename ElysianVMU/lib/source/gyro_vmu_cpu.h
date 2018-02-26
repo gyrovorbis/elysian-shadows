@@ -20,7 +20,9 @@ int gyVmuCpuReset(struct VMUDevice* dev);
 void gyVmuCpuInstrExecuteNext(struct VMUDevice* dev);
 
 
-void gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMUInstrOperands* operands);
+void gyVmuCpuInstrExecute(struct VMUDevice* dev, const VMUInstr* instr, const VMUInstrOperands* operands);
+
+void gyVmuBiosDisassemblyPrints(char* buff);
 
 #ifdef __cplusplus
 }

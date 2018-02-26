@@ -2,12 +2,12 @@
 
 namespace elysian {
 
-EVENT_RECEIVER_TYPE EventReceiver::getEventReceiverType(void) const {
-    return EVENT_RECEIVER_INVALID;
+EVENT_TARGET_TYPE EventTarget::getEventTargetType(void) const {
+    return EVENT_TARGET_INVALID;
 }
 
-void EventReceiver::onReceiveEvent(Event *event) {}
+void EventTarget::onReceiveEvent(Event *event) {}
 
-void EventObserver::onObserveEvent(Event *event, EventReceiver *receiver) {}
+void EventObserver::onObserveEvent(Event *event, EventTarget *receiver) {}
 
 }

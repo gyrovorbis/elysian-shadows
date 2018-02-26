@@ -1267,3 +1267,12 @@ void ESToolkit::on_actionTexture_Dump_triggered()
     gyVidTexWalkthrough();
 }
 
+
+void ESToolkit::on_actionConnectEVMUTcp_triggered()
+{
+    _assets.getEngine()->getInputSys()->getVMU(0)->connectToEVMU("localhost", 1234);
+}
+
+void ESToolkit::showStatusBarMessage(QString message) {
+    _instance->statusBar()->showMessage(message, ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+}

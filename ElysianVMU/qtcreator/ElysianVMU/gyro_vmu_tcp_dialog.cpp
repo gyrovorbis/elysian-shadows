@@ -92,7 +92,7 @@ bool VmuTcpDialog::quickConnect(void) {
 }
 
 void VmuTcpDialog::updateConnectionStatus(void) {
-    #if 0
+    #if 1
     bool connected = false;
     switch(gyVmuSerialConnectionType(_dev)) {
     case VMU_SERIAL_CONNECTION_NONE:
@@ -185,7 +185,7 @@ void VmuTcpDialog::on_clientGroupBox_toggled(bool arg1)
 }
 
 bool VmuTcpDialog::startTcpServer(void) {
-#if 0
+#if 1
     if(!_ui->hostGroupBox->isChecked()) _ui->hostGroupBox->setChecked(true);
     if(gyVmuSerialTcpServerStart(_dev, _ui->listenPortSpinBox->value())) {
         setConnectionStatus(Qt::darkYellow, "Listening for Incoming Connections...");
@@ -201,7 +201,7 @@ bool VmuTcpDialog::startTcpServer(void) {
 }
 
 bool VmuTcpDialog::stopTcpServer(void) {
-    #if 0
+    #if 1
     bool success = true;
 
     if(gyVmuSerialConnectionType(_dev) != VMU_SERIAL_CONNECTION_NONE) {
@@ -317,7 +317,7 @@ void VmuTcpDialog::on_mostRecentCheckBox_stateChanged(int arg1)
     }
 
     _gyLog(GY_DEBUG_VERBOSE, "VMU Serial TCP Server - Use most recent connection: %s", checked? "ON" : "OFF");
-#if 0
+#if 1
     gyVmuSerialTcpServerUseMostRecentClientSet(_dev, (int)checked);
 #endif
 }

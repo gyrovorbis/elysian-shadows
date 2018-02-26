@@ -51,9 +51,6 @@ namespace elysian {
         Entity*             getEntity(void) const;
         bool                isTrigger(void) const;
 
-        //LuaTableProxy CRTP override
-        static int          lua_downCast(lua_State*const vm);
-
     };
 
 

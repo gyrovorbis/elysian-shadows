@@ -112,5 +112,5 @@
         <file>images/_0007_levels_icon.png</file>
         <file>images/_0008_areas_icon.png</file>
     </qresource>
-    <qresource prefix="/"/>
+    <qresource prefix="/vmu"/>
 </RCC>

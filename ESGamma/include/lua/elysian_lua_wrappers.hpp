@@ -171,6 +171,10 @@ static inline int Singletons_getTimerSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::TimerSystem*, elysian::Singletons::getTimerSys)
 }
 
+static inline int Singletons_getCollisionSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::CollisionSystem*, elysian::Singletons::getCollisionSys)
+}
+
 static inline int Singletons_getRigidBodySystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::RigidBodySystem*, elysian::Singletons::getRigidBodySys)
 }
@@ -185,6 +189,14 @@ static inline int Singletons_getCameraSystem(lua_State* const vm) {
 
 static inline int Singletons_getCharacterSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::CharacterSystem*, elysian::Singletons::getCharSys)
+}
+
+static inline int Singletons_getExaminableSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::ExaminableSystem*, elysian::Singletons::getExamSys)
+}
+
+static inline int Singletons_getEventSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::EventSystem*, elysian::Singletons::getEventSys)
 }
 
 static inline int Direction_fromVector2(lua_State* const vm) {

@@ -214,6 +214,7 @@ void Engine::update(void) {
             updateCombatMonitor.stop();
 
             updateLuaMonitor.start();
+
             _behaviorSystem->callTriggers(Behavior::ON_UPDATE);
             updateLuaMonitor.stop();
             break;

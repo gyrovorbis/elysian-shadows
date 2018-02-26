@@ -9,6 +9,7 @@
 #include "gyro_vmu_bios.h"
 #include "gyro_vmu_util.h"
 #include <gyro_system_api.h>
+#include "gyro_vmu_disassembler.h"
 
 #include <assert.h>
 #include <string.h>
@@ -16,6 +17,15 @@
 #include <limits.h>
 #include <sys/time.h>
 #include <time.h>
+
+static int _biosDisassemblyInstrBytes[ROM_SIZE] = { 0 };
+static char _biosDisassembly[ROM_SIZE][300] = { { 0 }};
+
+static inline int dbgEnabled(VMUDevice* dev) {
+    return gyVmuSerialConnectionType(dev) == VMU_SERIAL_CONNECTION_DC;
+}
+
+//#define VMU_DEBUG
 
 #define SGNEXT(n) ((n)&0x80? (n)-0x100:(n))
 
@@ -36,8 +46,9 @@ static inline int _fetchRegIndAddr(struct VMUDevice* dev, uint8_t reg) {
 inline static void _push(VMUDevice* dev, unsigned val) {
     const unsigned sp = dev->sfr[SFR_OFFSET(SFR_ADDR_SP)]+1;
 #ifdef VMU_DEBUG
-    _gyLog(GY_DEBUG_VERBOSE, "push[%x] = %d", dev->sfr[sp, val);
-    GY_ASSERT(sp <= RAM_STACK_ADDR_END);
+    if(dbgEnabled(dev))
+    _gyLog(GY_DEBUG_VERBOSE, "push[%x] = %d", sp, val);
+    assert(sp <= RAM_STACK_ADDR_END);
 #endif
 
     if(sp > RAM_STACK_ADDR_END) {
@@ -51,8 +62,9 @@ inline static int _pop(VMUDevice* dev) {
     const unsigned sp = dev->sfr[SFR_OFFSET(SFR_ADDR_SP)];
 
 #ifdef VMU_DEBUG
+        if(dbgEnabled(dev))
     _gyLog(GY_DEBUG_VERBOSE, "pop[%x] = %d", dev->sfr[SFR_OFFSET(SFR_ADDR_SP)], dev->ram[0][dev->sfr[SFR_OFFSET(SFR_ADDR_SP)]]);
-    GY_ASSERT(sp >= RAM_STACK_ADDR_BASE);
+    assert(sp >= RAM_STACK_ADDR_BASE);
 #endif
 
     if(sp < RAM_STACK_ADDR_BASE) {
@@ -66,9 +78,23 @@ inline static int _pop(VMUDevice* dev) {
 static int _serviceInterrupts(VMUDevice* dev) {
     //Check for Port 3 interrupt
 
-    if(!dev->intMask && (dev->sfr[SFR_OFFSET(SFR_ADDR_P3INT)]&(SFR_P3INT_P31INT_MASK|SFR_P3INT_P30INT_MASK)) ==
-            (SFR_P3INT_P31INT_MASK|SFR_P3INT_P30INT_MASK))
-        dev->intReq |= 1<<VMU_INT_P3;
+    if(!dev->intMask) {
+
+        if((dev->sfr[SFR_OFFSET(SFR_ADDR_P3INT)]&(SFR_P3INT_P31INT_MASK|SFR_P3INT_P30INT_MASK)) ==
+                (SFR_P3INT_P31INT_MASK|SFR_P3INT_P30INT_MASK))
+            dev->intReq |= 1<<VMU_INT_P3;
+
+#if 1
+
+#endif
+
+    }
+
+
+    if((dev->sfr[SFR_OFFSET(SFR_ADDR_P7)]&SFR_P7_P70_MASK) && (dev->sfr[SFR_OFFSET(SFR_ADDR_I01CR)]&0x3)) {
+        dev->intReq |= 1<<VMU_INT_EXT_INT0;
+        _gyLog(GY_DEBUG_VERBOSE, "RAISING EXTERNAL P7 INTERRUPT!!!!");
+    }
 
     uint8_t ie = dev->sfr[SFR_OFFSET(SFR_ADDR_IE)];
 
@@ -82,6 +108,7 @@ static int _serviceInterrupts(VMUDevice* dev) {
             _push(dev, dev->pc&0xff);
             _push(dev, (dev->pc&0xff00)>>8);    //push return address
 #ifdef VMU_DEBUG
+                                                    if(dbgEnabled(dev))
             _gyLog(GY_DEBUG_VERBOSE, "INTERRUPT - %d", r);
 #endif
             dev->pc = gyVmuIsrAddr(r);          //jump to ISR address
@@ -570,10 +597,12 @@ static int gyVmuCpuInstrExecuteNext(VMUDevice* device) {
     //Entire instruction has been loaded
     if(device->curInstr.bytes >= _instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].bytes) {
 #ifdef VMU_DEBUG
+            if(dbgEnabled(device)) {
         static int instrNum = 0;
         _gyLog(GY_DEBUG_VERBOSE, "*************** [%d] PC - %x **************", ++instrNum, device->pc-_instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].bytes+1);
         _gyPush();
         _gyLog(GY_DEBUG_VERBOSE, "mnemonic - %s", _instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
+            }
 #endif
         //If this happens, we're at some unknown instruction, and fuck only knows what is about to happen...
         assert(_instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
@@ -583,23 +612,32 @@ static int gyVmuCpuInstrExecuteNext(VMUDevice* device) {
         memset(&operands, 0, sizeof(VMUInstrOperands));
         gyVmuInstrDecodeOperands(&device->curInstr, &operands);
 
+        if(gyVmuBiosSystemCodeActive(device)) {
+            uint16_t prevPc = device->pc - device->curInstr.bytes;
+            gyVmuDisassembleInstruction(device->curInstr, operands, _biosDisassembly[prevPc], prevPc, 1);
+            _biosDisassemblyInstrBytes[prevPc] = device->curInstr.bytes;
+        }
+
         //Execute instructions
         gyVmuCpuInstrExecute(device, &device->curInstr, &operands);
 
+        static int wasInFw = 0;
+
         //Check if we entered the firmware
-        if((!device->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK) && !device->biosLoaded) {
+        if((!device->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK)) {
             if(!device->biosLoaded) {
                 //handle the BIOS call in software if no firwmare has been loaded
                 if((device->pc = gyVmuBiosHandleCall(device)))
                     //jump back to USER mode before resuming execution.
                     gyVmuMemWrite(device, SFR_ADDR_EXT, gyVmuMemRead(device, SFR_ADDR_EXT)|SFR_EXT_USER);
-            } else {
-
+            } else if(!wasInFw){
+                if(dbgEnabled(device)) _gyLog(GY_DEBUG_VERBOSE, "Entering firmware: %d", device->pc);
             }
-        }
+        } else wasInFw = 0;
     }
 
 #ifdef VMU_DEBUG
+            if(dbgEnabled(device))
     _gyPop(1);
 #endif
     return 1; //keep fetching instruction in next clock-cycle
@@ -637,6 +675,15 @@ int gyVmuCpuReset(VMUDevice* dev) {
     dev->sfr[SFR_OFFSET(SFR_ADDR_SP)]   = RAM_STACK_ADDR_BASE-1;    //Initialize stack pointer
     dev->sfr[SFR_OFFSET(SFR_ADDR_P3)]   = 0xff;                     //Reset all P3 pins (controller buttons)
     dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]  = SFR_PSW_RAMBK0_MASK;
+
+
+    gyVmuMemWrite(dev, SFR_ADDR_P1FCR,  0xbf);
+    gyVmuMemWrite(dev, SFR_ADDR_P3INT,  0xfd);
+    gyVmuMemWrite(dev, SFR_ADDR_ISL,    0xc0);
+    gyVmuMemWrite(dev, SFR_ADDR_VSEL,   0xf4);
+    gyVmuMemWrite(dev, SFR_ADDR_BTCR,   0x41);
+
+
 
     dev->timer0.tscale = 256;
     dev->pc = 0x0;
@@ -695,3 +742,33 @@ int gyVmuCpuReset(VMUDevice* dev) {
 
     return 1;
 }
+
+void gyVmuBiosDisassemblyPrints(char* buffer) {
+    _gyLog(GY_DEBUG_VERBOSE, "===========SHITTING DISASSEMBLY===========");
+    int lastValid = -1;
+    int spaceAdded = 0;
+    buffer[0] = '\0';
+    for(unsigned i = 0; i < ROM_SIZE; ++i) {
+        if(_biosDisassembly[i][0]) {
+            _gyLog(GY_DEBUG_VERBOSE, "%s", _biosDisassembly[i]);
+            if(buffer) {
+                strcat(buffer, _biosDisassembly[i]);
+                strcat(buffer, "\n");
+            }
+            lastValid = i;
+            spaceAdded = 0;
+        } else {
+            if(!spaceAdded && lastValid != -1) {
+                if(i > lastValid + _biosDisassemblyInstrBytes[lastValid]) {
+                    _gyLog(GY_DEBUG_VERBOSE, "\n");
+                    if(buffer) strcat(buffer, "\n");
+                    spaceAdded = 1;
+                }
+            }
+
+
+        }
+    }
+    _gyLog(GY_DEBUG_VERBOSE, "===========DONE SHITTING DISASSEMBLY===========");
+}
+

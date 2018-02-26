@@ -121,6 +121,9 @@ static void _serialTransferComplete(VMUDevice* dev, int ifaceIndex) {
 }
 
 void gyVmuSerialUpdate(struct VMUDevice* dev, float deltaTime) {
+#if 1
+
+#else
     const float halfPeriod = dev->serial.tsbr/2.0f;
     if(halfPeriod == 0.0f) return;
 
@@ -190,7 +193,7 @@ void gyVmuSerialUpdate(struct VMUDevice* dev, float deltaTime) {
         }
 
     } while(deltaTime >= 0.000001f); //account for floating-point inaccuracy
-
+#endif
 }
 
 static void _vmuSerialTransferStop(VMUDevice* dev, int ifaceIndex) {

@@ -119,6 +119,7 @@ namespace elysian {
 
         unsigned                    getScreenCount(void) const;
         DialogScreen*               getScreen(const unsigned index) const;
+        LuaVariant                  getScreenLua(const unsigned index) const;
         void                        setScreen(const unsigned index, DialogScreen*const screen);
 
         void                        setTriggerEntity(Entity*const entity);
@@ -148,6 +149,7 @@ namespace elysian {
     inline void DialogTextBase::setNextIndexLua(const int index) { _nextIndex = (index == -1)? -1 : index-1; }
     inline int DialogTextBase::getNextIndexLua(void) const { return (_nextIndex == -1)? -1 :_nextIndex+1; }
     inline DialogTextBase& DialogTextBase::operator =(const DialogTextBase& rhs) {
+        DialogScreen::operator=(rhs);
         _nextIndex = rhs._nextIndex;
         return *this;
     }

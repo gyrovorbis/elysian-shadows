@@ -9,7 +9,7 @@
 
     The RigidBodySystem is the \l{Engine} subsystem for managing all \{RigidBody}s attached
     to any active \l{Entity} within the scene. It handles force application, integration (updating
-    acceleration, velocity, and position), and \l{Contact} resolution between two rigid bodies where
+    acceleration, velocity, and position), and contact resolution between two rigid bodies where
     momentum is exchanged between the two (as opposed to them simply being pushed apart as with
     static \l{Collidable}-only contacts}.
 
@@ -36,7 +36,7 @@
 */
  /*!
   \qmlmethod void RigidBodySystem::addForce(ForceGenerator* generator)
-  Adds the \l{ForceGenerator| object given by \a{generator} to the internal
+  Adds the \l{ForceGenerator} object given by \a{generator} to the internal
   list of active generators which will be automatically applied to all
   matching Entities every frame. This is for persistant forces such as
   wind or gravity that need to be applied every frame, rather than
@@ -45,7 +45,7 @@
 */
 /*!
  \qmlmethod void RigidBodySystem::removeForce(ForceGenerator* generator)
- Removes the \l{ForceGenerator} object given by \l{generator} from the
+ Removes the \l{ForceGenerator} object given by \a{generator} from the
  internal list of persistant forces which are automatically applied
  every frame. For example, maybe a wind effect has subsided.
  \sa addForce, clearForces, applyForce
@@ -87,7 +87,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodySystem)
     masks are bitwise ANDed together, and if the result is not zero, this produces a match.
 
     \section2 Applying Force Masks
-    All ForceGenerators are managed by the \l{RigibBodySystem} and should be added there.
+    All ForceGenerators are managed by the \l{RigidBodySystem} and should be added there.
 
     \sa RigidBodySystem, GravityForceGenerator, ImplosionForceGenerator
 */

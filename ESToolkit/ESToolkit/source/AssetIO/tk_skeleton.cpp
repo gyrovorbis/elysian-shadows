@@ -470,6 +470,7 @@ void TkSkeleton::printSlotData(void) const {
 }
 
 TkSkeleton::~TkSkeleton(void) {
-    dbgprintf("Deleting SkeletonAttrib: %d references remaining!", _attrib.use_count()-1);
-
+    if(_attrib.get()) {
+        dbgprintf("Deleting SkeletonAttrib: %d references remaining!", _attrib.use_count()-1);
+    }
 }

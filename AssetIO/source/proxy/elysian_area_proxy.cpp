@@ -386,7 +386,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
  * \sa setStartPosition
  */
 /*!
- * \qmlmethod void Area::getStartPosition(const Vector3&)
+ * \qmlmethod void Area::setStartPosition(const Vector3&)
  * Sets the starting location for the Area when a user swaps to it within ESTk rather than warping.
  * \sa getStartPosition
  */

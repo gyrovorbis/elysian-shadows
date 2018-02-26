@@ -1,3 +1,4 @@
+#include <proxy/elysian_entity_proxy.hpp>
 #include <crtp/elysian_dialog.hpp>
 #include <cstring>
 
@@ -17,14 +18,16 @@ namespace elysian {
 
 // ====== DIALOG PROMPT =======
 DialogPromptBase& DialogPromptBase::operator =(const DialogPromptBase& rhs) {
+    DialogScreen::operator=(rhs);
     for(auto& it : _options) delete it;
     _options.clear();
     for(auto& it : rhs._options) _options.push_back(new DialogOption(*it));
+    return *this;
 }
 
 DialogOption* DialogPromptBase::getOption(const unsigned index) const {
-                    return index < _options.size()? _options[index] : nullptr;
-    }
+    return index < _options.size()? _options[index] : nullptr;
+}
 
 void DialogPromptBase::addOption(const char*const text, const int nextIndex) { _options.push_back(new DialogOption(text, nextIndex)); }
 void DialogPromptBase::setOption(const unsigned index, DialogOption* option) {
@@ -57,6 +60,27 @@ void DialogBase::setScreen(const unsigned index, DialogScreen*const screen) {
     }
 }
 
+LuaVariant DialogBase::getScreenLua(const unsigned index) const {
+    LuaVariant v;
+
+    if(index < _screens.size()) {
+        auto* screen = getScreen(index);
+        if(screen) {
+            switch(screen->getScreenType()) {
+            case DialogScreen::SCREEN_TEXT:
+                v.setValue<DialogText>(static_cast<DialogText*>(screen));
+                break;
+            case DialogScreen::SCREEN_PROMPT:
+                v.setValue<DialogPrompt>(static_cast<DialogPrompt*>(screen));
+                break;
+            default:
+            GY_ASSERT(0);
+            }
+        }
+    }
+
+    return v;
+}
 
 
 DialogText*	DialogBase::addTextScreen(const char*const text) {

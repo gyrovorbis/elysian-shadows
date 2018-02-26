@@ -20,6 +20,7 @@
 #include <ESToolkit/core/tk_file_utilities.h>
 #include <system/elysian_audio_system.hpp>
 #include <QApplication>
+#include <QDateTime>
 
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(TkArea)
@@ -260,6 +261,14 @@ bool TkArea::load(const char*const str) {
     return success;//success;
 }
 
+bool TkArea::saveBackup(void) {
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QString path = getNodePath() + QString("/") + dateTime.toString() + QString(".tkbk");
+    DbgEvent event("Saving Area Backup [%s].", Q_CSTR(path));
+    bool success = saveAs(path);
+    return success;
+}
+
 bool Area::save(void) {
     DbgEvent event("Saving Area [%s].", Q_CSTR(getNodePath()));
     bool success = true;
@@ -267,6 +276,7 @@ bool Area::save(void) {
     success &= level->save();
     //export to previous save location
     success &= saveAs(getNodePath());
+    success &= saveBackup();
     _undoStack.setClean();
     return success;
 }

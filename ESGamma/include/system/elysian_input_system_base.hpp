@@ -1,7 +1,9 @@
 #ifndef ELYSIAN_INPUT_SYSTEM_BASE_HPP
 #define ELYSIAN_INPUT_SYSTEM_BASE_HPP
 
-#define ELYSIAN_INPUT_CONTROLLERS_MAX                    4
+#define ELYSIAN_INPUT_PLAYERS_MAX                       4
+#define ELYSIAN_INPUT_CONTROLLERS_MAX                   ELYSIAN_INPUT_PLAYERS_MAX
+#define ELYSIAN_INPUT_VMUS_MAX                          ELYSIAN_INPUT_PLAYERS_MAX
 #define ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT    0
 
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MIN    0.3f
@@ -10,34 +12,46 @@
 #include <system/elysian_system.hpp>
 #include <gyro_input_api.h>
 #include <gyro_rumble_api.h>
+#include <gyro_visual_memory_api.h>
 #include <system/elysian_event_system.hpp>
 
 namespace elysian {
     class Mouse;
+    class Controller;
 
+    class PlayerIODevice    {
+    protected:
+        bool        _attached;
+        unsigned    _playerIndex;
 
-    class TouchDevice {
+    public:
+        bool        isAttached(void) const;
+        unsigned    getPlayerIndex(void) const;
+        void        setPlayerIndex(unsigned index);
+
+    };
+
+    class TouchDevice: public PlayerIODevice {
 
     };
 
     class KeyboardEventObserver: public EventObserver {
     public:
                         KeyboardEventObserver(void);
-        virtual void    onObserveEvent(Event* event, EventReceiver* receiver) override;
+        virtual void    onObserveEvent(Event* event, EventTarget* target) override;
         virtual void    onKeyboardEvent(const Keyboard& keybd);
     };
 
-    class Keyboard {
+
+    class Keyboard: public PlayerIODevice {
     private:
         GYKeyboard*         _gyHandle   = nullptr;
-        bool                _attached   = false;
 
     public:
         GY_BUTTON_STATE     getButtonState(const GY_KEY key) const;
         bool                isPressed(const GY_KEY key) const;
         void                setPressed(const GY_KEY key, const bool pressed) const;
         bool                isTapped(const GY_KEY key) const;
-        bool                isAttached(void) const;
 
         bool                pollInput(void);
     };
@@ -51,10 +65,9 @@ namespace elysian {
         const Mouse*    getMouse(void) const;
     };
 
-    class Mouse {
+    class Mouse: public PlayerIODevice {
     private:
         GYMouse*            _gyHandle = nullptr;
-        bool                _attached = false;
 
     public:
         GY_BUTTON_STATE     getButtonState(const GY_MOUSE_BUTTON button) const;
@@ -63,7 +76,6 @@ namespace elysian {
         bool                isPressed(const GY_MOUSE_BUTTON button) const;
         void                setPressed(const GY_MOUSE_BUTTON button, const bool pressed) const;
         bool                isTapped(const GY_MOUSE_BUTTON button) const;
-        bool                isAttached(void) const;
 
         bool                pollInput(void);
 
@@ -86,7 +98,17 @@ namespace elysian {
         void                updateState(const GYVector2& analog);
     };
 
-    class Controller {
+    class ControllerEvent: public Event {
+    private:
+        Controller*         _controller    = nullptr;
+        int                  _slot          = 1;
+    public:
+                             ControllerEvent(EventType type, const Controller* controller);
+                             ControllerEvent(EventType type, int slot);
+        Controller*          getController(void) const;
+    };
+
+    class Controller: public PlayerIODevice {
     private:
         GYVector2           _analogDirs[GY_CONTROLLER_ANALOG_COUNT]     = { { 0.0f, 0.0f } };
         VirtualDPad         _virtualDPads[GY_CONTROLLER_ANALOG_COUNT];
@@ -94,7 +116,6 @@ namespace elysian {
         float               _analogAngles[GY_CONTROLLER_ANALOG_COUNT]   = { 0.0f };
         GYController*       _gyHandle                                   = nullptr;
         unsigned            _port                                       = 0;
-        bool                _attached                                   = false;
 
         void                _clearDerivedValues(void);
 
@@ -116,7 +137,6 @@ namespace elysian {
 
         unsigned            getPort(void) const;
         void                setPort(const unsigned port);
-        bool                isAttached(void) const;
 
 
         //void setVmuIcon();
@@ -165,9 +185,29 @@ namespace elysian {
     };
 #endif
 
-    class VisualMemoryDevice {
+    class VisualMemoryUnit;
+
+    class VisualMemoryUnitEvent: public Event {
+     private:
+        VisualMemoryUnit* _vmu;
+    public:
+        VisualMemoryUnit* getVMU(void) const;
+                            VisualMemoryUnitEvent(EventType type, VisualMemoryUnit* vmu);
+    };
 
 
+    class VisualMemoryUnit: public PlayerIODevice {
+    private:
+        GYVisualMemoryTCPSettings* _tcpSettings = nullptr;
+        GYVisualMemoryDevice*       _gyHandle = nullptr;
+    public:
+        bool readBlock(uint16_t blockNum, uint8_t* buffer);
+        bool writeBlock(uint16_t blockNum, const uint8_t* buffer);
+        bool beep(uint8_t pulseLength, uint8_t dutyCycle);
+        bool displayIcon(const char* filePath);
+        bool pollDevice(void);
+        bool connectToEVMU(const char* hostName, unsigned port);
+        bool disconnectFromEVMU(void);
     };
 
 
@@ -186,44 +226,48 @@ namespace elysian {
         { 'a' };
 #endif
 
-        static bool     _initialized;
-        static bool     _managedExternally;
+        static bool         _initialized;
+        static bool         _managedExternally;
 
-        Controller      _controllers[ELYSIAN_INPUT_CONTROLLERS_MAX];
-        Keyboard        _keyboard;
-        Mouse           _mouse;
+        Controller          _controllers[ELYSIAN_INPUT_CONTROLLERS_MAX];
+        VisualMemoryUnit    _vmus[ELYSIAN_INPUT_VMUS_MAX];
+        Keyboard            _keyboard;
+        Mouse               _mouse;
 
-        int             _keyboardAsControllerPort = ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT;
+        int                 _keyboardAsControllerPort = ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT;
 
 
-        void            _onControllerAttached(const unsigned slot);
-        void            _onControllerRemoved(const unsigned slot);
-        void            _onKeyboardAttached(void);
-        void            _onKeyboardRemoved(void);
-        void            _onMouseAttached(void);
-        void            _onMouseRemoved(void);
+        void                _onControllerAttached(const unsigned slot);
+        void                _onControllerRemoved(const unsigned slot);
+        void                _onKeyboardAttached(void);
+        void                _onKeyboardRemoved(void);
+        void                _onMouseAttached(void);
+        void                _onMouseRemoved(void);
+        void                _onVMUAttached(unsigned slot);
+        void                _onVMURemoved(unsigned slot);
 
-        void            _mapKeyboardToController(const int port);
+        void                _mapKeyboardToController(const int port);
 
     public:
 
-                        InputSystemBase(void);
+                            InputSystemBase(void);
+                            ~InputSystemBase(void);
 
         //allow external software (ESTk) to initialize input outside the engine with custom parameters
-        static bool     initialize(const GYInputInitParams*const params=nullptr);
-        static bool     uninitialize(void);
+        static bool         initialize(const GYInputInitParams*const params=nullptr);
+        static bool         uninitialize(void);
 
 
-        void            update(void);
-        void            dumpStats(void);
+        void                update(void);
+        void                dumpStats(void);
 
-        Controller*     getController(const unsigned port);
-        auto            getController(const unsigned port) const -> const Controller*;
-        Keyboard*       getKeyboard(void);
-        Mouse*          getMouse(void);
+        Controller*         getController(const unsigned port);
+        auto                getController(const unsigned port) const -> const Controller*;
+        Keyboard*           getKeyboard(void);
+        Mouse*              getMouse(void);
+        VisualMemoryUnit*   getVMU(const unsigned port);
 
-
-        void            setKeyboardAsControllerPort(const int port);
+        void                setKeyboardAsControllerPort(const int port);
 
 
     };
@@ -232,8 +276,13 @@ namespace elysian {
 
 
 
+    //===== PLAYER I/O DEVICE ==========
+    inline bool PlayerIODevice::isAttached(void) const { return _attached; }
+    inline void PlayerIODevice::setPlayerIndex(unsigned index) { _playerIndex = index; }
+    inline unsigned PlayerIODevice::getPlayerIndex(void) const { return _playerIndex; }
+
+
     //====== KEYBOARD INLINEZ ===========
-    inline bool Keyboard::isAttached(void) const { return _attached; }
     inline GY_BUTTON_STATE Keyboard::getButtonState(const GY_KEY key) const { return (GY_BUTTON_STATE)_gyHandle->keys[key]; }
     inline bool Keyboard::isPressed(const GY_KEY key) const { return (_gyHandle->keys[key] & GY_BUT_FLAGS_IS_PRESSED); }
     inline bool Keyboard::isTapped(const GY_KEY key) const { return _gyHandle->keys[key] == GY_BUT_STATE_TAPPED; }
@@ -249,7 +298,6 @@ namespace elysian {
     {}
     inline const Mouse* MouseEvent::getMouse(void) const { return _mouse; }
 
-    inline bool Mouse::isAttached(void) const { return _attached; }
     inline bool Mouse::isPressed(const GY_MOUSE_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
     inline bool Mouse::isTapped(const GY_MOUSE_BUTTON button) const { return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
     inline GY_BUTTON_STATE Mouse::getButtonState(const GY_MOUSE_BUTTON button) const { return (GY_BUTTON_STATE)_gyHandle->buttons[button]; }
@@ -276,7 +324,14 @@ namespace elysian {
     inline bool VirtualDPad::isTapped(const GY_CONTROLLER_BUTTON button) const { return _dpad[_toIndex(button)] == GY_BUT_STATE_TAPPED; }
 
     //====== CONTROLLER INLINEZ ===========
-    inline bool Controller::isAttached(void) const { return _attached; }
+    inline ControllerEvent::ControllerEvent(EventType type, const Controller* controller):
+        Event(type),
+        _slot(controller->getPort())
+    {}
+
+
+    inline Controller* ControllerEvent::getController(void) const { return _controller; }
+
     inline unsigned Controller::getPort(void) const { return _port; }
     inline void Controller::setPort(const unsigned port) { _port = port; }
     inline bool Controller::isPressed(const GY_CONTROLLER_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
@@ -295,11 +350,21 @@ namespace elysian {
         _gyHandle->analogSticks[stick] = vec;
     }
 
+    //====== VMU INLINEZ =======
+
+    inline VisualMemoryUnit* VisualMemoryUnitEvent::getVMU(void) const { return _vmu; }
+    inline VisualMemoryUnitEvent::VisualMemoryUnitEvent(EventType type, VisualMemoryUnit* vmu):
+        Event(type),
+        _vmu(vmu)
+    {}
+
+
     //======== INPUTSYSTEM INLINEZ =======
     inline Controller* InputSystemBase::getController(const unsigned port) { return &_controllers[port]; }
     inline const Controller* InputSystemBase::getController(const unsigned port) const { return &_controllers[port]; }
     inline Keyboard* InputSystemBase::getKeyboard(void) { return &_keyboard; }
     inline Mouse* InputSystemBase::getMouse(void) { return &_mouse; }
+    inline VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) { return &_vmus[port]; }
     inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
 
 }

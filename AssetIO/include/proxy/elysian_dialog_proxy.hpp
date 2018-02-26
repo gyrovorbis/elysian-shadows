@@ -51,12 +51,13 @@ OOLUA_PROXY(Dialog)
     OOLUA_MEM_FUNC(DialogText*, addTextScreen, const char*)
     OOLUA_MEM_FUNC(DialogPrompt*, addPromptScreen, const char*)
     OOLUA_MEM_FUNC(void, setScreen, const unsigned, cpp_in_p<DialogScreen*>)
-    OOLUA_MEM_FUNC_CONST(maybe_null<DialogScreen*>, getScreen, const unsigned)
+    OOLUA_MEM_FUNC_CONST(LuaVariant, getScreenLua, const unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getScreenCount)
     OOLUA_MEM_FUNC(void, setTriggerEntity, Entity*)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getTriggerEntity)
     OOLUA_MEM_FUNC_RENAME(setStartScreen, void, setStartScreenLua, const int)
     OOLUA_MEM_FUNC_CONST_RENAME(getStartScreen, int, getStartScreenLua)
+    OOLUA_MEM_FUNC_CONST_RENAME(getScreen, LuaVariant, getScreenLua, const unsigned)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_DIALOG_PROXY_HPP

@@ -31,17 +31,18 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Toolkit)
 /*!
  * \qmlmethod void Toolkit::setSelection(LuaVariant obj)
  * Sets the current Toolkit selection to \a{obj}, clearing the previous selection, updating the active layers,
- * and displaying it within \l{SelectionView}. The selection is cleared if \a{obj} is nil.
+ * and displaying it within \l{Selection View}. The selection is cleared if \a{obj} is nil.
  *
  * Anything that can be iterated over as a Lua table is a valid selectable and will be handled generically.
  * If an Engine class/object has not been exported to Lua, it does not implement the Lua table metamethods and
- * thus cannot be selected, viewed, and modified generically through \l{SelectionView}.
+ * thus cannot be selected, viewed, and modified generically through \l{Selection View}.
  * and will not be expandable. The following types are built-in selection types that are handled uniquely
  * by ESTk (rather than as generic Lua tables)
  * 	\list
  *  \li \l{Level}
  *  \li \l{Area}
  *  \li \l{Entity}
+ * \endlist
  *
  *   \sa getSelection
  */
@@ -74,6 +75,21 @@ static inline int Toolkit_findEntity(lua_State* const vm) {
 }
 
 /*!
+ * \qmlmethod void Toolkit::showStatusBarMessage(string message)
+ * Displays the given \a{message} on the Status Bar of the main ESToolkit window, temporarily hiding the other information. You can use this for
+ * global status alerts to the user or for debugging. After the timeout is expired (2 seconds default), the normal widgets and information
+ * are restored to the status bar.
+ */
+static inline int Toolkit_showStatusBarMessage(lua_State* const vm) {
+    QString qstr;
+    if(OOLUA::pull(vm, qstr)) {
+        ESToolkit::showStatusBarMessage(qstr);
+    }
+    return 0;
+}
+
+
+/*!
  * \qmlmethod void Toolkit::searchDocs(string name)
  * Opens the ESTk documentation and performs a search on the query given by \a{name}. This is to conveniently
  * pull up the documentation for methods, types, and classes from the \l{Debugging#Real-Time Lua Terminal}{Real-Time Lua Terminal}.
@@ -86,6 +102,7 @@ static inline int Toolkit_searchDocs(lua_State* const vm) {
     }
     return 0;
 }
+
 
 static inline int Toolkit_openDocs(lua_State* const vm) {
     QString page, section;
@@ -194,6 +211,7 @@ void TkLuaManager::_registerWrappers(void) {
     _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);
     _mainState->register_class_static<Toolkit>("searchDocs", &Toolkit_searchDocs);
     _mainState->register_class_static<Toolkit>("openDocs", &Toolkit_openDocs);
+    _mainState->register_class_static<Toolkit>("showStatusBarMessage", &Toolkit_showStatusBarMessage);
 
     luaRegisterTkEnumsConstants(_mainState);
     TkLuaTableUserdata::staticInitialize();

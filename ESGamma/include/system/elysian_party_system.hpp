@@ -115,7 +115,7 @@ namespace elysian {
             PartySystem(void);
             ~PartySystem(void);
 
-        virtual void onObserveEvent(Event* event, EventReceiver* receiver);
+        virtual void onObserveEvent(Event* event, EventTarget* target);
 		
 		void update(void);
 		void updatePartyPaths(void);

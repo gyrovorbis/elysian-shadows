@@ -45,9 +45,9 @@ TkParticleSystem::TkParticleSystem(void):
     _previewWidget->setModel(_model);
 
     QObject::connect(_previewWidget->getVector2DWidget(), &Vector2DWidget::vectorChanged, [&](elysian::Vector2 vec, float mag) {
-        vec.normalize();
         _previewProperties.dir.x = vec.x;
         _previewProperties.dir.y = vec.y;
+        _previewProperties.dir.normalize();
 
         _emitters[_tkEmitterIndex].emitFromPointInDir(_previewProperties.pos,
                                                       _previewProperties.dir,

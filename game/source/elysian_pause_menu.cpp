@@ -102,9 +102,9 @@ void PauseMenu::deactivate(void) {
     Widget::deactivate();
 }
 
-void PauseMenu::onObserveEvent(elysian::Event* event, elysian::EventReceiver* receiver) {
-    if(receiver) {
-        if(receiver == _optionsPane) {
+void PauseMenu::onObserveEvent(elysian::Event* event, elysian::EventTarget* target) {
+    if(target) {
+        if(target == _optionsPane) {
             switch(event->getEventType()) {
             case EVENT_WIDGET_MENU_CANCEL:
                 onOptionsPaneCancel();
@@ -114,7 +114,7 @@ void PauseMenu::onObserveEvent(elysian::Event* event, elysian::EventReceiver* re
                 return;
             default: break;
             }
-        } else if(receiver == _centralLayout->getWidget(FRAME_RIGHT)) {
+        } else if(target == _centralLayout->getWidget(FRAME_RIGHT)) {
             switch(event->getEventType()) {
             case EVENT_WIDGET_MENU_CANCEL:
                 onMainFrameCancel();
@@ -124,7 +124,7 @@ void PauseMenu::onObserveEvent(elysian::Event* event, elysian::EventReceiver* re
 
         }
     }
-    EntityWidget::onObserveEvent(event, receiver);
+    EntityWidget::onObserveEvent(event, target);
 }
 
 void PauseMenu::onOptionsPaneSelect(const elysian::MenuSelection* selection) {

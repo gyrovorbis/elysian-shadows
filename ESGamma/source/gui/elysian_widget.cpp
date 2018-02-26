@@ -221,8 +221,8 @@ void Widget::onReceiveEvent(Event* event) {
     }
 }
 
-void Widget::onObserveEvent(Event *event, EventReceiver *receiver) {
-    if(!receiver) {
+void Widget::onObserveEvent(Event* event, EventTarget* target) {
+    if(!target) {
         auto* mouseEvent = static_cast<MouseEvent*>(event);
         switch(event->getEventType()) {
 
@@ -237,7 +237,7 @@ void Widget::onObserveEvent(Event *event, EventReceiver *receiver) {
             break;
         }
     } else {
-        KeyboardEventObserver::onObserveEvent(event, receiver);
+        KeyboardEventObserver::onObserveEvent(event, target);
     }
 }
 

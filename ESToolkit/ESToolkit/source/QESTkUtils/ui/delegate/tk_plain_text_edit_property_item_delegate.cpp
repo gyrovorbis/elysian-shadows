@@ -53,8 +53,8 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
 
 #if 1
     QObject::connect(editor, &QTextEdit::textChanged, [=]() {
-        char buff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE] = { '\0' };
-        char tempBuff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE];
+        char buff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE] = { '\0' };   //all text
+        char tempBuff[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE];          //current line
 
         QTextCursor cursor = editor->textCursor();
         strncpy(buff, Q_CSTR(editor->toPlainText()), ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE-1);
@@ -68,26 +68,28 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
         unsigned        curOffset  = 0;
 
         for(; i < length; ++i) {
-            for(unsigned j = lineIdx; j < i; ++j) tempBuff[j-lineIdx] = buff[i];
+            //Only look at the buffer starting at the current line and going until the end of the string
+            for(unsigned j = lineIdx; j <= i; ++j) tempBuff[j-lineIdx] = buff[i];
             tempBuff[i-lineIdx+1] = '\0';
 
             if(font.getStringPixelWidth(tempBuff) > 560) {
-                if(wordIdx != lineIdx) {
+                if(wordIdx != lineIdx) {        //This isn't just one big-ass word wrapping around
                     if(curLine != ELYSIAN_DIALOG_SYSTEM_MAX_LINES-1) {
-                        lineIdx = wordIdx;
+                        lineIdx = wordIdx;      //Make the current word start a new line
                         //wordIdx = 0;
-                        buff[wordIdx-1] = '\n';
-                        wordIdx = i+1;
+                        buff[wordIdx-1] = '\n'; //Replace space before word with newline character
+                        //wordIdx = i+1;
+                                                //Next character starts a word? Can't be right.
                     }
                     ++curLine;
 
-                } else {
+                } else {    //Singe big-ass word being wrapped
                     if(curLine != ELYSIAN_DIALOG_SYSTEM_MAX_LINES-1) {
                         //one single fucking word is too long
                         const char temp = buff[i];
                         buff[i] = '\n';
                         buff[i+1] = temp;
-                        for(unsigned j = i+3; j < ELYSIAN_DIALOG_SYSTEM_MAX_LINES-1; ++j) buff[j-1] = buff[j];
+                        for(unsigned j = i+3; j < ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE-1; ++j) buff[j-1] = buff[j];
                         if(cursor.position() >= i) ++curOffset;
                         //if(cursor.position() >= (int)strlen(tempBuff)) {
                           //  cursor.setPosition(cursor.position()+1);
@@ -99,6 +101,7 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
                 }
             }
 
+            //Check if we've hit our line limit, and cut the string off here if we have
             if(curLine >= ELYSIAN_DIALOG_SYSTEM_MAX_LINES) {
                 buff[i] = '\0';
                 break;
@@ -106,10 +109,10 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
 
             switch(buff[i]) {
             case '\n':
-                ++curLine;
-                lineIdx = i+1;
+                ++curLine;      //Start next line
+                lineIdx = i+1;  //Next index is the beginning of the next line
             case ' ':
-                wordIdx = i+1;
+                wordIdx = i+1;  //next index is the beginning of the current word
                 break;
             default:
                 break;
@@ -117,12 +120,13 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
 
         }
 
+        int newCursorPos = cursor.position() + curOffset;
+
 
         const int newLen = strlen(buff);
-#if 0
-        if(cursor.position() >= newLen) {
-            cursor.setPosition(newLen-1);
-
+#if 1
+        if(newCursorPos > newLen) {
+            cursor.setPosition(newLen);
         }
 #endif
 #if 0
@@ -131,11 +135,10 @@ QWidget* PlainTextEditPropertyItemDelegate::createEditor(QWidget *parent, const 
          }
 #endif
 
-        auto pos = cursor.position();
         editor->blockSignals(true);
         editor->setPlainText(buff);
         editor->blockSignals(false);
-        cursor.setPosition(pos);//+curOffset);
+        cursor.setPosition(newCursorPos);//+curOffset);
         editor->setTextCursor(cursor);
     });
 

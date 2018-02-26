@@ -291,6 +291,7 @@
     <addaction name="actionPerformance_Monitor_Dump"/>
     <addaction name="actionAdd_Player"/>
     <addaction name="actionRemove_Player"/>
+    <addaction name="actionConnectEVMUTcp"/>
    </widget>
    <widget class="QMenu" name="menuConsole">
     <property name="title">
@@ -1668,6 +1669,11 @@
    </property>
    <property name="text">
     <string>VMU View</string>
+   </property>
+  </action>
+  <action name="actionConnectEVMUTcp">
+   <property name="text">
+    <string>Connect to EVMU on Port 0</string>
    </property>
   </action>
  </widget>

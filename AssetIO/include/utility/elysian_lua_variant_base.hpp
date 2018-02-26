@@ -462,8 +462,12 @@ public:
 
     template<typename T>
     inline LuaVariantBase::LuaVariantBase(T*const ref) {
-        OOLUA::push(*_mainState, ref);
-        pull();
+        if(ref) {
+            OOLUA::push(*_mainState, ref);
+            pull();
+        } else {
+            _setType(LUA_TNIL);
+        }
     }
 
     inline LuaVariantBase::LuaVariantBase(const std::initializer_list<LuaPair>& pairs) {

@@ -426,7 +426,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib,
 \qmlproperty ParticleEmitterAttrib* ParticleEmitter::attrib
 
 Contains a reference to the ParticleEmitterAttrib defining characteristics of the ParticleEmitter,
-or nil if one has not been set. \i{NOTE: A non-nil \l{attrib} property is required for any ParticleEmitter
+or nil if one has not been set. \e{NOTE: A non-nil \l{attrib} property is required for any ParticleEmitter
 attached to an active entity, otherwise behavior is undefined (ie: it's going to fucking crash).}
 
 \sa getAttrib(), setAttrib()

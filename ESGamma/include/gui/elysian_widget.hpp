@@ -21,7 +21,7 @@ namespace elysian {
     class Layout;
 
     //maybe want alpha values/states so all menu shit can fade out?
-    class Widget: public EventReceiver, public KeyboardEventObserver {
+    class Widget: public EventTarget, public KeyboardEventObserver {
     public:
 
         static const constexpr uint16_t growFlag   = (1u<<ELYSIAN_SIZE_POLICY_GROW_FLAG_POS);
@@ -123,7 +123,7 @@ namespace elysian {
         virtual void    onReceiveEvent(Event* event) override;
 
         //overridden from EventObserver
-        virtual void    onObserveEvent(Event *event, EventReceiver *receiver) override;
+        virtual void    onObserveEvent(Event *event, EventTarget* target) override;
 
         //Overriddabe by child widgets
         virtual void    activate(void);

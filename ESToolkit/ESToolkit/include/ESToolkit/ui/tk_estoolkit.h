@@ -15,6 +15,8 @@
 #define ESTOOLKIT_SCREENS_DIR           "screenshots"
 #define ESTOOLKIT_CRASH_CMD_LINE_ARG    "--crash"
 #define ESTOOLKIT_SETTINGS_FILE         "estk_settings.ini"
+#define ESTOOLKIT_EVMU_BIOS_FILE_PATH   "/assets/bin/vmu_bios_jap.bin"
+#define ESTOOLKIT_STATUSBAR_MSG_TIMEOUT 2000
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -69,6 +71,7 @@ public:
     static int          pushSelection(lua_State*const vm);
     static void         searchDocs(QString query);
     static void         openDoc(QString page, QString section=QString());
+    static void         showStatusBarMessage(QString message);
 
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
@@ -279,6 +282,7 @@ private Q_SLOTS:
     void on_actionAudio_Dump_triggered();
     void on_actionTexture_Dump_triggered();
     void on_actionVMU_View_triggered(bool checked);
+    void on_actionConnectEVMUTcp_triggered();
 };
 
 

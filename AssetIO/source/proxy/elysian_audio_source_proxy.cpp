@@ -38,7 +38,7 @@
     elsewhere before destroying it. libGyro handles that for you.
 
     \section2 Playing a WAV
-    For playback via the \l{AudioSystem}, see \l{Playing a Sound Effect through Lua}. For playback via an \l{AudioSorce}, see
+    For playback via the \l{AudioSystem}, see \l{Playing a Sound Effect through Lua}. For playback via an \l{AudioSource}, see
     \l{AudioSource::playWav}.
 
     \sa AudioSource, AudioSystem, gyro

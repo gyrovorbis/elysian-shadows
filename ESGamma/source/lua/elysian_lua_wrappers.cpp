@@ -25,6 +25,10 @@
 #include <proxy/elysian_rigid_body_system_proxy.hpp>
 #include <proxy/elysian_timer_system_proxy.hpp>
 #include <proxy/elysian_bit_mask_proxy.hpp>
+#include <proxy/elysian_event_system_proxy.hpp>
+#include <proxy/elysian_event_proxy.hpp>
+#include <proxy/elysian_collision_system_proxy.hpp>
+#include <proxy/elysian_examinable_system_proxy.hpp>
 
 #include <crtp/elysian_lua_manager.hpp>
 #include <lua/elysian_lua_wrappers.hpp>
@@ -61,10 +65,6 @@ namespace elysian {
         s->register_class_static<gyro>("RECT_PLANE_FRONT_SLOPE_45", GY_RECT_PLANE_FRONT_SLOPE_45);
         s->register_class_static<gyro>("RECT_PLANE_LEFT_SLOPE_45", GY_RECT_PLANE_LEFT_SLOPE_45);
         s->register_class_static<gyro>("RECT_PLANE_RIGHT_SLOPE_45", GY_RECT_PLANE_RIGHT_SLOPE_45);
-
-        s->register_class_static<gyro>("MOUSE_BUT_LEFT", GY_MOUSE_BUT_LEFT);
-        s->register_class_static<gyro>("MOUSE_BUT_RIGHT", GY_MOUSE_BUT_RIGHT);
-        s->register_class_static<gyro>("MOUSE_BUT_MIDDLE", GY_MOUSE_BUT_MIDDLE);
 
         //Entity::DEPTH_TYPE
     //	typedef OOLUA::Entity Entity;
@@ -145,32 +145,34 @@ namespace elysian {
         s->register_class_static<Behavior>("ON_TK_SELECT", Behavior::ON_TK_SELECT);
         s->register_class_static<Behavior>("ON_TK_UNSELECT", Behavior::ON_TK_UNSELECT);
 
-        s->register_class_static<Behavior>("ON_SCRIPT_CREATE_INDEX", Behavior::ON_SCRIPT_CREATE_INDEX);
-        s->register_class_static<Behavior>("ON_SCRIPT_DESTROY_INDEX", Behavior::ON_SCRIPT_DESTROY_INDEX);
-        s->register_class_static<Behavior>("ON_CREATE_INDEX", Behavior::ON_CREATE_INDEX);
-        s->register_class_static<Behavior>("ON_DESTROY_INDEX", Behavior::ON_DESTROY_INDEX);
-        s->register_class_static<Behavior>("ON_LOAD_INDEX", Behavior::ON_LOAD_INDEX);
-        s->register_class_static<Behavior>("ON_UNLOAD_INDEX", Behavior::ON_UNLOAD_INDEX);
-        s->register_class_static<Behavior>("ON_ENTER_INDEX", Behavior::ON_ENTER_INDEX);
-        s->register_class_static<Behavior>("ON_EXIT_INDEX", Behavior::ON_EXIT_INDEX);
-        s->register_class_static<Behavior>("ON_UPDATE_INDEX", Behavior::ON_UPDATE_INDEX);
-        s->register_class_static<Behavior>("ON_RENDER_INDEX", Behavior::ON_RENDER_INDEX);
-        s->register_class_static<Behavior>("ON_COLLIDE_INDEX", Behavior::ON_COLLIDE_INDEX);
-        s->register_class_static<Behavior>("ON_COLLISION_ENTER_INDEX", Behavior::ON_COLLISION_ENTER_INDEX);
-        s->register_class_static<Behavior>("ON_COLLISION_EXIT_INDEX", Behavior::ON_COLLISION_EXIT_INDEX);
-        s->register_class_static<Behavior>("ON_EXAMINE_INDEX", Behavior::ON_EXAMINE_INDEX);
-        s->register_class_static<Behavior>("ON_DIALOG_INDEX", Behavior::ON_DIALOG_INDEX);
-        s->register_class_static<Behavior>("ON_COMBAT_ENTER_INDEX", Behavior::ON_COMBAT_ENTER_INDEX);
-        s->register_class_static<Behavior>("ON_COMBAT_EXIT_INDEX", Behavior::ON_COMBAT_EXIT_INDEX);
-        s->register_class_static<Behavior>("ON_COMBAT_DEATH_INDEX", Behavior::ON_COMBAT_DEATH_INDEX);
-        s->register_class_static<Behavior>("ON_SHATTER_INDEX", Behavior::ON_SHATTER_INDEX);
-        s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX", Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX);
-        s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER_INDEX", Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX);
-        s->register_class_static<Behavior>("ON_BUTTON_PRESS_INDEX", Behavior::ON_BUTTON_PRESS_INDEX);
-        s->register_class_static<Behavior>("ON_BUTTON_RELEASE_INDEX", Behavior::ON_BUTTON_RELEASE_INDEX);
-        s->register_class_static<Behavior>("ON_TK_SELECT_INDEX", Behavior::ON_TK_SELECT_INDEX);
-        s->register_class_static<Behavior>("ON_TK_UNSELECT_INDEX", Behavior::ON_TK_UNSELECT_INDEX);
-        s->register_class_static<Behavior>("TRIGGER_MAX_INDEX", Behavior::TRIGGER_MAX_INDEX);
+        s->register_class_static<Behavior>("ON_SCRIPT_CREATE_INDEX",                    Behavior::ON_SCRIPT_CREATE_INDEX);
+        s->register_class_static<Behavior>("ON_SCRIPT_DESTROY_INDEX",                   Behavior::ON_SCRIPT_DESTROY_INDEX);
+        s->register_class_static<Behavior>("ON_CREATE_INDEX",                           Behavior::ON_CREATE_INDEX);
+        s->register_class_static<Behavior>("ON_DESTROY_INDEX",                          Behavior::ON_DESTROY_INDEX);
+        s->register_class_static<Behavior>("ON_LOAD_INDEX",                             Behavior::ON_LOAD_INDEX);
+        s->register_class_static<Behavior>("ON_UNLOAD_INDEX",                           Behavior::ON_UNLOAD_INDEX);
+        s->register_class_static<Behavior>("ON_ENTER_INDEX",                            Behavior::ON_ENTER_INDEX);
+        s->register_class_static<Behavior>("ON_EXIT_INDEX",                             Behavior::ON_EXIT_INDEX);
+        s->register_class_static<Behavior>("ON_UPDATE_INDEX",                           Behavior::ON_UPDATE_INDEX);
+        s->register_class_static<Behavior>("ON_RENDER_INDEX",                           Behavior::ON_RENDER_INDEX);
+        s->register_class_static<Behavior>("ON_COLLIDE_INDEX",                          Behavior::ON_COLLIDE_INDEX);
+        s->register_class_static<Behavior>("ON_COLLISION_ENTER_INDEX",                  Behavior::ON_COLLISION_ENTER_INDEX);
+        s->register_class_static<Behavior>("ON_COLLISION_EXIT_INDEX",                   Behavior::ON_COLLISION_EXIT_INDEX);
+        s->register_class_static<Behavior>("ON_EXAMINE_INDEX",                          Behavior::ON_EXAMINE_INDEX);
+        s->register_class_static<Behavior>("ON_DIALOG_INDEX",                           Behavior::ON_DIALOG_INDEX);
+        s->register_class_static<Behavior>("ON_COMBAT_ENTER_INDEX",                     Behavior::ON_COMBAT_ENTER_INDEX);
+        s->register_class_static<Behavior>("ON_COMBAT_EXIT_INDEX",                      Behavior::ON_COMBAT_EXIT_INDEX);
+        s->register_class_static<Behavior>("ON_COMBAT_DEATH_INDEX",                     Behavior::ON_COMBAT_DEATH_INDEX);
+        s->register_class_static<Behavior>("ON_SHATTER_INDEX",                          Behavior::ON_SHATTER_INDEX);
+        s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX",   Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX);
+        s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER_INDEX",    Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX);
+        s->register_class_static<Behavior>("ON_BUTTON_PRESS_INDEX",                     Behavior::ON_BUTTON_PRESS_INDEX);
+        s->register_class_static<Behavior>("ON_BUTTON_RELEASE_INDEX",                   Behavior::ON_BUTTON_RELEASE_INDEX);
+        s->register_class_static<Behavior>("ON_RECEIVE_EVENT",                          Behavior::ON_RECEIVE_EVENT);
+        s->register_class_static<Behavior>("ON_OBSERVE_EVENT",                          Behavior::ON_OBSERVE_EVENT);
+        s->register_class_static<Behavior>("ON_TK_SELECT_INDEX",                        Behavior::ON_TK_SELECT_INDEX);
+        s->register_class_static<Behavior>("ON_TK_UNSELECT_INDEX",                      Behavior::ON_TK_UNSELECT_INDEX);
+        s->register_class_static<Behavior>("TRIGGER_MAX_INDEX",                         Behavior::TRIGGER_MAX_INDEX);
 
         //Tile::COLLIDER_TYPE
         typedef elysian::Tile Tile;
@@ -260,6 +262,13 @@ namespace elysian {
         s->register_class_static<Controller>("BUT_TRIANGLE", GY_CONTROLLER_BUT_TRIANGLE);
         s->register_class_static<Controller>("BUT_COUNT", GY_CONTROLLER_BUT_COUNT);
 
+        typedef elysian::Mouse Mouse;
+        s->register_class_static<Mouse>("BUT_NONE", GY_MOUSE_BUT_NONE);
+        s->register_class_static<Mouse>("BUT_LEFT", GY_MOUSE_BUT_LEFT);
+        s->register_class_static<Mouse>("BUT_MIDDLE", GY_MOUSE_BUT_MIDDLE);
+        s->register_class_static<Mouse>("BUT_RIGHT", GY_MOUSE_BUT_RIGHT);
+        s->register_class_static<Mouse>("BUT_BACK", GY_MOUSE_BUT_BACK);
+
         typedef elysian::InputSystem InputSystem;
         s->register_class_static<InputSystem>("BUT_STATE_UP", GY_BUT_STATE_UP);
         s->register_class_static<InputSystem>("BUT_STATE_TAPPED", GY_BUT_STATE_TAPPED);
@@ -293,15 +302,56 @@ namespace elysian {
         s->register_class_static<Character>("STATE_LUA", Character::STATE_LUA);
 
         typedef elysian::Layout Layout;
-        s->register_class_static<Layout>("ALIGN_NEGATIVE", Layout::ALIGN_NEGATIVE);
-        s->register_class_static<Layout>("ALIGN_CENTER", Layout::ALIGN_CENTER);
-        s->register_class_static<Layout>("ALIGN_POSITIVE", Layout::ALIGN_POSITIVE);
+        s->register_class_static<Layout>("ALIGN_NEGATIVE",      Layout::ALIGN_NEGATIVE);
+        s->register_class_static<Layout>("ALIGN_CENTER",        Layout::ALIGN_CENTER);
+        s->register_class_static<Layout>("ALIGN_POSITIVE",      Layout::ALIGN_POSITIVE);
+
+        typedef elysian::EventTarget EventTarget;
+        s->register_class_static<EventTarget>("INVALID",        EVENT_TARGET_INVALID);
+        s->register_class_static<EventTarget>("ENTITY",         EVENT_TARGET_ENTITY);
+        s->register_class_static<EventTarget>("BEHAVIOR",       EVENT_TARGET_BEHAVIOR);
+        s->register_class_static<EventTarget>("WIDGET",         EVENT_TARGET_WIDGET);
+        s->register_class_static<EventTarget>("LUA",            EVENT_TARGET_LUA);
+
+        typedef elysian::Event Event;
+        s->register_class_static<EventTarget>("STATE_PENDING",  EVENT_STATE_PENDING);
+        s->register_class_static<EventTarget>("STATE_ACCEPTED", EVENT_STATE_ACCEPTED);
+        s->register_class_static<EventTarget>("STATE_IGNORED",  EVENT_STATE_IGNORED);
+
+        s->register_class_static<Event>("ENTITY_ACTIVATE",      EVENT_ENTITY_ACTIVATE);
+        s->register_class_static<Event>("ENTITY_DEACTIVATE",    EVENT_ENTITY_DEACTIVATE);
+        s->register_class_static<Event>("KEYBOARD_ATTACHED",    EVENT_KEYBOARD_ATTACHED);
+        s->register_class_static<Event>("KEYBOARD_REMOVED",     EVENT_KEYBOARD_REMOVED);
+        s->register_class_static<Event>("MOUSE_ATTACHED",       EVENT_MOUSE_ATTACHED);
+        s->register_class_static<Event>("MOUSE_REMOVED",        EVENT_MOUSE_REMOVED);
+        s->register_class_static<Event>("VMU_ATTACHED",         EVENT_VMU_ATTACHED);
+        s->register_class_static<Event>("VMU_REMOVED",          EVENT_VMU_REMOVED);
+        s->register_class_static<Event>("CONTROLLER_ATTACHED",  EVENT_CONTROLLER_ATTACHED);
+        s->register_class_static<Event>("CONTROLLER_REMOVED",   EVENT_CONTROLLER_REMOVED);
+        s->register_class_static<Event>("MOUSE_MOVE",           EVENT_MOUSE_MOVE);
+      //  s->register_class_static<Event>("MOUSE_BUTTON",         EVENT_MOUSE_BUTTON);
+        s->register_class_static<Event>("MOUSE_WHEEL",          EVENT_MOUSE_WHEEL);
+        s->register_class_static<Event>("COLLISION_ENTER",      EVENT_COLLISION_ENTER);
+        s->register_class_static<Event>("COLLISION_EXIT",       EVENT_COLLISION_EXIT);
+        s->register_class_static<Event>("AREA_ENTER",           EVENT_AREA_ENTER);
+        s->register_class_static<Event>("AREA_EXIT",            EVENT_AREA_EXIT);
+        s->register_class_static<Event>("AREA_CHANGED",         EVENT_AREA_CHANGED);
+
+        /*
+        s->register_class_static<Event>("WIDGET_ACTIVE",         EVENT_VMU_ATTACHED);
+        s->register_class_static<Event>("VMU_REMOVED",          EVENT_VMU_REMOVED);
+        s->register_class_static<Event>("CONTROLLER_ATTACHED",  EVENT_CONTROLLER_ATTACHED);
+        s->register_class_static<Event>("CONTROLLER_REMOVED",   EVENT_CONTROLLER_REMOVED);
+        s->register_class_static<Event>("MOUSE_MOVE",           EVENT_MOUSE_MOVE);
+        s->register_class_static<Event>("MOUSE_BUTTON",         EVENT_ENTITY_ACTIVATE);
+        */
+        s->register_class_static<Event>("LUA",                  EVENT_LUA);
+
     }
 
 
     void LuaManagerBase::_registerWrappers(void) {
-
-		//Register classes and structs
+        //Register classes and structs that have been proxied to Lua
         _mainState->register_class<Recti>();
         Recti::registerProxyMetaTable(*_mainState);
         _mainState->register_class<BitMask32>();
@@ -376,6 +426,10 @@ namespace elysian {
 		_mainState->register_class<ParticleEmitterAttrib>();
         ParticleEmitterAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ParticleEmitter>();
+        OOLUA::register_class<LuaEvent>(*_mainState);
+        _mainState->register_class<EventTarget>();
+        _mainState->register_class<EventObserver>();
+        _mainState->register_class<EventSystem>();
         ParticleEmitter::registerProxyMetaTable(*_mainState);
         OOLUA::register_class<LuaBehaviorScript>(*_mainState);
 		OOLUA::register_class<LuaBehavior>(*_mainState);
@@ -402,7 +456,9 @@ namespace elysian {
 		_mainState->register_class<LightSystem>();
 		_mainState->register_class<ParticleSystem>();
 		_mainState->register_class<DaySystem>();
+        _mainState->register_class<ExaminableSystem>();
 		_mainState->register_class<DialogSystem>();
+        _mainState->register_class<CollisionSystem>();
 		_mainState->register_class<RigidBodySystem>();
         _mainState->register_class<AdventureLog>();
         OOLUA::register_class<HorizontalLayout>(*_mainState);
@@ -412,6 +468,9 @@ namespace elysian {
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
         _mainState->register_class<Controller>();
+        _mainState->register_class<Mouse>();
+        _mainState->register_class<VisualMemoryUnit>();
+        _mainState->register_class<Keyboard>();
         _mainState->register_class<InputSystem>();
 		_mainState->register_class<CombatSystem>();
 		_mainState->register_class<CameraSystem>();
@@ -435,23 +494,26 @@ namespace elysian {
         lua_register(*_mainState, "printAdvLog", &printAdvLog);
         lua_register(*_mainState, "dbgPush", &dbgPush);
         lua_register(*_mainState, "dbgPop", &dbgPop);
-        _mainState->register_class_static<Engine>("getCurArea", &Singletons_getCurArea);
-        _mainState->register_class_static<Engine>("getCurLevel", &Singletons_getCurLevel);
-        _mainState->register_class_static<Engine>("setProcessInput", &Singletons_setProcessInput);
-        _mainState->register_class_static<Engine>("getPartySys", &Singletons_getPartySystem);
-        _mainState->register_class_static<Engine>("getInputSys", &Singletons_getInputSystem);
-        _mainState->register_class_static<Engine>("getTimerSys", &Singletons_getTimerSystem);
-        _mainState->register_class_static<Engine>("getAudioSys", &Singletons_getAudioSystem);
-        _mainState->register_class_static<Engine>("getLightSys", &Singletons_getLightSystem);
-        _mainState->register_class_static<Engine>("getLevelSys", &Singletons_getLevelSystem);
-        _mainState->register_class_static<Engine>("getCombatSys", &Singletons_getCombatSystem);
-        _mainState->register_class_static<Engine>("getPartSys", &Singletons_getParticleSystem);
-        _mainState->register_class_static<Engine>("getDaySys", &Singletons_getDaySystem);
-        _mainState->register_class_static<Engine>("getRigidBodySys", &Singletons_getRigidBodySystem);
-        _mainState->register_class_static<Engine>("getDialogSys", &Singletons_getDialogSystem);
-        _mainState->register_class_static<Engine>("getGuiSys", &Singletons_getGuiSystem);
-        _mainState->register_class_static<Engine>("getCameraSys", &Singletons_getCameraSystem);
-        _mainState->register_class_static<Engine>("getCharSys", &Singletons_getCharacterSystem);
+        _mainState->register_class_static<Engine>("getCurArea",         &Singletons_getCurArea);
+        _mainState->register_class_static<Engine>("getCurLevel",        &Singletons_getCurLevel);
+        _mainState->register_class_static<Engine>("setProcessInput",    &Singletons_setProcessInput);
+        _mainState->register_class_static<Engine>("getPartySys",        &Singletons_getPartySystem);
+        _mainState->register_class_static<Engine>("getInputSys",        &Singletons_getInputSystem);
+        _mainState->register_class_static<Engine>("getTimerSys",        &Singletons_getTimerSystem);
+        _mainState->register_class_static<Engine>("getAudioSys",        &Singletons_getAudioSystem);
+        _mainState->register_class_static<Engine>("getLightSys",        &Singletons_getLightSystem);
+        _mainState->register_class_static<Engine>("getLevelSys",        &Singletons_getLevelSystem);
+        _mainState->register_class_static<Engine>("getCombatSys",       &Singletons_getCombatSystem);
+        _mainState->register_class_static<Engine>("getPartSys",         &Singletons_getParticleSystem);
+        _mainState->register_class_static<Engine>("getDaySys",          &Singletons_getDaySystem);
+        _mainState->register_class_static<Engine>("getCollisionSys",    &Singletons_getCollisionSystem);
+        _mainState->register_class_static<Engine>("getRigidBodySys",    &Singletons_getRigidBodySystem);
+        _mainState->register_class_static<Engine>("getDialogSys",       &Singletons_getDialogSystem);
+        _mainState->register_class_static<Engine>("getGuiSys",          &Singletons_getGuiSystem);
+        _mainState->register_class_static<Engine>("getCameraSys",       &Singletons_getCameraSystem);
+        _mainState->register_class_static<Engine>("getCharSys",         &Singletons_getCharacterSystem);
+        _mainState->register_class_static<Engine>("getEventSys",        &Singletons_getEventSystem);
+        _mainState->register_class_static<Engine>("getExamSys",         &Singletons_getExaminableSystem);
 
 		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
 
@@ -479,9 +541,109 @@ namespace elysian {
     Engine is a static class (class of all static functions) providing access
     to the various subsystems and the current \l{Level} and \l{Area}.
 
+    \section2 Asset/Data Access and Centrality
+    90% of what is operated upon by the engine and its various subsystems is
+    stored within the current \l{Level} and \a{Area} objects, rather than within
+    the subsystems themselves. This drastically simplifies the process of loading
+    and swapping between multiple levels and areas, and allows for the ones that
+    are not active to be cached to a certain extent for platforms with enough RAM
+    to do so. The main advantage is that Entities, components, and other data does
+    not have to be copied in and out of each subsystem when an Area is activated or
+    when new data arrives. Since it's all accessed indirectly through the current
+    area, swapping areas (and levels) ultimately becomes simply reassigning a
+    pointer internally, and the higher-level game logic and Lua scripts never
+    have to worry about maintaining consistency between assets in a Level/Area
+    and the subsystems or even data stored within one subsystem vs. another.
+
+    From a Behavior and LuaBehavior scripting perspective, most of the data you
+    need to access and manipulate from within your scripts are also stored within
+    either the current Level or Area. You can retreive these through the Engine.
+    \code
+    local area = Engine.getCurArea()
+    local level = Engine.getCurLevel()
+    \endcode
+
+    \section2 Subsystems
+    The engine itself delegates all processing, input, and rendering logic to a
+    series of subsystems, most of which manage a particular type of \l{Component}.
+    \table
+        \header
+            \li \b{Subsystem}
+            \li \b{Managed Data}
+            \li \b{Functionality}
+        \row
+            \li \l{AudioSystem}
+            \li \l{AudioSource}
+            \li Music and SFX playback
+        \row
+            \li \l{CameraSystem}
+            \li \l{Camera}
+            \li Camera properties, cutscenes, boundaries, viewport
+        \row
+            \li \l{CharacterSystem}
+            \li \l{Character}
+            \li Basic character functionality: walking, running, jumping, holding, etc
+        \row
+            \li \l{CollisionSystem}
+            \li \l{Collidable}
+            \li Collision checks, contact generation, penetration resolution
+        \row
+            \li \l{CombatSystem}
+            \li \l{Combat}
+            \li Battles, stats, aggro, damage resolution, death
+        \row
+            \li \l{DaySystem}
+            \li Sun \l{Entity}
+            \li Day/Night dynamic lighting, in-game time
+        \row
+            \li \l{DialogSystem}
+            \li \l{Dialog}
+            \li Dialog box text from conversations, examined items, messages
+        \row
+            \li \l{EventSystem}
+            \li \l{Event}
+            \li Sends, receives, and propogates events to other objects
+        \row
+            \li \l{ExaminableSystem}
+            \li \l{Examinable}
+            \li Object/Entity inspection/interaction
+        \row
+            \li \l{GuiSystem}
+            \li \l{Widget}
+            \li Menus, UIs, overlays
+        \row
+            \li \l{InputSystem}
+            \li \l{PlayerIODevice}
+            \li \l{Controller}, \l{Keyboard}, \l{Mouse}, \l{VisualMemoryUnit}
+        \row
+            \li \l{LevelSystem}
+            \li \l{Level}, \l{Area}
+            \li Maintains current level/area, and handles swapping between new ones
+        \row
+            \li \l{LightSystem}
+            \li \l{LightSource}
+            \li Handles all of dynamic lighting
+        \row
+            \li \l{ParticleSystem}
+            \li \l{ParticleEmitter}
+            \li Emitting, updating, and maintaining particles
+        \row
+            \li \l{PartySystem}
+            \li \l{Playable}
+            \li Basic player input like walking, running, jumping, throwing, etc
+        \row
+            \li \l{RigidBodySystem}
+            \li \l{RigidBody}, \l{ForceGenerator}
+            \li All of physics integration, force application, contact velocity resolution
+        \row
+            \li \l{TimerSystem}
+            \li \l{TimerSystem::getDeltaTime()}{deltaTime}
+            \li Calculates frame time, maintains framerate, manages timers
+    \endtable
+
     \sa PartySystem, InputSystem, TimerSystem, AudioSystem, LightSystem, LevelSystem,
-    CombatSystem, ParticleSystem, DaySystem, RigidBodySystem, GuiSystem, DaySystem,
-    CharacterSystem, CameraSystem, DialogSystem
+    CombatSystem, ParticleSystem, DaySystem, CollisionSystem, RigidBodySystem, GuiSystem,
+    CharacterSystem, CameraSystem, DialogSystem, ExaminableSystem
 */
 
 /*!
@@ -546,6 +708,11 @@ namespace elysian {
  * Returns the DaySystem subsystem.
  */
 /*!
+ * \qmlmethod CollisionSystem* Engine::getCollisionSys()
+ *
+ * Returns the CollisionSystem subsystem.
+ */
+/*!
  * \qmlmethod RigidBodySystem* Engine::getRigidBodySys()
  *
  * Returns the RigidBodySystem subsystem.
@@ -554,6 +721,11 @@ namespace elysian {
  * \qmlmethod GuiSystem* Engine::getGuiSys()
  *
  * Returns the GuiSystem subsystem.
+ */
+/*!
+ * \qmlmethod ExaminableSystem* Engine::getExamSys()
+ *
+ * Returns the ExaminableSystem subsystem.
  */
 /*!
  * \qmlmethod CameraSystem* Engine::getCameraSys()
@@ -569,6 +741,11 @@ namespace elysian {
  * \qmlmethod DialogSystem* Engine::getDialogSys()
  *
  * Returns the DialogSystem subsystem.
+ */
+/*!
+ * \qmlmethod EventSystem* Engine::getEventSys()
+ *
+ * Returns the EventSystem subsystem.
  */
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Engine)

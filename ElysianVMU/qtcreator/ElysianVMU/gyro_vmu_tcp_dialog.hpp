@@ -30,6 +30,7 @@ public:
 
     bool        startTcpServer(void);
     bool        stopTcpServer(void);
+    bool        isTcpServerActive(void) const;
     bool        connectToServer(void);
     bool        disconnectFromServer(void);
 
@@ -83,5 +84,7 @@ inline void VmuTcpDialog::setVmuDevice(VMUDevice* dev) {
 }
 
 inline VMUDevice* VmuTcpDialog::getVmuDevice(void) const { return _dev; }
+
+inline bool VmuTcpDialog::isTcpServerActive(void) const { return _serverActive; }
 
 #endif // GYRO_VMU_TCP_DIALOG_H

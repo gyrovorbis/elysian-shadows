@@ -96,12 +96,12 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AdventureLog)
 /*!
  * \qmlmethod void GuiSystem::addCombatText(string text, GYColor4 color, GYVector2 pos, const GYVector2 vel)
  * Emits a moving text object displaying the given \a{text} in the same style as combat damage numbers when giving or receiving damage.
- * The object begins at the location given by \a{pos} with the initial velocity given by \l{vel} and the text color given by \l{color}.
+ * The object begins at the location given by \a{pos} with the initial velocity given by \a{vel} and the text color given by \a{color}.
  * \sa addVictoryText()
  */
 /*!
  * \qmlmethod void GuiSystem::setFgWidget(Widget* widget)
- * Sets \l{widget} as the active foreground widget, which will be rendered ontop of the scene.
+ * Sets \a{widget} as the active foreground widget, which will be rendered ontop of the scene.
  * \sa clearFgWidget()
  */
 /*!
@@ -111,7 +111,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AdventureLog)
  */
 /*!
  * \qmlmethod void GuiSystem::setBgWidget(Widget* widget)
- * Sets \l{widget} as the active background widget, which will be rendered beneath the map and the rest of the scene.
+ * Sets \a{widget} as the active background widget, which will be rendered beneath the map and the rest of the scene.
  * This is useful for areas like floating islands where you want a massive texture in the background showing through
  * beneath the map.
  * \sa clearBgWidget()
@@ -139,7 +139,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AdventureLog)
  */
 /*!
  * \qmlmethod void GuiSystem::addVictoryText(GYVector2 pos, string text)
- * Emits a text object with the given \a{text} at the position given by \l{pos} within the scene
+ * Emits a text object with the given \a{text} at the position given by \a{pos} within the scene
  * that animates with the Crash Bandicoot-style typewriter effect, where each character pops in
  * sequentially. The effect is also used for displaying the "level up" notification.
  * \sa addCombatText()

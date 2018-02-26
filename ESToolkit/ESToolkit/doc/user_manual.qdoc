@@ -539,7 +539,7 @@
 	\section3 Engine Debug Hotkeys
 	In addition to debugging features built into ESTk, there are certain hotkeys built into the engine itself that can be used to display useful information or aid in debugging. Since the functionality is built into the engine itself, it is also availble in standalone builds and on devices like the Dreamcast, OUYA, and RazerTV which all support optional external keyboards. Please notice the vast majority of these all require the \b{left alternate key} to be held down. In general, this is the debugging keyspace to ensure that the regular keyspace is avaiable for normal in-game input.
 
-	Note: \e{To use these hotkeys within ESTk builds, please ensure that the \l{MapView} widget is given focus, so they engine receives the input key events.}
+	Note: \e{To use these hotkeys within ESTk builds, please ensure that the MapView widget is given focus, so they engine receives the input key events.}
 
 	\table
     \header

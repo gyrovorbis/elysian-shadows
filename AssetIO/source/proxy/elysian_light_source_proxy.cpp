@@ -303,7 +303,7 @@ See \l{Types of Dynamic Lights} for detailed descriptions of each.
  * \sa relPos, setRelPos
  */
 /*!
- * \qmlmethod Vector3 LightSource::getRelPos()
+ * \qmlmethod void LightSource::setRelPos()
  *
  * Sets the value of the \l{relPos} property.
  * \sa relPos, getRelPos

@@ -1,0 +1,28 @@
+#ifndef ELYSIAN_EVENT_SYSTEM_PROXY
+#define ELYSIAN_EVENT_SYSTEM_PROXY
+
+#include <level/elysian_event.hpp>
+#include <system/elysian_event_system.hpp>
+#include <proxy/elysian_event_proxy.hpp>
+#include <oolua.h>
+
+namespace OOLUA {
+    typedef elysian::EventType      EventType;
+    typedef elysian::EventSystem    EventSystem;
+}
+
+OOLUA_PROXY(EventSystem)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MEM_FUNC(void, sendEvent, Event*, EventTarget*)
+    OOLUA_MEM_FUNC(void, emitEvent, Event*, EventTarget*)
+    OOLUA_MEM_FUNC(void, broadcastEvent, Event*)
+    OOLUA_MEM_FUNC(void, addEventObserverLua, EventObserver*, EventType, LuaVariant)
+    OOLUA_MEM_FUNC(void, removeEventObserverLua, EventObserver*, EventType, LuaVariant)
+    OOLUA_MEM_FUNC_RENAME(addEventObserver, void, addEventObserverLua, EventObserver*, EventType, LuaVariant)
+    OOLUA_MEM_FUNC_RENAME(removeEventObserver, void, removeEventObserverLua, EventObserver*, EventType, LuaVariant)
+OOLUA_PROXY_END
+
+#endif

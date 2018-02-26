@@ -8,7 +8,8 @@
 #include <ESToolkit/core/tk_asset_manager.h>
 #include <AssetIO/tk_map_entry.h>
 
-#define AREA_SAVE_MAP_TILE_0_REEST_CHECK  true
+#define AREA_SAVE_MAP_TILE_0_REEST_CHECK    true
+#define TK_AREA_BACKUP_COUNT                5
 
 class QPainter;
 class QPoint;
@@ -106,6 +107,7 @@ public:
 
     bool                load(const char*const str);
     bool                save(void);
+    bool                saveBackup(void);
     bool                duplicate(void);
 
     QUndoStack&         getUndoStack(void);

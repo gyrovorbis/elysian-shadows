@@ -12,6 +12,10 @@ dreamcast {
     TARGET_EXT=".elf"
 }
 
+vmu_child_app {
+    DEFINES+=VMU_CHILD_APP
+}
+
 !ios: !dreamcast: !android {
     QT += sql gui opengl network help
     CONFIG += console
@@ -213,8 +217,11 @@ SOURCES += \
     ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
     ../../ESGamma/source/system/elysian_particle_system_base.cpp \
-    source/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.cpp \
-    ../../AssetIO/source/level/elysian_event.cpp
+    ../../AssetIO/source/level/elysian_event.cpp \
+    ../../AssetIO/source/proxy/elysian_event_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_event_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_collision_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp
 
 !ios: !dreamcast: !android {
 
@@ -308,7 +315,8 @@ SOURCES += \
         source/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.cpp \
         source/QESTkUtils/ui/widget/tk_2d_vector_widget.cpp \
         source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp
+        source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.cpp
 
 
 } else {
@@ -487,8 +495,11 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_particle_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_particle_system.hpp \
     ../../AssetIO/include/primitive/elysian_rect.hpp \
-    include/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h \
-    ../../AssetIO/include/level/elysian_event.hpp
+    ../../AssetIO/include/level/elysian_event.hpp \
+    ../../AssetIO/include/proxy/elysian_event_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_event_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_collision_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -608,7 +619,8 @@ HEADERS += \
         include/ESGamma/tk_level_system.h \
         include/QESTkUtils/tk_mime_data.h \
         include/QESTkUtils/tk_mime_drop_manager.h \
-        include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h
+        include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h
 }
 
 
@@ -658,6 +670,10 @@ opencl {
 }
 
 RESOURCES += resource/resource.qrc
+
+vmu_child_app {
+    RESOURCES += ../../ElysianVMU/qtcreator/ElysianVMU/resource/evmu.qrc
+}
 
 docs {
 
@@ -842,6 +858,7 @@ macx {
         -L../../ESGamma/lib/osx \
         -F../../libGyro/lib/osx \
         -framework SDL2 \
+        -framework SDL2_net \
         -framework Foundation \
         -framework Cocoa \
         -lobjc \
