@@ -252,7 +252,7 @@ extern "C" int gyKeyboardPoll(GYKeyboard**const keybd) {
             key |= wasDown;
             key &= 0x03;
             (*keybd)->keys[i] = (GY_BUTTON_STATE)key;
-            (*keybd)->changed = 1;
+          //  (*keybd)->changed = 1;
         } else {
             _keysChangedThisFrame[i] = false;
             (*keybd)->changed = 1;
