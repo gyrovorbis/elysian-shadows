@@ -135,14 +135,15 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconFile(ICON_FILE_PATH),
     _iconGame(ICON_GAME_PATH),
     _iconFlash(ICON_FLASH_PATH),
-    _iconDisconnected(ICON_DISCONNECTED_PATH),
-    _iconListening(ICON_LISTENING_PATH),
-    _iconConnected(ICON_CONNECTED_PATH),
+    _iconDisconnected(ICON_TCP_DISABLED_PATH),
+    _iconListening(ICON_TCP_LISTENING_PATH),
+    _iconConnected(ICON_TCP_CONNECTED_PATH),
     _iconRecording(ICON_RECORDING_PATH),
     _tcpDialog(new VmuTcpDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
     _recordingLabel(new QLabel()),
+    _remoteLabel(new QLabel()),
     _loadGameMenu(new QMenu()),
     _saveGameMenu(new QMenu()),
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
@@ -153,10 +154,13 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconLabel->setMargin(0);
     _iconLabel->setFixedSize(21, 21);
     _recordingLabel->setMargin(0);
+    _remoteLabel->setMargin(0);
+    _remoteLabel->setFixedSize(20, 20);
     _ui->statusbar->layout()->setSpacing(0);
-    _ui->statusbar->insertPermanentWidget(0, _recordingLabel);
-    _ui->statusbar->insertPermanentWidget(1, _statusLabel);
-    _ui->statusbar->insertPermanentWidget(2, _iconLabel);
+    _ui->statusbar->insertPermanentWidget(0, _remoteLabel);
+    _ui->statusbar->insertPermanentWidget(1, _recordingLabel);
+    _ui->statusbar->insertPermanentWidget(2, _statusLabel);
+    _ui->statusbar->insertPermanentWidget(3, _iconLabel);
     setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
 
     //Create framebuffer label and layouts for centering and managing its size
@@ -183,10 +187,12 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
 
     //Initialize libGyro File API, working directory, and log file
+#ifndef VMU_CHILD_APP
     GYFileInitParams fileParams;
     strcpy(fileParams.workingDir, workingDir.isEmpty()?
                QDir::homePath().toStdString().c_str() : workingDir.toStdString().c_str());
     gyFileInit(&fileParams);
+#endif
 
     if(workingDir.isEmpty()) {
         QDir outputDir(QDir::current());
@@ -197,16 +203,18 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
             QDir::setCurrent(QDir::current().filePath(VMU_OUTPUT_DIR));
         }
     }
+
     _logFile = fopen(VMU_LOG_FILE, "w");
 
     //Initialize libGyro Debug API with logging
+#ifndef VMU_CHILD_APP
     GYDebugCallbacks dbgCallbacks = {
         &_log,
         &_push,
         &_pop
     };
     gySysDebugEnable(GY_DEBUG_VERBOSE, &dbgCallbacks);
-
+#endif
     _gyLog(GY_DEBUG_VERBOSE, "Initializing ElysianVMU v %s", GYRO_VMU_VERSION_STRING);
     _gyPush();
 
@@ -217,6 +225,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _gyPop(1);
 
     //Initialize libGyro System, Timer, Audio, Input, and Network APIs
+#ifndef VMU_CHILD_APP
     GYSysInitParams sysParams = {
         (void*)this,
         [](void* /*context*/) {
@@ -233,8 +242,14 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
         4
     };
     gyInputInit(&inputParams);
+#endif
     GYNetInitParams netParams = {
-        2 //maximum number of monitored sockets allowed
+#ifdef VMU_CHILD_APP
+        2 + 4//maximum number of monitored sockets allowed (2 base + 4 from ESGamma)
+#else
+        2
+#endif
+
     };
     gyNetInit(&netParams);
 
@@ -308,12 +323,16 @@ VMUMainWindow::~VMUMainWindow(void)
     _freeIcons();
     gyVmuDeviceDestroy(_dev);
     gyNetUninit();
+#ifndef VMU_CHILD_APP
     gyInputUninit();
     gyAudUninit();
     gyTimerUninit();
     gySysUninit();
     _gyPop(1);
     gyDebugUninit();
+#else
+    _gyPop(1);
+#endif
     fclose(_logFile);
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     delete _comDialog;
@@ -334,7 +353,7 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
         QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcel Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
         QString("</table><br><br>") +
         QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
-        QString("<i>ElysianVMU Copyright 2017 Elysian Shadows</i><br>") +
+        QString("<i>ElysianVMU Copyright 2017-2018 Elysian Shadows</i><br>") +
         QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
     });
 }
@@ -406,14 +425,15 @@ void VMUMainWindow::_update(void) {
     _advanceFrame = false;
 
     //store socket status before update
-#if 0
-    auto* prevSocket = _dev->serialPort._tcpSocket;
-#endif
 
       for(int i = 0; i < 1; ++i) {
 
 #ifndef VMU_DEBUG
-        ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
+        #if 1
+          ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
+#else
+                    ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/10000000.0f);
+#endif
 #else
         gyVmuCpuTick(_dev, 1.0f/30.0f);
 #endif
@@ -430,17 +450,91 @@ void VMUMainWindow::_update(void) {
         }
         _contAttached = (bool)_dev->gamepad.contAttached;
 
-#if 0
-        //Check if the TCP connection was changed from outside (ie: disconnected)
-        if(prevSocket != _dev->serialPort._tcpSocket) {
-            _tcpDialog->updateConnectionStatus();
-        }
-#endif
+        _tcpDialog->updateConnectionStatus();
+        _updateStatusbar();
+
         if(!_dev->lcdFile) _updatePConRegister();
         else _updateLcdAnimStatusMessage();
         _updateIcon();
 
         _updateScene();
+    }
+}
+
+void VMUMainWindow::_updateStatusbar(void) {
+    REMOTE_STATE next;
+
+    switch(gyVmuSerialConnectionType(_dev)) {
+        case GY_VMU_TCP_CONNECTION_VMU:
+        next = REMOTE_CONNECTED;
+        break;
+    case GY_VMU_TCP_CONNECTION_DC:
+        next = REMOTE_CONNECTED;
+        break;
+    default:
+        if(_tcpDialog->isTcpServerActive()) {
+            next = REMOTE_LISTENING;
+
+        } else {
+            next = REMOTE_DISABLED;
+        }
+    }
+
+    bool remoteDCStatus = false;
+
+    if(_remoteState != next) {
+        _statusBarChanged = true;
+        switch(next) {
+        case REMOTE_CONNECTED: {
+            remoteDCStatus = true;
+            _remoteLabel->setToolTip("Connected to Remote Device");
+            _remoteLabel->setPixmap(_iconConnected);
+            break;
+        } case REMOTE_LISTENING:
+            _remoteLabel->setToolTip("Listening for Remote Devices");
+            _remoteLabel->setPixmap(_iconListening);
+            break;
+        case REMOTE_DISABLED:
+            _remoteLabel->setToolTip("Remote Server Disabled");
+            _remoteLabel->setPixmap(_iconDisconnected);
+        default:
+            break;
+        }
+
+        _remoteState = next;
+    }
+
+    if(_statusBarChanged) {
+        QPalette palette = _statusLabel->palette();
+
+        if(remoteDCStatus) {
+            palette.setColor(QPalette::WindowText, QColor(Qt::darkGreen));
+            _statusLabel->setText("Connected to Remote DC");
+
+        } else {
+            palette.setColor(QPalette::WindowText, QColor(Qt::black));
+            if(_dev->lcdFile) {
+                _statusLabel->setText(QString("LCD Animation"));
+
+            } else if(_vmsHeader) {
+                char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+                gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
+                _statusLabel->setText(_japCodec->toUnicode(string));
+
+            } else if(_dev->biosLoaded) {
+                palette.setColor(QPalette::WindowText, QColor(Qt::gray));
+                _statusLabel->setText("System BIOS Image");
+
+            } else {
+                palette.setColor(QPalette::WindowText, QColor(Qt::darkRed));
+                _statusLabel->setText("No ROM Image Loaded!");
+
+            }
+        }
+
+        _statusLabel->setPalette(palette);
+        _statusBarChanged = false;
+
     }
 }
 
@@ -564,7 +658,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
     if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
         if(_dev->lcdFile) {
-            _statusLabel->setText(QString("LCD ANIM: ")+info.fileName());
+            _statusBarChanged = true;
             _pushRecentRom(filepath);
             _gyLog(GY_DEBUG_VERBOSE, "Playing LCD animation.");
             resetCpu();
@@ -574,11 +668,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
             resetCpu();
 
-            //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
-            char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-            gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
-            _statusLabel->setText(_japCodec->toUnicode(string));
-            _loadIcons();
+            _statusBarChanged = true;
             _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
             _running = true;
             _pushRecentRom(filepath);
@@ -1063,12 +1153,29 @@ void VMUMainWindow::on_actionEnable_Low_Battery_toggled(bool arg1)
 
 void VMUMainWindow::on_actionQuit_triggered(void)
 {
+    _saveSettings();
     QApplication::quit();
 }
 
 void VMUMainWindow::on_actionView_Log_triggered(void)
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().absoluteFilePath(VMU_LOG_FILE)));
+}
+
+bool VMUMainWindow::loadBios(QString filepath) {
+    QFileInfo info(filepath);
+    filepath = info.absoluteFilePath();
+
+    if(gyloadbios(_dev, filepath.toStdString().c_str())) {
+        resetCpu();
+        _running = true;
+
+        _statusBarChanged = true;
+
+        return true;
+    }
+
+    return false;
 }
 
 void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
@@ -1078,19 +1185,12 @@ void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
 
     if(file.isNull()) return;
 
-    QFileInfo info(file);
-    file = info.absoluteFilePath();
-
-    if(gyloadbios(_dev, file.toStdString().c_str())) {
-        resetCpu();
-        _running = true;
-    }
-
+    loadBios(file);
 }
 
 void VMUMainWindow::on_actionDisassemble_ROM_triggered(void)
 {
-    if(!_running) {
+    if(!_running || !_vmsHeader) {
         QMessageBox::critical(nullptr, "Failed to disassemble ROM", "You don't even have a ROM loaded to disassemble!");
         return;
     }
@@ -1187,7 +1287,24 @@ void VMUMainWindow::on_action64x_triggered()
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 void VMUMainWindow::on_actionSerial_COM_Connection_Manager_triggered()
 {
+#if 1
+    char* buff = (char*)malloc((ROM_SIZE+1)*400);
+
+        gyVmuBiosDisassemblyPrints(buff);
+
+        QFile file("bios_disassembly.txt");
+        if(file.open(QIODevice::ReadWrite)) {
+            QTextStream stream(&file);
+            stream << buff << endl;
+        }
+
+
+
+        free(buff);
+#else
+
     _comDialog->show();
+#endif
 }
 #endif
 

@@ -3,8 +3,10 @@ vmu {
     TEMPLATE = app
 }
 vmu_child_app {
+    DEFINES+=VMU_CHILD_APP
     TEMPLATE = lib
     CONFIG += staticlib
+    CONFIG -= app_bundle
 }
 TARGET = ElysianVMU
 QT += gui opengl
@@ -68,7 +70,8 @@ SOURCES += \
     gif/gif_font.c \
     gif/gif_hash.c \
     gif/gifalloc.c \
-    gif/quantize.c
+    gif/quantize.c \
+    ../../lib/source/gyro_vmu_maple.c
 
 !vmu_child_app {
     SOURCES += ../../console/main.cpp
@@ -112,7 +115,8 @@ HEADERS += \
     gif/gif_lib_private.h \
     gif/qgifglobal.h \
     gif/qgifimage.h \
-    gif/qgifimage_p.h
+    gif/qgifimage_p.h \
+    ../../lib/source/gyro_vmu_maple.h
 
 
 !raspberrypi {
@@ -128,6 +132,13 @@ DEPENDPATH += ../../../libGyro/include \
     ../../lib/include \
     gif
 
+FORMS += \
+    gyro_vmu_main_window.ui \
+    gyro_vmu_tcp_dialog.ui \
+    gyro_vmu_com_dialog.ui
+
+!vmu_child_app {
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/ -llibGyro
 else:unix: LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/ -llibGyro
@@ -140,12 +151,6 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../.
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/libGyro.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/libGyro.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/liblibGyro.a
-
-FORMS += \
-    gyro_vmu_main_window.ui \
-    gyro_vmu_tcp_dialog.ui \
-    gyro_vmu_com_dialog.ui
-
 
 macx {
   LIBS +=  -L../../../libGyro/lib/osx \
@@ -235,12 +240,13 @@ raspberrypi {
         -lrt
 }
 
-
+}
 
 
 DISTFILES +=
 
+!vmu_child_app {
 RESOURCES += \
-    resource/resource.qrc
-
+    resource/evmu.qrc
+}
 

@@ -1,12 +1,68 @@
 #include "gyro_vmu_disassembler.h"
 #include "gyro_vmu_device.h"
-#include "gyro_vmu_instr.h"
 #include "gyro_vmu_flash.h"
 #include <gyro_file_api.h>
 #include <gyro_system_api.h>
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+
+
+void gyVmuDisassembleInstruction(VMUInstr instr, VMUInstrOperands operands, char* buffer, uint16_t pc, int showPc) {
+    char strBuff[100];
+    char tempBuff[100];
+    char mneumonic[100];
+
+    strcpy(mneumonic, _instrMap[instr.instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
+    char* tok = strtok(mneumonic, " ,");
+
+    sprintf(strBuff, "%s ", tok);
+
+    const int argc = instrArgsArgc(_instrMap[instr.instrBytes[INSTR_BYTE_OPCODE]].args);
+    for(int j = 0; j < argc; ++j) {
+        tok = strtok(NULL, " ,");
+        assert(tok); //operand not present within pneumonic!
+
+        if(j != 0) strcat(strBuff, ", ");
+
+        if(strcmp(tok, "r8") == 0) {
+            sprintf(tempBuff, "0x%x", operands.addrRel);
+        } else if(strcmp(tok, "r16") == 0) {
+            sprintf(tempBuff, "0x%0x", operands.addrRel);
+        } else if(strcmp(tok, "d9") == 0) {
+            sprintf(tempBuff, "0x%x", operands.addrMode[ADDR_MODE_DIR]);
+        } else if(strcmp(tok, "@Ri") == 0) {
+            sprintf(tempBuff, "@R%u", operands.addrMode[ADDR_MODE_IND]);
+        } else if(strcmp(tok, "@Rj") == 0) {
+            sprintf(tempBuff, "@R%u", operands.addrMode[ADDR_MODE_IND]);
+        } else if(strcmp(tok, "#i8") == 0) {
+            sprintf(tempBuff, "#0x%x", operands.addrMode[ADDR_MODE_IMM]);
+        } else if(strcmp(tok, "a12") == 0) {
+            sprintf(tempBuff, "#0x%x", operands.addrMode[ADDR_MODE_ABS]);
+        } else if(strcmp(tok, "a16") == 0) {
+            sprintf(tempBuff, "#0x%x", operands.addrMode[ADDR_MODE_ABS]);
+        } else if(strcmp(tok, "b3") == 0) {
+            sprintf(tempBuff, "#%u", operands.addrMode[ADDR_MODE_BIT]);
+        } else {
+            assert(0); //unknown operand token!
+        }
+
+        strcat(strBuff, tempBuff);
+    }
+
+    char tmp[20];
+    sprintf(tmp, "0x%x", pc);
+
+    if(showPc) {
+        sprintf(buffer, "%-5s: %s", tmp, strBuff);
+
+    } else {
+        sprintf(buffer, "%-5s: %s", tmp, strBuff);
+
+    }
+
+
+}
 
 bool gyVmuDisassemble(const unsigned char* buffer, size_t size, const char* outputFile, bool writeAddr) {
     char strBuff[100];

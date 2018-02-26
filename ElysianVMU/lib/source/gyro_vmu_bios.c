@@ -5,6 +5,12 @@
 #include "gyro_vmu_memory.h"
 #include "gyro_vmu_bios.h"
 #include "gyro_vmu_device.h"
+#include "gyro_vmu_sfr.h"
+
+int gyVmuBiosSystemCodeActive(struct VMUDevice* device) {
+    return device->imem == device->rom;
+}
+
 
 static inline int _monthDays(const VMUDevice* dev) {
   int m = dev->ram[0][0x19];
