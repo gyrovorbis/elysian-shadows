@@ -39,6 +39,7 @@
 
 #ifdef VMU_CHILD_APP
 #include <gyro_vmu_main_window.hpp>
+#include <gyro_vmu_display.h>
 #endif
 
 
@@ -838,5 +839,66 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
     _vmuDockWidget->setVisible(checked);
     _ui->actionVMU_View->setChecked(checked);
 #endif
+}
+
+static bool _convertVMUImageToIco(const QImage& img, QString outFile) {
+    bool success = true;
+    FILE* file = fopen(Q_CSTR(outFile), "wb");
+    if(file) {
+        uint8_t buff[192] = { 0 };
+
+        for(unsigned byte = 0; byte < 192; ++byte) {
+            for(unsigned bit = 0; bit < 8; ++bit) {
+                unsigned y = byte / 6;
+                unsigned x = (byte % 6)*8 + bit;
+                QColor color = img.pixelColor(x, y);
+                if(color == QColor(Qt::black)) {
+                    buff[byte] |= (0x1<<bit);
+                } else if (color == QColor(Qt::white)) {
+
+                } else {
+                    success = false;
+                    errprintf("What the shit? Found color %d at <%d, %d> when this is supposed to be black and white!", color.value(), x, y);
+                }
+            }
+        }
+
+        auto writtenBytes = fwrite(buff, 1, 192, file);
+
+        if(writtenBytes != 192) {
+            errprintf("Could not write all 192 bytes to file!");
+            success = false;
+        }
+
+        fclose(file);
+
+    } else {
+        errprintf("Could not create file for writing: %s", Q_CSTR(outFile));
+        success = false;
+    }
+
+    return success;
+}
+
+void ESToolkit::on_actionGenerate_VMU_Icons_triggered(void) {
+    QString vmuDir = FileUtilities::getAbsoluteAssetPath("/assets/graphics/vmu");
+    DbgEvent dbg("Scanning VMU Directory for Icons: %s", Q_CSTR(vmuDir));
+    (void)dbg;
+
+    QDirIterator it(vmuDir, QDir::Files);
+    while(it.hasNext()) {
+        QString filePath = it.next();
+        QFileInfo fileInfo(filePath);
+        DbgEvent dbg2("Processing File: %s", Q_CSTR(fileInfo.absoluteFilePath()));
+        (void)dbg2;
+        if(fileInfo.suffix() == "png") {
+            QImage png(filePath);
+            if(png.width() == VMU_DISP_PIXEL_WIDTH && png.height() == VMU_DISP_PIXEL_HEIGHT) {
+                _convertVMUImageToIco(png, filePath.split(".").first()+QString(".vmuico"));
+
+            } else errprintf("Invalid PNG resolutions. Expected <%d, %d>, Got <%d, %d>",
+                             VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT, png.width(), png.height());
+        }
+    }
 }
 

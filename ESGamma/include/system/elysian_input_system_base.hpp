@@ -197,17 +197,31 @@ namespace elysian {
 
 
     class VisualMemoryUnit: public PlayerIODevice {
-    private:
-        GYVisualMemoryTCPSettings* _tcpSettings = nullptr;
-        GYVisualMemoryDevice*       _gyHandle = nullptr;
     public:
-        bool readBlock(uint16_t blockNum, uint8_t* buffer);
-        bool writeBlock(uint16_t blockNum, const uint8_t* buffer);
-        bool beep(uint8_t pulseLength, uint8_t dutyCycle);
-        bool displayIcon(const char* filePath);
-        bool pollDevice(void);
-        bool connectToEVMU(const char* hostName, unsigned port);
-        bool disconnectFromEVMU(void);
+        enum VMU_TYPE {
+            VMU_NONE,
+            VMU_PHYSICAL,
+            VMU_VIRTUAL
+        };
+    private:
+        uint8_t                     _frameBuffer[32][6]     = { { 0 } };
+        GYVisualMemoryTCPSettings*  _tcpSettings            = nullptr;
+        GYVisualMemoryDevice*       _gyHandle               = nullptr;
+        VMU_TYPE                    _vmuType                = VMU_NONE;
+        bool                        _fbChanged              = false;
+    public:
+        bool                        readBlock(uint16_t blockNum, uint8_t* buffer) const;
+        bool                        writeBlock(uint16_t blockNum, const uint8_t* buffer);
+        bool                        beep(uint8_t pulseLength, uint8_t dutyCycle);
+        bool                        setFramebuffer(const char* buff);
+        bool                        loadIcon(const char* filePath);
+        bool                        frameBufferReadPixel(uint8_t x, uint8_t y) const;
+        void                        frameBufferWritePixel(uint8_t x, uint8_t y, bool pixelVal);
+        bool                        pollDevice(void);
+        bool                        isRemoteConnected(void) const;
+        VMU_TYPE                    getVmuType(void) const;
+        bool                        connectToEVMU(const char* hostName, unsigned port);
+        bool                        disconnectFromEVMU(void);
     };
 
 
@@ -357,6 +371,22 @@ namespace elysian {
         Event(type),
         _vmu(vmu)
     {}
+    inline bool VisualMemoryUnit::frameBufferReadPixel(uint8_t x, uint8_t y) const {
+        const int byte  = x / 8;
+        const int bit   = x % 8;
+        return (bool)(_frameBuffer[y][byte]>>bit)&0x1;
+    }
+    inline void VisualMemoryUnit::frameBufferWritePixel(uint8_t x, uint8_t y, bool pixelVal) {
+        const uint8_t byte  = x / 8;
+        const uint8_t bit   = x % 8;
+        const uint8_t prevVal = _frameBuffer[y][byte];
+        if(pixelVal) {
+            _frameBuffer[y][byte] |= (0x1<<bit);
+        } else {
+            _frameBuffer[y][byte] &= ~(0x1<<bit);
+        }
+        if(_frameBuffer[y][byte] != prevVal) _fbChanged = true;
+    }
 
 
     //======== INPUTSYSTEM INLINEZ =======

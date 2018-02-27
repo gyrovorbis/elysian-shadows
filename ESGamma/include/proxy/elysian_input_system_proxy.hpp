@@ -77,7 +77,7 @@ OOLUA_PROXY(VisualMemoryUnit, PlayerIODevice)
         No_public_destructor
     )
     OOLUA_MFUNC(beep)
-    OOLUA_MFUNC(displayIcon)
+    OOLUA_MFUNC(loadIcon)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InputSystem)

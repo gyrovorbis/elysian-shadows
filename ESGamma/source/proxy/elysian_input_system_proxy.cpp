@@ -167,7 +167,7 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
 
 OOLUA_EXPORT_FUNCTIONS(VisualMemoryUnit,
                        beep,
-                       displayIcon)
+                       loadIcon)
 OOLUA_EXPORT_FUNCTIONS_CONST(VisualMemoryUnit)
 
 /*!

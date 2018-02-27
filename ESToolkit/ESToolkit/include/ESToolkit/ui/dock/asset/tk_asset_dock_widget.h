@@ -16,6 +16,7 @@
 #define TK_MAP_ASSET_ICON                   ":/assetIcons/images/_0006_BIN.png"
 #define TK_LEVEL_ASSET_ICON                 ":/assetIcons/images/_0007_levels_icon.png"
 #define TK_AREA_ASSET_ICON                  ":/assetIcons/images/_0008_areas_icon.png"
+#define TK_VMU_ICON_ASSET_ICON              ":/assetIcons/images/vmu_icon.png"
 
 #define TK_SPECULARSHEET_ASSET_NAME_TOKEN   "specularsheet.png"
 #define TK_NORMALSHEET_ASSET_NAME_TOKEN     "normalsheet.png"
@@ -23,6 +24,7 @@
 #define TK_PREFAB_ASSET_NAME_TOKEN          "_prefab_data.lua"
 #define TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN    "_behav.lua"
 #define TK_MAP_ASSET_NAME_TOKEN             "map.bin"
+#define TK_VMU_ICON_ASSET_NAME_TOKEN        ".vmuico"
 
 class QMenu;
 class QItemSelection;
@@ -184,6 +186,15 @@ public:
     virtual QMenu*      contextMenu(const QModelIndex& index) override;
 };
 
+class VmuIconAssetFileType: public CustomAssetFileType {
+private:
+    QString             _assetRelativePath;
+public:
+                        VmuIconAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
+    virtual void        doubleClick(const QModelIndex &index) override;
+};
+
 class AssetFileSystemModel: public QFileSystemModel {
     Q_OBJECT
 private:
@@ -286,6 +297,7 @@ inline TilesheetAssetFileType::TilesheetAssetFileType(QString filePath): CustomA
 inline LuaScriptAssetFileType::LuaScriptAssetFileType(QString filePath): CustomAssetFileType("Lua Script", QIcon(TK_LUA_SCRIPT_ASSET_ICON), std::move(filePath)) {}
 inline LuaBehaviorAssetFileType::LuaBehaviorAssetFileType(QString filePath): CustomAssetFileType("Lua Behavior", QIcon(TK_LUA_BEHAVIOR_ASSET_ICON), std::move(filePath)) {}
 inline MapAssetFileType::MapAssetFileType(QString filePath): CustomAssetFileType("Map", QIcon(TK_MAP_ASSET_ICON), std::move(filePath)) {}
+inline VmuIconAssetFileType::VmuIconAssetFileType(QString filePath): CustomAssetFileType("VMU Icon", QIcon(TK_VMU_ICON_ASSET_ICON), std::move(filePath)) {}
 
 
 

@@ -72,6 +72,7 @@ public:
     static void         searchDocs(QString query);
     static void         openDoc(QString page, QString section=QString());
     static void         showStatusBarMessage(QString message);
+    static void         showStatusBarMessage(QString message, QColor color);
 
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
@@ -283,6 +284,7 @@ private Q_SLOTS:
     void on_actionTexture_Dump_triggered();
     void on_actionVMU_View_triggered(bool checked);
     void on_actionConnectEVMUTcp_triggered();
+    void on_actionGenerate_VMU_Icons_triggered();
 };
 
 

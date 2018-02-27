@@ -26,6 +26,7 @@
 #include "elysian_debug.hpp"
 #include "elysian_lua_manager.hpp"
 #include <QDir>
+#include <ESToolkit/ui/tk_estoolkit.h>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estk.h>
@@ -245,6 +246,7 @@ void TkDebug::Log(SEVERITY flag, QString msg, int src) {
         if(msg == _filterList[i]) return;
     }
 #endif
+    if(flag == LOG_ERROR) ESToolkit::showStatusBarMessage(msg, Qt::darkRed);
     _postToQueue((TK_SOURCE)src, flag, msg);
 }
 

@@ -1273,6 +1273,17 @@ void ESToolkit::on_actionConnectEVMUTcp_triggered()
     _assets.getEngine()->getInputSys()->getVMU(0)->connectToEVMU("localhost", 1234);
 }
 
-void ESToolkit::showStatusBarMessage(QString message) {
+void ESToolkit::showStatusBarMessage(QString message, QColor color) {
+    auto pal = _instance->statusBar()->palette();
+    pal.setColor(QPalette::WindowText, QColor(color));
+    _instance->statusBar()->setPalette(pal);
     _instance->statusBar()->showMessage(message, ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+    pal.setColor(QPalette::WindowText, QColor(Qt::black));
+    _instance->statusBar()->setPalette(pal);
 }
+
+void ESToolkit::showStatusBarMessage(QString message) {
+    ESToolkit::showStatusBarMessage(message, Qt::black);
+}
+
+

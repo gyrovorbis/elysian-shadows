@@ -309,6 +309,7 @@
     <addaction name="actionGitLab_Manager"/>
     <addaction name="actionPerformance_Monitor"/>
     <addaction name="actionDocumentation"/>
+    <addaction name="actionGenerate_VMU_Icons"/>
    </widget>
    <widget class="QMenu" name="menuGame">
     <property name="title">
@@ -1674,6 +1675,11 @@
   <action name="actionConnectEVMUTcp">
    <property name="text">
     <string>Connect to EVMU on Port 0</string>
+   </property>
+  </action>
+  <action name="actionGenerate_VMU_Icons">
+   <property name="text">
+    <string>Generate VMU Icons</string>
    </property>
   </action>
  </widget>

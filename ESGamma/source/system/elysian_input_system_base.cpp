@@ -1,6 +1,7 @@
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_debug.hpp>
 #include <system/elysian_event_system.hpp>
+#include <gyro_file_api.h>
 
 namespace elysian {
 
@@ -72,8 +73,7 @@ bool Controller::pollInput(void) {
     return _attached;
 }
 
-
-bool VisualMemoryUnit::readBlock(uint16_t blockNum, uint8_t* buffer) {
+bool VisualMemoryUnit::readBlock(uint16_t blockNum, uint8_t* buffer) const {
     return _gyHandle? gyVisualMemoryDeviceBlockRead(_gyHandle, buffer, blockNum) : false;
 }
 
@@ -83,11 +83,36 @@ bool VisualMemoryUnit::writeBlock(uint16_t blockNum, const uint8_t* buffer) {
 bool VisualMemoryUnit::beep(uint8_t pulseLength, uint8_t dutyCycle) {
     return _gyHandle? gyVisualMemoryDeviceBeep(_gyHandle, pulseLength, dutyCycle) : false;
 }
-bool VisualMemoryUnit::displayIcon(const char* filePath) {
-    return true;
+bool VisualMemoryUnit::loadIcon(const char* filePath) {
+    GYFile *fp;
+    bool success = true;
+    dbgprintf("VisualMemoryUnit[%d]::loadIcon(%s)", getPlayerIndex(), filePath);
+    dbgpush();
+
+    if (!gyFileOpen(filePath, "rb", &fp)) {
+        Debug::printf(Debug::LOG_ERROR, "FAILURE!");
+        success = false;
+    } else {
+        size_t bytesRead;
+        gyFileRead(fp, _frameBuffer, 192, &bytesRead);
+        if(bytesRead != 192) {
+            errprintf("Could only read %d of %d bytes from file!", bytesRead, 192);
+            success = false;
+        }
+        if(bytesRead > 0) _fbChanged = true;
+    }
+    dbgpop();
+    return success;
 }
+
 bool VisualMemoryUnit::pollDevice(void) {
     _attached = gyVisualMemoryDevicePoll(_playerIndex, &_gyHandle);
+    if(_attached && _gyHandle) {
+        if(_fbChanged) {
+            gyVisualMemoryDeviceDisplayImage(_gyHandle, (uint8_t*)_frameBuffer);
+            _fbChanged = false;
+        }
+    }
     return _attached;
 }
 
