@@ -46,18 +46,18 @@
 #ifdef VMU_DEBUG
 //#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
 #endif
-#define VMU_STATUS_TEMP_TIMEOUT 2000
-#define VMU_LOG_FILE "vmu_debug.txt"
-#define SCREENSHOT_FILENAME "screenshot"
-#define SCREENSHOT_FILENAME_EXT "png"
-#define VMU_OUTPUT_DIR          "ElysianVMU"
-#define SETTINGS_FILE           "UserSettings.ini"
+#define VMU_STATUS_TEMP_TIMEOUT         2000
+#define VMU_LOG_FILE                    "vmu_debug.txt"
+#define SCREENSHOT_FILENAME             "screenshot"
+#define SCREENSHOT_FILENAME_EXT         "png"
+#define VMU_OUTPUT_DIR                  "ElysianVMU"
+#define SETTINGS_FILE                   "UserSettings.ini"
 #define SCREENSHOT_FILENAME_SIZE_MAX    100
-#define CYCLES      1000
-#define AUDIO_SAMPLE_RATE   44100
-#define STATE_FILE "elysianVMUSaveState.bin"
+#define CYCLES                          1000
+#define AUDIO_SAMPLE_RATE               44100
+#define STATE_FILE                      "elysianVMUSaveState.bin"
 
-#define FRAME_ADVANCE_TICKS  ((1.0f/5.0f)*1000000000.0f)
+#define FRAME_ADVANCE_TICKS             ((1.0f/5.0f)*1000000000.0f)
 
 
 bool VMUMainWindow::eventFilter(QObject *watched, QEvent *event) {
@@ -193,7 +193,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
                QDir::homePath().toStdString().c_str() : workingDir.toStdString().c_str());
     gyFileInit(&fileParams);
 #endif
-
+#if 0
     if(workingDir.isEmpty()) {
         QDir outputDir(QDir::current());
         if(!outputDir.cd(VMU_OUTPUT_DIR) && !outputDir.mkdir(VMU_OUTPUT_DIR)) {
@@ -203,7 +203,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
             QDir::setCurrent(QDir::current().filePath(VMU_OUTPUT_DIR));
         }
     }
-
+#endif
     _logFile = fopen(VMU_LOG_FILE, "w");
 
     //Initialize libGyro Debug API with logging
@@ -305,9 +305,11 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _setupAboutMsgBox();
 
     //Set update timer
+#ifndef VMU_CHILD_APP
     _updateTimer.setInterval(17);
-    connect(&_updateTimer, SIGNAL(timeout()), this, SLOT(_update()));
+    connect(&_updateTimer, SIGNAL(timeout()), this, SLOT(update()));
     _updateTimer.start();
+#endif
 
     _gyPop(1);
     _resizeWindowFromScreenZoom(VMU_FB_DEFAULT_ZOOM_LEVEL);
@@ -402,7 +404,7 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 }
 
 
-void VMUMainWindow::_update(void) {
+void VMUMainWindow::update(void) {
     bool ranThisFrame = false;
     int64_t deltaTicks;
 
