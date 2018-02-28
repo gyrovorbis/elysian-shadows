@@ -263,7 +263,9 @@ bool TkArea::load(const char*const str) {
 
 bool TkArea::saveBackup(void) {
     QDateTime dateTime = QDateTime::currentDateTime();
-    QString path = getNodePath() + QString("/") + dateTime.toString() + QString(".tkbk");
+    QString dateTimeStr = dateTime.toString();
+    dateTimeStr = dateTimeStr.replace(":", "-");
+    QString path = getNodePath() + QString("/") + dateTimeStr + QString(".tkbk");
     DbgEvent event("Saving Area Backup [%s].", Q_CSTR(path));
     bool success = saveAs(path);
     return success;

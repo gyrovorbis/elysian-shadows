@@ -82,6 +82,7 @@ public:
     QDir            getOutputDir(void) const;
     void            setIndexHiddenLevels(const bool val);
     AssetDockWidget* getAssetDockWidget(void) const;
+    VMUMainWindow*  getVMUMainWindow(void) const;
 
 protected:
     virtual void    changeEvent(QEvent *e) override;
@@ -304,5 +305,6 @@ inline void ESToolkit::setOutputDir(const QDir dir) { _outputDir = dir; }
 inline QDir ESToolkit::getOutputDir(void) const { return _outputDir; }
 inline ESToolkit* ESToolkit::getInstance(void) { return _instance; }
 inline AssetDockWidget* ESToolkit::getAssetDockWidget(void) const { return _assetDockWidget; }
+inline VMUMainWindow* ESToolkit::getVMUMainWindow(void) const { return _evmuWindow; }
 
 #endif // ESTOOLKIT_H

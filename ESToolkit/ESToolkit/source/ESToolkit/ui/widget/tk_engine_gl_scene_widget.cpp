@@ -8,6 +8,8 @@
 #include <ESToolkit/ui/widget/tk_map_view.h>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
+#include <ESToolkit/ui/tk_estoolkit.h>
+#include <gyro_vmu_main_window.hpp>
 
 #include <QMouseEvent>
 #include <spine/spine.h>
@@ -184,6 +186,11 @@ void EngineGLSceneWidget::paintGL(void) {
     getAssets()->getEngine()->processInput();
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->render();
+    if(ESToolkit::getInstance()->getVMUMainWindow()) {
+        Debug::setEVMUActive(true);
+        ESToolkit::getInstance()->getVMUMainWindow()->update();
+        Debug::setEVMUActive(false);
+    }
 
     _monitor.stop();
 

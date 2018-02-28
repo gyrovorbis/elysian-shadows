@@ -84,7 +84,7 @@ bool VisualMemoryUnit::beep(uint8_t pulseLength, uint8_t dutyCycle) {
     return _gyHandle? gyVisualMemoryDeviceBeep(_gyHandle, pulseLength, dutyCycle) : false;
 }
 bool VisualMemoryUnit::loadIcon(const char* filePath) {
-    GYFile *fp;
+    GYFile *fp = NULL;
     bool success = true;
     dbgprintf("VisualMemoryUnit[%d]::loadIcon(%s)", getPlayerIndex(), filePath);
     dbgpush();

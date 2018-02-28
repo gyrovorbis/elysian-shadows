@@ -268,6 +268,8 @@ bool ESToolkit::event(QEvent *event) {
 
 
 ESToolkit::~ESToolkit(void) {
+    delete _vmuDockWidget;
+
     _ui->mapView->setEnabled(false);
     _assets.setCurrentArea(nullptr);
     _assets.setCurrentProject(nullptr);

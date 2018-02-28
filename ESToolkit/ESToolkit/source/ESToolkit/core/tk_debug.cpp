@@ -27,6 +27,7 @@
 #include "elysian_lua_manager.hpp"
 #include <QDir>
 #include <ESToolkit/ui/tk_estoolkit.h>
+#include <QThread>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estk.h>
@@ -56,6 +57,7 @@ QString             TkDebug::_lastString;
 bool                TkDebug::_prevMsgDiscarded = false;
 QStack<bool>        TkDebug::_ignoredPushes;
 QMenu*              TkDebug::_filterMenu;
+bool                TkDebug::_evmuActive = false;
 QAction*            TkDebug::_filterActions[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{nullptr}};
 
 TkDebug::TkDebug(void) {
@@ -129,13 +131,14 @@ TkDebug::TkDebug(void) {
         });
         sourcesMenu.pop();
     };
-    addFilterSource("LibGyro",  Debug::LIBGYRO);
-    addFilterSource("Engine",   Debug::ENGINE);
-    addFilterSource("Toolkit",  Debug::TOOLKIT);
-    addFilterSource("Qt",       Debug::SOURCE_QT);
-    addFilterSource("OpenGL",   Debug::OPENGL);
-    addFilterSource("Lua",      Debug::LUA);
-    addFilterSource("Commands", Debug::COMMAND);
+    addFilterSource("LibGyro",      Debug::LIBGYRO);
+    addFilterSource("Engine",       Debug::ENGINE);
+    addFilterSource("Toolkit",      Debug::TOOLKIT);
+    addFilterSource("Qt",           Debug::SOURCE_QT);
+    addFilterSource("OpenGL",       Debug::OPENGL);
+    addFilterSource("Lua",          Debug::LUA);
+    addFilterSource("Commands",     Debug::COMMAND);
+    addFilterSource("ElysianVMU",   Debug::EVMU);
     sourcesMenu.insertAction("Enable All Filters", [](bool) {
         for(unsigned i = 0; i < Debug::SOURCE_MAX; ++i)
             for(unsigned j = 0; j < Debug::LOG_OFF; ++j)
@@ -246,7 +249,15 @@ void TkDebug::Log(SEVERITY flag, QString msg, int src) {
         if(msg == _filterList[i]) return;
     }
 #endif
-    if(flag == LOG_ERROR) ESToolkit::showStatusBarMessage(msg, Qt::darkRed);
+
+    if(src == LIBGYRO && _evmuActive) {
+        src = EVMU;
+    } else {
+        //Don't let shit from other threads fucking touch a GUI-thread widget!!!!
+        if(flag == LOG_ERROR && QThread::currentThread() == QApplication::instance()->thread())
+            ESToolkit::showStatusBarMessage(msg, Qt::darkRed);
+    }
+
     _postToQueue((TK_SOURCE)src, flag, msg);
 }
 
@@ -434,6 +445,9 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
         break;
     case COMMAND:
         brush = QBrush(Qt::darkGreen);
+        break;
+    case EVMU:
+        brush = QBrush(Qt::darkGray);
         break;
     default:
         brush = QBrush(Qt::black);

@@ -815,7 +815,7 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
 #ifdef VMU_CHILD_APP
     if(checked) {
         if(!_evmuWindow) {
-
+            Debug::setEVMUActive(true);
             _evmuWindow = new VMUMainWindow(this);	// no parent
             //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
             //evmuWindow->setWindowFlags(Qt::Widget);
@@ -833,6 +833,7 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
         //dock->setMouseTracking(false);
            //evmuWindow->setParent(dock) ;	// here
             addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
+            Debug::setEVMUActive(false);
         }
     }
 

@@ -6,6 +6,7 @@
 #include <QVector>
 #include <stdint.h>
 #include <gyro_system_api.h>
+#include <functional>
 
 #define VMU_FB_DEFAULT_WIDTH            48
 #define VMU_FB_DEFAULT_HEIGHT           40
@@ -76,8 +77,10 @@ public:
     virtual void        dropEvent(QDropEvent* event) override;
     virtual bool        eventFilter(QObject *watched, QEvent *event) override;
 
+public Q_SLOTS:
+        void                update(void);
+
 protected Q_SLOTS:
-    void                _update(void);
     void                _updateScene(void);
     void                _onLoadGameAboutToShow(void);
     void                _onLoadGameAboutToHide(void);
