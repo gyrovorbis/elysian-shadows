@@ -297,7 +297,9 @@ inline TilesheetAssetFileType::TilesheetAssetFileType(QString filePath): CustomA
 inline LuaScriptAssetFileType::LuaScriptAssetFileType(QString filePath): CustomAssetFileType("Lua Script", QIcon(TK_LUA_SCRIPT_ASSET_ICON), std::move(filePath)) {}
 inline LuaBehaviorAssetFileType::LuaBehaviorAssetFileType(QString filePath): CustomAssetFileType("Lua Behavior", QIcon(TK_LUA_BEHAVIOR_ASSET_ICON), std::move(filePath)) {}
 inline MapAssetFileType::MapAssetFileType(QString filePath): CustomAssetFileType("Map", QIcon(TK_MAP_ASSET_ICON), std::move(filePath)) {}
-inline VmuIconAssetFileType::VmuIconAssetFileType(QString filePath): CustomAssetFileType("VMU Icon", QIcon(TK_VMU_ICON_ASSET_ICON), std::move(filePath)) {}
+inline VmuIconAssetFileType::VmuIconAssetFileType(QString filePath): CustomAssetFileType("VMU Icon", QIcon(TK_VMU_ICON_ASSET_ICON), std::move(filePath), "Double-click to preview on VMU[0]!") {
+    _fontState = FONT_ACTIVE;
+}
 
 
 

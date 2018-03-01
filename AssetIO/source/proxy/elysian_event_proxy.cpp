@@ -193,6 +193,26 @@ OOLUA_EXPORT_NO_FUNCTIONS(EventObserver)
             \li Party is leaving the current area
 
         \row
+            \li Event.GAME_TIME_DAWN
+            \li Event
+            \li In-Game time has just reached dawn (hour 6)
+
+        \row
+            \li Event.GAME_TIME_NOON
+            \li Event
+            \li In-game time has just reached noon (hour 12)
+
+        \row
+            \li Event.GAME_TIME_DUSK
+            \li Event
+            \li In-game time has just reached dusk (hour 18)
+
+        \row
+            \li Event.GAME_TIME_MIDNIGHT
+            \li Event
+            \li In-game time has just reached midnight (hour 24)
+
+        \row
             \li Event.WIDGET_ACTIVE
             \li Event
             \li Target Widget has either been activated or deactivated

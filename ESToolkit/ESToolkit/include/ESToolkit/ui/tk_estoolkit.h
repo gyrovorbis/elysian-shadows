@@ -284,8 +284,8 @@ private Q_SLOTS:
     void on_actionAudio_Dump_triggered();
     void on_actionTexture_Dump_triggered();
     void on_actionVMU_View_triggered(bool checked);
-    void on_actionConnectEVMUTcp_triggered();
     void on_actionGenerate_VMU_Icons_triggered();
+    void on_actionConnectEVMUTcp_toggled(bool arg1);
 };
 
 

@@ -336,6 +336,10 @@ namespace elysian {
         s->register_class_static<Event>("AREA_ENTER",           EVENT_AREA_ENTER);
         s->register_class_static<Event>("AREA_EXIT",            EVENT_AREA_EXIT);
         s->register_class_static<Event>("AREA_CHANGED",         EVENT_AREA_CHANGED);
+        s->register_class_static<Event>("GAME_TIME_DAWN",       EVENT_GAME_TIME_DAWN);
+        s->register_class_static<Event>("GAME_TIME_NOON",       EVENT_GAME_TIME_NOON);
+        s->register_class_static<Event>("GAME_TIME_DUSK",       EVENT_GAME_TIME_DUSK);
+        s->register_class_static<Event>("GAME_TIME_MIDNIGHT",   EVENT_GAME_TIME_MIDNIGHT);
 
         /*
         s->register_class_static<Event>("WIDGET_ACTIVE",         EVENT_VMU_ATTACHED);

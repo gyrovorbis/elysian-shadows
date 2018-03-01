@@ -2,17 +2,38 @@
 #define ELYSIAN_DAY_SYSTEM_HPP
 
 #include <system/elysian_system.hpp>
+#include <system/elysian_event_system.hpp>
 #include <gyro_matrix_api.h>
 #include <memory>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(LightSource)
 
+#define ELYSIAN_DAY_SYSTEM_HOUR_DAWN        6
+#define ELYSIAN_DAY_SYSTEM_HOUR_NOON        12
+#define ELYSIAN_DAY_SYSTEM_HOUR_DUSK        18
+#define ELYSIAN_DAY_SYSTEM_HOUR_MIDNIGHT    24
+
 namespace elysian {
 
 	class LightAttrib;
 
-	class DaySystem: public System {
+    class DaySystem: public System, public EventObserver {
+    public:
+        enum TIME_HOUR {
+            TIME_HOUR_DAWN       = 6,
+            TIME_HOUR_NOON       = 12,
+            TIME_HOUR_DUSK       = 18,
+            TIME_HOUR_MIDNIGHT   = 24
+        };
+
+        enum TIME_INTERVAL {
+            TIME_INTERVAL_DAY_AM,     //6-12
+            TIME_INTERVAL_DAY_PM,     //12-18
+            TIME_INTERVAL_NIGHT_PM,   //18-24
+            TIME_INTERVAL_NIGHT_AM,   //24-6
+        };
+
 	private:
         GYVector3                       _axis			= GYVector3 { 0.0f, 1.0f, -1.0f };
         GYVector4                       _baseDir		= GYVector4 { -1.0f, 0.0f, 0.0f, 1.0f };
@@ -40,6 +61,9 @@ namespace elysian {
         std::shared_ptr<LightAttrib>	_sunLightAttrib	= nullptr;
 //		bool                            _sunEnabled		= true;
         bool                            _sunActive		= false;
+        TIME_INTERVAL                   _timeInterval   = TIME_INTERVAL_NIGHT_PM;
+
+        void            _updateTimeInterval(void);
 
 
 	public:
@@ -54,10 +78,15 @@ namespace elysian {
 		unsigned		getHours(void) const;
 		unsigned		getMinutes(void) const;
 		unsigned		getDays(void) const;
+        bool            isDay(void) const;
+        TIME_INTERVAL   getTimeInterval(void) const;
 
 		void			update(void);
-		void			onAreaEnter(void);
-		void			onAreaExit(void);
+
+        virtual void    onObserveEvent(Event* event, EventTarget* target) override;
+
+        void			onAreaEnter(void);
+        void			onAreaExit(void);
 
 	};
 
@@ -95,6 +124,9 @@ namespace elysian {
         //update second counter
         _curSecs = _time*_secsPerDay;
     }
+
+    inline bool DaySystem::isDay(void) const { return (_timeInterval == TIME_INTERVAL_DAY_AM || _timeInterval == TIME_INTERVAL_DAY_PM); }
+    inline auto DaySystem::getTimeInterval(void) const -> TIME_INTERVAL { return _timeInterval; }
 
 
 }

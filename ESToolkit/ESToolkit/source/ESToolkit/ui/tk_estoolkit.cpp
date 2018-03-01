@@ -1270,11 +1270,6 @@ void ESToolkit::on_actionTexture_Dump_triggered()
 }
 
 
-void ESToolkit::on_actionConnectEVMUTcp_triggered()
-{
-    _assets.getEngine()->getInputSys()->getVMU(0)->connectToEVMU("localhost", 1234);
-}
-
 void ESToolkit::showStatusBarMessage(QString message, QColor color) {
     auto pal = _instance->statusBar()->palette();
     pal.setColor(QPalette::WindowText, QColor(color));
@@ -1287,5 +1282,7 @@ void ESToolkit::showStatusBarMessage(QString message, QColor color) {
 void ESToolkit::showStatusBarMessage(QString message) {
     ESToolkit::showStatusBarMessage(message, Qt::black);
 }
+
+
 
 

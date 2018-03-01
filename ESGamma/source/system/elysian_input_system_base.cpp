@@ -28,9 +28,9 @@ bool Keyboard::pollInput(void) {
 bool Mouse::pollInput(void) {
     _attached = gyMousePoll(&_gyHandle);
     if(_attached && _gyHandle) {
-        if(_gyHandle->buttonsChanged)       System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_BUTTON, this));
-        if(_gyHandle->screenPosChanged)     System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_MOVE, this));
-        if(_gyHandle->scrollWheelChanged)   System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_WHEEL, this));
+        if(_gyHandle->buttonsChanged)       System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_BUTTON,    this));
+        if(_gyHandle->screenPosChanged)     System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_MOVE,      this));
+        if(_gyHandle->scrollWheelChanged)   System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_WHEEL,     this));
     }
     return _attached;
 }

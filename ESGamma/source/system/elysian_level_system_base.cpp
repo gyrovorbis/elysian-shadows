@@ -204,7 +204,6 @@ void LevelSystemBase::_onAreaEnter(void) {
 void LevelSystemBase::_onAreaExit(void) {
     //Clean up current area
     getBehavSys()->callTriggers(Behavior::ON_EXIT);
-    getDaySys()->onAreaExit();
     _removePersistentEntities();
     _curArea->deactivate();
     getCollisionSys()->onAreaExit();

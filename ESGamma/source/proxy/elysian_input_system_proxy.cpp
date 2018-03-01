@@ -118,7 +118,6 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
     8-bit sound output device, and allows you to upload VMU minigames to the device for when
     they function in standalone mode independent of the Engine.
 
-
     \section2 Physical Devices
     Physical Devices can either be actual Dreamcast VMUs connected to a Sega Dreamcast in the
     standard manner, or actual Dreamcast VMUs connected to a PC through some sort of USB
@@ -134,6 +133,13 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
     through TCP rather than through the Dreamcast's Maple BUS or through USB. TCP communication
     is all handled internally by the engine.
 
+    \section2 Reading and Writing to the LCD Display
+    The engine maintains an internal local copy of the VMU's framebuffer which is only submitted
+    to the VMU for updating once per-frame, and only if the framebuffer has actually changed, so
+    doing lots of reads and writes to the framebuffer will not negatively impact performance, as
+    it's only referencing the local cache, and the Engine will handle updating the actual device
+    screen for you.
+
     \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {Mouse}
 */
 /*!
@@ -141,7 +147,8 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
  *
  *  Creates a raw beep sound effect (square wave) using the given information and submits it to
  *  the VMU device for playback on its 8-bit buzzer. Returns true if the VMU returns a success message
- *  or false otherwise.
+ *  or false otherwise. The sound generated will essentially play on repeat until its cleared
+ *  (send any pulse with a pulseActiveLength of 0).
  *
  * \a{pulseTotalLength} is the total length of the square wave to be created. \a{pulseActiveLength} is
  * the sublength of \a{pulseTotalLength} which is to be the positive portion of the wave. Both values
@@ -158,17 +165,41 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
  * \qmlmethod bool VisualMemoryUnit::displayIcon(string filepath)
  *
  *  Sets the LCD display of the VMU device to the icon given located at \a{filepath}.
- *  The image must be in PNG format and must have the dimensions of 48x32 pixels, with
- *  only black and white (1-bit) color depth.
+ *  The image must be in .vmuico format and must have the dimensions of 48x32 pixels, with
+ *  only black and white (1-bit) color depth. ESTk can convert PNGs of these resolutions to
+ *  the compressed .vmuico format for you.
  *
  *  Returns true if the remote device returns a successful status code or false otherwise
  * (message timed out, VMU is disconnected or unavailable, invalid file, etc).
  */
+/*!
+ * \qmlmethod bool VisualMemoryUnit::frameBufferReadPixel(int x, int y)
+ *
+ *  Returns true if the given framebuffer pixel at coordinate <\a{x}, \a{y}> is
+ *  black, and false if it is white.
+ *
+ *  \e{NOTE: The valid range for \a{x} is [0, 48] while the valid range for \a{y}
+ *  is [0, 32] (the VMU LCD screen resolution).
+ * \sa frameBufferWrite
+ *
+ */
+/*!
+ * \qmlmethod bool VisualMemoryUnit::frameBufferWritePixel(int x, int y, bool value)
+ *
+ *  Sets the given pixel at coordinate <\a{x}, \a{y}> on the VMU's LCD screen to
+ *  black if \a{value} is true or white if \a{value} is false.
+ *
+ *  \e{NOTE: The valid range for \a{x} is [0, 48] while the valid range for \a{y}
+ *  is [0, 32] (the VMU LCD screen resolution).
+ * \sa displayIcon, frameBufferRead
+ */
 
 OOLUA_EXPORT_FUNCTIONS(VisualMemoryUnit,
                        beep,
-                       loadIcon)
-OOLUA_EXPORT_FUNCTIONS_CONST(VisualMemoryUnit)
+                       loadIcon,
+                       frameBufferWritePixel)
+OOLUA_EXPORT_FUNCTIONS_CONST(VisualMemoryUnit,
+                             frameBufferReadPixel)
 
 /*!
     \qmltype Keyboard

@@ -330,8 +330,8 @@ bool AssetFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
 CustomAssetFileType::CustomAssetFileType(QString typeName, QIcon icon, QString filePath, QString toolTip, QString whatsThis):
     _filePath(std::move(filePath)),
     _typeName(std::move(typeName)),
-    _icon(std::move(icon)),
     _toolTip(std::move(toolTip)),
+    _icon(std::move(icon)),
     _whatsThis(std::move(whatsThis))
 {}
 
@@ -664,7 +664,10 @@ auto VmuIconAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
 }
 
 void VmuIconAssetFileType::doubleClick(const QModelIndex &index) {
-    elysian::System::getInputSys()->getVMU(0)->loadIcon(Q_CSTR(FileUtilities::getAssetRelativePath(_filePath)));
+    elysian::VisualMemoryUnit* vmu = elysian::System::getInputSys()->getVMU(0);
+    if(vmu) {
+        vmu->loadIcon(Q_CSTR(FileUtilities::getAssetRelativePath(_filePath)));
+    }
 }
 
 CustomAssetFileType* AssetFileSystemModel::getCustomAssetFileType(QString fileName) {

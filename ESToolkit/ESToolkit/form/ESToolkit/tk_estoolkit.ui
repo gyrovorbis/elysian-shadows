@@ -1673,8 +1673,11 @@
    </property>
   </action>
   <action name="actionConnectEVMUTcp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Connect to EVMU on Port 0</string>
+    <string>Connect to EVMU</string>
    </property>
   </action>
   <action name="actionGenerate_VMU_Icons">

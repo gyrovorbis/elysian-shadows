@@ -447,7 +447,7 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
         brush = QBrush(Qt::darkGreen);
         break;
     case EVMU:
-        brush = QBrush(Qt::darkGray);
+        brush = QBrush(Qt::darkMagenta);
         break;
     default:
         brush = QBrush(Qt::black);

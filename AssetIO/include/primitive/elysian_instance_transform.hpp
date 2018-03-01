@@ -27,6 +27,7 @@ namespace elysian {
         Vector2     operator+(const Vector2& rhs) const;
         Vector2     operator-(const Vector2& rhs) const;
         Vector2     operator*(const Vector2& rhs) const;
+        Vector2     operator*(float scalar) const;
         Vector2     operator/(const Vector2& rhs) const;
         Vector2&    operator=(const Vector2& rhs);
 
@@ -42,6 +43,7 @@ namespace elysian {
         float       distance(const Vector2& rhs) const;
         void        normalize(void);
         float       dotProduct(const Vector2& rhs) const;
+        Vector2     scalarMult(float scalar) const;
         float       scalarCrossProduct(const Vector2& rhs) const;
         Vector2     vectorCrossProduct(float scalar) const;
     };
@@ -317,9 +319,16 @@ namespace elysian {
     inline Vector2 Vector2::operator*(const Vector2& rhs) const {
         return Vector2(x * rhs.x, y * rhs.y);
     }
+    inline Vector2 Vector2::operator*(float scalar) const {
+        return Vector2(x * scalar, y * scalar);
+    }
 
     inline Vector2 Vector2::operator/(const Vector2& rhs) const {
         return Vector2(x / rhs.x, y / rhs.y);
+    }
+
+    inline Vector2 Vector2::scalarMult(float scalar) const {
+        return *this * scalar;
     }
 
    inline float Vector2::dotProduct(const Vector2 &rhs) const {

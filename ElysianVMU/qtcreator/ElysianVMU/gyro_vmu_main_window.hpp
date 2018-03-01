@@ -30,6 +30,7 @@
 #define ICON_TCP_DISABLED_PATH          ":/icons/images/task_bar_disconnected.png"
 #define ICON_TCP_CONNECTED_PATH         ":/icons/images/task_bar_connected.png"
 
+class   QDir;
 class   QGifImage;
 class   QSettings;
 class   QLabel;
@@ -69,6 +70,7 @@ public:
     bool                saveSettings(QSettings* settings=nullptr);
     bool                loadSettings(QSettings* settings=nullptr);
     auto                getUi(void) const -> Ui::VMUMainWindow*;
+    bool                startTcpServer(unsigned port);
 
     //virtual void        paintEvent(QPaintEvent* event) override;
     virtual bool        event(QEvent* event) override;
@@ -117,6 +119,7 @@ protected Q_SLOTS:
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     void on_actionSerial_COM_Connection_Manager_triggered();
 #endif
+    void on_actionBIOS_Runtime_Disassembly_triggered();
 
 private:
 
@@ -140,6 +143,7 @@ private:
     void                _pushRecentRom(QString path);
 
     Ui::VMUMainWindow*  _ui                 = nullptr;
+    QDir*               _workingDir         = nullptr;
     QPixmap             _fb;
     QPixmap             _iconES;
     QPixmap             _iconClock;

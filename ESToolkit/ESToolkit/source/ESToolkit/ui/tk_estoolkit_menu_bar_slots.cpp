@@ -823,12 +823,12 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
 
             //subMainWindow->setUnifiedTitleAndToolBarOnMac(true); _vmuDockWidget = new QDockWidget(nullptr);
            _vmuDockWidget = new QDockWidget(this);
+           _vmuDockWidget->setFocusPolicy(Qt::ClickFocus);
             _vmuDockWidget->setWindowTitle("VMU View");
             _evmuWindow->menuBar()->setNativeMenuBar(false);
 
            _vmuDockWidget->setWidget(_evmuWindow);
            _evmuWindow->loadBios(FileUtilities::getAbsoluteAssetPath(ESTOOLKIT_EVMU_BIOS_FILE_PATH));
-           on_actionConnectEVMUTcp_triggered();
 
         //dock->setMouseTracking(false);
            //evmuWindow->setParent(dock) ;	// here
@@ -900,6 +900,17 @@ void ESToolkit::on_actionGenerate_VMU_Icons_triggered(void) {
             } else errprintf("Invalid PNG resolutions. Expected <%d, %d>, Got <%d, %d>",
                              VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT, png.width(), png.height());
         }
+    }
+}
+
+void ESToolkit::on_actionConnectEVMUTcp_toggled(bool arg1)
+{
+    if(!_evmuWindow) return;
+    if(arg1) {
+        _evmuWindow->startTcpServer(1234);
+        _assets.getEngine()->getInputSys()->getVMU(0)->connectToEVMU("localhost", 1234);
+    } else {
+        _assets.getEngine()->getInputSys()->getVMU(0)->disconnectFromEVMU();
     }
 }
 

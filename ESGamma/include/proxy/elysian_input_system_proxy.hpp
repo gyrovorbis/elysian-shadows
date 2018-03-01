@@ -78,6 +78,8 @@ OOLUA_PROXY(VisualMemoryUnit, PlayerIODevice)
     )
     OOLUA_MFUNC(beep)
     OOLUA_MFUNC(loadIcon)
+    OOLUA_MFUNC_CONST(frameBufferReadPixel)
+    OOLUA_MFUNC(frameBufferWritePixel)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InputSystem)
