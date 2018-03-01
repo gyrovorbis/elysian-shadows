@@ -73,6 +73,31 @@ bool Controller::pollInput(void) {
     return _attached;
 }
 
+bool VisualMemoryUnit::frameBufferReadPixel(uint8_t x, uint8_t y) const {
+    if(x >= 48 || y >= 32) {
+        errprintf("Attempting to read oustide of VMU framebuffer boundaries: <%d, %d>", x, y);
+        return false;
+    }
+    const int byte  = x / 8;
+    const int bit   = x % 8;
+    return (bool)(_frameBuffer[y][byte]>>bit)&0x1;
+}
+void VisualMemoryUnit::frameBufferWritePixel(uint8_t x, uint8_t y, bool pixelVal) {
+    if(x >= 48 || y >= 32) {
+        errprintf("Attempting to write oustide of VMU framebuffer boundaries: <%d, %d>", x, y);
+        return;
+    }
+    const uint8_t byte  = x / 8;
+    const uint8_t bit   = x % 8;
+    const uint8_t prevVal = _frameBuffer[y][byte];
+    if(pixelVal) {
+        _frameBuffer[y][byte] |= (0x1<<bit);
+    } else {
+        _frameBuffer[y][byte] &= ~(0x1<<bit);
+    }
+    if(_frameBuffer[y][byte] != prevVal) _fbChanged = true;
+}
+
 bool VisualMemoryUnit::readBlock(uint16_t blockNum, uint8_t* buffer) const {
     return _gyHandle? gyVisualMemoryDeviceBlockRead(_gyHandle, buffer, blockNum) : false;
 }

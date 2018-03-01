@@ -371,22 +371,7 @@ namespace elysian {
         Event(type),
         _vmu(vmu)
     {}
-    inline bool VisualMemoryUnit::frameBufferReadPixel(uint8_t x, uint8_t y) const {
-        const int byte  = x / 8;
-        const int bit   = x % 8;
-        return (bool)(_frameBuffer[y][byte]>>bit)&0x1;
-    }
-    inline void VisualMemoryUnit::frameBufferWritePixel(uint8_t x, uint8_t y, bool pixelVal) {
-        const uint8_t byte  = x / 8;
-        const uint8_t bit   = x % 8;
-        const uint8_t prevVal = _frameBuffer[y][byte];
-        if(pixelVal) {
-            _frameBuffer[y][byte] |= (0x1<<bit);
-        } else {
-            _frameBuffer[y][byte] &= ~(0x1<<bit);
-        }
-        if(_frameBuffer[y][byte] != prevVal) _fbChanged = true;
-    }
+
 
 
     //======== INPUTSYSTEM INLINEZ =======
