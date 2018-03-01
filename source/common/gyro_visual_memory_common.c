@@ -131,13 +131,13 @@ int gyVisualMemoryDeviceBeep(GYVisualMemoryDevice* device, uint8_t cycleLength, 
     data[MAPLE_FRAME_DATA_BLOCK_OFFSET]     = 0;
     data[MAPLE_FRAME_DATA_PHASE_OFFSET]     = 0;
 
-    uint8_t* writeData = data[MAPLE_FRAME_DATA_WRITE_OFFSET];
+    uint8_t* writeData = &data[MAPLE_FRAME_DATA_WRITE_OFFSET];
     writeData[0] = 0x0;
     writeData[1] = cycleLength;
     writeData[2] = 0x0;
     writeData[3] = pulseWidth;
 
-    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_WRITE, 0, 0, frame, 8, &frameBytes);
+    gyVisualMemoryMapleFrame(MAPLE_CMD_SET_CONDITION, 0, 0, frame, 8, &frameBytes);
     _tcpSend(device, frame, frameBytes);
 
     assert(device);
@@ -194,6 +194,7 @@ int gyVisualMemoryDeviceRemoteDisconnect(GYVisualMemoryDevice* device) {
 
     int success = 1;
     if(device->tcpSocket) {
+        gyNetMonitoredConnectionsRemove(device->tcpSocket);
         success = gyNetTcpSocketClose(device->tcpSocket);
         if(!success) _gyLog(GY_DEBUG_ERROR, "Failed to close socket!");
         device->tcpSocket = NULL;
@@ -223,10 +224,10 @@ int gyVisualMemoryDevicePoll(unsigned port, GYVisualMemoryDevice** device) {
     GYMapleFrame mapleFrame;
     int recvBytes;
 
-    static unsigned first = 0;
     assert(device && port < _initParams.maxDeviceCount);
 
     GYVisualMemoryDevice* dev = _devices[port];
+    *device = _devices[port];
     if(dev && dev->tcpSocket) {
 
 
