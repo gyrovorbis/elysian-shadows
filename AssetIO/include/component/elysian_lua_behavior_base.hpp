@@ -33,7 +33,6 @@ namespace elysian {
     ELYSIAN_LUA_PROXY_FIELDS_END()
 
 
-
     protected:
         LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
         //int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
@@ -98,8 +97,6 @@ namespace elysian {
         virtual void        onObserveEvent(Event *event, EventTarget* target) override;
         //virtual void        onButtonPress(const GameInput::BUTTON button) override;
         //virtual void        onButtonRelease(const GameInput::BUTTON button) override;
-
-
 
         //ESTk triggers
         virtual void        onTkSelect(void) override;

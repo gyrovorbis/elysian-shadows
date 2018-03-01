@@ -22,8 +22,13 @@ namespace elysian {
                     Vector2(const Vector2& other);
                     ~Vector2(void) = default;
 
-        friend bool operator== (const Vector2& vec1, const Vector2& vec2);
-        friend bool operator!= (const Vector2& vec1, const Vector2& vec2);
+        bool        operator==(const Vector2& rhs) const;
+        bool        operator!=(const Vector2& rhs) const;
+        Vector2     operator+(const Vector2& rhs) const;
+        Vector2     operator-(const Vector2& rhs) const;
+        Vector2     operator*(const Vector2& rhs) const;
+        Vector2     operator/(const Vector2& rhs) const;
+        Vector2&    operator=(const Vector2& rhs);
 
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
@@ -34,7 +39,11 @@ namespace elysian {
         void        setY(const float val) const;
 
         float       getMagnitude(void) const;
+        float       distance(const Vector2& rhs) const;
         void        normalize(void);
+        float       dotProduct(const Vector2& rhs) const;
+        float       scalarCrossProduct(const Vector2& rhs) const;
+        Vector2     vectorCrossProduct(float scalar) const;
     };
 
     struct Vector3: public GYVector3, public VirtualArray<Vector3, int, float>, public LuaTableProxy<Vector3> {
@@ -264,12 +273,6 @@ namespace elysian {
             _ptr = this;
         }
     }
-    inline bool operator==(const Vector2& vec1, const Vector2& vec2) {
-        return (vec1.x == vec2.x && vec1.y == vec2.y);
-    }
-    inline bool operator!=(const Vector2& vec1, const Vector2& vec2) {
-        return !(vec1==vec2);
-    }
 
     inline float Vector2::getX(void) const { return _ptr->x; }
     inline float Vector2::getY(void) const { return _ptr->y; }
@@ -290,6 +293,52 @@ namespace elysian {
     inline void Vector2::normalize(void) {
         gyVec2Normalize(_ptr);
     }
+    inline bool Vector2::operator==(const Vector2& rhs) const {
+        return (x == rhs.x && y == rhs.y);
+    }
+    inline bool Vector2::operator!=(const Vector2& rhs) const {
+        return !(*this == rhs);
+    }
+    inline Vector2& Vector2::operator=(const Vector2& rhs) {
+        _ptr = this;
+        setX(rhs.getX());
+        setY(rhs.getY());
+        return *this;
+    }
+
+    inline Vector2 Vector2::operator+(const Vector2& rhs) const {
+        return Vector2(x + rhs.x, y + rhs.y);
+    }
+
+    inline Vector2 Vector2::operator-(const Vector2& rhs) const {
+        return Vector2(x - rhs.x, y - rhs.y);
+    }
+
+    inline Vector2 Vector2::operator*(const Vector2& rhs) const {
+        return Vector2(x * rhs.x, y * rhs.y);
+    }
+
+    inline Vector2 Vector2::operator/(const Vector2& rhs) const {
+        return Vector2(x / rhs.x, y / rhs.y);
+    }
+
+   inline float Vector2::dotProduct(const Vector2 &rhs) const {
+        return gyVec2DotProd(this, &rhs);
+   }
+
+   inline Vector2 Vector2::vectorCrossProduct(float scalar) const {
+        Vector2 result;
+        gyVec2VectorCrossProd((GYVector2*)&result, this, scalar);
+        return result;
+   }
+
+   inline float Vector2::scalarCrossProduct(const Vector2 &rhs) const {
+        return gyVec2ScalarCrossProd(this, &rhs);
+   }
+
+   inline float Vector2::distance(const Vector2 &rhs) const {
+        return gyVec2Dist(this, &rhs);
+   }
 
 
 

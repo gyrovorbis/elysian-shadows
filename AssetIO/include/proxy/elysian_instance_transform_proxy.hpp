@@ -16,20 +16,32 @@ namespace OOLUA {
 
 }
 
-
 OOLUA_PROXY(GYVector2)
     OOLUA_MGET_MSET(x, getX, setX)
     OOLUA_MGET_MSET(y, getY, setY)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Vector2)
+    OOLUA_TAGS(
+        Equal_op,
+        Add_op,
+        Sub_op,
+        Mul_op,
+        Div_op)
     OOLUA_CTORS(
         OOLUA_CTOR(const Vector2&)
+        OOLUA_CTOR(float, float)
     )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC_CONST(void, setX, float)
     OOLUA_MEM_FUNC_CONST(void, setY, float)
+    OOLUA_MFUNC(normalize)
+    OOLUA_MFUNC_CONST(getMagnitude)
+    OOLUA_MFUNC_CONST(distance)
+    OOLUA_MFUNC_CONST(dotProduct)
+    OOLUA_MFUNC_CONST(scalarCrossProduct)
+    OOLUA_MFUNC_CONST(vectorCrossProduct)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector3)

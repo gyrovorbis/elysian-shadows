@@ -422,7 +422,7 @@ void EntityAttachment::update(void) {
 void SkeletonBase::setSkin(const char *name) {
     if(!spSkeleton_setSkinByName(_skeleton, name)) {
         errprintf("Skeleton::setSkin(%s) - Skin not found on entity: %s.", name, getEntity()->getName());
-    }
+    } else update(2.0f);
 }
 
 const char* SkeletonBase::getSkin(void) const {
