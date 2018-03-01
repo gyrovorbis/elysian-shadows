@@ -92,12 +92,12 @@ namespace elysian {
         friend class CollisionSystem;
         friend RigidBody;
 	private:
-		float				_tileDamping	= 1.0f;
-		bool				_active			= true;
+        float                               _tileDamping	= 1.0f;
+        bool                                _active			= true;
 
-        RigidBodyAttrib*	_attrib			= nullptr;
-        float				_durability		= -1.0f;
-        CollisionContact*	_breakContact	= nullptr;
+        std::shared_ptr<RigidBodyAttrib>	_attrib			= nullptr;
+        float                               _durability		= -1.0f;
+        CollisionContact*                   _breakContact	= nullptr;
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -110,10 +110,10 @@ namespace elysian {
         using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::fromTable;
         using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::lua_downCast;
 
-                                    RigidBodyBase(Entity& entity, const RigidBodyBase*const prefab=nullptr);
+                                    RigidBodyBase(Entity& entity, RigidBodyBase*const prefab=nullptr);
                                     RigidBodyBase(void) = default;
                                     ~RigidBodyBase(void) = default;
-        RigidBodyBase&              operator=(const RigidBodyBase& rhs);
+        RigidBodyBase&              operator=(RigidBodyBase& rhs);
 
 		//reimplemented from Component
         static constexpr const Component::TYPE componentType = Component::RIGID_BODY;
@@ -128,8 +128,8 @@ namespace elysian {
         void                        setActive(const bool val);
         void                        setTileDamping(const float factor);
         float                       getTileDamping(void) const;
-        void                        setAttrib(RigidBodyAttrib*const attrib);
-        RigidBodyAttrib*            getAttrib(void) const;
+        void                        setAttrib(std::shared_ptr<RigidBodyAttrib> attrib);
+        auto                        getAttrib(void) const -> std::shared_ptr<RigidBodyAttrib>;
         float                       getDurability(void) const;
         void                        setDurability(const float val);
         CollisionContact*           getBreakContact(void) const;
@@ -177,10 +177,10 @@ namespace elysian {
     inline Vector3 ForceTarget::getForceAccum(void) { return Vector3(&forceAccum); }
 
 
-    inline RigidBodyBase::RigidBodyBase(Entity& entity, const RigidBodyBase*const prefab): Component(entity) {
+    inline RigidBodyBase::RigidBodyBase(Entity& entity, RigidBodyBase*const prefab): Component(entity) {
         if(prefab) *this = *prefab;
     }
-    inline RigidBodyBase& RigidBodyBase::operator=(const RigidBodyBase& rhs) {
+    inline RigidBodyBase& RigidBodyBase::operator=(RigidBodyBase& rhs) {
         _tileDamping    = rhs._tileDamping;
         _active         = rhs._active;
         _attrib         = rhs._attrib;
@@ -189,8 +189,7 @@ namespace elysian {
     }
     inline float RigidBodyBase::getTileDamping(void) const { return _tileDamping; }
     inline void RigidBodyBase::setTileDamping(const float factor) {_tileDamping = factor; }
-    inline void RigidBodyBase::setAttrib(RigidBodyAttrib*const attrib) {
-        /*delete _attrib;*/
+    inline void RigidBodyBase::setAttrib(std::shared_ptr<RigidBodyAttrib> attrib) {
         _attrib = attrib;
         _durability = _attrib? _attrib->getBaseDurability() : -1.0f;
     }
@@ -199,7 +198,7 @@ namespace elysian {
     inline void RigidBodyBase::setDurability(const float val) { _durability = val; }
     inline CollisionContact* RigidBodyBase::getBreakContact(void) const { return _breakContact; }
     inline void	RigidBodyBase::setBreakContact(CollisionContact*const contact) { _breakContact = contact; }
-    inline RigidBodyAttrib* RigidBodyBase::getAttrib(void) const { return _attrib; }
+    inline std::shared_ptr<RigidBodyAttrib> RigidBodyBase::getAttrib(void) const { return _attrib; }
 
 	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
     inline BitMask32& RigidBodyAttrib::getForceMask(void) { return _forceMask; }

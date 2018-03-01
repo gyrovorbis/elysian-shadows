@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -78,7 +78,8 @@ namespace OOLUA
 		template<typename Cpp_type>
 		struct lua_type_is_cpp_type<Cpp_type, LUA_TNUMBER>
 		{
-			enum {value = Type_enum_defaults<Cpp_type>::is_integral
+			enum {value = (Type_enum_defaults<Cpp_type>::is_integral
+							|| is_scoped_enum<Cpp_type>::value)
 					&& !LVD::is_same<bool, Cpp_type>::value };
 		};
 
@@ -148,7 +149,7 @@ MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 									&& INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(vm, index))) );
 				}
 				return 0;
-MSC_POP_COMPILER_LOG_WARNING_OOLUA
+MSC_POP_COMPILER_WARNING_OOLUA
 			}
 		};
 

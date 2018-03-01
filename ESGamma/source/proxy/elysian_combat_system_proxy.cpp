@@ -93,7 +93,7 @@
  * \e{NOTE: If the \l{COMBAT_MGMT_TYPE} is currently COMBAT_MGMT_AUTO and there are
  * still enemies that will be aggroed, combat will immediately restart the next frame. For most cases,
  * you will probably want to set the management type to COMBAT_MGMT_MANUAL when
- * calling this method.
+ * calling this method.}
  * \sa addCombatant(), removeCombatant(), COMBAT_MGMT_TYPE
  */
 

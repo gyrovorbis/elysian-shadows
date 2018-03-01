@@ -6,6 +6,13 @@
 #include "gyro_vmu_buzzer.h"
 #include "gyro_vmu_display.h"
 #include "gyro_vmu_port1.h"
+#include "gyro_vmu_tcp.h"
+
+//#define VMU_DEBUG
+
+static inline dbgEnabled(VMUDevice* dev) {
+    return gyVmuSerialConnectionType(dev) == VMU_SERIAL_CONNECTION_DC;
+}
 
 extern void lcdrefresh(void);
 
@@ -74,9 +81,12 @@ int gyVmuMemRead(VMUDevice* dev, int addr) {
       return 0xfe|(dev->sfr[SFR_OFFSET(SFR_ADDR_VRMAD2)]&0x1);
     case SFR_ADDR_P1:
         return dev->port1.pins;
+    case SFR_ADDR_P7:
+        return 0xf0|(dev->sfr[SFR_OFFSET(SFR_ADDR_P7)]);
     default: {
         int val = dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE];
 #ifdef VMU_DEBUG
+        if(dbgEnabled(dev))
         _gyLog(GY_DEBUG_VERBOSE, "READMEM[%x] = %d", addr, val);
 #endif
         return val;
@@ -113,6 +123,7 @@ void _sconPrintUpdate(int port, uint8_t oldVal, uint8_t newVal) {
 void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
     val &= 0xff; //clamp to single byte
 #ifdef VMU_DEBUG
+            if(dbgEnabled(dev))
       _gyLog(GY_DEBUG_VERBOSE, "WRITEMEM[%x] = %d", addr, val);
 #endif
 
@@ -214,14 +225,14 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
         break;
     case SFR_ADDR_SCON0:
         _sconPrintUpdate(0, dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)], val);
-#if 0
+#if 1
         gyVmuSerialTcpSconUpdate(dev, SFR_ADDR_SCON0, val);
 #endif
         //dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] = val;
         //return;
         //return; Let SBUF0 be written with the byte?
     case SFR_ADDR_SCON1:
-#if 0
+#if 1
         gyVmuSerialTcpSconUpdate(dev, SFR_ADDR_SCON1, val);
 #endif
         _sconPrintUpdate(1, dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)], val);
@@ -231,10 +242,12 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
     case SFR_ADDR_VCCR:
         if(val&SFR_VCCR_VCCR7_MASK) {
 #ifdef VMU_DEBUG
+                    if(dbgEnabled(dev))
             _gyLog(GY_DEBUG_VERBOSE, "LCD TURNED ON!!!");
 #endif
         } else {
  #ifdef VMU_DEBUG
+                    if(dbgEnabled(dev))
             _gyLog(GY_DEBUG_VERBOSE, "LCD TURNED OFF!!!!");
 #endif
         }

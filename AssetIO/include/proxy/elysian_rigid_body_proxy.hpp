@@ -14,6 +14,7 @@ namespace OOLUA {
 }
 
 OOLUA_PROXY(RigidBodyAttrib)
+    OOLUA_TAGS(Shared)
     OOLUA_MEM_FUNC(void, setForceMask, const BitMask32)
     OOLUA_MEM_FUNC(BitMask32&, getForceMask)
     OOLUA_MEM_FUNC(void, setBreakable, bool)
@@ -48,8 +49,8 @@ OOLUA_PROXY(RigidBody, Component, ForceTarget)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<RigidBodyAttrib*>)
-    OOLUA_MEM_FUNC_CONST(maybe_null<RigidBodyAttrib*>, getAttrib)
+    OOLUA_MEM_FUNC(void, setAttrib, std::shared_ptr<RigidBodyAttrib>)
+    OOLUA_MEM_FUNC_CONST(maybe_null<std::shared_ptr<RigidBodyAttrib>>, getAttrib)
     OOLUA_MEM_FUNC(void, setDurability, float)
     OOLUA_MEM_FUNC_CONST(float, getDurability)
     OOLUA_MEM_FUNC_CONST(float, getTileDamping)

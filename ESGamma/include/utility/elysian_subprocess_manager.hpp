@@ -159,7 +159,8 @@ public:
 	}
 
 	void setTimeInterval(const float interval) { _timeInterval = interval; }
-	const T& getEndKeyFrame(void) const { return _endKeyFrame; }
+    const T& getEndKeyFrame(void) const { return _endKeyFrame; }
+    T& getEndKeyFrame(void) { return _endKeyFrame; }
 	const T& getStartKeyFrame(void) const { return _startKeyFrame; }
 
 };

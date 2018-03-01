@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_DIALOG_SYSTEM_HPP
 #define ELYSIAN_DIALOG_SYSTEM_HPP
 
-#include "elysian_system.hpp"
+#include <system/elysian_system.hpp>
 #include <crtp/elysian_dialog.hpp>
 #include <elysian_quad_sprite.hpp>
 #include <gyro_wav_api.h>
@@ -14,6 +14,9 @@
 
 #define ELYSIAN_DIALOG_SYSTEM_WIDTH                 640.0f
 #define ELYSIAN_DIALOG_SYSTEM_HEIGHT                110.0f
+#define ELYSIAN_DIALOG_SYSTEM_MARGIN_HORIZONTAL     40.0f
+#define ELYSIAN_DIALOG_SYSTEM_MARGIN_VERTICAL       35.0f
+
 
 #define ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST     200.0f
 
@@ -27,6 +30,7 @@ ELYSIAN_ASSET_TYPEDEF(Entity)
 namespace elysian {
 
 	class GameInput;
+    class Font;
 	class EventMonitor;
 
 	class DialogSystem: public System {
@@ -49,7 +53,7 @@ namespace elysian {
 		// ==== USER STATE =====
         int                         _currentOption          = 0;
 
-        Dialog*                     _curDialog              = nullptr;
+        std::shared_ptr<Dialog>     _curDialog;
 		union Screen {
             DialogScreen*           screen                  = nullptr;
             //DialogText*           text;
@@ -62,6 +66,8 @@ namespace elysian {
         QuadSprite                  _optionBox;
         QuadSprite                  _border[2];
         QuadSprite                  _cursor;
+        Vector2                     _marginSize             = Vector2(ELYSIAN_DIALOG_SYSTEM_MARGIN_HORIZONTAL, ELYSIAN_DIALOG_SYSTEM_MARGIN_VERTICAL);
+        Vector2                     _textFrameSize;
 
         POS_STATE                   _posState               = POS_BOTTOM;
         BOX_STATE                   _boxState               = BOX_OUTPUT;
@@ -88,6 +94,8 @@ namespace elysian {
         void                        render(void);
         void                        processInput(void);
 
+        bool                        setCurrentScreen(DialogScreen* screen);
+
 		//Quick helper functions that use default values internally (mostly debugging)
         void                        openText(const char*const str);
 		//void openTextf(const char*const tex, ...)
@@ -98,16 +106,32 @@ namespace elysian {
         void                        openTextScreen(DialogText& screen);
         void                        openPromptScreen(DialogPrompt& screen);
 
-        void                        startDialog(Dialog*const dialog, EventMonitor*const monitor=nullptr);
+        void                        startDialog(std::shared_ptr<Dialog> dialog, EventMonitor*const monitor=nullptr);
+        void                        startDialogAtScreenIndex(std::shared_ptr<Dialog> dialog, unsigned screenIndex, EventMonitor* monitor=nullptr);
         void                        pauseDialog(void);   //stops, but keeps state information to resume later
         void                        closeDialog(void);
 
 	   // unsigned getActiveScreenCount();
         void                        setEnabled(const bool val);
-        Dialog*                     getDialog(void) const;
+        std::shared_ptr<Dialog>     getDialog(void) const;
         bool                        isOpen(void) const;
 
+        const Vector2&              getTextFrameSize(void) const;
+        Font&                       getTextFont(void) const;
+
 	};
+
+
+
+
+
+
+    //========== INLINEZ ==========
+    inline const Vector2& DialogSystem::getTextFrameSize(void) const {
+        return _textFrameSize;
+    }
+
+
 
 }
 

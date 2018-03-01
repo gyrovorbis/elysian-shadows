@@ -22,8 +22,14 @@ namespace elysian {
                     Vector2(const Vector2& other);
                     ~Vector2(void) = default;
 
-        friend bool operator== (const Vector2& vec1, const Vector2& vec2);
-        friend bool operator!= (const Vector2& vec1, const Vector2& vec2);
+        bool        operator==(const Vector2& rhs) const;
+        bool        operator!=(const Vector2& rhs) const;
+        Vector2     operator+(const Vector2& rhs) const;
+        Vector2     operator-(const Vector2& rhs) const;
+        Vector2     operator*(const Vector2& rhs) const;
+        Vector2     operator*(float scalar) const;
+        Vector2     operator/(const Vector2& rhs) const;
+        Vector2&    operator=(const Vector2& rhs);
 
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
@@ -34,7 +40,12 @@ namespace elysian {
         void        setY(const float val) const;
 
         float       getMagnitude(void) const;
+        float       distance(const Vector2& rhs) const;
         void        normalize(void);
+        float       dotProduct(const Vector2& rhs) const;
+        Vector2     scalarMult(float scalar) const;
+        float       scalarCrossProduct(const Vector2& rhs) const;
+        Vector2     vectorCrossProduct(float scalar) const;
     };
 
     struct Vector3: public GYVector3, public VirtualArray<Vector3, int, float>, public LuaTableProxy<Vector3> {
@@ -49,8 +60,11 @@ namespace elysian {
                     Vector3(void);
                     Vector3(const float x, const float y, const float z);
                     Vector3(GYVector3*const vec3);
+                    Vector3(const GYVector3& vec3);
                     Vector3(const Vector3& other);
                     ~Vector3(void) = default;
+
+        Vector3&    operator=(const Vector3& rhs);
 
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
@@ -61,9 +75,11 @@ namespace elysian {
         void        setX(const float val) const;
         void        setY(const float val) const;
         void        setZ(const float val) const;
+
+        void        normalize(void);
     };
 
-    struct Vector4: public GYVector4, public LuaTableProxy<Vector4> {
+    struct Vector4: public GYVector4, public VirtualArray<Vector4, int, float>, public LuaTableProxy<Vector4> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
@@ -79,7 +95,10 @@ namespace elysian {
                     Vector4(const Vector4& other);
                     ~Vector4(void) = default;
 
-        float       operator[](int index) const;
+        Vector4&    operator=(const Vector4& rhs);
+
+        void        setValueByIndex(int index, float val);
+        float       getValueByIndex(int index) const;
 
         float       getX(void) const;
         float       getY(void) const;
@@ -256,12 +275,6 @@ namespace elysian {
             _ptr = this;
         }
     }
-    inline bool operator==(const Vector2& vec1, const Vector2& vec2) {
-        return (vec1.x == vec2.x && vec1.y == vec2.y);
-    }
-    inline bool operator!=(const Vector2& vec1, const Vector2& vec2) {
-        return !(vec1==vec2);
-    }
 
     inline float Vector2::getX(void) const { return _ptr->x; }
     inline float Vector2::getY(void) const { return _ptr->y; }
@@ -282,16 +295,76 @@ namespace elysian {
     inline void Vector2::normalize(void) {
         gyVec2Normalize(_ptr);
     }
+    inline bool Vector2::operator==(const Vector2& rhs) const {
+        return (x == rhs.x && y == rhs.y);
+    }
+    inline bool Vector2::operator!=(const Vector2& rhs) const {
+        return !(*this == rhs);
+    }
+    inline Vector2& Vector2::operator=(const Vector2& rhs) {
+        _ptr = this;
+        setX(rhs.getX());
+        setY(rhs.getY());
+        return *this;
+    }
+
+    inline Vector2 Vector2::operator+(const Vector2& rhs) const {
+        return Vector2(x + rhs.x, y + rhs.y);
+    }
+
+    inline Vector2 Vector2::operator-(const Vector2& rhs) const {
+        return Vector2(x - rhs.x, y - rhs.y);
+    }
+
+    inline Vector2 Vector2::operator*(const Vector2& rhs) const {
+        return Vector2(x * rhs.x, y * rhs.y);
+    }
+    inline Vector2 Vector2::operator*(float scalar) const {
+        return Vector2(x * scalar, y * scalar);
+    }
+
+    inline Vector2 Vector2::operator/(const Vector2& rhs) const {
+        return Vector2(x / rhs.x, y / rhs.y);
+    }
+
+    inline Vector2 Vector2::scalarMult(float scalar) const {
+        return *this * scalar;
+    }
+
+   inline float Vector2::dotProduct(const Vector2 &rhs) const {
+        return gyVec2DotProd(this, &rhs);
+   }
+
+   inline Vector2 Vector2::vectorCrossProduct(float scalar) const {
+        Vector2 result;
+        gyVec2VectorCrossProd((GYVector2*)&result, this, scalar);
+        return result;
+   }
+
+   inline float Vector2::scalarCrossProduct(const Vector2 &rhs) const {
+        return gyVec2ScalarCrossProd(this, &rhs);
+   }
+
+   inline float Vector2::distance(const Vector2 &rhs) const {
+        return gyVec2Dist(this, &rhs);
+   }
+
+
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
     inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}), _ptr(this) {}
+    inline Vector3::Vector3(const GYVector3& vec3): Vector3(vec3.x, vec3.y, vec3.z) {}
     inline Vector3::Vector3(const Vector3 &other) : LuaTableProxy<Vector3>() {
-        if(other._ptr != &other) {
+        *this = other;
+    }
+    inline Vector3& Vector3::operator =(const Vector3& other) {
+        if(other._ptr != static_cast<const GYVector3*>(&other)) {
             _ptr = other._ptr;
         } else {
-            *(GYVector3*)this = *(const GYVector3*)&other;
             _ptr = this;
+            setX(other.getX()); setY(other.getY()); setZ(other.getZ());
         }
+        return *this;
     }
     inline Vector3::Vector3(GYVector3 * const vec3): _ptr(vec3) {}
     inline float Vector3::getX(void) const { return _ptr->x; }
@@ -300,40 +373,49 @@ namespace elysian {
     inline void Vector3::setX(const float val) const { _ptr->x = val; }
     inline void Vector3::setY(const float val) const { _ptr->y = val; }
     inline void Vector3::setZ(const float val) const { _ptr->z = val; }
+    inline void Vector3::normalize(void) { gyVec3Normalize(this); }
     inline float Vector3::getValueByIndex(int index) const {
         GY_ASSERT(index >= 0 || index <= 2);
         switch(index) {
         case 0:
-            return x;
+            return _ptr->x;
         case 1:
-            return y;
+            return _ptr->y;
         default:
         case 2:
-            return z;
+            return _ptr->z;
         }
     }
     inline void Vector3::setValueByIndex(int index, float value) {
         GY_ASSERT(index >= 0 || index <= 2);
         switch(index) {
         case 0:
-            x = value;
+            _ptr->x = value;
+            break;
         case 1:
-            y = value;
+            _ptr->y = value;
+            break;
         case 2:
-            z = value;
+            _ptr->z = value;
+            break;
         }
     }
 
     inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}
     inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}), _ptr(this){}
     inline Vector4::Vector4(const Vector4 &other) :LuaTableProxy<Vector4>() {
-        if(other._ptr != &other) {
+        *this = other;
+    }
+    inline Vector4& Vector4::operator =(const Vector4& other) {
+        if(other._ptr != static_cast<const GYVector4*>(&other)) {
             _ptr = other._ptr;
         } else {
-            *(GYVector4*)this = *(const GYVector4*)&other;
             _ptr = this;
+            setX(other.getX()); setY(other.getY()); setZ(other.getZ()); setW(other.getW());
         }
+        return *this;
     }
+
     inline Vector4::Vector4(GYVector4 * const vec4): _ptr(vec4) {}
     inline float Vector4::getX(void) const { return _ptr->x; }
     inline float Vector4::getY(void) const { return _ptr->y; }
@@ -343,6 +425,41 @@ namespace elysian {
     inline void Vector4::setY(const float val) const { _ptr->y = val; }
     inline void Vector4::setZ(const float val) const { _ptr->z = val; }
     inline void Vector4::setW(const float val) const { _ptr->w = val; }
+    inline float Vector4::getValueByIndex(int index) const {
+        GY_ASSERT(index >= 0 || index <= 3);
+        switch(index) {
+        case 0:
+            return _ptr->x;
+        case 1:
+            return _ptr->y;
+        case 2:
+            return _ptr->z;
+        default:
+        case 3:
+            return _ptr->w;
+        }
+    }
+    inline void Vector4::setValueByIndex(int index, float value) {
+        GY_ASSERT(index >= 0 || index <= 3);
+        switch(index) {
+        case 0:
+            _ptr->x = value;
+            break;
+        case 1:
+            _ptr->y = value;
+            break;
+        case 2:
+            _ptr->z = value;
+            break;
+        default:
+        case 3:
+            _ptr->w = value;
+            break;
+        }
+    }
+
+
+
     inline bool InstanceTransform::getFlipX(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_X_AXIS); }
     inline bool InstanceTransform::getFlipY(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_Y_AXIS); }
     inline bool InstanceTransform::getFlipZ(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_Z_AXIS); }

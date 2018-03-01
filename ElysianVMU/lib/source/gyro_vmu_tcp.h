@@ -1,13 +1,15 @@
 #ifndef GYRO_VMU_TCP_H
 #define GYRO_VMU_TCP_H
 
+#include <gyro_visual_memory_api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 //#define VMU_SERIAL_TCP_SERVER_USE_LATEST_CLIENT IMPLEMENT OPTION FOR ME
 #define VMU_SERIAL_TCP_POLL_TIMEOUT           0
-#define VMU_SERIAL_TCP_PACKET_SIZE_MAX        10000
+#define VMU_SERIAL_TCP_PACKET_SIZE_MAX        MAPLE_FRAME_SIZE_MAX + 100
 
 struct          VMUDevice;
 typedef void    GYTcpSocket;
@@ -34,7 +36,7 @@ typedef struct VMUSerialPort {
     int                      _useMostRecentClient;
 } VMUSerialPort;
 
-//void gyVmuSerialUpdate(struct VMUDevice* dev);
+void gyVmuSerialPortUpdate(struct VMUDevice* dev);
 
 int gyVmuSerialTcpServerStart(struct VMUDevice* dev, unsigned port);
 int gyVmuSerialTcpServerStop(struct VMUDevice* dev);
@@ -44,7 +46,7 @@ int gyVmuSerialTcpOpen(struct VMUDevice* dev, const char* host, unsigned port);
 int gyVmuSerialTcpClose(struct VMUDevice* dev);
 int gyVmuSerialTcpSend(struct VMUDevice* dev, const unsigned char* byte, int size);
 
-void gyVmuSerialTcpSconModified(struct VMUDevice* dev, int sfr, unsigned char val);
+void gyVmuSerialTcpSconUpdate(struct VMUDevice* dev, int sfr, unsigned char val);
 
 VMU_SERIAL_CONNECTION_TYPE gyVmuSerialConnectionType(const struct VMUDevice* dev);
 

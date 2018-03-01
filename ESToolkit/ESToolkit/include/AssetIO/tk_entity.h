@@ -41,11 +41,11 @@ public:
 protected:
 
     static bool                         _staticInit;
-    static elysian::CollidableAttrib*   _selColliderAttrib;
+    static std::shared_ptr<elysian::CollidableAttrib>   _selColliderAttrib;
 
     mutable LuaTableStackModel*  _luaModel              = nullptr;
     bool                         _selectable;
-    elysian::SpriteAttrib*       _selSpriteAttrib;
+    shared_ptr<elysian::SpriteAttrib>       _selSpriteAttrib;
     elysian::Collidable*         _selectionCollider;
     elysian::Renderable*         _selectionRenderable;
     SELECTION_STATE              _selectionState        = SELECTION_NONE;

@@ -212,7 +212,7 @@
  * Returns the plane the current entity is tied to, as one of the faces of a cube.
  */
 /*!
- * \qmlmethod void Entity::setPlaneType(gyro.RECT_PLANE_TYPE plane)
+ * \qmlmethod void Entity::setPlaneType(gyro::RECT_PLANE_TYPE plane)
  *
  * Sets the plane the current entity is tied to, as one of the faces of a cube.
  */

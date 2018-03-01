@@ -66,25 +66,23 @@ headerdirs  += ../../AssetIO/include \
 
 
 sourcedirs += source \
-	source/asset \
-	source/core \
-	source/dialog \
-	source/estk \
-	source/model \
-	source/sheet_manager \
-	source/tile_engine \
-	source/widget \
+        source/AssetIO \
+        source/ESGamma \
+        source/ESToolkit \
+        source/QESTkUtils \
 	../../AssetIO/source \
 	../../AssetIO/source/component \
-	./../AssetIO/source/level \
-	./../AssetIO/source/primitive \
-	./../AssetIO/source/utility \
+        ../../AssetIO/source/level \
+        ../../AssetIO/source/primitive \
+        ../../AssetIO/source/utility \
+        ../../AssetIO/source/proxy \
 	../../ESGamma/source \
 	../../ESGamma/source/lua \
 	../../ESGamma/source/gui \
 	../../ESGamma/source/system \
 	../../ESGamma/source/utility \
-	doc \
+        ../../ESGamma/source/proxy \
+        doc
 
 
 imagedirs   += resource/images

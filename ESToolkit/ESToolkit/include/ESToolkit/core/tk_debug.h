@@ -46,14 +46,12 @@ public:
         SOURCE_QT,
         COMMAND,
         OPENGL,
+        EVMU,
         SOURCE_MAX
     };
 
-    //static void ESDebugWrapper(elysian::Asset::DBG_TYPE, const char msg[]);
     static void Log(SEVERITY flag, QString msg, int src = TOOLKIT);
-    //Fuck you, Marcel. Fuck QString. C-Style!
     static void Logf(SEVERITY flag, const char *string, ...);
-	//Event filter to catch QDebug/QFatal/QCritical messages
     static void logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
     static void push(void);
@@ -74,6 +72,7 @@ public:
         _window = nullptr;
 	}
 
+    static void setEVMUActive(bool active=true);
     static void setFilter(const TK_SOURCE source, const SEVERITY severity, const bool enabled);
     static bool isFilterEnabled(const TK_SOURCE source, const SEVERITY severity);
     static void clear(void);
@@ -129,6 +128,7 @@ private:
     static QString              _lastString;
     static bool                 _prevMsgDiscarded;
     static QStack<bool>         _ignoredPushes;
+    static bool                 _evmuActive;
 
     static QQueue<LogEntry>*    _pendingQueue;
     static QMutex*              _mutex;
@@ -137,7 +137,7 @@ private:
 
 
     constexpr static char    _srcEnumToStr[SOURCE_MAX][50] = {
-        "LIBGYRO", "ENGINE", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL"
+        "LIBGYRO", "ENGINE", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL", "EVMU"
     };
 
     constexpr static const char* const _filterList[] = {
@@ -173,6 +173,8 @@ inline bool TkDebug::isFilterEnabled(const TK_SOURCE source, const SEVERITY seve
     Q_ASSERT(source < SOURCE_MAX && severity < LOG_OFF);
     return _filterEnabled[source][severity];
 }
+
+inline void TkDebug::setEVMUActive(bool active) { _evmuActive = active; }
 
 
 

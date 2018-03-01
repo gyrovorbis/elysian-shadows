@@ -26,6 +26,8 @@
 #include "elysian_debug.hpp"
 #include "elysian_lua_manager.hpp"
 #include <QDir>
+#include <ESToolkit/ui/tk_estoolkit.h>
+#include <QThread>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estk.h>
@@ -55,6 +57,7 @@ QString             TkDebug::_lastString;
 bool                TkDebug::_prevMsgDiscarded = false;
 QStack<bool>        TkDebug::_ignoredPushes;
 QMenu*              TkDebug::_filterMenu;
+bool                TkDebug::_evmuActive = false;
 QAction*            TkDebug::_filterActions[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{nullptr}};
 
 TkDebug::TkDebug(void) {
@@ -128,13 +131,14 @@ TkDebug::TkDebug(void) {
         });
         sourcesMenu.pop();
     };
-    addFilterSource("LibGyro",  Debug::LIBGYRO);
-    addFilterSource("Engine",   Debug::ENGINE);
-    addFilterSource("Toolkit",  Debug::TOOLKIT);
-    addFilterSource("Qt",       Debug::SOURCE_QT);
-    addFilterSource("OpenGL",   Debug::OPENGL);
-    addFilterSource("Lua",      Debug::LUA);
-    addFilterSource("Commands", Debug::COMMAND);
+    addFilterSource("LibGyro",      Debug::LIBGYRO);
+    addFilterSource("Engine",       Debug::ENGINE);
+    addFilterSource("Toolkit",      Debug::TOOLKIT);
+    addFilterSource("Qt",           Debug::SOURCE_QT);
+    addFilterSource("OpenGL",       Debug::OPENGL);
+    addFilterSource("Lua",          Debug::LUA);
+    addFilterSource("Commands",     Debug::COMMAND);
+    addFilterSource("ElysianVMU",   Debug::EVMU);
     sourcesMenu.insertAction("Enable All Filters", [](bool) {
         for(unsigned i = 0; i < Debug::SOURCE_MAX; ++i)
             for(unsigned j = 0; j < Debug::LOG_OFF; ++j)
@@ -245,6 +249,15 @@ void TkDebug::Log(SEVERITY flag, QString msg, int src) {
         if(msg == _filterList[i]) return;
     }
 #endif
+
+    if(src == LIBGYRO && _evmuActive) {
+        src = EVMU;
+    } else {
+        //Don't let shit from other threads fucking touch a GUI-thread widget!!!!
+        if(flag == LOG_ERROR && QThread::currentThread() == QApplication::instance()->thread())
+            ESToolkit::showStatusBarMessage(msg, Qt::darkRed);
+    }
+
     _postToQueue((TK_SOURCE)src, flag, msg);
 }
 
@@ -433,6 +446,9 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
     case COMMAND:
         brush = QBrush(Qt::darkGreen);
         break;
+    case EVMU:
+        brush = QBrush(Qt::darkMagenta);
+        break;
     default:
         brush = QBrush(Qt::black);
         break;
@@ -445,6 +461,10 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
     Q_ASSERT(_curParent); //better never happen!
 
     _curParent->addChild(_prevItem);
+    if(src == COMMAND) {
+        _prevItem->setExpanded(true);
+        _treeWidget->scrollToItem(_prevItem);
+    }
 
     //if(flag == LOG_VERBOSE && !_filterSourceEnabled[src]) _prevItem->setHidden(true);
 
@@ -461,7 +481,8 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
             it = (flag == Debug::LOG_ERROR)? it->parent() : nullptr;
         } while(it);
 
-        if(flag == Debug::LOG_ERROR) _prevItem->setSelected(true);
+
+       // if(flag == Debug::LOG_ERROR) _prevItem->setSelected(true);
         //_treeWidget->scrollToItem(_prevItem);
 
         //If we've returned to the top level with a pending error,
@@ -477,6 +498,12 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
         } while(it);
     }*/
 
+    for(auto* it = _prevItem; it != nullptr; it = it->parent()) {
+        if(it->text(1) == "COMMAND") {
+            _treeWidget->scrollToBottom();
+            break;
+        }
+    }
 }
 
 void TkDebug::_onLogWidgetContextMenuRequested(const QPoint point) {

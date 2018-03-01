@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QESTkUtils/tk_mime_data.h>
+#include <crtp/elysian_input_system.hpp>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -69,6 +70,7 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
         _fsModel->addFileType(new PrefabAssetFileType);
         _fsModel->addFileType(new LuaScriptAssetFileType);
         _fsModel->addFileType(new WavAssetFileType);
+        _fsModel->addFileType(new VmuIconAssetFileType);
         _fsModel->setRootPath(project->getNodePath());
         //qDebug() << "LA NODE PATH" << project->getNodePath();
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -328,8 +330,8 @@ bool AssetFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
 CustomAssetFileType::CustomAssetFileType(QString typeName, QIcon icon, QString filePath, QString toolTip, QString whatsThis):
     _filePath(std::move(filePath)),
     _typeName(std::move(typeName)),
-    _icon(std::move(icon)),
     _toolTip(std::move(toolTip)),
+    _icon(std::move(icon)),
     _whatsThis(std::move(whatsThis))
 {}
 
@@ -653,6 +655,19 @@ QString PrefabAssetFileType::prefabifyFilePath(const QString path) {
 
 QMimeData* PrefabAssetFileType::mimeData(void) const {
     return new TkMimeData(_prefabRef);
+}
+
+auto VmuIconAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
+    QFile file(path);
+    if(file.fileName().split(TK_VMU_ICON_ASSET_NAME_TOKEN).size() > 1) return new VmuIconAssetFileType(std::move(path));
+    return nullptr;
+}
+
+void VmuIconAssetFileType::doubleClick(const QModelIndex &index) {
+    elysian::VisualMemoryUnit* vmu = elysian::System::getInputSys()->getVMU(0);
+    if(vmu) {
+        vmu->loadIcon(Q_CSTR(FileUtilities::getAssetRelativePath(_filePath)));
+    }
 }
 
 CustomAssetFileType* AssetFileSystemModel::getCustomAssetFileType(QString fileName) {

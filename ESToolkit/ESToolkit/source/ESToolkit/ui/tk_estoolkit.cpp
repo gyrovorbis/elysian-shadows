@@ -35,6 +35,10 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
+#ifdef GYRO_VMU_APP
+#include <gyro_vmu_main_window.hpp>
+#include <ui_gyro_vmu_main_window.h>
+#endif
 
 
 #ifdef ESTK_UNIT_TESTS
@@ -162,26 +166,31 @@ ESToolkit::ESToolkit(QWidget *parent):
     _cameraDockWidget = new CameraDockWidget(this);
     _cameraDockWidget->hide();
 
+    _statusLabel = new QLabel();
+    _statusLabelTimer = new QTimer(this);
+    _statusLabelTimer->setSingleShot(true);
+    statusBar()->insertPermanentWidget(0, _statusLabel, 2);
+
     // Initialize status bar
     QLabel *label = new QLabel;
     label->setPixmap(QPixmap(":/statusbar/images/absPosStatusIcon.png"));
-    statusBar()->addWidget(label, 0);
-    statusBar()->addWidget(_ui->mapView->getSceneMousePosLabel(), 1);
+    statusBar()->insertPermanentWidget(1, label);
+    statusBar()->insertPermanentWidget(2, _ui->mapView->getSceneMousePosLabel(), 1);
 
     label = new QLabel;
     label->setPixmap(QPixmap(":/statusbar/images/tilePosStatusIcon.png"));
-    statusBar()->addWidget(label, 0);
-    statusBar()->addWidget(_ui->mapView->getSceneMouseTileLabel(), 1);
+    statusBar()->insertPermanentWidget(3, label);
+    statusBar()->insertPermanentWidget(4, _ui->mapView->getSceneMouseTileLabel(), 1);
 
     label = new QLabel;
     label->setPixmap(QPixmap(":/statusbar/images/selectionSizeStatusIcon.png"));
-    statusBar()->addWidget(label, 0);
-    statusBar()->addWidget(_ui->mapView->getSceneSelectionSizeLabel(), 1);
+    statusBar()->insertPermanentWidget(5, label);
+    statusBar()->insertPermanentWidget(6, _ui->mapView->getSceneSelectionSizeLabel(), 1);
 
     label = new QLabel;
     label->setPixmap(QPixmap(":/statusbar/images/zoomStatusIcon.png"));
-    statusBar()->addWidget(label, 0);
-    statusBar()->addWidget(_ui->mapView->getZoomLabel(), 2);
+    statusBar()->insertPermanentWidget(7, label);
+    statusBar()->insertPermanentWidget(8, _ui->mapView->getZoomLabel(), 1);
 
     //Initialize and set main scenes
     Level::initializeScene(static_cast<SourceView *>(_sheetDockWidget->getSourceView()));
@@ -240,8 +249,33 @@ ESToolkit::ESToolkit(QWidget *parent):
 
     setMouseTracking(true);
 }
+#if 0
+bool ESToolkit::event(QEvent *event) {
+    switch(event->type()) {
+    case QEvent::Shortcut: {
+        auto* shortcutEvent = static_cast<QShortcutEvent*>(event);
+        if(shortcutEvent->isAmbiguous()) {
+            if(_evmuWindow && _evmuWindow->hasFocus()) {
+                shortcutEvent->accept();
+                return true;
+            }
+
+        }
+        break;
+    }
+
+
+    default: break;
+    }
+    return QMainWindow::event(event);
+}
+#endif
+
 
 ESToolkit::~ESToolkit(void) {
+    delete _vmuDockWidget;
+
+    _ui->mapView->setEnabled(false);
     _assets.setCurrentArea(nullptr);
     _assets.setCurrentProject(nullptr);
     _assets.setCurrentLevel(nullptr);
@@ -1038,6 +1072,8 @@ void ESToolkit::_setMapViewResolution(const MAP_VIEW_RES res) {
         break;
     }
 
+    showStatusBarMessage("Resolution Mode Changed");
+
     _ui->action480p->blockSignals(false);
     _ui->action720p->blockSignals(false);
     _ui->actionDynamic->blockSignals(false);
@@ -1239,3 +1275,23 @@ void ESToolkit::on_actionTexture_Dump_triggered()
 {
     gyVidTexWalkthrough();
 }
+
+
+void ESToolkit::showStatusBarMessage(QString message, QColor color) {
+    auto pal = _instance->_statusLabel->palette();
+    pal.setColor(QPalette::WindowText, QColor(color));
+    _instance->_statusLabel->setPalette(pal);
+    _instance->_statusLabel->setText(message);
+    connect(_instance->_statusLabelTimer, &QTimer::timeout, [=]() {
+        _instance->_statusLabel->setText("");
+    });
+    _instance->_statusLabelTimer->start(ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+}
+
+void ESToolkit::showStatusBarMessage(QString message) {
+    ESToolkit::showStatusBarMessage(message, Qt::black);
+}
+
+
+
+

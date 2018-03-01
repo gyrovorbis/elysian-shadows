@@ -12,6 +12,8 @@
 #include "elysian_audio_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_debug.hpp"
+#include <crtp/elysian_camera_system.hpp>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
 
@@ -141,6 +143,7 @@ bool LevelSystemBase::switchArea(const char *const path) {
     }
 
     if(_curArea != nullptr) { //Can't call that if no area has been loaded yet.
+        getEventSys()->broadcastEvent(Event(EVENT_AREA_EXIT));
         _onAreaExit();
     }
 
@@ -173,7 +176,6 @@ bool LevelSystemBase::switchArea(const char *const path) {
     Vector3 pos;
     if(getWarpSys()->getState() == WarpSystem::WARP) {
         pos = getWarpSys()->getCurrentWarp().getToPosVec();
-                Debug::printf(Debug::LOG_VERBOSE, "VECTORZ - <%f, %f, %f>", pos.getX(), pos.getY(), pos.getZ());
     } else {
         pos = area->getStartPosition();
     }
@@ -184,24 +186,24 @@ bool LevelSystemBase::switchArea(const char *const path) {
 
   //              getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
 
+    getEventSys()->broadcastEvent(Event(EVENT_AREA_ENTER));
     _onAreaEnter();
     return true;
 }
 
 void LevelSystemBase::_onAreaEnter(void) {
-    getPartySys()->addPartyToArea();
+
     _addPersistentEntities();
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
     getCollisionSys()->onAreaEnter();
     getAudioSys()->update();
+    getCameraSys()->update();
     getCombatSys()->onAreaEnter();
 }
 
 void LevelSystemBase::_onAreaExit(void) {
     //Clean up current area
     getBehavSys()->callTriggers(Behavior::ON_EXIT);
-    getPartySys()->removePartyFromArea();
-    getDaySys()->onAreaExit();
     _removePersistentEntities();
     _curArea->deactivate();
     getCollisionSys()->onAreaExit();

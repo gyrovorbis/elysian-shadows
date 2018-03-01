@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -106,6 +106,7 @@ namespace OOLUA
 			return false;
 		}
 
+		// LCOV_EXCL_START
 		int info(lua_State* vm, int const index, int const id)
 		{
 			if(lua_getmetatable(vm, index))
@@ -118,6 +119,7 @@ namespace OOLUA
 			}
 			return 0;
 		}
+		// LCOV_EXCL_STOP
 	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
 } // namespace OOLUA

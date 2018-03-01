@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ THE SOFTWARE.
 
 /**
 	\file default_trait_caller.h
-	\brief Default trait callers for constant and none constant member functions as well
-	as C functions.
+	\brief Default trait callers for member functions which are constant or non constant member, in
+	addition to C functions.
 */
 
 struct lua_State;
@@ -45,7 +45,7 @@ namespace OOLUA
 			\struct default_traits_caller
 			\brief Caller for non constant member function using default traits.
 			\details Determines the function return type and parameters for
-			\ref OOLuaMinimalist "Minimalist" DSL usage. No traits can be provied by a user
+			\ref OOLuaMinimalist "Minimalist" DSL usage. No traits can be provided by a user
 			and it will instead use default traits, which are OOLUA::in_p for parameters
 			and OOLUA::INTERNAL::function_return for the return type.
 			\tparam func_type Specialiased function pointer type
@@ -58,8 +58,8 @@ namespace OOLUA
 			\struct default_traits_const_caller
 			\brief Determines the function return type and parameters for
 			\ref OOLuaMinimalist "Minimalist"  DSL usage
-			\tparam func_type Specialiased constant member function pointer type
-			\tparam type None type template argument
+			\tparam func_type Specialised constant member function pointer type
+			\tparam type Non type template argument
 		*/
 		template<typename func_type, typename type = func_type>
 		struct default_traits_const_caller;
@@ -68,8 +68,8 @@ namespace OOLUA
 			\struct default_c_traits_caller
 			\brief Determines the function return type and parameters for
 			\ref OOLuaMinimalist "Minimalist" DSL usage.
-			\tparam func_type Specialiased function pointer type
-			\tparam type None type template argument
+			\tparam func_type Specialised function pointer type
+			\tparam type Non type template argument
 		*/
 		template<typename func_type, typename type = func_type>
 		struct default_c_traits_caller;
@@ -103,7 +103,7 @@ namespace OOLUA
 	\brief Generator template to produce default trait callers
 	\details Template for OOLUA::INTERNAL::default_traits_caller which produces
 	a static method call for class member and non member functions.
-	\param NUM Number of parameters the macro will generate a default tratis caller for.
+	\param NUM Number of parameters the macro will generate a default traits caller for.
 */
 #define OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(NUM) \
 namespace OOLUA \

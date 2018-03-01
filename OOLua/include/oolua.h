@@ -9,7 +9,7 @@
 	\section OOLuaIntroduction Introduction
 	OOLua is cross platform, test driven, dependency free and Open Source library. It uses C++03
 	template meta-programming and pre-processor magic internally, which can be used to generate
-	none intrusive proxies that provide a fast bridge for the interaction of C++ classes and functions
+	non intrusive proxies that provide a fast bridge for the interaction of C++ classes and functions
 	with Lua.
 	<p>
 	The library provides multiple inheritance C++ classes without using C++'s RTTI,
@@ -20,7 +20,7 @@
 	still using the Lua C API.
 
 	OOLua is developed by Liam Devine who has over ten years experience using the Lua programming
-	language, having what he considers a deep understanding of both it and also C++.
+	language, having what he considers to be a deep understanding of both it and also C++.
 
 	This is not a fully original work and was originally based on ideas from binding classes using
 	the famous <a href="http://lua-users.org/wiki/CppBindingWithLunar" target="_blank">Lunar</a>
@@ -28,20 +28,20 @@
 
 	\section OOLuaCompatibility Lua compatibility
 	This version of the library is compatible with the following Lua implementations
-		\li Rio Lua 5.1 and 5.2 http://www.lua.org
+		\li Rio Lua 5.1, 5.2 and 5.3 http://www.lua.org
 		\li LuaJIT 1.1.8 and 2.0 http://www.luajit.org/
 
 	\section OOLuaLinks Links
-		\li Project Home  http://oolua.org
-		\li Library documentation http://oolua.org/docs
-		\li Issue tracker http://oolua.org/issues
-		\li Mailing list http://oolua.org/mailinglist
+		\li Project Home  https://oolua.org
+		\li Library documentation https://docs.oolua.org/2.0.1
+		\li Issue tracker https://oolua.org/issues
+		\li Mailing list https://oolua.org/mailinglist
 
 	\section OOLuaLicence Licence
 	OOLua:
 	\copyright
 	The MIT License\n
-	Copyright (c) 2009 - 2013 Liam Devine\n
+	Copyright (c) 2009 - 2015 Liam Devine\n
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
@@ -69,7 +69,7 @@
 #ifndef OOLUA_H_
 #	define OOLUA_H_
 
-
+#   include "oolua_config.h"
 #	include "lua_includes.h"
 #	include "oolua_dsl.h"
 #	include "proxy_function_exports.h"

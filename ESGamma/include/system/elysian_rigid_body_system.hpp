@@ -15,7 +15,7 @@
 #include <elysian_force_generator.hpp>
 #include <crtp/elysian_entity.hpp>
 
-#define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               0
+#define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               100
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME       5.0f
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_IDEAL_FREE_COUNT   (0.1f*ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE)
 

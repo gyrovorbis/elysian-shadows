@@ -28,6 +28,7 @@
 #include "elysian_skeleton_system.hpp"
 #include "elysian_pathfinding_system.hpp"
 #include <crtp/elysian_input_system.hpp>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
 
@@ -46,6 +47,7 @@ Engine::Engine(void):
     LuaManager::initialize();
 
     //allocate systems
+    _eventSystem        = new EventSystem;
     _inputSystem        = new InputSystem;
     _levelSystem		= new LevelSystem;
     _mapSystem			= new MapSystem;
@@ -150,6 +152,7 @@ void Engine::update(void) {
             updateRigidBodyMonitor.start();
             _rigidBodySystem->applyForces();
             _rigidBodySystem->integrate();
+            //_mapSystem->update();
             updateRigidBodyMonitor.stop();
 
             updateCollisionMonitor.start();
@@ -211,6 +214,7 @@ void Engine::update(void) {
             updateCombatMonitor.stop();
 
             updateLuaMonitor.start();
+
             _behaviorSystem->callTriggers(Behavior::ON_UPDATE);
             updateLuaMonitor.stop();
             break;
@@ -224,8 +228,8 @@ void Engine::update(void) {
             _mapSystem->update();
             _guiSystem->update();
         break;
-
-
+        case System::ENGINE_MODAL_MENU:
+            _guiSystem->update();
             break;
         default:
             break;
@@ -391,6 +395,7 @@ Engine::~Engine(void) {
     delete _skeletonSystem;
     delete _behaviorSystem;
     delete _pathfindingSystem;
+    delete _eventSystem;
 
     LuaManager::uninitialize();
 

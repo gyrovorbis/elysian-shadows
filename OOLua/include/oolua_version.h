@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ THE SOFTWARE.
 	\def OOLUA_VERSION_PATCH
 	\brief CPP patch version number
 */
-#	define OOLUA_VERSION_PATCH 0
+#	define OOLUA_VERSION_PATCH 2
 
 /**
 	\def OOLUA_VERSION
@@ -58,7 +58,7 @@ THE SOFTWARE.
 #	define OOLUA_VERSION \
 					OOLUA_STRINGISE(OOLUA_VERSION_MAJ) "." \
 					OOLUA_STRINGISE(OOLUA_VERSION_MIN) "." \
-					OOLUA_STRINGISE(OOLUA_VERSION_PATCH) " Beta 3"
+					OOLUA_STRINGISE(OOLUA_VERSION_PATCH)
 
 
 namespace OOLUA

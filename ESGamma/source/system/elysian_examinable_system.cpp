@@ -8,6 +8,7 @@
 #include <crtp/elysian_entity.hpp>
 #include "elysian_gui_system_base.hpp"
 #include <crtp/elysian_input_system.hpp>
+#include <crtp/elysian_camera_system.hpp>
 
 namespace elysian {
 
@@ -47,7 +48,12 @@ void ExaminableSystem::processInput(void) {
         if(curExamine) {
             if(/*partyLeader->getCharacter()->isFacing(curExamine) &&*/ getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
                 getBehavSys()->getBehavSys()->onExamine(curExamine, partyLeader);
-                if(curExamine->getExaminable()->getDialog()) getDialogSys()->startDialog(curExamine->getExaminable()->getDialog());
+                if(curExamine->getExaminable()->getDialog()) {
+                   // auto keyfr = getCameraSys()->getKeyFrame();
+                   // keyfr.setScale(3.0f, 3.0f);
+                   // getCameraSys()->moveToKeyFrame(frame, 0.2);
+                    getDialogSys()->startDialog(curExamine->getExaminable()->getDialog());
+                }
                 curExamine = nullptr;
             }
         }

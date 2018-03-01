@@ -33,7 +33,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
     \endcode
 */
 /*!
- * \qmlmethod void LuaBehaviorScriptAttrib::addSupportedTrigger(Behavior.TRIGGER triggerType)
+ * \qmlmethod void LuaBehaviorScriptAttrib::addSupportedTrigger(Behavior::TRIGGER triggerType)
  *
  * Adds triggerType to the list of triggers implemented by the LuaBehaviorScript.
  */
@@ -163,6 +163,10 @@ void LuaBehaviorScript::cacheTriggers(lua_State*const state) {
         if((_attrib.getSupportedTriggers()&(1ul<<i))) {
             lua_pushnumber(state, i);
             lua_getfield(state, -2, LuaBehavior::triggerStrings[i]);
+            LuaVariant f = LuaVariant::fromStack(-1, false);
+            if(f.getType() != LUA_TFUNCTION) {
+                errprintf("Expected trigger function for [%s], got [%s] instead!", LuaBehavior::triggerStrings[i], f.getTypeString());
+            }
             lua_settable(state, -3);
         }
     }

@@ -1,15 +1,37 @@
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_debug.hpp>
+#include <system/elysian_event_system.hpp>
+#include <gyro_file_api.h>
 
 namespace elysian {
 
+KeyboardEventObserver::KeyboardEventObserver(void) {
+    System::getEventSys()->addEventObserver(this, EVENT_KEYBOARD_KEY);
+}
+
+void KeyboardEventObserver::onObserveEvent(Event* event, EventTarget* target) {
+    if(!target && event->getEventType() == EVENT_KEYBOARD_KEY) {
+        onKeyboardEvent(*System::getInputSys()->getKeyboard());
+    }
+}
+
+void KeyboardEventObserver::onKeyboardEvent(const Keyboard&) {
+
+}
+
 bool Keyboard::pollInput(void) {
     _attached = gyKeyboardPoll(&_gyHandle);
+    if(_attached && _gyHandle->changed) System::getEventSys()->broadcastEvent(Event(EVENT_KEYBOARD_KEY));
     return _attached;
 }
 
 bool Mouse::pollInput(void) {
     _attached = gyMousePoll(&_gyHandle);
+    if(_attached && _gyHandle) {
+        if(_gyHandle->buttonsChanged)       System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_BUTTON,    this));
+        if(_gyHandle->screenPosChanged)     System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_MOVE,      this));
+        if(_gyHandle->scrollWheelChanged)   System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_WHEEL,     this));
+    }
     return _attached;
 }
 
@@ -51,15 +73,114 @@ bool Controller::pollInput(void) {
     return _attached;
 }
 
+bool VisualMemoryUnit::frameBufferReadPixel(uint8_t x, uint8_t y) const {
+    if(x >= 48 || y >= 32) {
+        errprintf("Attempting to read oustide of VMU framebuffer boundaries: <%d, %d>", x, y);
+        return false;
+    }
+    const int byte  = x / 8;
+    const int bit   = x % 8;
+    return (bool)(_frameBuffer[y][byte]>>bit)&0x1;
+}
+void VisualMemoryUnit::frameBufferWritePixel(uint8_t x, uint8_t y, bool pixelVal) {
+    if(x >= 48 || y >= 32) {
+        errprintf("Attempting to write oustide of VMU framebuffer boundaries: <%d, %d>", x, y);
+        return;
+    }
+    const uint8_t byte  = x / 8;
+    const uint8_t bit   = x % 8;
+    const uint8_t prevVal = _frameBuffer[y][byte];
+    if(pixelVal) {
+        _frameBuffer[y][byte] |= (0x1<<bit);
+    } else {
+        _frameBuffer[y][byte] &= ~(0x1<<bit);
+    }
+    if(_frameBuffer[y][byte] != prevVal) _fbChanged = true;
+}
+
+bool VisualMemoryUnit::readBlock(uint16_t blockNum, uint8_t* buffer) const {
+    return _gyHandle? gyVisualMemoryDeviceBlockRead(_gyHandle, buffer, blockNum) : false;
+}
+
+bool VisualMemoryUnit::writeBlock(uint16_t blockNum, const uint8_t* buffer) {
+    return _gyHandle? gyVisualMemoryDeviceBlockWrite(_gyHandle, buffer, blockNum) : false;
+}
+bool VisualMemoryUnit::beep(uint8_t pulseLength, uint8_t dutyCycle) {
+    return _gyHandle? gyVisualMemoryDeviceBeep(_gyHandle, pulseLength, dutyCycle) : false;
+}
+bool VisualMemoryUnit::loadIcon(const char* filePath) {
+    GYFile *fp = NULL;
+    bool success = true;
+    dbgprintf("VisualMemoryUnit[%d]::loadIcon(%s)", getPlayerIndex(), filePath);
+    dbgpush();
+
+    if (!gyFileOpen(filePath, "rb", &fp)) {
+        Debug::printf(Debug::LOG_ERROR, "FAILURE!");
+        success = false;
+    } else {
+        size_t bytesRead;
+        gyFileRead(fp, _frameBuffer, 192, &bytesRead);
+        if(bytesRead != 192) {
+            errprintf("Could only read %d of %d bytes from file!", bytesRead, 192);
+            success = false;
+        }
+        if(bytesRead > 0) _fbChanged = true;
+    }
+    dbgpop();
+    return success;
+}
+
+bool VisualMemoryUnit::pollDevice(void) {
+    _attached = gyVisualMemoryDevicePoll(_playerIndex, &_gyHandle);
+    if(_attached && _gyHandle) {
+        if(_fbChanged) {
+            gyVisualMemoryDeviceDisplayImage(_gyHandle, (uint8_t*)_frameBuffer);
+            _fbChanged = false;
+        }
+    }
+    return _attached;
+}
+
+bool VisualMemoryUnit::connectToEVMU(const char* hostName, unsigned port) {
+    _tcpSettings = (GYVisualMemoryTCPSettings*)malloc(sizeof(GYVisualMemoryTCPSettings));
+    strcpy(_tcpSettings->hostname, hostName);
+    _tcpSettings->port = port;
+    return gyVisualMemoryDeviceRemoteConnect(_playerIndex, _tcpSettings);
+}
+
+bool VisualMemoryUnit::disconnectFromEVMU(void) {
+    if(_gyHandle) gyVisualMemoryDeviceRemoteDisconnect(_gyHandle);
+    free(_tcpSettings);
+    _tcpSettings = nullptr;
+}
+
+
 
 bool InputSystemBase::_initialized = false;
 bool InputSystemBase::_managedExternally = false;
 const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
 
 InputSystemBase::InputSystemBase(void) {
-    for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) _controllers[i].setPort(i);
+    GYVisualMemoryInitParams vmuInitParams = {
+        4
+    };
+    gyVisualMemoryInit(&vmuInitParams);
+
+    for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) {
+        _controllers[i].setPort(i);
+        _controllers[i].setPlayerIndex(i);
+    }
+    _keyboard.setPlayerIndex(0);
+    _mouse.setPlayerIndex(0);
+    for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
+        _vmus[i].setPlayerIndex(i);
+    }
     //Initial input poll, to initialize controller/mouse/keyboard handles
     update();
+}
+
+InputSystemBase::~InputSystemBase(void) {
+    gyVisualMemoryUninit();
 }
 
 bool InputSystemBase::initialize(const GYInputInitParams*const params) {
@@ -87,10 +208,12 @@ bool InputSystemBase::uninitialize(void) {
 
 void InputSystemBase::_onControllerAttached(const unsigned slot) {
     dbgprintf("InputSystem: Controller Attached! [Port: %d]", slot);
+    getEventSys()->broadcastEvent(ControllerEvent(EVENT_CONTROLLER_ATTACHED, &_controllers[slot]));
 }
 
 void InputSystemBase::_onControllerRemoved(const unsigned slot) {
     dbgprintf("InputSystem: Controller Removed! [Port: %d]", slot);
+    getEventSys()->broadcastEvent(ControllerEvent(EVENT_CONTROLLER_REMOVED, &_controllers[slot]));
 }
 
 void InputSystemBase::_onMouseAttached(void) {
@@ -107,6 +230,14 @@ void InputSystemBase::_onKeyboardAttached(void) {
 
 void InputSystemBase::_onKeyboardRemoved(void) {
     dbgprintf("InputSystem: Keyboard Removed!");
+}
+
+void InputSystemBase::_onVMUAttached(unsigned slot) {
+    dbgprintf("InputSystem: VMU Attached! [Port: %d]", slot);
+}
+
+void InputSystemBase::_onVMURemoved(unsigned slot) {
+    dbgprintf("InputSystem: VMU Removed! [Port: %d]", slot);
 }
 
 void InputSystemBase::_mapKeyboardToController(const int port) {
@@ -171,11 +302,11 @@ void InputSystemBase::update(void) {
     else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onKeyboardRemoved();
 
     //update mouse
- //   wasAttached = _mouse.isAttached();
- //   isAttached = _mouse.pollInput();
+    wasAttached = _mouse.isAttached();
+    isAttached = _mouse.pollInput();
 
-   // if(isAttached && !wasAttached)      _onMouseAttached();
-   // else if(!isAttached && wasAttached) _onMouseRemoved();
+    if(isAttached && !wasAttached)      _onMouseAttached();
+    else if(!isAttached && wasAttached) _onMouseRemoved();
 
     //update controllers
     for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) {
@@ -187,6 +318,20 @@ void InputSystemBase::update(void) {
 
         if(isAttached && !wasAttached)      static_cast<InputSystem*>(this)->_onControllerAttached(i);
         else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onControllerRemoved(i);
+    }
+
+    //update VMUs
+    for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
+        const auto wasAttached  = _vmus[i].isAttached();
+        const auto isAttached   = _vmus[i].pollDevice();
+
+        if(isAttached && !wasAttached) {
+            static_cast<InputSystem*>(this)->_onVMUAttached(i);
+            getEventSys()->broadcastEvent(VisualMemoryUnitEvent(EVENT_VMU_ATTACHED, &_vmus[i]));
+        } else if(!isAttached && wasAttached) {
+            static_cast<InputSystem*>(this)->_onVMURemoved(i);
+            getEventSys()->broadcastEvent(VisualMemoryUnitEvent(EVENT_VMU_REMOVED, &_vmus[i]));
+        }
     }
 
 

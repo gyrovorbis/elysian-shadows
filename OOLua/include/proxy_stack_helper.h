@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,8 +63,8 @@ namespace OOLUA
 		{
 			static void push(lua_State* const vm, T& value, Owner /*owner*/)
 			{
-				Raw* ptr = new Raw(value);
-				OOLUA::INTERNAL::push_pointer_which_has_a_proxy_class<Raw>(vm, ptr, Lua);
+				typename OOLUA::INTERNAL::new_pointer<Raw>::type ptr(new Raw(value));
+				OOLUA::INTERNAL::add_ptr(vm, ptr, false, Lua);
 			}
 		};
 
@@ -86,6 +86,18 @@ namespace OOLUA
 			{
 				proxy_maybe_by_ref<typename WT::raw, T, WT::is_by_value>::push(vm, value, (Owner)WT::owner);
 			}
+		};
+
+		template<typename T>
+		struct add_ref
+		{
+			typedef T& type;
+		};
+
+		template<typename T>
+		struct add_ref<T&>
+		{
+			typedef T& type;
 		};
 	} // namespace //NOLINT
 	/** \endcond */
@@ -143,21 +155,21 @@ namespace OOLUA
 		template<typename MaybeNullType>
 		struct Proxy_stack_helper<maybe_null<MaybeNullType>, No_change>
 		{
-			static void push(lua_State* vm, MaybeNullType ptr)
+			static void push(lua_State* vm, typename add_ref<typename maybe_null<MaybeNullType>::type>::type ptr)
 			{
 				if (ptr)
-					Proxy_stack_helper<function_return<MaybeNullType>, No_change>::push(vm, ptr);
+					Proxy_stack_helper<typename maybe_null<MaybeNullType>::return_trait, No_change>::push(vm, ptr);
 				else
 					lua_pushnil(vm);
 			}
 		};
 
 		/*
-		Specialisation for the lua_maybe_null type.
+		Specialisation for the maybe_null<lua_return<T> > type.
 		If NULL it pushes nil to the stack else calls the normal helper static function.
 		*/
 		template<typename MaybeNullType>
-		struct Proxy_stack_helper<lua_maybe_null<MaybeNullType>, Lua>
+		struct Proxy_stack_helper<maybe_null<lua_return<MaybeNullType> >, Lua>
 		{
 			static void push(lua_State* vm, MaybeNullType ptr)
 			{
@@ -165,6 +177,22 @@ namespace OOLUA
 					Proxy_stack_helper<lua_return<MaybeNullType>, Lua>::push(vm, ptr);
 				else
 					lua_pushnil(vm);
+			}
+		};
+
+
+		template<typename PtrType>
+		struct Proxy_stack_helper<shared_return<PtrType>, No_change>
+		{
+			static void push(lua_State* vm, PtrType ptr)
+			{
+#if OOLUA_USE_SHARED_PTR == 1
+				OOLUA_SHARED_TYPE<typename LVD::remove_ptr<PtrType>::type > shared(ptr);
+				OOLUA::push(vm, shared);
+#else
+				assert(0 && "this is only valid when the library is compiled with"
+						"shared pointer support");
+#endif
 			}
 		};
 
@@ -186,13 +214,13 @@ namespace OOLUA
 
 			static void get(lua_State* const vm, int /*idx*/, lua_State*& vm1)
 			{
-				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
+				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1] OOLUA_UNUSED;
 				vm1 = vm;
 			}
 
 			static void get(int& /*idx*/, lua_State* const vm, lua_State*& vm1)
 			{
-				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
+				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1] OOLUA_UNUSED;
 				vm1 = vm;
 			}
 

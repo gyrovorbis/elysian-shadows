@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ THE SOFTWARE.
 #	ifndef PLATFORM_CHECKED
 #		define PLATFORM_CHECKED
 #		if (defined(__CYGWIN__))
-//#			error Cygwin is currently not supported
 #			define UNIX_BUILD			1
 #		else
 			/// windows
@@ -47,9 +46,11 @@ THE SOFTWARE.
 #				define MAC_BUILD		1
 			/// nix
 #			elif(defined(unix) || defined(_unix) || defined(__unix) || defined(__unix__) || \
-                defined(linux) || defined(__linux)) || defined(_arch_dreamcast)
+				defined(linux) || defined(__linux))
 #				define UNIX_BUILD		1
 
+#			elif(defined(_arch_dreamcast))
+#				define DREAMCAST_BUILD	1
 #			endif///! CYGWIN
 #		endif///CYGWIN
 

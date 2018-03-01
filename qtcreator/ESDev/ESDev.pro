@@ -16,6 +16,11 @@ tests {
     SUBDIRS += ../../UnitTests
 }
 
+vmu_child_app {
+    DEFINES += VMU_CHILD_APP
+    SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
+}
+
 estk {
     SUBDIRS += ../../ESToolkit/ESToolkit
 }
@@ -23,6 +28,7 @@ estk {
 vmu {
     SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
 }
+
 
 vulkan {
     DEFINES+=LIBGYRO_VULKAN
@@ -49,5 +55,8 @@ vmu {
     ElysianVMU.depends += libGyro
 }
 
-HEADERS += \
-    ../../libGyro/include/physics/gyro_physics_simulation.h
+vmu_child_app {
+    ElysianVMU.depends += libGyro
+    ESToolkit.depends += ElysianVMU
+}
+

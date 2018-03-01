@@ -102,6 +102,10 @@ void GuiSystem::update(void) {
     gyVidResolution(&_projWidth, &_projHeight);
     adventureLog.update();
 
+    _menuWidget->setPosition(Widget::X, _projWidth*0.5f);
+    _menuWidget->setPosition(Widget::Y, _projHeight*0.5f);
+    if(!_menuWidget->hasFocus() && _pauseMenuActive) setPauseMenuActive(false);
+
     const float deltaTime = getTimerSys()->getDeltaTime();
 
     //update internal fade state if fading in or out
@@ -352,27 +356,49 @@ void GuiSystem::_renderExamineEntity(void) {
 
 }
 
-void GuiSystem::processInput(void) {
-    if(getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_START)) {
-        setFgWidget(_menuActive? nullptr : _menuWidget);
-        _menuActive = !_menuActive;
-
-        if(_menuActive) {
+void GuiSystem::setPauseMenuActive(bool val) {
+    if(_pauseMenuActive != val) {
+        if(val) {
+            setFgWidget(_menuWidget);
             setEngineState(ENGINE_MODAL_MENU);
             _menuWidget->activate();
             _menuWidget->setFocus();
+
         } else {
+            setFgWidget(nullptr);
             _menuWidget->deactivate();
             setEngineState(ENGINE_NORMAL);
             _menuWidget->setFocus(false);
         }
 
+
+        _pauseMenuActive = val;
     }
-    if(_menuActive) {
+
+
+}
+
+void GuiSystem::processInput(void) {
+    if(getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_START)) {
+        setPauseMenuActive(!_pauseMenuActive);
+
+        if(_pauseMenuActive) adventureLog.fade(0.0f, false);
+        else adventureLog.fade(1.0f, true);
+
+    }
+    if(_pauseMenuActive) {
 
         _menuWidget->controllerEvent(*getInputSys()->getController(0));
         _menuWidget->virtualDPadEvent(getInputSys()->getController(0)->getVirtualDPad(GY_CONTROLLER_ANALOG_LEFT));
     }
+
+    auto* keybd = getInputSys()->getKeyboard();
+    //if(keybd && keybd->isPressed(GY_KEY_LALT)) {
+        if(keybd && keybd->isTapped(GY_KEY_6)) {
+            nextDebugOverlayPage();
+        }
+
+   // }
 }
 
 

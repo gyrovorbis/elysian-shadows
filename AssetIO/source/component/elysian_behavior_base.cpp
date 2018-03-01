@@ -29,7 +29,6 @@ Behavior* BehaviorBase::create(const char* typeName, Entity& parent) {
 
 const char* BehaviorBase::triggerNameFromFlag(const uint32_t flag) {
 	static char buff[20];
-
 	switch(flag) {
 	case ON_SCRIPT_CREATE:
 		return "ON_SCRIPT_CREATE";
@@ -49,7 +48,7 @@ const char* BehaviorBase::triggerNameFromFlag(const uint32_t flag) {
 		return "ON_EXIT";
 	case ON_UPDATE:
 		return "ON_UPDATE";
-	case ON_RENDER:
+    case ON_RENDER:
 		return "ON_RENDER";
 	case ON_COLLIDE:
 		return "ON_COLLIDE";
@@ -61,6 +60,22 @@ const char* BehaviorBase::triggerNameFromFlag(const uint32_t flag) {
 		return "ON_EXAMINE";
 	case ON_DIALOG:
 		return "ON_DIALOG";
+    case ON_COMBAT_ENTER:
+        return "ON_COMBAT_ENTER";
+    case ON_COMBAT_EXIT:
+        return "ON_COMBAT_EXIT";
+    case ON_COMBAT_DEATH:
+        return "ON_COMBAT_DEATH";
+    case ON_COMBAT_RECEIVE_STATUS_MODIFIER:
+        return "ON_COMBAT_STATUS_RECEIVE_MODIFIER";
+    case ON_COMBAT_TARGET_COLLISION_ENTER:
+        return "ON_COMBAT_TARGET_COLLISION_ENTER";
+    case ON_SHATTER:
+        return "ON_SHATTER";
+    case ON_OBSERVE_EVENT:
+        return "ON_OBSERVE_EVENT";
+    case ON_RECEIVE_EVENT:
+        return "ON_RECEIVE_EVENT";
 	case TRIGGER_MAX:
 		return "TRIGGER_MAX";
 	default:
@@ -95,6 +110,9 @@ void BehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const /*contact
 
 void BehaviorBase::onTkSelect(void) { Debug::printf(Debug::LOG_WARNING, "Behavior::onTkSelect() - Unimplemented for '%s'.", getBehavName()); }
 void BehaviorBase::onTkUnselect(void) { Debug::printf(Debug::LOG_WARNING, "Behavior::onTkUnselect() - Unimplemented for '%s'.", getBehavName()); }
+
+void BehaviorBase::onReceiveEvent(Event*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onReceiveEvent() - Unimplemented for '%s'.", getBehavName()); }
+void BehaviorBase::onObserveEvent(Event*, EventTarget*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onObserveEvent() - Unimplemented for '%s'.", getBehavName()); }
 
 BehaviorBase::BehaviorBase(Entity& parent): Component(parent) {
 //    dbgprintf(Asset::LOG_LOG_WARNING, "ENTITY - %s", parent.getName());

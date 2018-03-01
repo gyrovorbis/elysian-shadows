@@ -7,6 +7,7 @@
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <gyro_video_api.h>
+#include <memory>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -19,11 +20,11 @@ namespace elysian {
     friend Entity;
 
     protected:
-        GYTexCoord2			_texCoord[4];
-        SpriteAttrib*		_spriteAttrib	= nullptr;      //Prefab-able attributes
-        int					_frame			= 0;			//for animation
-        GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
-        GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
+        GYTexCoord2                 _texCoord[4] = { { 0.0f, 0.0f } };
+        shared_ptr<SpriteAttrib>	_spriteAttrib;
+        int                         _frame			= 0;			//for animation
+        GYVector2                   _offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+        GY_RECT_TEX_ORIENT          _texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
 
 
@@ -38,8 +39,8 @@ namespace elysian {
     ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             RenderableBase(void) = default;
-                            RenderableBase(Entity &parent, const RenderableBase*const prefab=nullptr);
-        RenderableBase&     operator=(const RenderableBase& rhs);
+                            RenderableBase(Entity &parent, RenderableBase* prefab=nullptr);
+        RenderableBase&     operator=(RenderableBase& rhs);
 
         static bool         hasPrereqs(Entity &entity);
         static constexpr const Component::TYPE componentType = Component::RENDERABLE;
@@ -59,9 +60,9 @@ namespace elysian {
         void				setTexOrient(const GY_RECT_TEX_ORIENT texOrient);
         int             	getTexOrient(void) const;
 
-        SpriteAttrib*       getSpriteAttrib(void) const;
-        QuadSpriteAttrib*   getQuadSpriteAttrib(void) const;
-        void                setSpriteAttrib(SpriteAttrib *const attrib);
+        shared_ptr<SpriteAttrib>       getSpriteAttrib(void) const;
+        shared_ptr<QuadSpriteAttrib>   getQuadSpriteAttrib(void) const;
+        void                setSpriteAttrib(shared_ptr<SpriteAttrib> attrib);
 
         void                setTexCoord(const unsigned index, const float u, const float v);
 
@@ -75,10 +76,10 @@ namespace elysian {
     };
 
     //=================== INLINEZ ======================
-    inline RenderableBase::RenderableBase(Entity &parent, const RenderableBase*const prefab): Component(parent) {
+    inline RenderableBase::RenderableBase(Entity &parent, RenderableBase*const prefab): Component(parent) {
         if(prefab) *this = *prefab;
     }
-    inline RenderableBase& RenderableBase::operator=(const RenderableBase& rhs) {
+    inline RenderableBase& RenderableBase::operator=(RenderableBase& rhs) {
         memcpy(_texCoord, rhs._texCoord, sizeof(_texCoord));
         _spriteAttrib   = rhs._spriteAttrib;
         _frame          = rhs._frame;
@@ -95,9 +96,9 @@ namespace elysian {
     inline void	RenderableBase::getOffset(GYVector2 &offset) const { offset = _offset; }
     inline void	RenderableBase::setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
     inline int RenderableBase::getTexOrient(void) const { return _texOrient; }
-    inline SpriteAttrib* RenderableBase::getSpriteAttrib(void) const { return _spriteAttrib; }
-    inline QuadSpriteAttrib* RenderableBase::getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
-    inline void RenderableBase::setSpriteAttrib(SpriteAttrib *const attrib) { /*delete _spriteAttrib;*/ _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
+    inline shared_ptr<SpriteAttrib> RenderableBase::getSpriteAttrib(void) const { return _spriteAttrib; }
+
+    inline void RenderableBase::setSpriteAttrib(shared_ptr<SpriteAttrib> attrib) { _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
     inline Vector2 RenderableBase::getOffsetVec(void) { return Vector2(&_offset); }
     inline void RenderableBase::setOffsetVec(const Vector2 &vec) { _offset = vec; }
 
@@ -131,7 +132,7 @@ namespace elysian {
         case PrimAttrib::QUAD_SPRITE:
 
             for(unsigned i = 0; i < 4; ++i) {
-                if(static_cast<QuadSpriteAttrib*>(_spriteAttrib)->getVertexAlpha(i) != 255) {
+                if(std::static_pointer_cast<QuadSpriteAttrib>(_spriteAttrib)->getVertexAlpha(i) != 255) {
                     alpha = true;
                     break;
                 }

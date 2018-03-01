@@ -16,7 +16,7 @@ public:
 class TkParticleEmitter: public elysian::ParticleEmitterBase {
 public:
                     TkParticleEmitter(void) = default;
-                    TkParticleEmitter(TkEntity& parent, const TkParticleEmitter*const prefab=nullptr);
+                    TkParticleEmitter(TkEntity& parent, TkParticleEmitter*const prefab=nullptr);
 
     virtual bool    validate(QString &string) const override;
     virtual QMenu*  createContextMenu(void) override;
@@ -24,7 +24,7 @@ public:
 };
 
 
-inline TkParticleEmitter::TkParticleEmitter(TkEntity &parent, const TkParticleEmitter*const prefab): elysian::ParticleEmitterBase(parent, prefab) {}
+inline TkParticleEmitter::TkParticleEmitter(TkEntity &parent, TkParticleEmitter*const prefab): elysian::ParticleEmitterBase(parent, prefab) {}
 
 
 #endif // TKPARTICLEEMITTER_H

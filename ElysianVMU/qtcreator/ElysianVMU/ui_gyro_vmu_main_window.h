@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'gyro_vmu_main_window.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.9.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -58,8 +59,10 @@ public:
     QAction *actionRecordAnim;
     QAction *actionSave_Game;
     QAction *actionLoad_Game;
+    QAction *actionBIOS_Runtime_Disassembly;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
+    QGraphicsView *graphicsView;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuLoad_Recent;
@@ -77,95 +80,151 @@ public:
     {
         if (VMUMainWindow->objectName().isEmpty())
             VMUMainWindow->setObjectName(QStringLiteral("VMUMainWindow"));
-        VMUMainWindow->resize(320, 240);
+        VMUMainWindow->resize(256, 235);
+        QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(VMUMainWindow->sizePolicy().hasHeightForWidth());
+        VMUMainWindow->setSizePolicy(sizePolicy);
         QIcon icon;
         icon.addFile(QStringLiteral(":/icons/images/vmu_icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
         VMUMainWindow->setWindowIcon(icon);
         VMUMainWindow->setLayoutDirection(Qt::LeftToRight);
         actionLoad_ROM = new QAction(VMUMainWindow);
         actionLoad_ROM->setObjectName(QStringLiteral("actionLoad_ROM"));
+        actionLoad_ROM->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionSave_State = new QAction(VMUMainWindow);
         actionSave_State->setObjectName(QStringLiteral("actionSave_State"));
+        actionSave_State->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionLoad_State = new QAction(VMUMainWindow);
         actionLoad_State->setObjectName(QStringLiteral("actionLoad_State"));
+        actionLoad_State->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionAbout = new QAction(VMUMainWindow);
         actionAbout->setObjectName(QStringLiteral("actionAbout"));
+        actionAbout->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionReset = new QAction(VMUMainWindow);
         actionReset->setObjectName(QStringLiteral("actionReset"));
+        actionReset->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionScreenshot = new QAction(VMUMainWindow);
         actionScreenshot->setObjectName(QStringLiteral("actionScreenshot"));
+        actionScreenshot->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionEmulate_Audio = new QAction(VMUMainWindow);
         actionEmulate_Audio->setObjectName(QStringLiteral("actionEmulate_Audio"));
         actionEmulate_Audio->setCheckable(true);
         actionEmulate_Audio->setChecked(true);
+        actionEmulate_Audio->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionDump_Icons = new QAction(VMUMainWindow);
         actionDump_Icons->setObjectName(QStringLiteral("actionDump_Icons"));
+        actionDump_Icons->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionDump_Eyecatch = new QAction(VMUMainWindow);
         actionDump_Eyecatch->setObjectName(QStringLiteral("actionDump_Eyecatch"));
+        actionDump_Eyecatch->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionEnable_Low_Battery = new QAction(VMUMainWindow);
         actionEnable_Low_Battery->setObjectName(QStringLiteral("actionEnable_Low_Battery"));
         actionEnable_Low_Battery->setCheckable(true);
+        actionEnable_Low_Battery->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionQuick_Connect = new QAction(VMUMainWindow);
         actionQuick_Connect->setObjectName(QStringLiteral("actionQuick_Connect"));
+        actionQuick_Connect->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionTCP_Connection_Manager = new QAction(VMUMainWindow);
         actionTCP_Connection_Manager->setObjectName(QStringLiteral("actionTCP_Connection_Manager"));
+        actionTCP_Connection_Manager->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionConfigure_Input_Devices = new QAction(VMUMainWindow);
         actionConfigure_Input_Devices->setObjectName(QStringLiteral("actionConfigure_Input_Devices"));
         actionConfigure_Input_Devices->setEnabled(false);
+        actionConfigure_Input_Devices->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionQuit = new QAction(VMUMainWindow);
         actionQuit->setObjectName(QStringLiteral("actionQuit"));
+        actionQuit->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionView_Log = new QAction(VMUMainWindow);
         actionView_Log->setObjectName(QStringLiteral("actionView_Log"));
+        actionView_Log->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionLoad_BIOS_Image = new QAction(VMUMainWindow);
         actionLoad_BIOS_Image->setObjectName(QStringLiteral("actionLoad_BIOS_Image"));
+        actionLoad_BIOS_Image->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionDisassemble_ROM = new QAction(VMUMainWindow);
         actionDisassemble_ROM->setObjectName(QStringLiteral("actionDisassemble_ROM"));
+        actionDisassemble_ROM->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionEnable_Pixel_Ghosting = new QAction(VMUMainWindow);
         actionEnable_Pixel_Ghosting->setObjectName(QStringLiteral("actionEnable_Pixel_Ghosting"));
         actionEnable_Pixel_Ghosting->setCheckable(true);
         actionEnable_Pixel_Ghosting->setChecked(true);
+        actionEnable_Pixel_Ghosting->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action1x = new QAction(VMUMainWindow);
         action1x->setObjectName(QStringLiteral("action1x"));
+        action1x->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action2x = new QAction(VMUMainWindow);
         action2x->setObjectName(QStringLiteral("action2x"));
+        action2x->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action4x = new QAction(VMUMainWindow);
         action4x->setObjectName(QStringLiteral("action4x"));
+        action4x->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action8x = new QAction(VMUMainWindow);
         action8x->setObjectName(QStringLiteral("action8x"));
+        action8x->setShortcutContext(Qt::ApplicationShortcut);
         action16x = new QAction(VMUMainWindow);
         action16x->setObjectName(QStringLiteral("action16x"));
+        action16x->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action32x = new QAction(VMUMainWindow);
         action32x->setObjectName(QStringLiteral("action32x"));
+        action32x->setShortcutContext(Qt::WidgetShortcut);
         action64x = new QAction(VMUMainWindow);
         action64x->setObjectName(QStringLiteral("action64x"));
+        action64x->setShortcutContext(Qt::ApplicationShortcut);
         actionPreserve_Aspect_Ratio = new QAction(VMUMainWindow);
         actionPreserve_Aspect_Ratio->setObjectName(QStringLiteral("actionPreserve_Aspect_Ratio"));
         actionPreserve_Aspect_Ratio->setCheckable(true);
         actionPreserve_Aspect_Ratio->setChecked(true);
+        actionPreserve_Aspect_Ratio->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionSerial_COM_Connection_Manager = new QAction(VMUMainWindow);
         actionSerial_COM_Connection_Manager->setObjectName(QStringLiteral("actionSerial_COM_Connection_Manager"));
         actionHalt = new QAction(VMUMainWindow);
         actionHalt->setObjectName(QStringLiteral("actionHalt"));
         actionHalt->setCheckable(true);
+        actionHalt->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionAdvance_Frame = new QAction(VMUMainWindow);
         actionAdvance_Frame->setObjectName(QStringLiteral("actionAdvance_Frame"));
+        actionAdvance_Frame->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionRecordAnim = new QAction(VMUMainWindow);
         actionRecordAnim->setObjectName(QStringLiteral("actionRecordAnim"));
         actionRecordAnim->setCheckable(true);
+        actionRecordAnim->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionSave_Game = new QAction(VMUMainWindow);
         actionSave_Game->setObjectName(QStringLiteral("actionSave_Game"));
+        actionSave_Game->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionLoad_Game = new QAction(VMUMainWindow);
         actionLoad_Game->setObjectName(QStringLiteral("actionLoad_Game"));
+        actionLoad_Game->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        actionBIOS_Runtime_Disassembly = new QAction(VMUMainWindow);
+        actionBIOS_Runtime_Disassembly->setObjectName(QStringLiteral("actionBIOS_Runtime_Disassembly"));
         centralwidget = new QWidget(VMUMainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(centralwidget->sizePolicy().hasHeightForWidth());
+        centralwidget->setSizePolicy(sizePolicy1);
         verticalLayout = new QVBoxLayout(centralwidget);
         verticalLayout->setSpacing(0);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
         verticalLayout->setContentsMargins(0, 0, 0, 0);
+        graphicsView = new QGraphicsView(centralwidget);
+        graphicsView->setObjectName(QStringLiteral("graphicsView"));
+        sizePolicy1.setHeightForWidth(graphicsView->sizePolicy().hasHeightForWidth());
+        graphicsView->setSizePolicy(sizePolicy1);
+        graphicsView->setLineWidth(0);
+        graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        graphicsView->setSceneRect(QRectF(0, 0, 0, 0));
+
+        verticalLayout->addWidget(graphicsView);
+
         VMUMainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(VMUMainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 320, 22));
+        menubar->setGeometry(QRect(0, 0, 256, 22));
+        menubar->setNativeMenuBar(true);
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuLoad_Recent = new QMenu(menuFile);
@@ -224,6 +283,7 @@ public:
         menuTools->addAction(actionDump_Icons);
         menuTools->addAction(actionDump_Eyecatch);
         menuTools->addAction(actionDisassemble_ROM);
+        menuTools->addAction(actionBIOS_Runtime_Disassembly);
         menuTools->addAction(actionView_Log);
         menuScreen_Capture->addAction(actionRecordAnim);
         menuHelp->addAction(actionAbout);
@@ -246,11 +306,17 @@ public:
     {
         VMUMainWindow->setWindowTitle(QApplication::translate("VMUMainWindow", "ElysianVMU v 0.0.1 Alpha", Q_NULLPTR));
         actionLoad_ROM->setText(QApplication::translate("VMUMainWindow", "Open ROM", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
         actionLoad_ROM->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+O", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionSave_State->setText(QApplication::translate("VMUMainWindow", "Save State", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
         actionSave_State->setShortcut(QApplication::translate("VMUMainWindow", "Shift+F1", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionLoad_State->setText(QApplication::translate("VMUMainWindow", "Load State", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
         actionLoad_State->setShortcut(QApplication::translate("VMUMainWindow", "F1", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionAbout->setText(QApplication::translate("VMUMainWindow", "About", Q_NULLPTR));
         actionReset->setText(QApplication::translate("VMUMainWindow", "Reset", Q_NULLPTR));
         actionScreenshot->setText(QApplication::translate("VMUMainWindow", "Screenshot", Q_NULLPTR));
@@ -276,19 +342,26 @@ public:
         actionPreserve_Aspect_Ratio->setText(QApplication::translate("VMUMainWindow", "Preserve Aspect Ratio", Q_NULLPTR));
         actionSerial_COM_Connection_Manager->setText(QApplication::translate("VMUMainWindow", "Serial/COM Connection Manager", Q_NULLPTR));
         actionHalt->setText(QApplication::translate("VMUMainWindow", "Halt", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
         actionHalt->setShortcut(QApplication::translate("VMUMainWindow", "F2", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionAdvance_Frame->setText(QApplication::translate("VMUMainWindow", "Advance Frame", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
         actionAdvance_Frame->setToolTip(QApplication::translate("VMUMainWindow", "Advance Execution by a Frame", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
+#ifndef QT_NO_SHORTCUT
         actionAdvance_Frame->setShortcut(QApplication::translate("VMUMainWindow", "F3", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionRecordAnim->setText(QApplication::translate("VMUMainWindow", "Record", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
         actionRecordAnim->setToolTip(QApplication::translate("VMUMainWindow", "Record to Animated GIF", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
+#ifndef QT_NO_SHORTCUT
         actionRecordAnim->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+R", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
         actionSave_Game->setText(QApplication::translate("VMUMainWindow", "Save Game", Q_NULLPTR));
         actionLoad_Game->setText(QApplication::translate("VMUMainWindow", "Load Game", Q_NULLPTR));
+        actionBIOS_Runtime_Disassembly->setText(QApplication::translate("VMUMainWindow", "BIOS Dynamic Disassembly", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("VMUMainWindow", "File", Q_NULLPTR));
         menuLoad_Recent->setTitle(QApplication::translate("VMUMainWindow", "Open Recent", Q_NULLPTR));
         menuEmulation->setTitle(QApplication::translate("VMUMainWindow", "Emulation", Q_NULLPTR));

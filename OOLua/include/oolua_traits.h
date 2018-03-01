@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ namespace OOLUA
 @{
 \brief Provides direction and/or ownership information.
 \details
-The general naming convention for traits is:\n
+The general naming conventions for traits are :\n
 \li \ref OOLuaFunctionParamTraits : end in "_p"
 \li \ref OOLuaFunctionReturnTraits : end in "_return" or "_null"
 \li \ref OOLuaStackTraits : end in "_ptr".
@@ -179,19 +179,16 @@ The general naming convention for traits is:\n
 	*/
 	template<typename T>struct maybe_null;
 
-	/** \struct lua_maybe_null
-		\brief Return trait for a pointer which at runtime maybe NULL and also
-		allowing transfer of ownership.
+	/** \struct shared_return
+		\brief Converts a raw pointer return type to the supported shared pointer type
 		\details
-		The type returned from the function is a pointer instance whose
-		runtime value maybe NULL. If it is NULL then lua_pushnil will be called
-		else the pointer will be pushed and transfer ownership of the instance
-		to Lua. This is only valid for function return types.
-		\note To be consistent in naming this should really be called
-		lua_maybe_null_return, however I feel this would be too long a name for the
-		trait so "return" has been dropped.
+		A shared_return does not define that a function returns a shared_ptr
+		instead it informs the proxy to create a new shared object for the returned
+		pointer. This trait therefore requires that there is not a reference to the
+		pointer already known to the library.
 	*/
-	template<typename T>struct lua_maybe_null;
+	template<typename T>struct shared_return;
+
 	/**@}*/
 
 	/** \addtogroup OOLuaStackTraits Stack Traits
@@ -304,12 +301,59 @@ The general naming convention for traits is:\n
 		};
 
 		template<typename T>
+		struct is_shared_type
+		{
+			enum {value = 0};
+			typedef void underlying_type;
+		};
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T, template <typename> class shared_type>
+		struct is_shared_type<shared_type<T> >
+		{
+			//container class does not have a proxy yet the contained class does.
+			enum {value = has_a_proxy_type<shared_type<T> >::value == 0
+					&& has_a_proxy_type<typename LVD::raw_type<T>::raw>::value == 1};
+			typedef T underlying_type;
+		};
+#endif
+		template<typename T>
+		struct is_shared_const
+		{
+			typedef typename LVD::raw_type<T>::type raw;
+			typedef is_shared_type<raw> is_shared;
+
+			enum {value = is_shared::value
+					&& LVD::is_const<typename is_shared::underlying_type>::value };
+		};
+
+		template<typename EnumType>
+		struct is_scoped_enum
+		{
+			typedef typename LVD::raw_type<EnumType>::type raw;
+			enum {value = LVD::is_class_type<raw>::value == 0
+						&& LVD::can_convert_to_int<raw>::value == 0
+						&& LVD::is_integral_type<raw>::value == 0
+						&& LVD::is_same<int(lua_State*), raw>::value == 0 //NOLINT(readability/casting)
+						? 1 : 0
+				};
+		};
+
+		template<>
+		struct is_scoped_enum<void>
+		{
+			enum {value = 0};
+		};
+
+		template<typename T>
 		struct is_false_integral
 		{
 			typedef typename LVD::raw_type<T>::type raw;
 			enum {value = STRING::is_integral_string_class<raw>::value
 						|| INTERNAL::is_lua_ref<raw>::value
 						|| LVD::is_same<OOLUA::Table, raw>::value
+						|| INTERNAL::is_shared_type<raw>::value
+						|| INTERNAL::is_scoped_enum<raw>::value
 					};
 		};
 	} // namespace INTERNAL // NOLINT
@@ -327,7 +371,8 @@ The general naming convention for traits is:\n
 		enum {out = 0};
 		enum {owner = No_change};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant
+							|| INTERNAL::is_shared_const<type>::value };
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
 							|| INTERNAL::is_false_integral<type>::value };
 	};
@@ -481,21 +526,46 @@ The general naming convention for traits is:\n
 	};
 
 	template<typename T>
-	struct maybe_null
+	struct shared_return
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef void pull_type;//It is a return trait, therefore we are not interested in the pull type
+		enum { in = 0 };
+		enum { out = 1 };
+		enum { owner = No_change };
+		enum { is_by_value = 0 };
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
+		enum { is_integral = 1 };
+		typedef char type_can_not_be_integral [INTERNAL::Type_enum_defaults<type>::is_integral ? -1 : 1 ];
+		typedef char type_has_to_be_by_reference [INTERNAL::Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_just_a_reference_to_type [LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_reference_const_to_type [LVD::is_same<raw const&, type>::value ? -1 : 1];
+		typedef char type_has_to_have_a_proxy[ INTERNAL::has_a_proxy_type<raw>::value ? 1 : -1];
+	};
+
+	template<typename T>
+	struct maybe_null
+	{
+		typedef INTERNAL::function_return<T> return_trait;
+		typedef T type;
+		typedef typename LVD::raw_type<T>::type raw;
+		typedef typename INTERNAL::Pull_type_<raw, T
+												, LVD::is_integral_type<raw>::value
+												|| INTERNAL::is_shared_type<type>::value
+											>::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
 		enum { owner = No_change};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
-		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
-		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
-		typedef char type_can_not_be_just_a_const_reference_to_type [ LVD::is_same<raw const&, type>::value ? -1 : 1];
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant
+										|| INTERNAL::is_shared_const<type>::value };
+		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
+										|| INTERNAL::is_shared_type<type>::value };
+		typedef char type_can_not_be_normal_integral [INTERNAL::Type_enum_defaults<type>::is_integral ? -1 : 1 ];
+		typedef char type_has_to_be_by_reference_if_not_shared [!INTERNAL::is_shared_type<type>::value && is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_just_a_reference_to_type_if_not_shared [!INTERNAL::is_shared_type<type>::value && LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_const_reference_to_type_if_not_shared [!INTERNAL::is_shared_type<type>::value && LVD::is_same<raw const&, type>::value ? -1 : 1];
 		/*Reference to pointer:
 		this could be valid in some situations, until such a time as it is required
 		or requested disable it*/
@@ -505,23 +575,41 @@ The general naming convention for traits is:\n
 		typedef char type_can_not_be_a_reference_to_ptr_const [ LVD::is_same<raw const*&, type>::value ? -1 : 1];
 	};
 
+	template<typename T>
+	struct maybe_null<lua_return<T> >
+	{
+		typedef lua_return<T> return_trait;
+		typedef typename return_trait::type type;
+		typedef typename return_trait::raw raw;
+		typedef typename return_trait::pull_type pull_type;
+		enum { in = return_trait::in};
+		enum { out = return_trait::out};
+		enum { owner = return_trait::owner};
+		enum { is_by_value = return_trait::is_by_value  };
+		enum { is_constant = return_trait::is_constant };
+		enum { is_integral = return_trait::is_integral };
+		/*Reference to pointer:
+		this could be valid in some situations, until such a time as it is required
+		or requested disable it*/
+		typedef char type_can_not_be_a_reference_to_ptr [ LVD::is_same<raw *&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_const_ptr [ LVD::is_same<raw *const&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_const_ptr_const [ LVD::is_same<raw const*const&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_ptr_const [ LVD::is_same<raw const*&, type>::value ? -1 : 1];
+	};
 
 	template<typename T>
-	struct lua_maybe_null
+	struct maybe_null<shared_return<T> >
 	{
-		typedef T type;
-		typedef typename LVD::raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = Lua};
-		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
-		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
-		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
-		typedef char type_can_not_be_just_a_const_reference_to_type [ LVD::is_same<raw const&, type>::value ? -1 : 1];
+		typedef shared_return<T> return_trait;
+		typedef typename return_trait::type type;
+		typedef typename return_trait::raw raw;
+		typedef typename return_trait::pull_type pull_type;
+		enum { in = return_trait::in};
+		enum { out = return_trait::out};
+		enum { owner = return_trait::owner};
+		enum { is_by_value = return_trait::is_by_value  };
+		enum { is_constant = return_trait::is_constant };
+		enum { is_integral = return_trait::is_integral };
 		/*Reference to pointer:
 		this could be valid in some situations, until such a time as it is required
 		or requested disable it*/
@@ -755,7 +843,7 @@ The general naming convention for traits is:\n
 		};
 
 		template<typename T>
-		struct has_return_traits< lua_maybe_null<T> >
+		struct has_return_traits< shared_return<T> >
 		{
 			enum {value = 1};
 		};

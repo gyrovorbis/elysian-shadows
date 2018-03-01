@@ -247,26 +247,28 @@ LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
     behav = new LuaBehaviorScript(file);
 
     if(!runScriptSandbox(file, behav)) {
-        delete behav;
-        return nullptr;
-    }
+        //delete behav; Do NOT just shit.
+        //return nullptr;
+    } else {
 
-    callGlobalFunction<void>("setScriptAttrib", behav, behav->getAttrib());
-    behav->cacheTriggers(*_mainState);
+        callGlobalFunction<void>("setScriptAttrib", behav, behav->getAttrib());
+        behav->cacheTriggers(*_mainState);
 
-    if(behav->getAttrib()->hasParent()) {
-        behav->setParent(loadBehaviorScript(behav->getAttrib()->getParentPath()));
+        if(behav->getAttrib()->hasParent()) {
+            behav->setParent(loadBehaviorScript(behav->getAttrib()->getParentPath()));
 
-        //Make _ENV inherit from parent._ENV
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());					//_ENV
-        lua_newtable(*_mainState);																//metatable
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getParent()->getEnvironRef());		//parent._ENV
-        lua_setfield(*_mainState, -2, "__index");												//metatable[__index] = parent._ENV;
-        lua_setmetatable(*_mainState, -2);														//setmetatable(_ENV, metatable);
-    }
+            //Make _ENV inherit from parent._ENV
+            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());					//_ENV
+            lua_newtable(*_mainState);																//metatable
+            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getParent()->getEnvironRef());		//parent._ENV
+            lua_setfield(*_mainState, -2, "__index");												//metatable[__index] = parent._ENV;
+            lua_setmetatable(*_mainState, -2);														//setmetatable(_ENV, metatable);
+        }
 
-    if(behav->getAttrib()->getSupportedTriggers() & Behavior::ON_SCRIPT_CREATE) {
-        callGlobalFunction<void>("onScriptCreate", behav);
+        if(behav->getAttrib()->getSupportedTriggers() & Behavior::ON_SCRIPT_CREATE) {
+            callGlobalFunction<void>("onScriptCreate", behav);
+        }
+
     }
 
     dbgprintf("Adding new script to cache.");

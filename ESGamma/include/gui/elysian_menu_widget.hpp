@@ -4,6 +4,7 @@
 #include <gui/elysian_widget.hpp>
 #include <utility/elysian_associative_aggregate_array.hpp>
 #include <utility/elysian_cpp_lua_callback.hpp>
+#include <system/elysian_event_system.hpp>
 
 #define ELYSIAN_MENU_WIDGET_INPUT_INDEX 0 //holy fuck, fix me!!!
 #define ELYSIAN_MENU_WIDGET_SCROLL_BUTTON_HELD_START_TIME 1.0f//scroll fast after holding dpad for one sec?
@@ -39,6 +40,16 @@ namespace elysian {
 
     };
 
+    class MenuCurrentItemChangedEvent: public elysian::Event {
+    private:
+        Widget* _prev;
+        Widget* _next;
+    public:
+                MenuCurrentItemChangedEvent(Widget* prev, Widget* next);
+        Widget* getPrevWidget(void) const;
+        Widget* getNextWidget(void) const;
+    };
+
     /* TODO: SCROLLBAR SUPPORT!!!111??!
      *
      */
@@ -71,7 +82,7 @@ namespace elysian {
     protected:
 
         //Overriddable within children
-        virtual void    onSelectionChange(MenuSelection* sel);
+        virtual void    onSelectionChange(const MenuSelection* sel);
         virtual void    onCurrentChange(Widget* pev, Widget* next);
         virtual void    onCancel(void);
 
@@ -88,6 +99,7 @@ namespace elysian {
         Widget*         getCurrentWidget(void) const;
         void            setCurrentWidget(Widget* selection);
         void            setCurrentIndex(int index);
+        int             getCurrentIndex(void) const;
 
         auto            getSelection(void) -> const MenuSelection*;
         auto            getSelection(void) const -> const MenuSelection*;
@@ -104,6 +116,9 @@ namespace elysian {
         virtual void    virtualDPadEvent(const VirtualDPad& dpad) override;
         virtual void    activate(void) override;
 
+        //Overridden from EventRecevier
+        virtual void    onReceiveEvent(Event* event);
+
     };
 
 
@@ -111,13 +126,21 @@ namespace elysian {
 
 //========== INLINEZ ==========
 
+inline MenuCurrentItemChangedEvent::MenuCurrentItemChangedEvent(Widget* prev, Widget* next):
+    Event(EVENT_WIDGET_MENU_CURRENT),
+    _prev(prev),
+    _next(next)
+{}
+
+inline Widget* MenuCurrentItemChangedEvent::getPrevWidget(void) const { return _prev; }
+inline Widget* MenuCurrentItemChangedEvent::getNextWidget(void) const { return _next; }
+
 inline Widget* MenuWidget::getCurrentWidget(void) const {
     return _currentWidget;
 }
 
 inline void MenuWidget::setCurrentIndex(int index) {
     int wrapIndex = _toWrapIndex(index);
-    dbgprintf("INDEX - %d, WRAPINDEX - %d", index, wrapIndex);
     _setCurrent(_getWidgetFromIndex(wrapIndex), wrapIndex);
 }
 

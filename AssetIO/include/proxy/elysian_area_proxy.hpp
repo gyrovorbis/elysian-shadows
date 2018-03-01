@@ -71,6 +71,8 @@ OOLUA_PROXY(Area)
     OOLUA_MEM_FUNC_CONST(unsigned, getAuxOggTrackCount)
     OOLUA_MEM_FUNC(void, setBgmOggByTrack, unsigned, const char*)
     OOLUA_MEM_FUNC(void, setAuxOggByTrack, unsigned, const char*)
+    OOLUA_MFUNC(setOggGain)
+    OOLUA_MFUNC_CONST(getOggGain)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_AREA_PROXY_HPP

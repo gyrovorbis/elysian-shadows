@@ -33,6 +33,10 @@ LuaVariant TkLuaManager::getParent(const LuaVariant &t) {
     return callGlobalFunction<LuaVariant>("getparenttable", nullptr, t);
 }
 
+void TkLuaManager::setParent(const elysian::LuaVariant& t, const elysian::LuaVariant& p) {
+    callGlobalFunction<void>("setparenttable", nullptr, t, p);
+}
+
 int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {
     if(++_serializeDepth == 1) setSerializing(true);
 

@@ -8,8 +8,8 @@ public:
     using                       LuaTableProxy<elysian::RigidBodyBase, RigidBody, ForceTarget>::initializeDelegates;
     using                       LuaTableProxy<elysian::RigidBodyBase, RigidBody, ForceTarget>::initializeVirtualTableDelegates;
 
-    TkRigidBody(TkEntity& parent, const TkRigidBody*const prefab=nullptr);
-    TkRigidBody(void) = default;
+                    TkRigidBody(TkEntity& parent, TkRigidBody*const prefab=nullptr);
+                    TkRigidBody(void) = default;
 
     virtual bool    validate(QString &string) const override;
     virtual QMenu*  createContextMenu(void) override;
@@ -24,7 +24,7 @@ public:
 
 // ========= INLINEZ ========
 
-inline TkRigidBody::TkRigidBody(TkEntity &parent, const TkRigidBody*const prefab): elysian::RigidBodyBase(parent, prefab) {}
+inline TkRigidBody::TkRigidBody(TkEntity &parent, TkRigidBody*const prefab): elysian::RigidBodyBase(parent, prefab) {}
 
 #endif // TKRIGIDBODY_H
 

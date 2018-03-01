@@ -192,6 +192,7 @@
     <addaction name="actionEntity_View"/>
     <addaction name="actionCamera_View"/>
     <addaction name="actionHistory_View"/>
+    <addaction name="actionVMU_View"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Layout"/>
     <addaction name="separator"/>
@@ -290,6 +291,7 @@
     <addaction name="actionPerformance_Monitor_Dump"/>
     <addaction name="actionAdd_Player"/>
     <addaction name="actionRemove_Player"/>
+    <addaction name="actionConnectEVMUTcp"/>
    </widget>
    <widget class="QMenu" name="menuConsole">
     <property name="title">
@@ -307,6 +309,7 @@
     <addaction name="actionGitLab_Manager"/>
     <addaction name="actionPerformance_Monitor"/>
     <addaction name="actionDocumentation"/>
+    <addaction name="actionGenerate_VMU_Icons"/>
    </widget>
    <widget class="QMenu" name="menuGame">
     <property name="title">
@@ -422,6 +425,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionFileCloseProject">
@@ -1096,6 +1102,9 @@
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
   </action>
   <action name="actionAdvance_Frame">
    <property name="icon">
@@ -1653,6 +1662,27 @@
   <action name="actionPerformance_Monitor_Dump">
    <property name="text">
     <string>Performance Monitor Dump</string>
+   </property>
+  </action>
+  <action name="actionVMU_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>VMU View</string>
+   </property>
+  </action>
+  <action name="actionConnectEVMUTcp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Connect to EVMU</string>
+   </property>
+  </action>
+  <action name="actionGenerate_VMU_Icons">
+   <property name="text">
+    <string>Generate VMU Icons</string>
    </property>
   </action>
  </widget>

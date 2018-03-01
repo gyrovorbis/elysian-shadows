@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "char_arrays.h"
 #include "oolua_traits.h"
 #include "oolua_registration.h" //get_oolua_module
+#include "oolua_table.h"
 namespace
 {
 	void add_weaklookup_table(lua_State* vm)
@@ -50,6 +51,18 @@ namespace
 
 		lua_pop(vm, 1);//empty
 	}
+
+	void add_collision_metatable(lua_State* vm)
+	{
+		lua_createtable(vm, 0, 1);
+		lua_pushliteral(vm, "__mode");
+		lua_pushliteral(vm, "kv");
+		//collisionMetaTable['__mode'] = 'kv'
+		lua_rawset(vm, -3); //collisionMetaTable
+		OOLUA::INTERNAL::Weak_table::setCollisionMetatable(vm, -2);
+		lua_pop(vm, 1);
+	}
+
 	void add_ownership_globals(lua_State* vm)
 	{
 		lua_pushinteger(vm, OOLUA::Cpp);//int
@@ -58,13 +71,21 @@ namespace
 		lua_pushinteger(vm, OOLUA::Lua);//int
 		lua_setglobal(vm, OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
 
+		lua_pushcclosure(vm, OOLUA::INTERNAL::l_new_table, 0);
+		lua_setglobal(vm, OOLUA::INTERNAL::lua_new_table);
+
 		OOLUA::INTERNAL::get_oolua_module(vm);
-		lua_pushinteger(vm, OOLUA::Cpp);//int
+
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::cpp_owns_str);
+		lua_pushinteger(vm, OOLUA::Cpp);//int
 		lua_rawset(vm, -3);
 
-		lua_pushinteger(vm, OOLUA::Lua);//int
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::lua_owns_str);
+		lua_pushinteger(vm, OOLUA::Lua);//int
+		lua_rawset(vm, -3);
+
+		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::lua_new_table);
+		lua_pushcclosure(vm, OOLUA::INTERNAL::l_new_table, 0);
 		lua_rawset(vm, -3);
 
 		lua_pop(vm, 1);
@@ -81,7 +102,7 @@ namespace
 		if( lua_type(vm, -1) != LUA_TTABLE )
 			luaL_error(vm, "Lua %d get_preload_table failed to retrieve the preload table. Stack top is %s\n"
 					   , LUA_VERSION_NUM
-					   , lua_typename(vm, -1));
+					   , lua_typename(vm, -1)); // LCOV_EXCL_LINE
 	}
 
 	void register_oolua_module(lua_State *vm)
@@ -94,7 +115,7 @@ namespace
 		lua_settable(vm, -3);
 
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::oolua_str);
-		lua_createtable(vm, 0, 2);//starts with two entries cpp_own and lua_owns
+		lua_createtable(vm, 0, 3);//starts with three entries cpp_own, lua_owns and new_table
 		lua_rawset(vm, LUA_REGISTRYINDEX);
 
 		lua_settop(vm, top);
@@ -106,6 +127,7 @@ namespace OOLUA
 	void setup_user_lua_state(lua_State* vm)
 	{
 		add_weaklookup_table(vm);
+		add_collision_metatable(vm);
 		register_oolua_module(vm);
 		add_ownership_globals(vm);
 	}

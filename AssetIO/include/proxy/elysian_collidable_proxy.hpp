@@ -53,6 +53,7 @@ OOLUA_PROXY(CollidableStaticAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollidableAttrib)
+    OOLUA_TAGS(Shared)
     OOLUA_MEM_FUNC_CONST(GY_COLLIDER_TYPE, getColliderType)
     OOLUA_MEM_FUNC(void, setColliderType, GY_COLLIDER_TYPE)
     OOLUA_MEM_FUNC(void, setRelPos, float, float, float)
@@ -87,8 +88,8 @@ OOLUA_PROXY(Collidable, Component)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC_CONST(maybe_null<CollidableAttrib*>, getAttrib)
-    OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<CollidableAttrib*>)
+    OOLUA_MEM_FUNC_CONST(maybe_null<std::shared_ptr<CollidableAttrib>>, getAttrib)
+    OOLUA_MEM_FUNC(void, setAttrib, std::shared_ptr<CollidableAttrib>)
     OOLUA_MEM_FUNC_CONST(unsigned, getContactCount)
     OOLUA_MEM_FUNC_CONST(bool, isActive)
     OOLUA_MEM_FUNC(void, setActive, bool)

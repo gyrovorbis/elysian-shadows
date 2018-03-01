@@ -36,19 +36,26 @@ bool TkSkeleton::validate(QString &str) const {
         }
     };
 
-    cAssert(_attrib, "LOG_ERROR: Skeleton component has no attrib field.");
+    cAssert(_attrib.get(), "LOG_ERROR: Skeleton component has no attrib field.");
     return success;
 }
+void TkSkeleton::setAttrib(std::shared_ptr<SkeletonAttrib> attrib) {
+    _attrib->disconnect(this);
 
+    connect(attrib.get(), SIGNAL(atlasChanged()), this, SLOT(onAtlasChanged()));
+    connect(attrib.get(), SIGNAL(jsonChanged()), this, SLOT(onJsonChanged()));
+
+    elysian::SkeletonBase::setAttrib(attrib);
+}
 
 QMenu* TkSkeleton::createContextMenu(void) {
     MenuStack menuStack("Skeleton");
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new SkeletonAttrib : nullptr);
+            setAttrib(checked? std::make_shared<SkeletonAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 
@@ -156,7 +163,7 @@ void TkSkeletonAttrib::initializeDelegates(void) {
     lua_setfield(*_mainState, -2, "jsonPath");
 
     DynamicContentPropertyItemDelegate* animDelegate =
-            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
     animDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<elysian::Animation>);
     animDelegate->setMimeDropManager(new LuaMimeDropManager(QMap<QString, LuaMimeDropManager::LuaHandler> {
         {
@@ -303,7 +310,7 @@ void TkAnimation::initializeDelegates(void) {
     lua_setfield(*_mainState, -2, "name");
 
     DynamicContentPropertyItemDelegate* tracksDelegate =
-            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
     tracksDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<AnimationTrack>);
 
     OOLUA::push(*_mainState, tracksDelegate);
@@ -459,5 +466,11 @@ void TkSkeleton::printSlotData(void) const {
         }
     } else {
         warnprintf("Skeleton component has no attributes!");
+    }
+}
+
+TkSkeleton::~TkSkeleton(void) {
+    if(_attrib.get()) {
+        dbgprintf("Deleting SkeletonAttrib: %d references remaining!", _attrib.use_count()-1);
     }
 }

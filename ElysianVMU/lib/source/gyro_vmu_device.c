@@ -50,6 +50,8 @@ int gyVmuDeviceUpdate(VMUDevice* device, float deltaTime) {
         return 1;
     } else {
 
+            gyVmuSerialPortUpdate(device);
+
         if(deltaTime >= gyVmuOscSecPerCycle(device)) {
             //gyVmuSerialUpdate(device, deltaTime);
             gyVmuGamepadPoll(device);

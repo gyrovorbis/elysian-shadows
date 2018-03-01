@@ -35,8 +35,8 @@ OOLUA_PROXY_END
 OOLUA_PROXY(DialogOption)
     OOLUA_MEM_FUNC_CONST(const char*, getText)
     OOLUA_MEM_FUNC(void, setText, const char*)
-    OOLUA_MEM_FUNC_CONST(int, getNextIndex)
-    OOLUA_MEM_FUNC(void, setNextIndex, int)
+    OOLUA_MEM_FUNC_CONST_RENAME(getNextIndex, int, getNextIndexLua)
+    OOLUA_MEM_FUNC_RENAME(setNextIndex, void, setNextIndexLua, int)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogPrompt, DialogScreen)
@@ -47,15 +47,17 @@ OOLUA_PROXY(DialogPrompt, DialogScreen)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Dialog)
+    OOLUA_TAGS(Shared)
     OOLUA_MEM_FUNC(DialogText*, addTextScreen, const char*)
     OOLUA_MEM_FUNC(DialogPrompt*, addPromptScreen, const char*)
     OOLUA_MEM_FUNC(void, setScreen, const unsigned, cpp_in_p<DialogScreen*>)
-    OOLUA_MEM_FUNC_CONST(maybe_null<DialogScreen*>, getScreen, const unsigned)
+    OOLUA_MEM_FUNC_CONST(LuaVariant, getScreenLua, const unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getScreenCount)
     OOLUA_MEM_FUNC(void, setTriggerEntity, Entity*)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getTriggerEntity)
     OOLUA_MEM_FUNC_RENAME(setStartScreen, void, setStartScreenLua, const int)
     OOLUA_MEM_FUNC_CONST_RENAME(getStartScreen, int, getStartScreenLua)
+    OOLUA_MEM_FUNC_CONST_RENAME(getScreen, LuaVariant, getScreenLua, const unsigned)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_DIALOG_PROXY_HPP

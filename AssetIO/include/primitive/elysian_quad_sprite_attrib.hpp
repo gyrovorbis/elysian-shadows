@@ -24,7 +24,7 @@ namespace elysian {
 
         void setVertexColor4(const unsigned short index, const Color4& color) {
             GY_ASSERT(index < 4);
-            if(index > 0) _vertColor[index-1] = *(const GYColor4*)color;
+            if(index > 0) _vertColor[index-1] = GYColor4 { color.getR(), color.getG(), color.getB(), color.getA() };
             else setColor4(color);
         }
 

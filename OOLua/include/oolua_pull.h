@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,6 @@ THE SOFTWARE.
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
 
-
 #include <cassert>
 
 namespace OOLUA
@@ -69,6 +68,11 @@ namespace OOLUA
 		T* class_from_stack_top(lua_State * vm);
 		template<typename T>
 		T* none_const_class_from_stack_top(lua_State * vm);
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct stack_checker;
+#endif
 		//fwd
 
 		template<typename T, int is_integral, int is_convertable_to_int>
@@ -81,7 +85,7 @@ namespace OOLUA
 			{
 				//enumeration type so a static cast should be allowed else this
 				//is being called with the wrong type
-				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1];
+				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1] OOLUA_UNUSED;
 				//value = static_cast<T>( lua_tonumber( vm, -1) );
 				if( !cpp_runtime_type_check_of_top(vm, lua_isnumber, "enum type") )
 					return false;
@@ -105,7 +109,7 @@ namespace OOLUA
 		{
 			static bool pull(lua_State* const vm, T &  value)
 			{
-				if( !cpp_runtime_type_check_of_top(vm, lua_isnumber, "integer compatabile type") )
+				if( !cpp_runtime_type_check_of_top(vm, lua_isnumber, "integer compatible type") )
 					return false;
 				value = static_cast<T>(lua_tointeger(vm, -1));
 				lua_pop(vm, 1);
@@ -113,15 +117,54 @@ namespace OOLUA
 			}
 		};
 
-
+		//either a C++11 scoped enum or a string class
 		template<typename T>
 		struct pull_basic_type<T, 0, 0>
 		{
 			static bool pull(lua_State* const vm, T&  value)
 			{
+				return pull_imp(vm, value, LVD::Int2type<is_scoped_enum<T>::value>());
+			}
+			static bool pull_imp(lua_State* const vm, T& value, LVD::Int2type<1>)
+			{
+				//C++11 scoped enum
+				return pull_basic_type<T, 1, 1>::pull(vm, value);
+			}
+			static bool pull_imp(lua_State* const vm, T& value, LVD::Int2type<0>)
+			{
 				return OOLUA::STRING::pull(vm, value);
 			}
 		};
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T, template <typename> class Shared_pointer_class>
+		struct pull_basic_type<Shared_pointer_class<T>, 0, 0>
+		{
+			typedef typename LVD::remove_const<T>::type raw;
+			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)
+			{
+				value = !LVD::is_const<T>::value
+							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, lua_gettop(vm))
+							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, lua_gettop(vm));
+
+				if(!value)
+				{
+#	if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+					INTERNAL::handle_cpp_pull_fail(vm, LVD::is_const<T>::value
+														   ? Proxy_class<raw>::class_name_const
+														   : Proxy_class<raw>::class_name);
+#	elif OOLUA_DEBUG_CHECKS == 1
+					assert(value);
+#	endif
+#	if OOLUA_USE_EXCEPTIONS == 0
+					return false;
+#	endif
+				}
+				lua_pop(vm, 1);
+				return true;
+			}
+		};
+#endif
 
 		///////////////////////////////////////////////////////////////////////////////
 		///  @struct pull_ptr
@@ -139,7 +182,7 @@ namespace OOLUA
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 			if(Is_const) class_type = INTERNAL::class_from_stack_top< Raw_type >(vm);
 			else class_type = INTERNAL::none_const_class_from_stack_top<Raw_type>(vm);
-MSC_POP_COMPILER_LOG_WARNING_OOLUA
+MSC_POP_COMPILER_WARNING_OOLUA
 		}
 
 
@@ -206,7 +249,7 @@ MSC_POP_COMPILER_LOG_WARNING_OOLUA
 			assert(value.m_ptr);
 #endif
 #	if OOLUA_USE_EXCEPTIONS == 0//prevent vs warnings
-			return false;
+			return false; // LCOV_EXCL_LINE
 #	endif
 		}
 		INTERNAL::PULL::set_index_gc_value_to_false(vm, -1);

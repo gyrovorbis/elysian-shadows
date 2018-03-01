@@ -54,6 +54,7 @@ const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
 };
 
 void DebugBase::_guiWidgetsTest(void) {
+#if 0
     static bool initialized = false;
     HorizontalLayout* hLayout =  nullptr;
     EntityWidget* mainWidget = nullptr;
@@ -108,6 +109,7 @@ void DebugBase::_guiWidgetsTest(void) {
 
         initialized = true;
     }
+#endif
 
 }
 
@@ -286,12 +288,9 @@ void DebugBase::update(void) {
 
 }
 
-static LightSource* src;
-
 static EventCallback callback;
 
 void DebugBase::processInput(Keyboard*const input) {
-	static float theta = 0.0f;
 //	static unsigned size = 3;
 //	static unsigned intensity = 200;
     static bool freeCam = false;

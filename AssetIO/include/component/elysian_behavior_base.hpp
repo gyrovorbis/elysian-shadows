@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <cassert>
 #include <crtp/elysian_component.hpp>
+#include <level/elysian_event.hpp>
 #include <utility/elysian_stl_algorithm.hpp>
 
 #define ELYSIAN_BEHAVIOR_NAME_SIZE 100
@@ -19,7 +20,9 @@ namespace elysian {
     class CombatStatus;
 
     class BehaviorBase:
-            public Component
+            public Component,
+            public EventTarget,
+            public EventObserver
     {
         friend class BaseEntity;
 
@@ -68,6 +71,8 @@ namespace elysian {
             ON_SHATTER_INDEX,
             ON_BUTTON_PRESS_INDEX,
             ON_BUTTON_RELEASE_INDEX,
+            ON_RECEIVE_EVENT_INDEX,
+            ON_OBSERVE_EVENT_INDEX,
             TRIGGER_ENGINE_MAX_INDEX,
             //ESTk-only trigers
             ON_TK_SELECT_INDEX=61,
@@ -100,7 +105,9 @@ namespace elysian {
             ON_SHATTER                          = 1ul<<ON_SHATTER_INDEX,
             ON_BUTTON_PRESS                     = 1ul<<ON_BUTTON_PRESS_INDEX,
             ON_BUTTON_RELEASE                   = 1ul<<ON_BUTTON_RELEASE_INDEX,
-            TRIGGER_MAX							= 1ul<<TRIGGER_ENGINE_MAX_INDEX,//1<<23,
+            ON_RECEIVE_EVENT                    = 1ul<<ON_RECEIVE_EVENT_INDEX,
+            ON_OBSERVE_EVENT                    = 1ul<<ON_OBSERVE_EVENT_INDEX,
+            TRIGGER_MAX							= 1ul<<TRIGGER_ENGINE_MAX_INDEX,
             //ESTk-only trigers
             ON_TK_SELECT                        = 1ull<<ON_TK_SELECT_INDEX,
             ON_TK_UNSELECT                      = 1ull<<ON_TK_UNSELECT_INDEX
@@ -129,7 +136,9 @@ namespace elysian {
             "onCombatTargetCollisionEnter",
             "onShatter",
             "onButtonPress",
-            "onButtonRelease"
+            "onButtonRelease",
+            "onEventReceive",
+            "onEventObserve"
         };
 
         static const char* triggerNameFromFlag(const uint32_t flag);
@@ -160,6 +169,10 @@ namespace elysian {
         //virtual void onButtonRelease(const GameInput::BUTTON button);
         virtual void onCombatReceiveStatusModifier(CombatStatus*const modifier);
         virtual void onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
+
+        //Reimplemented from EventTarget/Observer
+        virtual void onReceiveEvent(Event* event);
+        virtual void onObserveEvent(Event* event, EventTarget* target);
 
         //ESTk Triggers
         virtual void onTkSelect(void);

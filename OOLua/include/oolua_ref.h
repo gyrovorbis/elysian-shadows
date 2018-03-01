@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -90,6 +90,12 @@ namespace OOLUA
 	{
 		/**
 			\brief
+			Initialises the instance so that a call to valid will return false.
+		 */
+		Lua_ref();
+
+		/**
+			\brief
 			Sets the lua_State and reference for the instance
 			\note This does not preform any validation on the parameters and it
 			is perfectly acceptable to pass parameters such that a call to
@@ -109,32 +115,6 @@ namespace OOLUA
 
 		/**
 			\brief
-			Initialises the instance so that a call to valid will return false.
-		 */
-		Lua_ref();
-
-		/**
-			\brief
-			Makes this instance a copy of rhs.
-			\param[in] rhs The instance to make a copy of
-			\note Even self assignment makes a copy, yet it will refer to the same
-			actual Lua type. It doesn't seem correct for every assignment to pay for
-			a branch just to keep the internal reference id the same.
-		*/
-		Lua_ref& operator = (Lua_ref const& rhs);
-
-		/**
-			\brief
-			Compares this instance reference with the right hand side operand.
-			\param[in] rhs Right hand side operand for the operator.
-			\return bool Result of the comparison.
-			\note An invalid reference compares equal any other invalid reference
-			regardless of the lua_State members.
-		*/
-		bool operator == (Lua_ref const& rhs) const;
-
-		/**
-			\brief
 			Creates a copy of rhs
 			\details
 			If rhs is valid then creates a new Lua reference to the value which rhs
@@ -150,22 +130,29 @@ namespace OOLUA
 		*/
 		~Lua_ref()OOLUA_DEFAULT;
 
+		/**@{*/
 		/**
 			\brief
-			Returns true if both the Lua instance is not NULL and the registry reference
-			is not invalid.
+			Compares this instance reference with the right hand side operand using lua_rawequal.
+			\param[in] rhs Right hand side operand for the operator.
+			\details An invalid reference compares equal with any other invalid reference
+			regardless of the lua_State members. This operator can produce different results for
+			Lua versions 5.1 and 5.2. In the latter pushing the same C function twice to the
+			stack using lua_pushcclosure and then comparing them will return true, yet in 5.1
+			this will return false.
+			\return bool Result of the comparison.
 		*/
-		bool valid()const;
+		bool operator == (Lua_ref const& rhs) const;
+
 		/**
 			\brief
-			Sets the stored reference and state.
-			\details
-			Releases any currently stored reference and takes ownership of the passed
-			reference.
-			\param[in] vm lua_State to associated the reference with.
-			\param[in] ref Registry reference id for which the instance takes ownership of.
+			Makes this instance a copy of rhs.
+			\param[in] rhs The instance to make a copy of
+			\note Even self assignment makes a copy, yet it will refer to the same
+			actual Lua instance. It doesn't seem correct for every assignment to pay for
+			a branch just to keep the internal reference id the same.
 		*/
-		void set_ref(lua_State* const vm, int const& ref)OOLUA_DEFAULT;
+		Lua_ref& operator = (Lua_ref const& rhs);
 
 		/**
 			\brief
@@ -178,13 +165,14 @@ namespace OOLUA
 				will receive the internal state of this instance as it was before the swap.
 		*/
 		void swap(Lua_ref& rhs);
+		/**@}*/
 
-		/** \cond INTERNAL*/
-		bool push(lua_State* const vm)const;
-		bool pull(lua_State* const vm) OOLUA_DEFAULT;
-		bool lua_push(lua_State* const vm)const;
-		bool lua_get(lua_State* const vm, int idx);
-		/** \endcond*/
+		/**
+			\brief
+			Returns true if both the Lua instance is not NULL and the registry reference
+			is not invalid.
+		*/
+		bool valid()const;
 
 		/**
 			\brief
@@ -197,6 +185,25 @@ namespace OOLUA
 			Returns the integer Lua registry reference value.
 		*/
 		int const& ref()const;
+
+		/**
+			\brief
+			Sets the stored reference and state.
+			\details
+			Releases any currently stored reference and takes ownership of the passed
+			reference.
+			\param[in] vm lua_State to associated the reference with.
+			\param[in] ref Registry reference id for which the instance takes ownership of.
+		*/
+		void set_ref(lua_State* const vm, int const& ref)OOLUA_DEFAULT;
+
+
+		/** \cond INTERNAL*/
+		bool push(lua_State* const vm)const;
+		bool pull(lua_State* const vm) OOLUA_DEFAULT;
+		bool lua_push(lua_State* const vm)const;
+		bool lua_get(lua_State* const vm, int idx);
+		/** \endcond*/
 	private:
 		/** \cond INTERNAL Yes I know this is bad \endcond*/
 		friend class Table;
@@ -253,7 +260,7 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	bool Lua_ref<ID>::operator == (Lua_ref<ID> const& rhs) const
+	inline bool Lua_ref<ID>::operator == (Lua_ref<ID> const& rhs) const
 	{
 		if (!valid() || !rhs.valid()) return valid() == rhs.valid();
 		else if (m_lua == rhs.state() || can_xmove(m_lua, rhs.state()))
@@ -266,6 +273,7 @@ namespace OOLUA
 		}
 		return false;
 	}
+
 
 	template<int ID>
 	bool Lua_ref<ID>::valid()const

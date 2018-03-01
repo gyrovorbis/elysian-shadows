@@ -15,14 +15,18 @@
 #define ESTOOLKIT_SCREENS_DIR           "screenshots"
 #define ESTOOLKIT_CRASH_CMD_LINE_ARG    "--crash"
 #define ESTOOLKIT_SETTINGS_FILE         "estk_settings.ini"
+#define ESTOOLKIT_EVMU_BIOS_FILE_PATH   "/assets/bin/vmu_bios_jap.bin"
+#define ESTOOLKIT_STATUSBAR_MSG_TIMEOUT 2000
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
 class QToolButton;
 class QActionGroup;
 class QUndoGroup;
+class QLabel;
 class QOpenGLDebugLogger;
 class QOpenGLDebugMessage;
+class QTimer;
 
 namespace Ui {
     class ESToolkit;
@@ -45,6 +49,7 @@ class EngineGLSceneWidget;
 class CameraDockWidget;
 class GitlabDialog;
 class HelpDockWidget;
+class VMUMainWindow;
 class TkArea;
 
 namespace Ui {
@@ -68,6 +73,8 @@ public:
     static int          pushSelection(lua_State*const vm);
     static void         searchDocs(QString query);
     static void         openDoc(QString page, QString section=QString());
+    static void         showStatusBarMessage(QString message);
+    static void         showStatusBarMessage(QString message, QColor color);
 
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
@@ -77,9 +84,11 @@ public:
     QDir            getOutputDir(void) const;
     void            setIndexHiddenLevels(const bool val);
     AssetDockWidget* getAssetDockWidget(void) const;
+    VMUMainWindow*  getVMUMainWindow(void) const;
 
 protected:
     virtual void    changeEvent(QEvent *e) override;
+    //virtual bool    event(QEvent* event) override;
     virtual void    closeEvent(QCloseEvent *event) override;
 
     void            _onGYSysSegFault();
@@ -127,8 +136,10 @@ private:
     HistoryDockWidget*      _historyDockWidget;
     CameraDockWidget*       _cameraDockWidget;
     QDockWidget*            _bottomDockWidget;
+    QDockWidget*            _vmuDockWidget;
     QTabWidget*             _bottomTabWidget;
 
+    VMUMainWindow*          _evmuWindow = nullptr;
     EngineDialog*           _engineDialog;
     EngineSettingsDialog*   _engineSettingsDialog;
     SheetManager*           _sheetManager;
@@ -138,6 +149,9 @@ private:
     QToolButton*            m_activePlatform;
     QActionGroup*           m_platformActionGroup;
     QActionGroup*           m_transformActionGroup;
+
+    QLabel*                 _statusLabel        = nullptr;
+    QTimer*                 _statusLabelTimer   = nullptr;
 
     enum MAP_VIEW_RES {
         MAP_VIEW_RES_480P,
@@ -274,6 +288,9 @@ private Q_SLOTS:
     void on_actionPerformance_Monitor_Dump_triggered();
     void on_actionAudio_Dump_triggered();
     void on_actionTexture_Dump_triggered();
+    void on_actionVMU_View_triggered(bool checked);
+    void on_actionGenerate_VMU_Icons_triggered();
+    void on_actionConnectEVMUTcp_toggled(bool arg1);
 };
 
 
@@ -293,5 +310,6 @@ inline void ESToolkit::setOutputDir(const QDir dir) { _outputDir = dir; }
 inline QDir ESToolkit::getOutputDir(void) const { return _outputDir; }
 inline ESToolkit* ESToolkit::getInstance(void) { return _instance; }
 inline AssetDockWidget* ESToolkit::getAssetDockWidget(void) const { return _assetDockWidget; }
+inline VMUMainWindow* ESToolkit::getVMUMainWindow(void) const { return _evmuWindow; }
 
 #endif // ESTOOLKIT_H

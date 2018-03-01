@@ -18,7 +18,7 @@ namespace elysian {
     class Layout {
     public:
         enum AXIS {
-            X, Y, AXIS_COUNT
+            X, Y, AXIS_COUNT, X_Y
         };
 
         enum ALIGNMENT {
@@ -34,11 +34,11 @@ namespace elysian {
         ALIGNMENT               _alignment[AXIS_COUNT]  = { ALIGN_CENTER };
         const AXIS              _groupingAxis;
 
-        void        _updateSizes(AXIS axis);
-        void        _updateSizes(void);
-        void        _updatePositions(AXIS axis);
-        void        _updatePositions(void);
-        void        _updatePositionsZ(void);
+        virtual void    _updateSizes(AXIS axis);
+        virtual void    _updatePositions(AXIS axis);
+        void            _updateSizes(void);
+        void            _updatePositions(void);
+        void            _updatePositionsZ(void);
 
     public:
 
@@ -46,9 +46,10 @@ namespace elysian {
                     Layout(AXIS groupingAxis, std::vector<Widget*>&& widgets, Widget* parent=nullptr);
                     Layout(AXIS groupingAxis, std::vector<Widget*>& widgets, Widget* parent=nullptr);
 
-                    ~Layout(void);
+        virtual     ~Layout(void);
 
         void        addWidget(Widget* widget);
+        void        insertWidget(unsigned index, Widget* widget);
         Widget*     removeWidget(Widget* widget);   //Returns widget given as argument (for owernship change in Lua API).
         void        clearWidgets(void);
         void        setWidget(unsigned index, Widget* widget);
@@ -87,8 +88,6 @@ namespace elysian {
         void        render(void) const;
 
         void        controllerEvent(const Controller& cont);
-        void        keyboardEvent(const Keyboard& keybd);
-        void        mouseEvent(const Mouse& mouse);
         void        touchEvent(const TouchDevice& touch);
         void        virtualDPadEvent(const VirtualDPad& dpad);
     };
@@ -111,6 +110,13 @@ namespace elysian {
 
     };
 
+    class GridLayout: public Layout {
+                        GridLayout(Widget* parent=nullptr);
+
+        virtual void    _updateSizes(AXIS axis);
+        virtual void    _updatePositions(AXIS axis);
+    };
+
 
 
 
@@ -124,8 +130,8 @@ namespace elysian {
         _groupingAxis(groupingAxis){}
 
     inline Widget* Layout::getWidget(unsigned index) const {
-        GY_ASSERT(index < _widgets.size());
-        return _widgets[index];
+        //GY_ASSERT(index < _widgets.size());
+        return (index < _widgets.size())? _widgets[index] : nullptr;
     }
     inline unsigned Layout::getWidgetCount(void) const { return (unsigned)_widgets.size();}
     inline auto Layout::getGroupingAxis(void) const -> AXIS { return _groupingAxis; }
@@ -156,6 +162,7 @@ namespace elysian {
     inline void Layout::_updatePositions(void) { _updatePositions(X); _updatePositions(Y); }
     inline void Layout::_updateSizes(void) { _updateSizes(X); _updateSizes(Y); }
 
+    //----- HORIZONTAL ------
     inline HorizontalLayout::HorizontalLayout(Widget* parent):
         Layout(X, parent) {}
 
@@ -167,6 +174,7 @@ namespace elysian {
         Layout(X, widgets, parent)
         {}
 
+    //----- VERTICAL ------
     inline VerticalLayout::VerticalLayout(Widget* parent):
         Layout(Y, parent) {}
 
@@ -177,6 +185,10 @@ namespace elysian {
     inline VerticalLayout::VerticalLayout(std::vector<Widget*>& widgets, Widget* parent):
         Layout(Y, widgets, parent)
         {}
+
+    //----- GRID ------
+    inline GridLayout::GridLayout(Widget* parent):
+        Layout(X_Y, parent) {}
 }
 
 #endif // ELYSIAN_LAYOUT_HPP

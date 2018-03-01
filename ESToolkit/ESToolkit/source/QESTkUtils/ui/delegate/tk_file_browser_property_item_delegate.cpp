@@ -23,7 +23,7 @@ FileBrowserPropertyItemDelegate::FileBrowserPropertyItemDelegate(TextCallbackTyp
              QString relFile = FileUtilities::getAssetRelativePath(str);
              item->setData(relFile, Qt::EditRole);
          }
-    });
+    }, "Browse For File");
 }
 
 #if 0

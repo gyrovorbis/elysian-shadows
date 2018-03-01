@@ -6,31 +6,45 @@
 
 class TkDialogText: public elysian::DialogTextBase {
 public:
-        using       TkDialogScreen::initializeDelegates;
-        using       TkDialogScreen::initializeVirtualTableDelegates;
+    using           TkDialogScreen::initializeVirtualTableDelegates;
 
                     TkDialogText(void) = default;
                     TkDialogText(const char *str);
+
+    virtual bool    validate(const TkDialog* dialog, QString& errorMsg) const override;
+    static void     initializeDelegates(void);
 };
 
 class TkDialogOption: public elysian::DialogOptionBase {
 public:
                     TkDialogOption(void) = default;
                     TkDialogOption(const char* str, const int nextIndex);
+
+        bool        validate(const TkDialog* dialog, QString& errorMsg) const;
+        static void initializeDelegates(void);
 };
 
 class TkDialogPrompt: public elysian::DialogPromptBase {
 public:
-        using       TkDialogScreen::initializeDelegates;
-        using       TkDialogScreen::initializeVirtualTableDelegates;
+    using           TkDialogScreen::initializeVirtualTableDelegates;
 
                     TkDialogPrompt(void) = default;
                     TkDialogPrompt(const char* str);
+
+    static void     initializeDelegates(void);
+    static void     initializeVirtualTableDelegates(QString key);
+
+    virtual bool    validate(const TkDialog* dialog, QString& errorMsg) const override;
 
 };
 
 class TkDialog: public elysian::DialogBase {
 public:
+
+    static void initializeDelegates(void);
+    static void initializeVirtualTableDelegates(QString key);
+
+    bool        validate(QString& errorMsg) const;
 
 };
 

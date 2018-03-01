@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #ifndef LVD_TYPE_TRAITS_H_
 #	define LVD_TYPE_TRAITS_H_
-
 
 /**
 	\file lvd_type_traits.h
@@ -369,12 +368,28 @@ namespace LVD
 		static no test(Convertor);
 		static no test(float&);
 		static no test(double&);
+#ifdef _MSC_VER
+		static yes test(::size_t); // NOLINT
+#else
 		static yes test(int); // NOLINT
+#endif
 		static From& make_from();
 	public:
 		enum { value = sizeof test(make_from()) == sizeof(yes) ? 1 : 0 };
 	};
 
+	template<typename T>
+	struct is_class_type
+	{
+		typedef char (&yes)[1];
+		typedef char (&no)[2];
+		template<typename C>
+		static no test(...);
+		template<typename C>
+		static yes test(char C::*); // NOLINT
+	public:
+		enum { value = sizeof test<typename raw_type<T>::type >(0) == sizeof(yes) ? 1 : 0 };
+	};
 
 } // namespace LVD // NOLINT
 

@@ -11,17 +11,16 @@ ParticleSystemBase::ParticleSystemBase(unsigned emitterCount):
     _emitterCount(emitterCount)
 {
     _emitters       = new ParticleEmitterInternals[emitterCount];
-    _defaultAttribs = new ParticleEmitterAttrib*[emitterCount];
+    _defaultAttribs = new std::shared_ptr<ParticleEmitterAttrib>[emitterCount];
 
     for(unsigned i = 0; i < emitterCount; ++i) {
-		_defaultAttribs[i] = new ParticleEmitterAttrib;
+        _defaultAttribs[i] = std::make_shared<ParticleEmitterAttrib>();
         _emitters[i].setAttrib(_defaultAttribs[i]);
         _emitters[i].resizePool(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
 	}
 }
 
 ParticleSystemBase::~ParticleSystemBase(void) {
-    for(unsigned i = 0; i < _emitterCount; ++i) delete _defaultAttribs[i];
     delete[] _defaultAttribs;
     delete[] _emitters;
 }

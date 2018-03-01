@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,11 @@ THE SOFTWARE.
 
 #	include "oolua_config.h"
 #	include "lvd_types.h"
+
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
+
 struct lua_State;
 namespace OOLUA
 {
@@ -41,15 +46,26 @@ namespace OOLUA
 		struct Lua_ud;
 		typedef void (*oolua_function_check_base)(INTERNAL::Lua_ud* __restrict, INTERNAL::Lua_ud const* __restrict);
 		typedef void (*oolua_type_check_function)(lua_State * vm);
-
+		typedef void (*oolua_release_shared_ptr)(INTERNAL::Lua_ud*);
 		/**
 			\brief The internal type which is used by the library to represent C++ classes.
 		*/
 		struct Lua_ud
 		{
+#if OOLUA_USE_SHARED_PTR == 1
+			union
+			{
+				void* void_class_ptr;
+				char shared_object[sizeof(OOLUA_SHARED_TYPE<int>)];
+			};
+#else
 			void* void_class_ptr;
+#endif
 			oolua_function_check_base base_checker;
 			oolua_type_check_function type_check;
+#if OOLUA_USE_SHARED_PTR == 1
+			oolua_release_shared_ptr shared_ptr_release;
+#endif
 			LVD::uint32 flags;
 		};
 
@@ -64,8 +80,10 @@ namespace OOLUA
 		bool userdata_is_constant(Lua_ud const* ud);
 		bool userdata_is_to_be_gced(Lua_ud const * ud);
 		void userdata_gc_value(Lua_ud* ud, bool value);
+		void userdata_shared_ptr(Lua_ud* ud);
+		bool userdata_is_shared_ptr(Lua_ud* ud);
 
-		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02};
+		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02, SHARED_FLAG = 0x4, COLLISION_FLAG = 0x08};
 
 		inline void userdata_const_value(Lua_ud* ud, bool value)
 		{
@@ -85,7 +103,23 @@ namespace OOLUA
 			if(value) ud->flags |= GC_FLAG;
 			else ud->flags &= (~GC_FLAG);
 		}
+		inline void userdata_ptr_collision(Lua_ud* ud)
+		{
+			ud->flags |= COLLISION_FLAG;
+		}
+		inline bool userdata_is_ptr_collision(Lua_ud* ud)
+		{
+			return (ud->flags & COLLISION_FLAG) != 0;
+		}
+		inline void userdata_shared_ptr(Lua_ud* ud)
+		{
+			ud->flags |= SHARED_FLAG;
+		}
 
+		inline bool userdata_is_shared_ptr(Lua_ud* ud)
+		{
+			return (ud->flags & SHARED_FLAG) != 0;
+		}
 	} // namespace INTERNAL //NOLINT
 	/**\endcond */
 

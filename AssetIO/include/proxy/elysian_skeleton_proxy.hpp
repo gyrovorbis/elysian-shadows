@@ -4,15 +4,14 @@
 #include <crtp/elysian_skeleton.hpp>
 #include <utility/elysian_oolua_string_traits.hpp>
 
+using namespace std;
+
 namespace OOLUA
 {
     typedef elysian::AnimationTrack     AnimationTrack;
     typedef elysian::Animation          Animation;
     typedef elysian::SkeletonAttrib     SkeletonAttrib;
     typedef elysian::Skeleton           Skeleton;
-
-    //template<> class Proxy_class<SkeletonAttrib>;
-    //template<> class Proxy_class<Skeleton>;
 }
 
 OOLUA_PROXY(AnimationTrack)
@@ -33,6 +32,9 @@ OOLUA_PROXY(Animation)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(SkeletonAttrib)
+    OOLUA_TAGS (
+        Shared
+    )
     OOLUA_MEM_FUNC(void, loadAssets, const char*, const char*)
     OOLUA_MEM_FUNC_CONST(const char*, getAtlasPath)
     OOLUA_MEM_FUNC_CONST(const char*, getJsonPath)
@@ -43,13 +45,14 @@ OOLUA_PROXY(SkeletonAttrib)
     OOLUA_MEM_FUNC_CONST(unsigned, getAnimationCount)
 OOLUA_PROXY_END
 
+
 OOLUA_PROXY(Skeleton, Component)
     OOLUA_TAGS (
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<SkeletonAttrib*const>)
-    OOLUA_MEM_FUNC_CONST(maybe_null<SkeletonAttrib*>, getAttrib)
+    OOLUA_MFUNC(setAttrib)
+    OOLUA_MEM_FUNC_CONST(maybe_null<shared_ptr<SkeletonAttrib>>, getAttrib)
     OOLUA_MEM_FUNC(void, setAnimTimeScale, const float)
     OOLUA_MEM_FUNC_CONST(float, getAnimTimeScale)
     OOLUA_MEM_FUNC(void, setAnimTrackByName, const int, const char*const, const bool)
@@ -65,6 +68,9 @@ OOLUA_PROXY(Skeleton, Component)
     OOLUA_MEM_FUNC_CONST(void, printSlotData)
 #endif
 OOLUA_PROXY_END
+
+
+
 
 
 #endif // ELYSIAN_SKELETON_PROXY_HPP

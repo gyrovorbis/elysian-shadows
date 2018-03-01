@@ -12,6 +12,10 @@ dreamcast {
     TARGET_EXT=".elf"
 }
 
+vmu_child_app {
+    DEFINES+=VMU_CHILD_APP
+}
+
 !ios: !dreamcast: !android {
     QT += sql gui opengl network help
     CONFIG += console
@@ -78,6 +82,16 @@ INCLUDEPATH += ../../AssetIO/include \
     INCLUDEPATH += include
     #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 }
+
+vmu_child_app {
+    QT += serialport
+
+    INCLUDEPATH += ../../ElysianVMU/lib/source
+
+    DEPENDPATH += ../../ElysianVMU/lib/source \
+        ../../ElysianVMU/qtcreator/ElysianVMU
+}
+
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
 INCLUDEPATH += \
     ../../game/include \
@@ -203,6 +217,11 @@ SOURCES += \
     ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
     ../../ESGamma/source/system/elysian_particle_system_base.cpp \
+    ../../AssetIO/source/level/elysian_event.cpp \
+    ../../AssetIO/source/proxy/elysian_event_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_event_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_collision_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp
 
 !ios: !dreamcast: !android {
 
@@ -295,7 +314,9 @@ SOURCES += \
         source/ESGamma/tk_particle_system.cpp \
         source/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.cpp \
         source/QESTkUtils/ui/widget/tk_2d_vector_widget.cpp \
-        source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp
+        source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp \
+        source/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.cpp
 
 
 } else {
@@ -472,7 +493,13 @@ HEADERS += \
     ../../AssetIO/include/crtp/elysian_color.hpp \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
     ../../ESGamma/include/system/elysian_particle_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_particle_system.hpp
+    ../../ESGamma/include/crtp/elysian_particle_system.hpp \
+    ../../AssetIO/include/primitive/elysian_rect.hpp \
+    ../../AssetIO/include/level/elysian_event.hpp \
+    ../../AssetIO/include/proxy/elysian_event_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_event_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_collision_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -591,7 +618,9 @@ HEADERS += \
         include/ESGamma/tk_gui_system.h \
         include/ESGamma/tk_level_system.h \
         include/QESTkUtils/tk_mime_data.h \
-        include/QESTkUtils/tk_mime_drop_manager.h
+        include/QESTkUtils/tk_mime_drop_manager.h \
+        include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h \
+        include/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h
 }
 
 
@@ -626,8 +655,8 @@ FORMS += form/ESToolkit/dock/tk_sheet_dock_widget.ui \
 
 #Required to get C++11x to work on OSX
 macx {
-    QMAKE_CXXFLAGS += -mmacosx-version-min=10.8 -stdlib=libc++
-    LIBS += -mmacosx-version-min=10.8 -stdlib=libc++
+    QMAKE_CXXFLAGS +=  -stdlib=libc++
+    LIBS += -stdlib=libc++
 
     #CONFIG(release, debug|release) {
      #  QMAKE_POST_LINK = "macdeployqt TARGET"
@@ -641,6 +670,10 @@ opencl {
 }
 
 RESOURCES += resource/resource.qrc
+
+vmu_child_app {
+    RESOURCES += ../../ElysianVMU/qtcreator/ElysianVMU/resource/evmu.qrc
+}
 
 docs {
 
@@ -697,6 +730,21 @@ linux {
 }
 
 
+vmu_child_app {
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
+    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU -lElysianVMU
+
+    INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+    DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/libElysianVMU.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/libElysianVMU.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ElysianVMU.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ElysianVMU.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/libElysianVMU.a
+}
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/ -llibGyro
@@ -786,6 +834,8 @@ win32 {
         -lSDL2 \
         -lSDL2Main \
         -lSDL2.dll \
+        -lSDL2_net \
+        -lSDL2_net.dll \
        # -lmingw32 \
         -logg \
         -lvorbis \
@@ -808,6 +858,7 @@ macx {
         -L../../ESGamma/lib/osx \
         -F../../libGyro/lib/osx \
         -framework SDL2 \
+        -framework SDL2_net \
         -framework Foundation \
         -framework Cocoa \
         -lobjc \

@@ -439,16 +439,21 @@
  */
 
 
-
-
-
-//EXPORT_OOLUA_FUNCTIONS_0_CONST(GYVector2)
-//EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYVector2)
 OOLUA_EXPORT_FUNCTIONS(GYVector2, setX, setY)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYVector2, getX, getY)
 
-OOLUA_EXPORT_FUNCTIONS(Vector2)
-OOLUA_EXPORT_FUNCTIONS_CONST(Vector2, getX, getY, setX, setY)
+OOLUA_EXPORT_FUNCTIONS(Vector2,
+                       normalize)
+OOLUA_EXPORT_FUNCTIONS_CONST(Vector2,
+                             getX,
+                             getY,
+                             setX,
+                             setY,
+                             getMagnitude,
+                             distance,
+                             dotProduct,
+                             scalarCrossProduct,
+                             vectorCrossProduct)
 
 //OOLUA_EXPORT_FUNCTIONS(GYVector3)
 //OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3)

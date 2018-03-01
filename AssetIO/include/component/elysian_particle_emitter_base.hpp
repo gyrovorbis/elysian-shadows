@@ -123,8 +123,8 @@ namespace elysian {
         friend ParticleEmitter;
 	private:
 		//Particle*				_pool			= nullptr;
-		Pool<Particle>          _pool           = Pool<Particle>(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
-		ParticleEmitterAttrib*	_attrib			= nullptr;
+        Pool<Particle>                          _pool   = Pool<Particle>(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
+        std::shared_ptr<ParticleEmitterAttrib>	_attrib;
 
     public:
 
@@ -132,15 +132,14 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                                    ~ParticleEmitterInternals(void);
-        ParticleEmitterInternals&   operator=(const ParticleEmitterInternals& rhs);
+        ParticleEmitterInternals&   operator=(ParticleEmitterInternals& rhs);
 
         void                        allocatePool(const unsigned size);
         unsigned                    getPoolSize(void) const;
         unsigned                    getActiveCount(void) const;
         void                        resizePool(unsigned size);
-        void                        setAttrib(ParticleEmitterAttrib*const attrib);
-        ParticleEmitterAttrib*      getAttrib(void) const;
+        void                        setAttrib(std::shared_ptr<ParticleEmitterAttrib> attrib);
+        auto                        getAttrib(void) const -> std::shared_ptr<ParticleEmitterAttrib>;
 
         void                        applyForce(ForceGenerator*const force, const float deltaTime);
         void                        update(const Camera*const state, const float deltaTime);
@@ -168,10 +167,10 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                                 ParticleEmitterBase(void) = default;
-                                ParticleEmitterBase(Entity& entity, const ParticleEmitterBase*const prefab=nullptr);
+                                ParticleEmitterBase(Entity& entity, ParticleEmitterBase*const prefab=nullptr);
                                 ~ParticleEmitterBase(void) = default;
 
-        ParticleEmitterBase&    operator=(const ParticleEmitterBase& rhs);
+        ParticleEmitterBase&    operator=(ParticleEmitterBase& rhs);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::PARTICLE_EMITTER;
@@ -191,7 +190,7 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setForceMask(const BitMask32 mask) { _forceMask = mask; }
     inline void ParticleEmitterAttribBase::setStartSize(const unsigned size) { _startSize = size; }
     inline void ParticleEmitterAttribBase::setEndSize(const unsigned size) { _endSize = size; }
-    inline void ParticleEmitterAttribBase::setEndColor(const Color4& color) { _endColor = color; }
+    inline void ParticleEmitterAttribBase::setEndColor(const Color4& color) { _endColor = GYColor4 { color.getR(), color.getG(), color.getB(), color.getA() }; }
 
     inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;
@@ -220,7 +219,7 @@ namespace elysian {
     inline bool ParticleEmitterAttribBase::getStick(void) const { return _stick; }
 
 
-    inline ParticleEmitterInternals& ParticleEmitterInternals::operator=(const ParticleEmitterInternals& rhs) {
+    inline ParticleEmitterInternals& ParticleEmitterInternals::operator=(ParticleEmitterInternals& rhs) {
         _attrib = rhs._attrib;
         return *this;
     }
@@ -228,12 +227,20 @@ namespace elysian {
     inline void ParticleEmitterInternals::resizePool(unsigned size) { _pool.resize(size); }
     inline unsigned ParticleEmitterInternals::getActiveCount(void) const { return _pool.size(); }
 
-    inline ParticleEmitterBase::ParticleEmitterBase(Entity& entity, const ParticleEmitterBase*const prefab): Component(entity) {
+    inline ParticleEmitterBase::ParticleEmitterBase(Entity& entity, ParticleEmitterBase*const prefab): Component(entity) {
         if(prefab) *this = *prefab;
     }
-    inline ParticleEmitterBase& ParticleEmitterBase::operator=(const ParticleEmitterBase& rhs) {
+    inline ParticleEmitterBase& ParticleEmitterBase::operator=(ParticleEmitterBase& rhs) {
         ParticleEmitterInternals::operator=(rhs);
         return *this;
+    }
+
+    inline std::shared_ptr<ParticleEmitterAttrib> ParticleEmitterInternals::getAttrib(void) const {
+        return _attrib;
+    }
+
+    inline void ParticleEmitterInternals::setAttrib(std::shared_ptr<ParticleEmitterAttrib> attrib) {
+        _attrib = attrib;
     }
 
 }

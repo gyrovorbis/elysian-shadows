@@ -4,10 +4,14 @@
 #include <level/elysian_dialog_screen_base.hpp>
 #include <ESGamma/tk_lua_wrappers.h>
 
+class TkDialog;
+
 class TkDialogScreen: public elysian::DialogScreenBase {
 public:
                     TkDialogScreen(const SCREEN_TYPE scrType);
                     TkDialogScreen(const SCREEN_TYPE scrType, const char*const text);
+    virtual bool    validate(const TkDialog* dialog, QString& errorMsg) const = 0;
+
 
     static void     initializeDelegates(void);
 };

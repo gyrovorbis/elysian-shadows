@@ -6,6 +6,7 @@
 #include <spine/Attachment.h>
 #include <spine/AnimationState.h>
 #include <initializer_list>
+#include <memory>
 
 #define ELYSIAN_SKELETON_ATLAS_PATH_SIZE        300
 #define ELYSIAN_SKELETON_JSON_PATH_SIZE         300
@@ -146,7 +147,8 @@ namespace elysian {
 
         std::vector<EntityAttachment*>
                             _entityAttachments;
-        SkeletonAttrib*     _attrib         = nullptr;
+        //SkeletonAttrib*     _attrib         = nullptr;
+        std::shared_ptr<SkeletonAttrib> _attrib;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
         const Animation*    _curAnim        = nullptr;
@@ -174,8 +176,8 @@ namespace elysian {
         void            update(const float deltaTime) const;
         void            render(void) const;
 
-        void            setAttrib(SkeletonAttrib*const attrib);
-        SkeletonAttrib* getAttrib(void) const;
+        void            setAttrib(std::shared_ptr<SkeletonAttrib> attrib);
+        std::shared_ptr<SkeletonAttrib> getAttrib(void) const;
 
         void            setAnimTimeScale(const float scale);
         float           getAnimTimeScale(void) const;
@@ -244,7 +246,7 @@ namespace elysian {
 
 
     //----- SKELETON ------
-    inline SkeletonAttrib* SkeletonBase::getAttrib(void) const { return _attrib; }
+    inline std::shared_ptr<SkeletonAttrib> SkeletonBase::getAttrib(void) const { return _attrib; }
     inline SkeletonBase::SkeletonBase(Entity& entity, const SkeletonBase *other): Component(entity) {
         if(other) *this = *other;
     }

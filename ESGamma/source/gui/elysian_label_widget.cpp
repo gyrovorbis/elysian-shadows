@@ -45,7 +45,8 @@ namespace elysian {
 
     float LabelWidget::getSize(AXIS axis) const {
         if(axis == Y) {
-            return _font->getCharacterHeight();
+            //return _font->getCharacterHeight();
+            return 28;
         } else {
             return _width;
         }
@@ -53,16 +54,34 @@ namespace elysian {
 
     void LabelWidget::render(void) const {
         if(_width) {
-
             gyMatPush();
             gyMatLoadIdentity();
 
             _font->_transform.setPos(_position);
             _font->_transform.setScale(1.0f, 1.0f);
+            _font->_transform.setSizeY(28.0f);
             _font->setColor(_color);
-            _font->drawString(Font::C_ALIGN, _text);
+
+            switch(_alignment) {
+            case CENTER:
+            default:
+                _font->drawString(Font::C_ALIGN, _text);
+                break;
+#if 0
+            case LEFT:
+                _font->getTransform().translate(-0.5f*_width, 0.0f, 0.0f);
+                _font->drawString(Font::L_ALIGN, _text);
+                break;
+            case RIGHT:
+                _font->getTransform().translate(0.5f*_width, 0.0f, 0.0f);
+                _font->drawString(Font::R_ALIGN, _text);
+                break;
+#endif
+
+            }
 
             gyMatPop();
+
         }
         Widget::render();
     }

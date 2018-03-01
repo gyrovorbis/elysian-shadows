@@ -8,6 +8,8 @@
 
 namespace elysian {
 
+
+
 //static members
 const constexpr int MenuWidget::InvalidIndex;
 
@@ -91,7 +93,7 @@ void MenuWidget::onCurrentChange(Widget*, Widget*) {
 
     //default implementation doesn't do shit!?
 }
-void MenuWidget::onSelectionChange(MenuSelection* sel) {
+void MenuWidget::onSelectionChange(const MenuSelection* sel) {
     //default implementation doesn't do shit either!?!
     dbgprintf("SELECTION CHANGE - %d", sel->getEntry(0)->second.index);
 }
@@ -101,25 +103,43 @@ void MenuWidget::onCancel(void) {
 
 void MenuWidget::_onCurrentChange(Widget* prevSel, Widget* nextSel) {
    // if(_currentChangeCb) _currentChangeCb(prevSel, nextSel);
-   // else onCurrentChange(prevSel, nextSel);
+    //else
+    System::getEventSys()->sendEvent(MenuCurrentItemChangedEvent(prevSel, nextSel), this);
+    //onCurrentChange(prevSel, nextSel);
 }
 
-void MenuWidget::_onSelectionChange(MenuSelection* sel) {
+void MenuWidget::_onSelectionChange(MenuSelection*) {
      //if(_selectionChangeCb) _selectionChangeCb(sel);
-    //else onSelectionChange(sel);
+    //else
+    System::getEventSys()->sendEvent(Event(EVENT_WIDGET_MENU_SELECTION), this);
+    //onSelectionChange(sel);
 }
 
 void MenuWidget::_onCancel(void) {
     //if(_cancelCb) _cancelCb();
-    //else onCancel();
+    //else
+    System::getEventSys()->sendEvent(Event(EVENT_WIDGET_MENU_CANCEL), this);
+    //onCancel();
 }
 
-
-#if 0
-void MenuWidget::onFocusChange(bool) {
-    //default implementation doesn't do fuck all in this bitch either...
+void MenuWidget::onReceiveEvent(Event* event) {
+    switch(event->getEventType()) {
+    case EVENT_WIDGET_MENU_CANCEL:
+        onCancel();
+        return;
+    case EVENT_WIDGET_MENU_CURRENT: {
+        auto* menuEvent = static_cast<MenuCurrentItemChangedEvent*>(event);
+        onCurrentChange(menuEvent->getPrevWidget(), menuEvent->getNextWidget());
+        return;
+    }
+    case EVENT_WIDGET_MENU_SELECTION:
+        onSelectionChange(getSelection());
+        return;
+    default:
+        Widget::onReceiveEvent(event);
+        return;
+    }
 }
-#endif
 
 void MenuWidget::controllerEvent(const Controller &cont) {
     GY_ASSERT(_layout);
@@ -134,10 +154,13 @@ void MenuWidget::controllerEvent(const Controller &cont) {
         MenuSelection sel;
         MenuSelection::Entry entry(_currentWidget, MenuSelectionData{_currentIndex[axis]});
         sel.addEntry(entry);
-        if(cont.getButtonState(GY_CONTROLLER_BUT_X)) setSelection(sel);
+        if(cont.getButtonState(GY_CONTROLLER_BUT_X) == GY_BUT_STATE_TAPPED) setSelection(sel);
 
         //check for going backwards
-        if(cont.getButtonState(GY_CONTROLLER_BUT_CIRCLE)) _enabled = false;
+        if(cont.getButtonState(GY_CONTROLLER_BUT_CIRCLE) == GY_BUT_STATE_TAPPED) {
+            _enabled = false;
+            _onCancel();
+        }
     }
 
     GroupWidget::controllerEvent(cont);
@@ -177,6 +200,11 @@ void MenuWidget::virtualDPadEvent(const VirtualDPad &dpad) {
 void MenuWidget::setSelection(MenuSelection selection) {
     _selection = std::move(selection);
     _onSelectionChange(&_selection);
+}
+
+int MenuWidget::getCurrentIndex(void) const {
+    const auto axis = _layout->getGroupingAxis();
+    return _currentIndex[axis];
 }
 
 

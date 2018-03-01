@@ -7,7 +7,7 @@ class TkRenderable: public elysian::RenderableBase {
 friend class TkEntity;
 friend class elysian::EntityBase;
 protected:
-                    TkRenderable(Entity& parent, const TkRenderable*const prefab=nullptr);
+                    TkRenderable(Entity& parent, TkRenderable*const prefab=nullptr);
     virtual         ~TkRenderable(void) = default;
 
 public:
@@ -24,7 +24,7 @@ public:
 
 
 // ========== INLINEZ ================
-inline TkRenderable::TkRenderable(Entity &parent, const TkRenderable*const prefab): elysian::RenderableBase(parent, prefab) {}
+inline TkRenderable::TkRenderable(Entity &parent, TkRenderable*const prefab): elysian::RenderableBase(parent, prefab) {}
 
 #endif // TKRENDERABLE_H
 

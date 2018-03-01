@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -56,15 +56,13 @@ namespace OOLUA
 	struct lua_return;
 
 	template<typename T>
-	struct maybe_null;
-
+	struct shared_return;
 
 	template<typename T>
-	struct lua_maybe_null;
+	struct maybe_null;
 
 	template<typename T>
 	struct cpp_acquire_ptr;
-
 
 	template<typename T>
 	struct lua_acquire_ptr;
@@ -93,6 +91,8 @@ namespace OOLUA
 		template<typename T>
 		struct lua_return_count;
 
+		template<typename EnumType>
+		struct is_scoped_enum;
 	} //namespace INTERNAL //NOLINT(readability/namespace)
 	/** \endcond */
 } // namespace OOLUA

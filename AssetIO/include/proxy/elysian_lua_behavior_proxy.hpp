@@ -3,6 +3,7 @@
 
 #include <crtp/elysian_lua_behavior.hpp>
 #include <proxy/elysian_component_proxy.hpp>
+#include <proxy/elysian_event_proxy.hpp>
 #include <utility/elysian_oolua_string_traits.hpp>
 
 namespace OOLUA {
@@ -11,7 +12,7 @@ namespace OOLUA {
 
 }
 
-OOLUA_PROXY(Behavior, Component)
+OOLUA_PROXY(Behavior, Component, EventTarget, EventObserver)
     OOLUA_TAGS (
         No_public_constructors,
         No_public_destructor

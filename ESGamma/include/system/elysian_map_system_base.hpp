@@ -136,6 +136,8 @@ namespace elysian {
     };
 
     class MapSystemBase: public MapSystemCrtp<MapSystem, MapDepthBuffEntryImpl, EntityDepthBuffEntryImpl> {
+    public:
+        void update(void);
 
     };
 

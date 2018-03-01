@@ -3,11 +3,11 @@ exists( ESDevCommandLineArgs.pri ) {
     include( ESDevCommandLineArgs.pri )
 }
 
-macx|win32|linux {
-    CONFIG(release, debug|release) {
-        DEFINES+=OOLUA_DEBUG_CHECKS
-    }
-}
+#macx|win32|linux {
+#    CONFIG(release, debug|release) {
+#        DEFINES+=OOLUA_DEBUG_CHECKS
+#    }
+#}
 
 dreamcast {
 

@@ -24,9 +24,9 @@ QMenu* TkLightSource::createContextMenu(void) {
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new elysian::LightAttrib : nullptr);
+            setAttrib(checked? std::make_shared<elysian::LightAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 

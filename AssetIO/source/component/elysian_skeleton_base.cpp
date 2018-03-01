@@ -102,6 +102,7 @@ SkeletonAttribBase::~SkeletonAttribBase(void) {
 SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {
     _animTimeScale = other._animTimeScale;
     setAttrib(other._attrib);
+    setSkin(other.getSkin());
     return *this;
 }
 
@@ -199,11 +200,11 @@ void SkeletonAttribBase::setAnimation(const unsigned index, Animation *anim) {
     if(index == _animations.size()) {                       //insert
         _animations.push_back(anim);
     } else if(index < _animations.size()) {
+        delete _animations[index];
         if(!anim) {
             _animations.erase(_animations.begin()+index);   //remove
         } else {
-            delete _animations[index];                      //reassign
-            _animations[index] = anim;
+            _animations[index] = anim; //reassign
         }
     }
 }
@@ -224,7 +225,7 @@ void SkeletonBase::setAnimTrackByName(const int trackIndex, const char* animatio
 }
 
 
-void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
+void SkeletonBase::setAttrib(std::shared_ptr<SkeletonAttrib> attrib) {
     DbgEvent event("SkeletonBase setting attributes.");
 
     //REMOVE ALL ATTACHMENTS
@@ -383,9 +384,12 @@ void EntityAttachment::update(void) {
     });
 
     if(slot->bone->data->inheritRotation) {
-        transform.setOrient(0.0f, 0.0f, 1.0f);
-        transform.setAngle(slot->bone->worldRotation*(M_PI/180.0f));
+        if(entity->getPlaneType() == GY_RECT_PLANE_BOTTOM) {
+            transform.setOrient(0.0f, 0.0f, 1.0f);
+            transform.setAngle(slot->bone->worldRotation*(M_PI/180.0f));
+        }
     }
+
 
 #else
 
@@ -418,7 +422,7 @@ void EntityAttachment::update(void) {
 void SkeletonBase::setSkin(const char *name) {
     if(!spSkeleton_setSkinByName(_skeleton, name)) {
         errprintf("Skeleton::setSkin(%s) - Skin not found on entity: %s.", name, getEntity()->getName());
-    }
+    } else update(2.0f);
 }
 
 const char* SkeletonBase::getSkin(void) const {

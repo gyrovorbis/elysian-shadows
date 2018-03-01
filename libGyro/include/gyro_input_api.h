@@ -39,7 +39,8 @@ typedef enum GY_KEY {
 } GY_KEY;
 
 typedef struct GYKeyboard {
-    unsigned keys[GY_KEY_COUNT];
+    unsigned    keys[GY_KEY_COUNT];
+    char        changed;
 } GYKeyboard;
 
 typedef enum GY_MOUSE_BUTTON {
@@ -47,6 +48,7 @@ typedef enum GY_MOUSE_BUTTON {
     GY_MOUSE_BUT_LEFT,
     GY_MOUSE_BUT_MIDDLE,
     GY_MOUSE_BUT_RIGHT,
+    GY_MOUSE_BUT_BACK,
     GY_MOUSE_BUT_COUNT
 } GY_MOUSE_BUTTON;
 
@@ -54,6 +56,9 @@ typedef struct GYMouse {
     unsigned        buttons[GY_MOUSE_BUT_COUNT];
     GYVector2       scrollWheel;
     GYVector2       screenPos;
+    char            buttonsChanged;
+    char            scrollWheelChanged;
+    char            screenPosChanged;
 } GYMouse;
 
 typedef enum GY_CONTROLLER_ANALOG {

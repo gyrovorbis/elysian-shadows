@@ -34,8 +34,13 @@
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>
 #include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/core/tk_file_utilities.h>
+#include <QStatusBar>
 
-
+#ifdef VMU_CHILD_APP
+#include <gyro_vmu_main_window.hpp>
+#include <gyro_vmu_display.h>
+#endif
 
 
 void ESToolkit::on_actionFileQuit_triggered() {
@@ -44,7 +49,11 @@ void ESToolkit::on_actionFileQuit_triggered() {
 }
 
 void ESToolkit::on_actionFileOpenProject_triggered(void) {
-    openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
+    if(openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks))) {
+        showStatusBarMessage("Project Opened Successfully!");
+    } else {
+        showStatusBarMessage("Project could not be Opened!");
+    }
 }
 
 void ESToolkit::on_actionFileCloseProject_triggered(void) {
@@ -53,10 +62,9 @@ void ESToolkit::on_actionFileCloseProject_triggered(void) {
 }
 
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
-    //check failure!
-    Debug::Log(Debug::LOG_VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
-    Debug::push();
     _assets.getCurrentProject()->save();
+
+    Debug::pop();
     //_assets.getCurrentProject()->ClearUndoStacks();
 }
 
@@ -67,7 +75,14 @@ void ESToolkit::on_actionFileSaveCurrentLevel_triggered() {
 }
 
 void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
-    _assets.getCurrentArea()->save();
+    if(_assets.getCurrentArea()->save()) {
+        showStatusBarMessage("Area saved successfully!");
+
+    } else {
+        showStatusBarMessage("Error Encountered while Saving Area!", Qt::darkRed);
+
+    }
+
     //Force TreeNode to update the '*' for unsaved area
     //_assets.getCurrentArea()->getUndoStack().setClean();
     //_assets.getCurrentArea()->onUndoCleanStateChanged(true);
@@ -77,6 +92,7 @@ void ESToolkit::on_actionAreaAddEntity_triggered() {
     Entity* entity = _assets.getCurrentArea()->newEntity();
     entity->setSaveFlag(true); //set to true by default!!!
     _assets.setCurrentSelection(new EntitySelectable(entity));
+    showStatusBarMessage("New Entity Added to the Current Area");
 }
 
 void ESToolkit::on_actionDebugViewLog_triggered()
@@ -360,6 +376,7 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     _assets.getEngine()->getCameraSys()->moveToKeyFrame(keyFrame);
     _assets.getEngine()->getCameraSys()->setStaticScale(1.0f);
     //_ui->mapView->defaultTransform();
+    showStatusBarMessage("Camera Transform Reset to Default");
 
 }
 
@@ -522,6 +539,7 @@ void ESToolkit::on_actionPrevious_Project_triggered(void) {
                 auto* area = _assets.getCurrentLevel()->getArea(_prevAreaPath);
                 if(area) {
                     _assets.setCurrentArea(area);
+                            showStatusBarMessage("Project Restored Successfully!");
                 }
             }
         }
@@ -532,14 +550,17 @@ void ESToolkit::on_actionInvoke_triggered(bool checked)
 {
     if(checked && (_ui->actionWindows->isChecked() || _ui->actionMac_OS_X->isChecked() || _ui->actionNix->isChecked())) {
         _engineGLView->play();
+        showStatusBarMessage("Running Engine");
     } else if(!checked) {
         _engineGLView->stop();
+        showStatusBarMessage("Stopping Engine");
     }
 }
 
 void ESToolkit::on_actionAdvance_Frame_triggered()
 {
     _engineGLView->advanceFrame();
+    showStatusBarMessage("Advancing Engine by one Frame");
 }
 
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
@@ -616,6 +637,8 @@ void ESToolkit::on_actionShadows_toggled(bool arg1)
 {
     _engineParams.shadowPassEnabled = arg1;
     if(_assets.getEngine()) {
+        if(arg1) showStatusBarMessage("Enabling Shadow Mapping");
+        else showStatusBarMessage("Disabling Shadow Mapping");
         _assets.getEngine()->getLightSys()->setShadowPassEnabled(arg1);
     }
 }
@@ -624,6 +647,8 @@ void ESToolkit::on_actionLights_toggled(bool arg1)
 {
     _engineParams.lightingEnabled = arg1;
     if(_assets.getEngine()) {
+        if(arg1) showStatusBarMessage("Enabling Dynamic Lighting");
+        else showStatusBarMessage("Disabling Dynamic Lighting");
         _assets.getEngine()->getLightSys()->setEnabled(arg1);
     }
     if(!arg1) {
@@ -638,6 +663,8 @@ void ESToolkit::on_actionManual_Camera_toggled(bool arg1)
 {
     _engineParams.manualCameraEnabled = arg1;
     if(_engineGLView) {
+        if(arg1) showStatusBarMessage("Camera Control changed to Manual");
+        else showStatusBarMessage("Camera Control Changed to In-Game");
         _engineGLView->setCameraManualOnPlay(arg1);
     }
 }
@@ -646,6 +673,8 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
 {
     _engineParams.audioEnabled = arg1;
     if(_assets.getEngine()) {
+        if(arg1) showStatusBarMessage("Audio Enabled");
+        else showStatusBarMessage("Audio Disabled");
         _assets.getEngine()->getAudioSys()->setEnabled(arg1);
     }
 
@@ -659,7 +688,9 @@ void ESToolkit::on_actionReloadProject_triggered(void)
     //gyAudUninit();
    // gyAudInit();
     _assets.setCurrentSelection(nullptr);
-    _assets.reloadProject();
+    if(_assets.reloadProject()) {
+        showStatusBarMessage("Project reloaded!");
+    }
 }
 
 void ESToolkit::on_actionDocumentation_triggered()
@@ -753,9 +784,11 @@ void ESToolkit::on_actionAdd_Player_triggered()
 
 void ESToolkit::on_actionRemove_Player_triggered()
 {
-  //  --players;
-
-
+    auto* partySys = _assets.getEngine()->getPartySys();
+    unsigned count = partySys->getPartySize();
+    if(count > 1) {
+        partySys->removeCharacterFromParty(partySys->getPartyMember(count-1));
+    }
 }
 
 void ESToolkit::on_actionLua_Manager_Dump_triggered()
@@ -789,5 +822,110 @@ void ESToolkit::on_actionPerformance_Monitor_Dump_triggered()
 
 void ESToolkit::on_actionAudio_Dump_triggered() {
     _assets.getEngine()->getAudioSys()->dumpDebugInfo();
-
 }
+
+void ESToolkit::on_actionVMU_View_triggered(bool checked) {
+#ifdef VMU_CHILD_APP
+    if(checked) {
+        if(!_evmuWindow) {
+            Debug::setEVMUActive(true);
+            _evmuWindow = new VMUMainWindow(this);	// no parent
+            //ubMainWindow->setWindowFlags(subMainWindow->windowFlags() & ~Qt::Window);
+            //evmuWindow->setWindowFlags(Qt::Widget);
+           _evmuWindow->setFocusPolicy(Qt::ClickFocus);
+
+            //subMainWindow->setUnifiedTitleAndToolBarOnMac(true); _vmuDockWidget = new QDockWidget(nullptr);
+           _vmuDockWidget = new QDockWidget(this);
+           _vmuDockWidget->setFocusPolicy(Qt::ClickFocus);
+            _vmuDockWidget->setWindowTitle("VMU View");
+            _evmuWindow->menuBar()->setNativeMenuBar(false);
+
+           _vmuDockWidget->setWidget(_evmuWindow);
+           _evmuWindow->loadBios(FileUtilities::getAbsoluteAssetPath(ESTOOLKIT_EVMU_BIOS_FILE_PATH));
+
+        //dock->setMouseTracking(false);
+           //evmuWindow->setParent(dock) ;	// here
+            addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
+            Debug::setEVMUActive(false);
+
+            showStatusBarMessage("Starting ElysianVMU");
+        }
+    }
+
+    _vmuDockWidget->setVisible(checked);
+    _ui->actionVMU_View->setChecked(checked);
+#endif
+}
+
+static bool _convertVMUImageToIco(const QImage& img, QString outFile) {
+    bool success = true;
+    FILE* file = fopen(Q_CSTR(outFile), "wb");
+    if(file) {
+        uint8_t buff[192] = { 0 };
+
+        for(unsigned byte = 0; byte < 192; ++byte) {
+            for(unsigned bit = 0; bit < 8; ++bit) {
+                unsigned y = byte / 6;
+                unsigned x = (byte % 6)*8 + bit;
+                QColor color = img.pixelColor(x, y);
+                if(color == QColor(Qt::black)) {
+                    buff[byte] |= (0x1<<bit);
+                } else if (color == QColor(Qt::white)) {
+
+                } else {
+                    success = false;
+                    errprintf("What the shit? Found color %d at <%d, %d> when this is supposed to be black and white!", color.value(), x, y);
+                }
+            }
+        }
+
+        auto writtenBytes = fwrite(buff, 1, 192, file);
+
+        if(writtenBytes != 192) {
+            errprintf("Could not write all 192 bytes to file!");
+            success = false;
+        }
+
+        fclose(file);
+
+    } else {
+        errprintf("Could not create file for writing: %s", Q_CSTR(outFile));
+        success = false;
+    }
+
+    return success;
+}
+
+void ESToolkit::on_actionGenerate_VMU_Icons_triggered(void) {
+    QString vmuDir = FileUtilities::getAbsoluteAssetPath("/assets/graphics/vmu");
+    DbgEvent dbg("Scanning VMU Directory for Icons: %s", Q_CSTR(vmuDir));
+    (void)dbg;
+
+    QDirIterator it(vmuDir, QDir::Files);
+    while(it.hasNext()) {
+        QString filePath = it.next();
+        QFileInfo fileInfo(filePath);
+        DbgEvent dbg2("Processing File: %s", Q_CSTR(fileInfo.absoluteFilePath()));
+        (void)dbg2;
+        if(fileInfo.suffix() == "png") {
+            QImage png(filePath);
+            if(png.width() == VMU_DISP_PIXEL_WIDTH && png.height() == VMU_DISP_PIXEL_HEIGHT) {
+                _convertVMUImageToIco(png, filePath.split(".").first()+QString(".vmuico"));
+
+            } else errprintf("Invalid PNG resolutions. Expected <%d, %d>, Got <%d, %d>",
+                             VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT, png.width(), png.height());
+        }
+    }
+}
+
+void ESToolkit::on_actionConnectEVMUTcp_toggled(bool arg1)
+{
+    if(!_evmuWindow) return;
+    if(arg1) {
+        _evmuWindow->startTcpServer(1234);
+        _assets.getEngine()->getInputSys()->getVMU(0)->connectToEVMU("localhost", 1234);
+    } else {
+        _assets.getEngine()->getInputSys()->getVMU(0)->disconnectFromEVMU();
+    }
+}
+

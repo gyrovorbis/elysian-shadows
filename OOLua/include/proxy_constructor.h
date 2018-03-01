@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,8 +39,7 @@ THE SOFTWARE.
 #	include "proxy_stack_helper.h"
 #	include "proxy_constructor_param_tester.h"
 #	include "type_converters.h"
-
-#include "oolua_boilerplate.h"
+#	include "oolua_boilerplate.h"
 
 #if defined __GNUC__ && defined __STRICT_ANSI__
 /*shhhhh about va args and c99*/
@@ -104,7 +103,7 @@ namespace OOLUA
 			static int construct(lua_State * vm)
 			{
 				OOLUA_CONSTRUCTOR_TRY
-				Type* obj = new Type;
+				typename new_pointer<Type>::type obj(new Type);
 				add_ptr(vm, obj, false, Lua);
 				OOLUA_CONSTRUCTOR_CATCH(Type, 0)
 				return 1;
@@ -179,7 +178,7 @@ namespace OOLUA \
 				int index(1); \
 				OOLUA_CONSTRUCTOR_PARAM_##NUM \
 				OOLUA_CONSTRUCTOR_TRY \
-				Class* obj = new Class(OOLUA_CONVERTER_PARAMS_##NUM); \
+				typename new_pointer<Class>::type obj(new Class(OOLUA_CONVERTER_PARAMS_##NUM)); \
 				add_ptr(vm, obj, false, Lua); \
 				OOLUA_CONSTRUCTOR_CATCH(Class, NUM) \
 			} \
@@ -225,7 +224,7 @@ static int oolua_factory_function(lua_State* vm) \
 	{ \
 		if( OOLUA_VA_CONSTRUCTOR(__VA_ARGS__)<class_ VA_PARAM_TYPES(__VA_ARGS__) >::construct(vm) ) return 1; \
 	} \
-	MSC_POP_COMPILER_LOG_WARNING_OOLUA
+	MSC_POP_COMPILER_WARNING_OOLUA
 /**@}*/
 
 /** \cond INTERNAL*/
@@ -258,18 +257,19 @@ static int oolua_factory_function(lua_State* vm) \
 @{
 	\def OOLUA_CTORS
 	\hideinitializer
-	\brief Creates a block into which none default constructors can be defined with \ref OOLUA_CTOR
+	\brief Creates a block into which none default constructors can be defined using \ref OOLUA_CTOR
 	\details OOLUA_CTORS(ConstructorEntriesList)
 	\param ConstructorEntriesList List of \ref OOLUA_CTOR
 	<p>
-	To enable the construction of an instance which is a specific type, there must be
-	constructor(s) for that type registered with OOLua. \ref OOLUA_CTORS is the block into
-	which you can define none default constructor entries using \ref OOLUA_CTOR.
+	To enable the construction of an instance without using the default constructor, there must be
+	a constructor block specified for the proxy type. The constructor block, \ref OOLUA_CTORS,
+	is where non-default constructor entries can be specified using an \ref OOLUA_CTOR per entry.
 	<p>
 	Constructors are the only real type of overloading which is permitted by OOLua
-	and there is an important point which should be noted. OOLua will try and match
-	the number of parameters on the stack with the amount required by each OOLUA_CTOR
-	entry and will look in the order they were defined. When interacting with the Lua
+	and there is an important point which should be noted. This being that OOLua will
+	attempt to match the number and type of parameters on the stack with the amount
+	and types specified for each OOLUA_CTOR entry. The order in which it will attempt
+	the matching is the same order in which they were defined. When interacting with the Lua
 	stack certain types can not be differentiated between, these include some integral
 	types such as float, int, double etc and types which are of a proxy class type or
 	derived from that type. OOLua implicitly converts between classes in a hierarchy

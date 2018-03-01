@@ -7,6 +7,12 @@
     \inmodule Engine
     \brief Extendable component for adding custom triggers and logic outside of the engine.
 
+    \table
+        \row
+            \li Inherits:
+            \li \l{Component}, \l{EventTarget}, \l{EventObserver}
+    \endtable.
+
     A Behavior is a custom Component that can be attached to an Entity, allowing a developer to
     add their own data and logic, extending the engine's functionality.
 
@@ -50,6 +56,7 @@ A TRIGGER_TYPE can be one of the following:
 \li Behavior.ON_BUTTON_RELEASE
 \li Behavior.ON_TK_SELECT
 \li Behavior.ON_TK_UNSELECT
+\endlist
 */
 /*!
  * \qmlmethod void Behavior::addTrigger(TRIGGER_TYPE type)

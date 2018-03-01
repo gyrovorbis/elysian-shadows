@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 namespace OOLUA
 {
-
+// LCOV_EXCL_START
 void lua_stack_dump(lua_State * const vm)
 {
 	int i;
@@ -67,5 +67,6 @@ void lua_stack_dump(lua_State * const vm)
 	}
 	std::cout <<std::endl;
 }
+// LCOV_EXCL_STOP
 } // namespace OOLUA
 

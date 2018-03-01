@@ -26,7 +26,7 @@
 
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
 
-elysian::CollidableAttrib* TkEntity::_selColliderAttrib;
+std::shared_ptr<elysian::CollidableAttrib> TkEntity::_selColliderAttrib;
 //elysian::Material* TkEntity::_selMaterial;
 bool TkEntity::_staticInit = false;
 
@@ -56,7 +56,7 @@ TkEntity::TkEntity(const bool selectable, TkEntity* prefab):
 
         if(!_staticInit) {
 
-            _selColliderAttrib = new elysian::CollidableAttrib;
+            _selColliderAttrib = std::make_shared<elysian::CollidableAttrib>();
             //_selColliderAttrib->setRelPos(0.0f, 0.0f, 0.0f);
             //_selColliderAttrib->setRelSize(1.0f, 1.0f, 0.0f);
             _selColliderAttrib->getFlags()->setType(elysian::BitMask32(0u));
@@ -72,13 +72,24 @@ TkEntity::TkEntity(const bool selectable, TkEntity* prefab):
         _selectionCollider->setResolvePenetration(false);
 
         _selectionRenderable = new Renderable(*this);
-        _selSpriteAttrib = new elysian::SpriteAttrib;
+        _selSpriteAttrib = std::make_shared<elysian::SpriteAttrib>();
         _selectionRenderable->setSpriteAttrib(_selSpriteAttrib);
     }
 
     setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     setTreeWidgetItemState(TreeItemState::Inactive);
-    setSaveFlag(_saveFlag);
+    if(prefab) {
+        LuaVariant parent = LuaManager::getParent(prefab);
+        const char* prefName = LuaManager::getPrefabName(prefab);
+        if(!parent.isNil()) {
+            LuaManager::setParent(this, parent);
+        } else if(prefName) {
+            LuaManager::setParent(this, LuaManager::getPrefab(prefName));
+        }
+        setSaveFlag(prefab->getSaveFlag());
+    } else {
+        setSaveFlag(_saveFlag);
+    }
 
 }
 
@@ -99,6 +110,7 @@ QVariant TkEntity::data(int column, int role) const {
 }
 
 TkEntity::~TkEntity(void) {
+    deactivate();
     delete _luaModel;
 }
 
@@ -456,7 +468,7 @@ void TkEntity::initializeDelegates(void) {
     OOLUA::push(*_mainState, elevDelegate);
     lua_setfield(*_mainState, -2, "elev");
 
-    DynamicContentPropertyItemDelegate* behavDelegate = new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+    DynamicContentPropertyItemDelegate* behavDelegate = new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback<false>);
     behavDelegate->setMimeDropManager(new MimeDropManager(QVector<MimeDropManager::Handler> {
         {
             MimeDropManager::TYPE_URLS,
@@ -530,6 +542,7 @@ void TkEntity::initializeVirtualTableDelegates(QString property) {
                             }
                         }
                     });
+                    delegate->setReadOnly();
 
                     delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
                         LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);

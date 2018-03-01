@@ -17,7 +17,7 @@ bool TkCollidable::validate(QString &str) const {
         return true;
     };
 
-    if(cAssert(_attrib, "LOG_ERROR: Collidable component has no attrib field.")) {
+    if(cAssert(_attrib.get(), "LOG_ERROR: Collidable component has no attrib field.")) {
         cAssert(_attrib->getColliderType() == GY_COLLIDER_AABB || _attrib->getColliderType() == GY_COLLIDER_OBB,
             "LOG_ERROR: Collidable component has invalid collider type!");
 
@@ -33,9 +33,9 @@ QMenu* TkCollidable::createContextMenu(void) {
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
-            setAttrib(checked? new elysian::CollidableAttrib : nullptr);
+            setAttrib(checked? std::make_shared<elysian::CollidableAttrib>() : nullptr);
         },
-        getAttrib(),
+        getAttrib().get(),
         !_entity->isActive()
     );
 

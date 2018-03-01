@@ -21,6 +21,7 @@ namespace OOLUA {
 }
 
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, CollidableStaticAttrib)
+    OOLUA_TAGS(Shared)
     OOLUA_MFUNC(setAcceleration)
     OOLUA_MFUNC(setMaxLife)
     OOLUA_MEM_FUNC(void, setForceMask, BitMask32)
@@ -52,8 +53,8 @@ OOLUA_PROXY(ParticleEmitter, Component)
         No_public_destructor
     )
     OOLUA_MEM_FUNC(void, resizePool, unsigned)
-    OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<ParticleEmitterAttrib*>)
-    OOLUA_MEM_FUNC_CONST(maybe_null<ParticleEmitterAttrib*>, getAttrib)
+    OOLUA_MEM_FUNC(void, setAttrib, std::shared_ptr<ParticleEmitterAttrib>)
+    OOLUA_MEM_FUNC_CONST(maybe_null<std::shared_ptr<ParticleEmitterAttrib>>, getAttrib)
     OOLUA_MEM_FUNC(void, emitFromPoint, const GYVector3&, float, unsigned)
     OOLUA_MEM_FUNC(void, emitFromEntity, const GYVector3&, float, unsigned)
     OOLUA_MEM_FUNC(void, emitFromPointInDir, const GYVector3&, const GYVector3&, unsigned, float)

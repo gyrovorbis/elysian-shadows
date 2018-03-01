@@ -70,7 +70,6 @@
  *
  * \sa ParticleEmitterAttrib
  */
-        void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
 /*!
  * \qmlmethod void ParticleSystem::emitFromPoint(int index, Vector3 pos, float angle, int intensity)
  * Creates a batch with the number of particles given by \a{intensity} and emits them from the position given by \a{pos} in

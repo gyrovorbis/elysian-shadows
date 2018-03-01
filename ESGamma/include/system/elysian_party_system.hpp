@@ -6,6 +6,7 @@
 #include <gyro_wav_api.h>
 #include <system/elysian_system.hpp>
 #include <crtp/elysian_character.hpp>
+#include <level/elysian_event.hpp>
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f
@@ -66,8 +67,19 @@ namespace elysian {
     };
 
 
-	class PartySystem: public System { 
+    class PartySystem: public System, public EventObserver {
     private:
+
+        struct PartyMember {
+            Entity* entity;
+            bool    active          = true;
+            bool    followLogic      = true;
+            PartyMember(Entity* e): entity(e), active(true), followLogic(true) {}
+             operator Entity*() const { return entity; }
+            bool operator ==(const Entity* e) const { return e == entity; }
+            Entity* operator->() const { return entity; }
+        };
+
         Player _players[ELYSIAN_PARTY_SLOTS_MAX];
 
 		unsigned int _activePlayablePartySize	= 3;
@@ -78,14 +90,15 @@ namespace elysian {
         std::vector<Entity*> _playables;
 
 		//< _activePartySize is active
-        std::vector<Entity*> _playableParty;
+        std::vector<PartyMember> _playableParty;
 		//ONLY active and can only contain up to _characterPartySize
-        std::vector<Entity*> _characterParty;
+        std::vector<PartyMember> _characterParty;
 		
 		std::vector<GYVector2> _partyPathPoint;
         static const unsigned int _pointsPerCharacter = 30;
 		
 		void _resizePartyPathPoints(void);
+        void _resetPartyPathPoints(void);
 
 		//footstep SFX
         float                   _footStepTimer              = 0.0f;
@@ -101,6 +114,8 @@ namespace elysian {
 	public:
             PartySystem(void);
             ~PartySystem(void);
+
+        virtual void onObserveEvent(Event* event, EventTarget* target);
 		
 		void update(void);
 		void updatePartyPaths(void);
@@ -124,8 +139,13 @@ namespace elysian {
         void    setPartyLeader(Entity* entity);
         Entity *getPlayablePartyMember(const char *name) const;
         Entity *getPartyMember(const unsigned int slot) const;
+        void    swapPartyMemberSlots(unsigned int slot1, unsigned int slot2);
         Entity *getCharacterPartyMember(const char *name) const;
         Entity *getCharacterPartyMember(const unsigned int slot) const;
+        bool    isPartyMemberActive(unsigned slot) const;
+        void    setPartyMemberActive(unsigned slot, bool active=true);
+
+        unsigned getActivePartyMemberCount(void) const;
 
         unsigned getPartySize(void) const;
 
@@ -142,6 +162,8 @@ namespace elysian {
         void setDashForceMagnitude(const float mag);
         void setDashAnimSpeedMultiplier(const float mult);
         void setFollowLogicEnabled(bool val=true);
+        void setSlotFollowLogicEnabled(const unsigned int slot, bool enabled=true);
+        bool isSlotFollowLogicEnabled(const unsigned int slot) const;
 		
 		//bool SwapPlayablePartyMembersBySlot();
 		//bool SwapLeader();
@@ -156,6 +178,10 @@ namespace elysian {
      inline unsigned PartySystem::getPartySize(void) const { return _characterParty.size(); }
     inline unsigned PartySystem::getPlayableCount(void) const { return _playables.size(); }
     inline void PartySystem::setFollowLogicEnabled(bool val) { _followLogic = val; }
+    inline bool PartySystem::isPartyMemberActive(unsigned slot) const { return (slot < getPartySize())? _characterParty[slot].active : false; }
+    inline bool PartySystem::isSlotFollowLogicEnabled(const unsigned int slot) const { return (slot < getPartySize())? _characterParty[slot].followLogic : false; }
+
+
 
 
      inline unsigned Player::getPlayerNum(void) const { return _playerNum; }

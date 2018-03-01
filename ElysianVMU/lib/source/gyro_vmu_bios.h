@@ -15,6 +15,8 @@ extern "C" {
 
 struct VMUDevice;
 
+int gyVmuBiosSystemCodeActive(struct VMUDevice* device);
+
 int gyVmuBiosLoadImage(struct VMUDevice* device, const unsigned char* buffer, int size);
 int gyVmuBiosHandleCall(struct VMUDevice* dev);
 

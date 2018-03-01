@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,9 +36,9 @@ namespace OOLUA
 #if OOLUA_RUNTIME_CHECKS_ENABLED == 1
 #	if OOLUA_USE_EXCEPTIONS ==1
 			lua_pushfstring(to, "Can not push a valid Lua reference from lua_State(%p) to an unrelated lua_State(%p)", from, to);
-			throw OOLUA::Runtime_error(to, (OOLUA::LOG_ERROR::PopTheStack*)0);
+			throw OOLUA::Runtime_error(to, (OOLUA::ERROR::PopTheStack*)0);
 #	endif
-#	if OOLUA_STORE_LAST_LOG_ERROR ==1
+#	if OOLUA_STORE_LAST_ERROR ==1
 			lua_pushfstring(to, "Can not push a valid Lua reference from lua_State(%p) to an unrelated lua_State(%p)", from, to);
 			OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(to);
 #	endif
@@ -58,14 +58,14 @@ namespace OOLUA
 
 		void pull_handle_invalid(lua_State* const vm, int id)
 		{
-#if OOLUA_STORE_LAST_LOG_ERROR == 1 || 	OOLUA_USE_EXCEPTIONS == 1
+#if OOLUA_STORE_LAST_ERROR == 1 || 	OOLUA_USE_EXCEPTIONS == 1
 			lua_pushfstring(vm
 							, "pulling incorrect type from stack. This is a Lua registry reference to %s, stack contains %s"
 							, lua_typename(vm, id)
 							, lua_gettop(vm) ? lua_typename(vm, lua_type(vm, -1)) : "empty stack");
 #	if OOLUA_USE_EXCEPTIONS == 1
-			throw OOLUA::Runtime_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
-#	else // OOLUA_STORE_LAST_LOG_ERROR == 1
+			throw OOLUA::Runtime_error(vm, (OOLUA::ERROR::PopTheStack*)0);
+#	else // OOLUA_STORE_LAST_ERROR == 1
 			OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(vm);
 #	endif
 #elif OOLUA_DEBUG_CHECKS == 1
@@ -73,6 +73,10 @@ namespace OOLUA
 #endif
 		}
 
+#ifdef _MSC_VER
+#	pragma warning(push)
+#	pragma warning(disable: 4702) //warning C4702: unreachable code
+#endif
 		bool push_reference_if_possible(int const ref, lua_State* const from, lua_State* const to)
 		{
 			if (from == to || OOLUA::can_xmove(from, to) )
@@ -82,5 +86,6 @@ namespace OOLUA
 			}
 			return handle_unrelated_states(from, to);
 		}
+MSC_POP_COMPILER_WARNING_OOLUA
 	} // namespace INTERNAL //NOLINT
 } // namespace OOLUA

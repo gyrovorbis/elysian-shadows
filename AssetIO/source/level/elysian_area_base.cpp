@@ -473,7 +473,7 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
 }
 
 Entity* AreaBase::getActiveEntityByIndex(const unsigned index) const {
-    return (int)index < entities.size()? entities[index] : nullptr;
+    return (int)index < (int)entities.size()? entities[index] : nullptr;
 }
 
 
@@ -488,7 +488,7 @@ void AreaBase::setActiveEntityByIndex(const unsigned index, Entity*const entity)
 }
 
 Entity* AreaBase::getInactiveEntityByIndex(const unsigned index) const {
-    return (int)index < inactiveEntities.size()? inactiveEntities[index] : nullptr;
+    return (int)index < (int)inactiveEntities.size()? inactiveEntities[index] : nullptr;
 }
 
 void AreaBase::setInactiveEntityByIndex(const unsigned index, Entity*const entity) {

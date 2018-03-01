@@ -14,7 +14,7 @@ OOLUA_PROXY(AudioSystem)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MFUNC(playSfxChannel)
+    OOLUA_MEM_FUNC(void, playSfxChannelLua, int, const GYWav&, LuaVariant)
     OOLUA_MFUNC_CONST(stopSfxChannel)
     OOLUA_MFUNC_CONST(setSfxChannelGain)
     OOLUA_MFUNC_CONST(setSfxChannelPitch)
@@ -57,6 +57,7 @@ OOLUA_PROXY(AudioSystem)
     OOLUA_MFUNC_CONST(setAuxTrackPos)
     OOLUA_MFUNC_CONST(setAuxTrackRolloffFactor)
     OOLUA_MFUNC_CONST(getAuxTrackTime)
+    OOLUA_MEM_FUNC_RENAME(playSfxChannel, void, playSfxChannelLua, int, const GYWav&, LuaVariant)
 OOLUA_PROXY_END
 
 

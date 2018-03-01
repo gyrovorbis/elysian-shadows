@@ -1,5 +1,6 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <crtp/elysian_debug.hpp>
+#include <proxy/elysian_event_proxy.hpp>
 
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \
@@ -214,6 +215,14 @@ void LuaBehaviorBase::onCombatReceiveStatusModifier(CombatStatus*const modifier)
 
 void LuaBehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX, *_ooSelfTableRef, contact, collidable, modifier));
+}
+
+void LuaBehaviorBase::onReceiveEvent(Event* event) {
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_RECEIVE_EVENT_INDEX, *_ooSelfTableRef, event));
+}
+
+void LuaBehaviorBase::onObserveEvent(Event *event, EventTarget* target) {
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_OBSERVE_EVENT_INDEX, *_ooSelfTableRef, event, LuaVariant(target)));
 }
 
 /*

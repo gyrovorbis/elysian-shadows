@@ -31,13 +31,13 @@ public:
     PreviewProperties&      getPreviewProperties(void);
     unsigned                getPreviewPoolSize(void) const;
     void                    resizePreviewPool(unsigned size);
-    ParticleEmitterAttrib*  getPreviewAttrib(void) const;
-    void                    setPreviewAttrib(ParticleEmitterAttrib* attrib);
+    auto                    getPreviewAttrib(void) const -> std::shared_ptr<ParticleEmitterAttrib>;
+    void                    setPreviewAttrib(std::shared_ptr<ParticleEmitterAttrib> attrib);
     unsigned                getPreviewEmitterIndex(void) const;
     unsigned                getPreviewActiveParticleCount(void) const;
 
-    void                    emitPreview(ParticleEmitterAttrib* attrib=nullptr);
-    void                    popDockWidget(ParticleEmitterAttrib* attrib=nullptr);
+    void                    emitPreview(std::shared_ptr<ParticleEmitterAttrib> attrib=nullptr);
+    void                    popDockWidget(std::shared_ptr<ParticleEmitterAttrib> attrib=nullptr);
     auto                    getStdItems(void) -> std::pair<QStandardItem*, QStandardItem*>;
 
 private:
@@ -66,8 +66,8 @@ inline float             TkParticleSystem::PreviewProperties::getSpreadAngle(voi
 inline void              TkParticleSystem::PreviewProperties::setSpreadAngle(float degrees) { spreadAngle = degrees; }
 
 inline auto              TkParticleSystem::getPreviewProperties(void) -> PreviewProperties& { return _previewProperties; }
-inline ParticleEmitterAttrib* TkParticleSystem::getPreviewAttrib(void) const { return getAttrib(_tkEmitterIndex); }
-inline void TkParticleSystem::setPreviewAttrib(ParticleEmitterAttrib* attrib) { setAttrib(_tkEmitterIndex, attrib); }
+inline std::shared_ptr<ParticleEmitterAttrib> TkParticleSystem::getPreviewAttrib(void) const { return getAttrib(_tkEmitterIndex); }
+inline void TkParticleSystem::setPreviewAttrib(std::shared_ptr<ParticleEmitterAttrib> attrib) { setAttrib(_tkEmitterIndex, attrib); }
 inline unsigned TkParticleSystem::getPreviewEmitterIndex(void) const { return _tkEmitterIndex; }
 
 

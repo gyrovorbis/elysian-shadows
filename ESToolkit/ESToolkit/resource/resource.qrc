@@ -72,6 +72,9 @@
         <file>images/minus_icon.ico</file>
         <file>images/browse_file_icon.ico</file>
         <file>images/color_swatch_icon.png</file>
+        <file>images/position_icon.png</file>
+        <file>images/dynamic.png</file>
+        <file>images/static.png</file>
     </qresource>
     <qresource prefix="/sheetManager">
         <file>images/reservedTile.png</file>
@@ -108,6 +111,7 @@
         <file>images/_0006_BIN.png</file>
         <file>images/_0007_levels_icon.png</file>
         <file>images/_0008_areas_icon.png</file>
+        <file>images/vmu_icon.png</file>
     </qresource>
-    <qresource prefix="/"/>
+    <qresource prefix="/vmu"/>
 </RCC>

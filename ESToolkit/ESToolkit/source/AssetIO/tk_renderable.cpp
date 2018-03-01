@@ -14,7 +14,7 @@ bool TkRenderable::validate(QString &str) const {
         }
     };
 
-    cAssert(_spriteAttrib, "LOG_ERROR: Renderable component has no spriteAttrib.");
+    cAssert(_spriteAttrib.get(), "LOG_ERROR: Renderable component has no spriteAttrib.");
 
     return success;
 }
@@ -25,9 +25,9 @@ QMenu* TkRenderable::createContextMenu(void) {
 
     menuStack.insertCheckableAction("Sprite Attributes",
         [&](bool checked) {
-            setSpriteAttrib(checked? new elysian::SpriteAttrib : nullptr);
+            setSpriteAttrib(checked? std::make_shared<elysian::SpriteAttrib>() : nullptr);
         },
-        getSpriteAttrib(),
+        getSpriteAttrib().get(),
         !_entity->isActive()
     );
 

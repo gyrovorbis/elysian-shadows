@@ -59,7 +59,7 @@ EntityBase::EntityBase(EntityBase *other) {
     }
 }
 
-EntityBase::EntityBase(EntityBase &&other) {
+EntityBase::EntityBase(EntityBase &&) {
     GY_ASSERT(false); //NOT IMPLEMENTED, FUCKER!!
 }
 

@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,9 +63,9 @@ namespace LVD
 			typedef unsigned __int64	uint64;
 } // namespace LVD
 #		else
-#			error please inform me what compiler are you using and set the correct types
+#			error please inform me what compiler you are using and set the correct types
 #		endif
-#	elif(defined(UNIX_BUILD) || defined(MAC_BUILD))
+#	elif(defined(UNIX_BUILD) || defined(MAC_BUILD) || defined(DREAMCAST_BUILD))
 #		include <stdint.h>
 namespace LVD
 {
@@ -78,7 +78,7 @@ namespace LVD
 #		ifdef __CYGWIN__
 			//gcc does define these types yet you need to use the
 			// the extension keyword to prevent warnings when using a high warning level
-			//The -Wno-long-long flag could supress this but lets not interfere
+			//The -Wno-long-long flag could suppress this but lets not interfere
 			//with what settings a user wants.
 			__extension__ typedef	long long			int64;
 			__extension__ typedef unsigned long long	uint64;
@@ -87,14 +87,13 @@ namespace LVD
 			typedef uint64_t			uint64;
 #		endif
 } // namespace LVD
-
+#	else
+#		error please inform me what platform you are using and set the correct types
 #	endif
 
 namespace LVD
 {
-	//typedef uint8 byte;
 	typedef unsigned char byte;
-	typedef uint32 size_t;
 
 	template<typename T>
 	struct is_integral_type

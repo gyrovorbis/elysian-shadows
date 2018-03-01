@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,12 +51,12 @@ namespace OOLUA
 	/**
 		\brief Pushes an instance to top of the Lua stack
 		\return
-		If \ref OOLUA_STORE_LAST_LOG_ERROR is set to one then the the return value will
+		If \ref OOLUA_STORE_LAST_ERROR is set to one then the the return value will
 		indicate success or failure, if \ref OOLUA_USE_EXCEPTIONS is set to one then
-		failure will always be reported by throwing an exception.
+		failure will always be reported by the throwing of an exception.
 		\note Although all push methods return a boolean, most simply return true.
-		The only versions which can return false are full userdata aswell as values
-		which are associated with a Lua universe.
+		The only versions which can return false are functions which operate on
+		full userdata and values which are associated with a Lua universe.
 		\see \ref OOLUA::can_xmove
 		\see OOLuaErrorReporting
 		\see OOLuaExceptionClasses
@@ -73,7 +73,7 @@ namespace OOLUA
 	template<typename T>
 	bool push(lua_State* const vm, T * const &  value);
 	template<typename T>
-	bool push(lua_State* const vm, lua_acquire_ptr<T>&  value);
+	bool push(lua_State* const vm, lua_acquire_ptr<T> const&  value);
 	template<typename T>
 	bool push(lua_State* const vm, T const &  value);
 	/**@}*/
@@ -88,7 +88,7 @@ namespace OOLUA
 		\brief Pulls the top element off the stack and pops it.
 		\details In stack terms this is a top followed by pop.
 		\return
-		If \ref OOLUA_STORE_LAST_LOG_ERROR is set to one then the the return value will
+		If \ref OOLUA_STORE_LAST_ERROR is set to one then the the return value will
 		indicate success or failure, if \ref OOLUA_USE_EXCEPTIONS is set to one then
 		failure will always be reported by throwing an exception.
 		\see OOLuaErrorReporting
@@ -106,7 +106,7 @@ namespace OOLUA
 	template<typename T>
 	bool pull(lua_State* const vm, T&  value);
 	template<typename T>
-	bool pull(lua_State* const vm, cpp_acquire_ptr<T>&  value);
+	bool pull(lua_State* const vm, cpp_acquire_ptr<T> const&  value);
 	/**	@}*/
 
 	/** \cond INTERNAL */
@@ -127,7 +127,6 @@ namespace OOLUA
 			void get(lua_State* const vm, int idx, void*& value);
 			void get(lua_State* const vm, int idx, bool& value);
 			void get(lua_State* const vm, int idx, char const*& value);
-			void get(lua_State* const vm, int idx, char *& value);
 			void get(lua_State* const vm, int idx, double& value);
 			void get(lua_State* const vm, int idx, float& value);
 			void get(lua_State* const vm, int idx, oolua_CFunction& value);

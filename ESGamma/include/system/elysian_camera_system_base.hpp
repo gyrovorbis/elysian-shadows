@@ -367,18 +367,7 @@ namespace elysian {
 
     inline float CameraSystemBase::getStaticScale(void) const { return _curState->staticScale; }
 
-    inline void CameraSystemBase::setScale(const float /*factor*/, const float time, EventMonitor*const monitor) {
-        auto &interp = get<SUBPROC_KEY_FR_INTERP> ( static_cast<SubProcParent&>(*this));
 
-        if(interp.getProcState() == PROC_STATE_RUNNING) return;
-
-        CameraKeyFrame frame = getKeyFrame();
-        //frame.setScale(factor);
-        interp.setKeyFrames(_curState, frame);
-        interp.setTimeInterval(time);
-        interp.setEventMonitor(monitor);
-        interp.start(this);
-    }
 
     inline void CameraSystemBase::setDirection(const GYVector3 &dir) {
         _curState->setOrient(dir.x, dir.y, dir.z);

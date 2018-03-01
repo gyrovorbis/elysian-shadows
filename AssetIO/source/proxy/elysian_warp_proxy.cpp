@@ -144,7 +144,9 @@ OOLUA_EXPORT_FUNCTIONS(Warp,
                                    setChangeLevel,
                                    setObliqueTransition,
                                     getToPosVec,
-                                    setToPosVec)
+                                    setToPosVec,
+                                    getCameraBoundaryRect,
+                                    setCameraBoundaryRect)
 OOLUA_EXPORT_FUNCTIONS_CONST(Warp,
                              getAreaPath,
                              getLevelPath,

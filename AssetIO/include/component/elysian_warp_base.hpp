@@ -5,6 +5,7 @@
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <primitive/elysian_instance_transform.hpp>
+#include <primitive/elysian_rect.hpp>
 
 #define ELYSIAN_WARP_AREA_PATH_MAX_CHARS        200
 #define ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS    200
@@ -18,16 +19,16 @@ namespace elysian {
         friend Entity;
         friend class EntityBase;
         friend class WarpSystem;
-
-
 		
     protected:
         char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS]         = { 0 };
         char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS]    = { 0 };
+        Recti                   _cameraBoundaryRect                                 = Recti(-1);
         GYVector3               _toPosition;
-        bool                    _changeArea     = false;
-        bool                    _changeLevel    = false;
-        bool                    _obliqueTran    = true;
+
+        bool                    _changeArea                                         = false;
+        bool                    _changeLevel                                        = false;
+        bool                    _obliqueTran                                        = true;
 
 		
 	public:
@@ -38,6 +39,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(areaPath,           getAreaPath,            setAreaPath)
             ELYSIAN_LUA_PROXY_FIELD(levelPath,          getLevelPath,           setLevelPath)
             ELYSIAN_LUA_PROXY_FIELD(obliqueTran,        getObliqueTransition,   setObliqueTransition)
+            ELYSIAN_LUA_PROXY_FIELD(cameraBoundaryRect, getCameraBoundaryRect,  setCameraBoundaryRect)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                                 WarpBase(Entity &parent, const WarpBase*const prefab=nullptr);
@@ -57,6 +59,8 @@ namespace elysian {
         void                    setChangeLevel(const bool flag=true);
         void                    setObliqueTransition(const bool flag=true);
         bool                    getObliqueTransition(void) const;
+        Recti&                  getCameraBoundaryRect(void);
+        void                    setCameraBoundaryRect(Recti rect);
 
         //Overridden from Component
         static constexpr const Component::TYPE componentType = Component::WARP;
@@ -74,10 +78,11 @@ namespace elysian {
         if(prefab) *this = *prefab;
     }
     inline WarpBase& WarpBase::operator=(const WarpBase& rhs) {
-        _toPosition     = rhs._toPosition;
-        _changeArea     = rhs._changeArea;
-        _changeLevel    = rhs._changeLevel;
-        _obliqueTran    = rhs._obliqueTran;
+        _toPosition         = rhs._toPosition;
+        _changeArea         = rhs._changeArea;
+        _changeLevel        = rhs._changeLevel;
+        _obliqueTran        = rhs._obliqueTran;
+        _cameraBoundaryRect = rhs._cameraBoundaryRect;
         strcpy(_areaPath, rhs._areaPath);
         strcpy(_levelPath, rhs._levelPath);
         return *this;
@@ -133,6 +138,9 @@ namespace elysian {
     inline bool WarpBase::getChangeLevel(void) const {
 		return _changeLevel;
 	}
+
+    inline Recti& WarpBase::getCameraBoundaryRect(void) { return _cameraBoundaryRect; }
+    inline void WarpBase::setCameraBoundaryRect(Recti rect) { _cameraBoundaryRect = rect; }
 
 	
 }

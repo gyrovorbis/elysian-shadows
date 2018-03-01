@@ -40,7 +40,7 @@ namespace elysian {
 
     void Layout::update(void) {
         if(!getWidgetCount()) return;
-        for(auto&& widget: _widgets) widget->update();
+        for(auto& widget: _widgets) widget->update();
 
         _updateSizes();
         _updatePositions();
@@ -56,6 +56,9 @@ namespace elysian {
     }
 
     void Layout::addWidget(Widget* widget) {
+        for(auto&& it : _widgets) {
+            if(it == widget) return;
+        }
         _widgets.push_back(widget);
         widget->setParentLayout(this);
     }
@@ -85,14 +88,6 @@ namespace elysian {
 
     void Layout::controllerEvent(const Controller &cont) {
         for(auto& widget: _widgets) if(widget->hasFocus()) widget->controllerEvent(cont);
-    }
-
-    void Layout::keyboardEvent(const Keyboard &keybd) {
-        for(auto& widget: _widgets) if(widget->hasFocus()) widget->keyboardEvent(keybd);
-    }
-
-    void Layout::mouseEvent(const Mouse &mouse) {
-        for(auto& widget: _widgets) widget->mouseEvent(mouse);
     }
 
     void Layout::touchEvent(const TouchDevice &touch) {
@@ -178,7 +173,7 @@ namespace elysian {
         } else {
             float curSize = 0.0f;
 
-            for(auto&& widget: _widgets) curSize += widget->getSize(axis);
+            for(auto& widget: _widgets) curSize += widget->getSize(axis);
 
             float delta = fabs(parentSize - curSize);
 
@@ -240,7 +235,7 @@ namespace elysian {
         const float parentPos     = _parent->getPosition(axis);
 
         if(_groupingAxis != axis_) {
-            for(auto&& widget : _widgets) {
+            for(auto& widget : _widgets) {
                 widget->setPosition(axis, parentPos);
             }
         } else {
@@ -248,7 +243,7 @@ namespace elysian {
             float startPos = parentPos - 0.5f*_parent->getSize(axis);
             float endPos;
 
-            for(auto&& widget : _widgets) {
+            for(auto& widget : _widgets) {
                 endPos = startPos + widget->getSize(axis);
                 widget->setPosition(axis, (endPos+startPos)*0.5f);
                 startPos = endPos;
@@ -275,5 +270,33 @@ namespace elysian {
         }
         return array;
     }
+
+    void Layout::insertWidget(unsigned index, Widget *widget) {
+        int i = 0;
+        //Check if we already contain the bitch at some other index...
+        for(; i < (int)_widgets.size(); ++i) {
+            if(_widgets[i] == widget) break;
+        }
+
+        if(i < (int)_widgets.size()) {
+            if(i == (int)index) return; //It's already where you wanted it, asswipe.
+            else _widgets.erase(_widgets.begin() + i);
+        }
+
+        if (index < (unsigned)_widgets.size()) {
+            _widgets.insert(_widgets.begin() + index, widget);
+        } else { //Either this is what you wanted, or you're a dumbass and that index is too large, so we'll just append it...
+            _widgets.push_back(widget);
+        }
+    }
+
+#if 0
+    void GridLayout::_updateSizes(AXIS axis) {
+
+
+    }
+#endif
+
+
 
 }

@@ -1,9 +1,11 @@
-#if 0
+#if 1
 
 #include "gyro_vmu_tcp.h"
 #include "gyro_vmu_device.h"
 #include "gyro_vmu_sfr.h"
 #include "gyro_vmu_isr.h"
+#include "gyro_vmu_maple.h"
+#include "gyro_vmu_lcd.h"
 #include <gyro_net_api.h>
 #include <gyro_system_api.h>
 #include <assert.h>
@@ -22,7 +24,7 @@ typedef enum TCP_MSG_TYPE {
 } TCP_MSG_TYPE;
 
 static void _setSerialConnectionPins(VMUDevice* dev, VMU_SERIAL_CONNECTION_TYPE type) {
-#if 0
+#if 1
     switch(type) {
     case VMU_SERIAL_CONNECTION_NONE:
         _gyLog(GY_DEBUG_VERBOSE, "Disconnecting VMU external serial pins.");
@@ -39,14 +41,15 @@ static void _setSerialConnectionPins(VMUDevice* dev, VMU_SERIAL_CONNECTION_TYPE 
     case VMU_SERIAL_CONNECTION_DC:
         _gyLog(GY_DEBUG_VERBOSE, "Configuring VMU external serial pins for DC to VMU connection.");
         dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] &= ~SFR_P7_P73_MASK; //Clear VMU/VMU connection pin
-        dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] |= (SFR_P7_P70_MASK|SFR_P7_P72_MASK); //set external voltage and DC controller pins
+        dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] |= (SFR_P7_P70_MASK|SFR_P7_P72_MASK|SFR_P7_P73_MASK); //set external voltage and DC controller pins
+        dev->intReq |=  1 << VMU_INT_EXT_INT0;
         break;
     }
 #endif
 }
 
 static int _handleIncomingTcpConnection(VMUDevice* dev) {
-#if 0
+#if 1
     int newConnection = 0;
 
     _gyLog(GY_DEBUG_VERBOSE, "Receiving incoming TCP connection request.");
@@ -83,7 +86,7 @@ static int _handleIncomingTcpConnection(VMUDevice* dev) {
 }
 
 static int _updateTcpServer(VMUDevice* dev) {
-#if 0
+#if 1
     int newConnection = 0;
 
     //Incoming TCP client connection request
@@ -95,8 +98,171 @@ static int _updateTcpServer(VMUDevice* dev) {
 #endif
 }
 
+static void _mapleProcessRecv(VMUDevice* dev, unsigned char* packetBuff, int recvBytes) {
+
+        GYMapleFrame    respFrame;
+        uint32_t        respBytes = 0;
+
+        //Parse Maple Header
+        char cmd                        = packetBuff[MAPLE_FRAME_CMD_OFFSET];
+        uint8_t       dstAddr           = packetBuff[MAPLE_FRAME_DST_ADDR_OFFSET];
+        uint8_t       srcAddr           = packetBuff[MAPLE_FRAME_SRC_ADDR_OFFSET];
+        uint8_t       dataWords         = packetBuff[MAPLE_FRAME_LENGTH_OFFSET];
+        uint8_t*      data              = &packetBuff[MAPLE_FRAME_DATA_OFFSET];
+
+        //Extract Maple Data
+        unsigned char func              = data[MAPLE_FRAME_DATA_FUNC_OFFSET];
+        unsigned char partitionNumber   = data[MAPLE_FRAME_DATA_PARTITION_OFFSET];      //should be 0?
+        unsigned char phase             = data[MAPLE_FRAME_DATA_PHASE_OFFSET];          //sequence number for piecewise block access
+        unsigned char block             = data[MAPLE_FRAME_DATA_BLOCK_OFFSET];          //0 for LCD screens (when cmd is WRITE)
+        unsigned char* blockWriteData   = &data[MAPLE_FRAME_DATA_WRITE_OFFSET];
+
+        uint32_t      dataBytes         = dataWords*MAPLE_WORD_SIZE;
+        uint32_t      mapleFrameSize    = dataBytes + MAPLE_HEADER_SIZE;
+        uint32_t      dataWriteBytes    = dataBytes - MAPLE_FRAME_DATA_WRITE_OFFSET;
+
+
+
+        if(recvBytes != mapleFrameSize) {
+            _gyLog(GY_DEBUG_WARNING, "[MAPLE/TCP RECV]: TCP Packet size [%d] does not match Maple frame size [%d]!", recvBytes, mapleFrameSize);
+
+
+
+        }
+        if(!(func == MAPLE_FUNC_CLOCK || func == MAPLE_FUNC_MEMCARD || func == MAPLE_FUNC_LCD)) {
+            _gyLog(GY_DEBUG_WARNING, "[MAPLE/TCP RECV]: Command [%d] sent for unsupported Function Type [%d]", cmd, func);
+        }
+
+
+        switch(cmd) {
+
+        case MAPLE_CMD_DEV_INFO_REQ:
+            memcpy(&respFrame[MAPLE_FRAME_DATA_OFFSET], VMUMapleDeviceInfoGet(dev), sizeof(VMUMapleDeviceInfo));
+            if(gyVisualMemoryMapleFrame(MAPLE_CMD_DEV_INFO_RESP, srcAddr, dstAddr, respFrame, sizeof(VMUMapleDeviceInfo), &respBytes))
+                gyVmuSerialTcpSend(dev, respFrame, respBytes);
+            break;
+
+        case MAPLE_CMD_BLOCK_READ: {
+            unsigned char* flashBlock = gyVmuFlashBlock(dev, block);
+            if(flashBlock) {
+                _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: Reading block %d from flash.", block);
+                memcpy(&respFrame[MAPLE_FRAME_DATA_OFFSET], flashBlock, VMU_FLASH_BLOCK_SIZE);
+                if(gyVisualMemoryMapleFrame(MAPLE_CMD_DATA_TRANSFER, srcAddr, dstAddr, respFrame, sizeof(VMUMapleDeviceInfo), &respBytes))
+                    gyVmuSerialTcpSend(dev, respFrame, respBytes);
+                break;
+            } else {
+                _gyLog(GY_DEBUG_ERROR, "[MAPLE/TCP RECV]: Read from Flash block %d returned NULL!", block);
+            }
+        } break;
+
+        case MAPLE_CMD_BLOCK_WRITE: {
+            switch(func) {
+                case MAPLE_FUNC_MEMCARD: {
+                    unsigned char* flashBlock = gyVmuFlashBlock(dev, block);
+                    if(dataWriteBytes != VMU_FLASH_BLOCK_SIZE) {
+                        _gyLog(GY_DEBUG_WARNING, "[MAPLE/TCP RECV]: Write to flash requested, but data size does not match block size: %d", dataBytes);
+                    }
+                    if(flashBlock)
+                        memcpy(flashBlock, blockWriteData, dataWriteBytes);
+                } break;
+
+            case MAPLE_FUNC_LCD:
+                _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: Writing to VMU LCD Screen!");
+                if(dataWriteBytes != 192) {
+                    _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: Write issued to VMU LCD with incorrect data size: %d", dataBytes);
+                }
+
+                for(unsigned byte = 0; byte < 192; ++byte) {
+                    for(unsigned bit = 0; bit < 8; ++bit) {
+                        uint8_t val = (blockWriteData[byte]>>bit)&0x1;
+                        unsigned y = byte / 6;
+                        unsigned x = (byte % 6)*8 + bit;
+                        gyVmuDisplayPixelSet(dev, x, y, val);
+                    }
+
+                }
+                break;
+
+            case MAPLE_FUNC_CLOCK:
+                _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: Writing to VMU Clock!");
+                //0-1: year (lower order byte in 0, upper order byte in 1
+                //2 : month
+                //3 : day
+                //4 : hour
+                //5 : minute
+                //6 : second
+                //7 : fixed value (0x00)
+
+
+                break;
+            default: break;
+            }
+
+            if(gyVisualMemoryMapleFrame(MAPLE_CMD_ACK, srcAddr, dstAddr, respFrame, 0, &respBytes))
+                gyVmuSerialTcpSend(dev, respFrame, respBytes);
+
+            break;
+        case MAPLE_CMD_SET_CONDITION:
+
+                if(func == MAPLE_FUNC_CLOCK) {
+                    _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: Playing Sound [%x]!", *(uint32_t*)blockWriteData);
+                    uint8_t pulse = blockWriteData[1];
+                    uint8_t width = blockWriteData[3];
+
+                    gyVmuBuzzerSoundPlay(dev, pulse, width, 0);
+
+                } else {
+                    _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: (Virtual) Dreamcast device sent SETCOND command on unsupported function: %d (ignoring)", func);
+                }
+
+                if(gyVisualMemoryMapleFrame(MAPLE_CMD_ACK, srcAddr, dstAddr, respFrame, 0, &respBytes))
+                    gyVmuSerialTcpSend(dev, respFrame, respBytes);
+                break;
+
+        case MAPLE_CMD_NO_RESP:
+            _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: (Virtual) Dreamcast device sent NO RESPONSE command! (ignoring)");
+            break;
+        case MAPLE_CMD_EXT_DEV_INFO_REQ:
+            _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: (Virtual) Dreamcast device sent EXTENDED_DEVICE_INFO_REQUEST command! (ignoring)");
+            break;
+
+        case MAPLE_CMD_SHUTDOWN_DEV:
+            _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: (Virtual) Dreamcast device sent SHUTDOWN command! (ignoring)");
+            break;
+        case MAPLE_CMD_RESET_DEVICE:
+            _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: (Virtual) Dreamcast device sent RESET command! (ignoring)");
+            break;
+
+
+        default:
+            _gyLog(GY_DEBUG_WARNING, "[MAPLE/TCP RECV]: Unknown Maple command received: %d (Ignoring)", cmd);
+        }
+
+    }
+}
+
 static void _updateTcpSocketSend(VMUDevice* dev) {
-#if 0
+#if 1 //TEMPORARY BULLSHIT REESTED TO ALL FUCK
+
+
+#else
+            if(gyVmuSerialConnectionType(dev) == VMU_SERIAL_CONNECTION_DC) {
+                if(dev->serialPort._txStart) {
+                    _gyLog(GY_DEBUG_VERBOSE, "[EVMU] - Sending 256 bytes from WRAM!!!");
+                    gyVmuSerialTcpSend(dev, dev->wram, 256);
+                    dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_OV_MASK;
+                dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_END_MASK;
+                //Raise interrupt if interrupt bit is set
+                if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] & SFR_SCON0_IE_MASK) {
+                    dev->intReq |= 1 << VMU_INT_SIO0;
+                    _gyLog(GY_DEBUG_VERBOSE, "RAISING SCON0 INTERRUPT!");
+                }
+
+
+                }
+
+            } else {
+#if 1
     //Send SBUF0 to remote if it's ready and SCON0.CTRL is set.
     if(dev->serialPort._txState == VMU_SERIAL_PORT_READY //remote SCON1 is ready to recieve
     &&
@@ -141,11 +307,13 @@ static void _updateTcpSocketSend(VMUDevice* dev) {
             dev->serialPort._rxState = VMU_SERIAL_PORT_READY;
         }
     }
+            }
+#endif
 #endif
 }
 
 static void _updateTcpSocketRecv(VMUDevice* dev) {
-#if 0
+#if 1
     unsigned char packetBuff[VMU_SERIAL_TCP_PACKET_SIZE_MAX];
     int recvBytes;
 
@@ -154,20 +322,32 @@ static void _updateTcpSocketRecv(VMUDevice* dev) {
 
         recvBytes = gyNetTcpSocketRecv(dev->serialPort._tcpSocket, packetBuff, VMU_SERIAL_TCP_PACKET_SIZE_MAX);
 
-        //0 byte TCP packet means the client disconnected!
         if(recvBytes <= 0) {
-            _gyLog(GY_DEBUG_VERBOSE, "TCP VMU client has disconnected.");
-            _gyPush();
-            _gyLog(GY_DEBUG_VERBOSE, "Closing TCP socket.");
-            gyNetMonitoredConnectionsRemove(dev->serialPort._tcpSocket);
-            gyNetTcpSocketClose(dev->serialPort._tcpSocket);
-            dev->serialPort._tcpSocket = 0;
-            _setSerialConnectionPins(dev, VMU_SERIAL_CONNECTION_NONE);
-            _gyPop(1);
+            gyVmuSerialTcpClose(dev);
 
+        } else
 
-        } else { //Decode message
+        if(gyVmuSerialConnectionType(dev) == VMU_SERIAL_CONNECTION_DC) {
+#if 1 //temporary bullshit -- reested to all fuck!!!
+    _mapleProcessRecv(dev, packetBuff, recvBytes);
+#else
+                _gyLog(GY_DEBUG_VERBOSE, "EVMU - Copying %d bytes to wram!", recvBytes);
+                memcpy(dev->wram, packetBuff, recvBytes);
 
+                dev->intReq |= 1 << VMU_INT_SIO1;
+                dev->intReq |= 1 << VMU_INT_RFB;
+                dev->sfr[SFR_OFFSET(SFR_ADDR_VTRBF)] = packetBuff[0];
+
+                //signal transfer complete
+                dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] |= SFR_SCON1_END_MASK;
+
+                //Raise interrupt after byte has been received, if IE bit is set
+                if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_IE_MASK) {
+                    _gyLog(GY_DEBUG_VERBOSE, "RAISING SCON1 INTERRUPT!");
+
+                }
+#endif
+        } else {
             switch(packetBuff[0]) {
             case TCP_MSG_CONNECTION_TYPE:
                 _setSerialConnectionPins(dev, packetBuff[1]);
@@ -210,7 +390,7 @@ static void _updateTcpSocketRecv(VMUDevice* dev) {
                         //Raise interrupt after byte has been received, if IE bit is set
                         if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_IE_MASK) {
                             _gyLog(GY_DEBUG_VERBOSE, "RAISING SCON1 INTERRUPT!");
-                            dev->intReq |= 1 << VMU_INT_SI01;
+                            dev->intReq |= 1 << VMU_INT_SIO1;
                         }
 
                         _gyPop(1);
@@ -283,7 +463,7 @@ static void _updateTcpSocketRecv(VMUDevice* dev) {
 #endif
 }
 
-#if 0
+#if 1
 void _gyVmuSerialUpdateTcp(VMUDevice* dev) {
 
     int newConnection = 0;
@@ -309,16 +489,17 @@ void _gyVmuSerialUpdateTcp(VMUDevice* dev) {
 
 }
 
-void gyVmuSerialUpdate(VMUDevice* dev) {
+void gyVmuSerialPortUpdate(VMUDevice* dev) {
     _gyVmuSerialUpdateTcp(dev);
     //update other shit like GPIO pins or physical connection here
 }
 
 VMU_SERIAL_CONNECTION_TYPE gyVmuSerialConnectionType(const struct VMUDevice* dev) {
     if(dev->serialPort._tcpSocket) {
-        if(dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] & SFR_P7_P73_MASK) {
-            return VMU_SERIAL_CONNECTION_VMU;
-        } else if(dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] & SFR_P7_P70_MASK) {
+       // if(dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] & SFR_P7_P73_MASK) {
+         //   return VMU_SERIAL_CONNECTION_VMU;
+        //} else
+        if(dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] & SFR_P7_P70_MASK) {
             return VMU_SERIAL_CONNECTION_DC;
         }
     }
@@ -375,6 +556,7 @@ int gyVmuSerialTcpClose(VMUDevice *dev) {
     int success = 1;
     if(dev->serialPort._tcpSocket) {
         _setSerialConnectionPins(dev, VMU_SERIAL_CONNECTION_NONE);
+        success &= gyNetMonitoredConnectionsRemove(dev->serialPort._tcpSocket);
         success &= gyNetTcpSocketClose(dev->serialPort._tcpSocket);
         dev->serialPort._tcpSocket = NULL;
     }

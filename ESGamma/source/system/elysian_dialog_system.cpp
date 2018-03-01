@@ -69,6 +69,8 @@ DialogSystem::DialogSystem(void) {
     _border[1]._transform._pos.x = ELYSIAN_DIALOG_SYSTEM_WIDTH+1.0f;
     _border[1].setVertexColor(3, borderColor);
 
+    _textFrameSize = Vector2(ELYSIAN_DIALOG_SYSTEM_WIDTH - _marginSize.getX()*2, ELYSIAN_DIALOG_SYSTEM_HEIGHT - _marginSize.getY()*2);
+
     _curScreen.screen = nullptr;
 }
 
@@ -77,6 +79,11 @@ DialogSystem::~DialogSystem(void) {
     gyAudWavDestroy(_sfxClose);
     gyAudWavDestroy(_sfxText);
     gyAudWavDestroy(_sfxSelect);
+}
+
+Font& DialogSystem::getTextFont(void) const {
+    return getGuiSys()->pragmata18;
+
 }
 
 bool DialogSystem::loadAssets(void) {
@@ -101,7 +108,7 @@ void DialogSystem::render(void) {
     unsigned width, height;
     getGuiSys()->getResolution(width, height);
 
-    auto& font = getGuiSys()->pragmata18;
+    auto& font = getTextFont();
     auto& font2 = getGuiSys()->pragmata22;
 
 	if(!_curDialog) return;
@@ -126,7 +133,8 @@ void DialogSystem::render(void) {
 		//Render Text
 		for(unsigned int i = 0; i <= _currentLine; ++i) {
             font.setAlpha(255*alpha);
-            font._transform.setPos(basePos.x-(_mainCanvas._transform._size.x/2.0f)+40.0f, basePos.y-(_mainCanvas._transform._size.y/2.0f)+35.0f+25.0f*i, _mainCanvas._transform._pos.z+1);
+            font._transform.setPos(basePos.x-(_mainCanvas._transform._size.x/2.0f)+ELYSIAN_DIALOG_SYSTEM_MARGIN_HORIZONTAL,
+                                   basePos.y-(_mainCanvas._transform._size.y/2.0f)+ELYSIAN_DIALOG_SYSTEM_MARGIN_VERTICAL+25.0f*i, _mainCanvas._transform._pos.z+1);
             if(i != _currentLine) font.drawString(Font::L_ALIGN, _textLines[i]);
 			else {
 				strncpy(buffer, _textLines[i], _currentCharacter);
@@ -227,7 +235,7 @@ void DialogSystem::update(void) {
 
         if(dist > _maxNonmodalDist) {
 			_prevScreen.screen = _curScreen.screen;
-			_curScreen.screen = nullptr;
+            setCurrentScreen(nullptr);
 			closeDialog();
 			return;
 		}
@@ -320,7 +328,7 @@ void DialogSystem::_nextScreen(void) {
 		case BOX_OUTPUT_END:
             nextIndex = text->getNextIndex();
 			break;
-		case BOX_INPUT:
+        case BOX_INPUT:
             nextIndex = prompt->getOption(_currentOption)->getNextIndex(); //_currentConversationDialog->getScreen(_currentScreen)->getOption(_currentOption)->resultScreen;
 			break;
 		default:
@@ -346,21 +354,23 @@ void DialogSystem::_nextScreen(void) {
     _currentOption = 0;
 	_prevScreen = _curScreen;
 	if(nextIndex == -1) {
-		_curScreen.screen = nullptr;
+        setCurrentScreen(nullptr);
 		closeDialog();
 	} else {
-		_curScreen.screen = _curDialog->getScreen(nextIndex);
-		_boxState = BOX_OUTPUT;
-		_currentLine = _currentCharacter = 0;
-		_characterTimer = 0.0f;
-		_updateCamera();
-		_splitText();
-        _checkModal();
+        if(setCurrentScreen(_curDialog->getScreen(nextIndex))) {
+            _boxState = BOX_OUTPUT;
+            _currentLine = _currentCharacter = 0;
+            _characterTimer = 0.0f;
+            _updateCamera();
+            _splitText();
+            _checkModal();
+        }
 	}
 }
 
 void DialogSystem::_checkModal(void) const {
-	setEngineState((_curScreen.screen->getScreenType() == DialogScreen::SCREEN_PROMPT)? System::ENGINE_MODAL_CONVERSATION : System::ENGINE_CONVERSATION);
+    //setEngineState((_curScreen.screen->getScreenType() == DialogScreen::SCREEN_PROMPT)? System::ENGINE_MODAL_CONVERSATION : System::ENGINE_CONVERSATION);
+    setEngineState(System::ENGINE_MODAL_CONVERSATION);
 }
 
 void DialogSystem::_facePlayer(void) const {
@@ -373,7 +383,7 @@ void DialogSystem::closeDialog(void) {
 	_updateCamera();
 	//if(_dynamicDialog) delete _currentConversationDialog;
 	_curDialog = nullptr;
-	_curScreen.screen = nullptr;
+    setCurrentScreen(nullptr);
 	_prevScreen.screen = nullptr;
 	_monitor = nullptr;
 	_currentScreen = _currentLine = _currentCharacter = _currentOption = 0;
@@ -419,32 +429,39 @@ void DialogSystem::_splitText(void) {
 	for(; lineCount < ELYSIAN_DIALOG_SYSTEM_MAX_LINES; ++lineCount) _textLines[lineCount][0] = 0;
 }
 
-void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor) {
+void DialogSystem::startDialog(std::shared_ptr<Dialog> dialog, EventMonitor * const monitor) {
+    if(!dialog) return;
+    startDialogAtScreenIndex(dialog, dialog->getStartScreen(), monitor);
+}
+
+void DialogSystem::startDialogAtScreenIndex(std::shared_ptr<Dialog> dialog, unsigned screenIndex, EventMonitor*const monitor) {
 	closeDialog();
+
+    if(!dialog) return;
 
     if(dialog->getScreenCount() == 0) {
         errprintf("Cannot start a dialog with 0 screens!");
         return;
     }
 
-    int screenIndex = dialog->getStartScreen();
-    auto* screen = dialog->getScreen(dialog->getStartScreen());
+    auto* screen = dialog->getScreen(screenIndex);
     if(!screen) {
         errprintf("Could not start Dialog! (dialog.screen[%d] could not be found!)", screenIndex+1);
         return;
     }
 
-    _curScreen.screen = screen;
-	_monitor = monitor;
-	_curDialog = dialog;
-    getAudioSys()->playSfxChannel(-1, *_sfxOpen);
-	_updateCamera();
-    _facePlayer();
-	_splitText();
-    _checkModal();
-    _advLogWasEnabled = getGuiSys()->adventureLog.isEnabled();
-    //getGuiSys()->adventureLog.setEnabled(false);
-    getGuiSys()->fadeFgLayer(1.0f, false);
+    if(setCurrentScreen(screen)) {
+        _monitor = monitor;
+        _curDialog = dialog;
+        getAudioSys()->playSfxChannel(-1, *_sfxOpen);
+        _updateCamera();
+        _facePlayer();
+        _splitText();
+        _checkModal();
+        _advLogWasEnabled = getGuiSys()->adventureLog.isEnabled();
+        //getGuiSys()->adventureLog.setEnabled(false);
+        getGuiSys()->fadeFgLayer(1.0f, false);
+    }
 }
 
 
@@ -521,12 +538,26 @@ void ConversationSystem::Close(void) {
 
 #endif
 
-Dialog *DialogSystem::getDialog(void) const {
+std::shared_ptr<Dialog> DialogSystem::getDialog(void) const {
 	return _curDialog;
 }
 
 bool DialogSystem::isOpen(void) const {
 	return _curDialog? true : false;
+}
+
+bool DialogSystem::setCurrentScreen(DialogScreen* screen) {
+    if(screen) {
+        if(screen->getScreenType() == DialogScreen::SCREEN_PROMPT) {
+            if(!static_cast<DialogPrompt*>(screen)->getOptionCount()) {
+                errprintf("[DialogSystem] Cannot start invalid DialogPrompt with 0 options! [Text: %s]", screen->getText());
+                closeDialog();
+                return false;
+            }
+        }
+    }
+    _curScreen.screen = screen;
+    return true;
 }
 
 

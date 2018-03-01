@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -78,8 +78,15 @@ namespace OOLUA
 		Table(lua_State*  const vm, std::string const& name);
 		Table(Table const& rhs);
 
-		/** \brief unimplemented*/
-		Table& operator =(Table const& /*rhs*/);
+		/** \brief Assigns a copy of rhs's internal state to this instance
+			\details If this table is valid then the operator will release
+			the registry reference before assigning a copy of rhs to this
+			instance.
+			\param[in] rhs Table from which to copy the table reference
+			\returns This instance.
+			\see OOLUA::Lua_ref assignment operator
+		*/
+		Table& operator = (Table const& rhs);
 
 		/**@}*/
 
@@ -176,7 +183,10 @@ namespace OOLUA
 		bool valid()const;
 
 		typedef void(*traverse_do_function)(lua_State* );//NOLINT
-		/** \deprecated*/
+		/** \brief Traverses the table using \ref oolua_pairs
+			\see \ref oolua_pairs "oolua_pairs'" details for the correct procedure
+			to follow.
+		*/
 		void traverse(traverse_do_function do_);
 
 		/**
@@ -356,6 +366,13 @@ namespace OOLUA
 	*/
 	OOLUA::Table new_table(lua_State* vm);
 
+	/** \cond INTERNAL*/
+	namespace INTERNAL
+	{
+		int l_new_table(lua_State* vm);
+	} //namespace INTERNAL
+	/** \endcond */
+
 	/**	\def oolua_ipairs (table)
 		\hideinitializer
 		\brief Helper for iterating over the sequence part of a table.
@@ -427,7 +444,7 @@ namespace OOLUA
 		oolua_pairs(table)
 		{
 			\\do what ever
-			lua_pop(vm);\\Pop the value, leaving the key at the top of stack
+			lua_pop(vm, 1);\\Pop the value, leaving the key at the top of stack
 		}
 		oolua_pairs_end()
 		\endcode

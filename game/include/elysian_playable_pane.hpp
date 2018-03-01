@@ -13,6 +13,7 @@
 #define ELYSIAN_PLAYABLE_PANE_MP_BG_PREFAB      "menu_partyMemberPane_mpBg"
 #define ELYSIAN_PLAYABLE_PANE_MP_FG_PREFAB      "menu_partyMemberPane_mpFg"
 #define ELYSIAN_PLAYABLE_PANE_ECHO_ICON_PREFAB  "menu_partyMemberPane_echoIcon"
+#define ELYSIAN_PLAYABLE_PANE_INDENT_SIZE       48
 
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
@@ -27,6 +28,8 @@ namespace game {
 
     using namespace elysian;
 
+    class HpMpGaugeWidget;
+
     class PlayablePane: public elysian::EntityWidget, public elysian::LuaManager {
     private:
         Entity*             _playable         = nullptr;
@@ -36,7 +39,7 @@ namespace game {
         VerticalLayout*     _vLayoutRight;
         HorizontalLayout*   _hLayoutEcho;
 
-        EntityWidget*        _groupLeft;
+        GroupWidget*         _groupLeft;
         GroupWidget*         _groupRight;
         GroupWidget*         _groupEcho;
 
@@ -49,11 +52,10 @@ namespace game {
         LabelWidget*        _mpText;
         LabelWidget*        _mpMaxText;
 
+        GroupWidget*        _indentWidget;
         EntityWidget*       _portrait;
-        EntityWidget*       _hpBg;
-        EntityWidget*       _mpBg;
-        EntityWidget*       _hpFg;
-        EntityWidget*       _mpFg;
+        HpMpGaugeWidget*    _hpGauge;
+        HpMpGaugeWidget*    _mpGauge;
         EntityWidget*       _echoIcon;
 
     public:

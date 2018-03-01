@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2015 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -92,15 +92,23 @@ namespace OOLUA
 	\struct Lua_function
 	\brief Structure which is used to call a Lua function.
 	\details
-	\ref OOLUA::Lua_function "Lua_function" is a lua_State function caller object, the state in which
-	it calls a function is specified in either the \ref OOLUA::Lua_function::Lua_function(lua_State*)
-	"constructor" or via \ref OOLUA::Lua_function::bind_script "bind_script".
-	This object provides function call operator overloads up to
-	\ref OOLuaConfigLuaParams "\"lua_params\"" count + 1 parameters, the first of which being
-	the function which is to be called and it's type maybe one of:
-		\li std::string A function in Lua's global table
+	Calling a Lua function, from C++ code using OOLua's API, can be achieved using a
+	\ref OOLUA::Lua_function "Lua_function" object. This is a state bound caller,
+	and the state in which the callee will be invoked is specified either in the
+	\ref OOLUA::Lua_function::Lua_function(lua_State*) "constructor" or via the
+	\ref OOLUA::Lua_function::bind_script "bind_script" member function.
+
+	To invoke a callee, the \ref OOLUA::Lua_function type uses a call operator. The operator's
+	first parameter must be the callee and it can be specified using one of the following types:
+		\li std::string A function in the bound state's global table
 		\li \ref OOLUA::Lua_func_ref A reference to a function
 		\li int A valid stack index
+	If the callee is identified via a valid stack index, then this index will remain on
+	the stack at same absolute location after the caller has returned.
+
+ 	The call operator is also overloaded to enable the passing of parameters to the callee;
+ 	the maximum number of parameters is defined by the configurable value
+ 	\ref OOLuaConfigLuaParams "\"lua_params\"".
 */
 	struct Lua_function
 	{
