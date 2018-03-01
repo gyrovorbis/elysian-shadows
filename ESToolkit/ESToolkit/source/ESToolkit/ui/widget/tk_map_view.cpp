@@ -779,12 +779,24 @@ void MapView::_registerDropEventCallbacks(void) {
                 Entity* entity = new Entity(prefabEntity);
                 QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
 
+                elysian::TileEntry tileEntries[ELYSIAN_AREA_MAP_LAYERS];
+               int index = -1;
+               int highestElev = 0;
+               for(unsigned i = 0; i < ELYSIAN_AREA_MAP_LAYERS; ++i) {
+                   tileEntries[i] = getAssets()->getCurrentArea()->getTileEntry(QPoint(scenePos.x()/32, scenePos.y()/32), (Assets::LAYER_TYPE)i);
+                   if(tileEntries[i].getElev() > 0 && getAssets()->getCurrentLevel()->getTile(tileEntries[i].getIndex())->getStandOn()) {
+                        index = i;
+                        highestElev = tileEntries[i].getElev();
+                   }
+               }
+
                 if(!entity) {
                    errprintf("Failed: Prefab constructor returned NULL!");
                    return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
                }
                 entity->getTransform().setPosX(scenePos.x());
-                entity->getTransform().setPosY(scenePos.y());
+                entity->getTransform().setPosY(scenePos.y()+highestElev*32);
+                entity->setElev(highestElev);
                 entity->setSaveFlag(true);
 
                 getAssets()->getCurrentArea()->addEntity(entity);
