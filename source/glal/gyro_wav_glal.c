@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <assert.h>
 
 typedef struct _GYAudWavPayload {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
@@ -18,11 +19,21 @@ typedef struct _GYAudWavPayload {
 
 void gyAudSourcePlayWav(GYAudioSource*const src, const struct GYWav* wav) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+    assert(src);
     if(!wav) return;
     const GYAudWavPayload* payload = wav->_data;
-    alSourceStop(*(ALuint*)src);
-    alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);
-    alSourcePlay(*(ALuint*)src);
+    if(payload->buffer == AL_NONE) return;
+    GY_AL_CLEAR_ERROR();
+        alSourceStop(*(ALuint*)src);
+    GY_AL_CHECK_ERROR();
+
+    GY_AL_CLEAR_ERROR();
+        alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);
+    GY_AL_CHECK_ERROR();
+
+    GY_AL_CLEAR_ERROR();
+        alSourcePlay(*(ALuint*)src);
+    GY_AL_CHECK_ERROR();
 #endif
 }
 
@@ -76,6 +87,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     _WAVE_RIFF_Header riff_header;
     _WAVE_Chunk wave_chunk;
     *size = 0;
+    *buffer = 0;
     unsigned char* data;
 
     if (!gyFileOpen(filename, "rb", &soundFile)) {
@@ -219,11 +231,13 @@ int _gyAudWavAlloc(GYWav *const wav) {
 
 int _gyAudWavFree(GYWav *const wav) {
     GYAudWavPayload *payload = wav->_data;
-    GY_AL_CLEAR_ERROR();
+    if(payload->buffer != AL_NONE) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
-    alDeleteBuffers(1, &payload->buffer);
-    GY_AL_CHECK_ERROR();
+        GY_AL_CLEAR_ERROR();
+        alDeleteBuffers(1, &payload->buffer);
+        GY_AL_CHECK_ERROR();
 #endif
+    }
     free(payload);
     return 1;
 }
