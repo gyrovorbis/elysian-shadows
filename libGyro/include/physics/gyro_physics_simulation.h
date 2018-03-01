@@ -183,6 +183,7 @@ typedef struct GYRigidBodyInternal {
     GYReal_t    torqueAccum;
     GYReal_t    damping[3];
     int32_t     forceMask;
+    int32_t     durability;
 } GYRigidBodyInternal;
 
 typedef struct GYContactInternal {
@@ -192,7 +193,31 @@ typedef struct GYContactInternal {
     GYReal_t    normalVector[3];
     GYReal_t    closingVelocity[3];
     GYReal_t    depth;
+    GYReal_t    totalInertia;//?
 } GYContactInternal;
+
+typedef struct GYParticleInternal {
+    GYReal_t    pos[3];
+    GYReal_t    velocity[3];
+    GYReal_t    accel;
+    GYReal_t    size;
+    int32_t     attrIndex;
+    uint32_t    lifeTime;    
+} GYParticle;
+
+typedef struct GYParticleAttrInternal {
+    uint32_t lifeTime;
+    uint32_t startSize;
+    uint32_t endSize;
+    uint32_t forceMask;
+} GYParticleAttrInternal;
+
+typedef struct GYFragmentInternal {
+    int32_t     bodyIndex;
+    uint32_t    primType;
+    int32_t     primIndex;
+    uint32_t    lifeTime;
+} GYFragmentInternal;
 
 
 

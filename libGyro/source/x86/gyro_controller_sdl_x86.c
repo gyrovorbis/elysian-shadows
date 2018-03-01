@@ -54,7 +54,6 @@ inline static SDLController* _claimFreeController(void) {
 int _sdlControllerInit(const struct GYInputInitParams*const  params) {
     int success = 1;
     SDL_version version;
-
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Initializing SDL_GAMECONTROLLER and SDL_HAPTIC.");
     _gyPush();
     if(SDL_Init(SDL_INIT_GAMECONTROLLER|SDL_INIT_HAPTIC) < 0) {

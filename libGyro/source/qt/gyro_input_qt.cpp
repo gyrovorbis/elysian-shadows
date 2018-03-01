@@ -9,23 +9,12 @@ extern "C" int  _sdlControllerUninit(void);
 extern "C" void _sdlControllerDump(void);
 
 GYInputInitParams    _initParams;
-static bool         _changedThisFrame[GY_KEY_COUNT] = { false };
+static bool         _keysChangedThisFrame[GY_KEY_COUNT]                 = { false };
+static bool         _mouseButtonsChangedThisFrame[GY_MOUSE_BUT_COUNT]   = { false };
+static bool         _mousePosChangedThisFrame                           = false;
+static bool         _mouseScrollWheelChangedThisFrame                   = false;
 
-#if 0
-static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(const Qt::MouseButton button) {
-    switch(button) {
-    case Qt::LeftButton:
-         return GY_MOUSE_BUT_LEFT;
-    case Qt::RightButton:
-        return GY_MOUSE_BUT_RIGHT;
-    case Qt::MidButton:
-        return GY_MOUSE_BUT_MIDDLE;
-    default: return GY_MOUSE_BUT_NONE;
-    }
-}
-#endif
-
-static inline GY_KEY _TranslateFromQt(const int keyCode) {
+static inline GY_KEY _TranslateKeyFromQt(const int keyCode) {
     switch(keyCode) {
     case Qt::Key_Escape:
         //exit(1);
@@ -137,19 +126,44 @@ static inline GY_KEY _TranslateFromQt(const int keyCode) {
     }
 }
 
+static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(Qt::MouseButton button) {
+    switch(button) {
+        case Qt::LeftButton:
+            return GY_MOUSE_BUT_LEFT;
+        case Qt::RightButton:
+            return GY_MOUSE_BUT_RIGHT;
+        case Qt::MiddleButton:
+            return GY_MOUSE_BUT_MIDDLE;
+        case Qt::BackButton:
+            return GY_MOUSE_BUT_BACK;
+        default: return GY_MOUSE_BUT_NONE;
+    }
+}
+
 static inline void _setKeyDown(GYKeyboard *const keybd, const GY_KEY key) {
     unsigned newState = keybd->keys[key] | 0x1;
     keybd->keys[key] = (GY_BUTTON_STATE)newState;
-    _changedThisFrame[key] = true;
+    _keysChangedThisFrame[key] = true;
 }
 
 static inline void _setKeyUp(GYKeyboard *const keybd, const GY_KEY key) {
     //keybd->keys[key] = (GY_BUTTON_STATE)(((keybd->keys[key] << 0x1)) & 0x11);
     unsigned newState = (keybd->keys[key] & (~0x1));
     keybd->keys[key] = (GY_BUTTON_STATE)newState;
-    _changedThisFrame[key] = true;
+    _keysChangedThisFrame[key] = true;
 }
 
+static inline void _setMouseButtonDown(GYMouse *const mouse, const GY_MOUSE_BUTTON button) {
+    unsigned newState = mouse->buttons[button] | 0x1;
+    mouse->buttons[button] = (GY_BUTTON_STATE)newState;
+    _mouseButtonsChangedThisFrame[button] = true;
+}
+
+static inline void _setMouseButtonUp(GYMouse *const mouse, const GY_MOUSE_BUTTON button) {
+    unsigned newState = (mouse->buttons[button] & (~0x1));
+    mouse->buttons[button] = (GY_BUTTON_STATE)newState;
+    _mouseButtonsChangedThisFrame[button] = true;
+}
 
 class EventFilter: public QObject, public GYKeyboard, public GYMouse {
 
@@ -170,31 +184,32 @@ public:
 
         switch(event->type()) {
         case QEvent::KeyPress:
-            _setKeyDown(static_cast<GYKeyboard*>(this), _TranslateFromQt(keyEvent->key()));
+            _setKeyDown(static_cast<GYKeyboard*>(this), _TranslateKeyFromQt(keyEvent->key()));
             break;
 
         case QEvent::KeyRelease:
-            _setKeyUp(static_cast<GYKeyboard*>(this), _TranslateFromQt(keyEvent->key()));
+            _setKeyUp(static_cast<GYKeyboard*>(this), _TranslateKeyFromQt(keyEvent->key()));
             break;
 
         case QEvent::MouseMove:
             screenPos.x = mouseEvent->pos().x();
             screenPos.y = mouseEvent->pos().y();
+            _mousePosChangedThisFrame = true;
             break;
 
          case QEvent::MouseButtonPress:
-            //buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] = (GY_BUTTON_STATE)(((buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] << 0x1) | 0x1) & 0x11);
+            _setMouseButtonDown(static_cast<GYMouse*>(this), _TranslateMouseButtonFromQt(mouseEvent->button()));
             break;
 
         case QEvent::MouseButtonRelease:
-            //buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] = (GY_BUTTON_STATE)(((buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] << 0x1)) & 0x11);
+            _setMouseButtonUp(static_cast<GYMouse*>(this), _TranslateMouseButtonFromQt(mouseEvent->button()));
             break;
 
         case QEvent::Wheel:
             scrollWheel.x = wheelEvent->angleDelta().x();
             scrollWheel.y = wheelEvent->angleDelta().y();
+            _mouseScrollWheelChangedThisFrame = true;
             break;
-
         default:
             break;
 
@@ -208,7 +223,7 @@ public:
 
 static EventFilter*  _inputFilter = nullptr;
 
-int gyInputInit(const GYInputInitParams*const params) {
+extern "C" int gyInputInit(const GYInputInitParams*const params) {
     int success = 1;
     _inputFilter = new EventFilter;
     _initParams = *params;
@@ -217,7 +232,7 @@ int gyInputInit(const GYInputInitParams*const params) {
     return 1;
 }
 
-int gyInputUninit(void) {
+extern "C" int gyInputUninit(void) {
     int success = 1;
      ((QObject*)_initParams.viewWidget)->removeEventFilter(_inputFilter);
     QApplication::instance()->removeEventFilter(_inputFilter);
@@ -226,30 +241,59 @@ int gyInputUninit(void) {
     return 1;
 }
 
-int gyKeyboardPoll(GYKeyboard**const keybd) {
+extern "C" int gyKeyboardPoll(GYKeyboard**const keybd) {
     *keybd = static_cast<GYKeyboard*>(_inputFilter);
-
+    (*keybd)->changed = 0;
     for(unsigned i = 0; i < GY_KEY_COUNT; ++i) {
-        if(!_changedThisFrame[i]) {
+        if(!_keysChangedThisFrame[i]) {
             unsigned wasDown = ((*keybd)->keys[i] & GY_BUT_FLAGS_IS_PRESSED);
             unsigned key = (*keybd)->keys[i];
             key <<= 1;
             key |= wasDown;
             key &= 0x03;
             (*keybd)->keys[i] = (GY_BUTTON_STATE)key;
-        } else _changedThisFrame[i] = false;
+          //  (*keybd)->changed = 1;
+        } else {
+            _keysChangedThisFrame[i] = false;
+            (*keybd)->changed = 1;
+        }
     }
 
     return 1;
 }
 
-int gyMousePoll(GYMouse**const /*mouse*/) {
-    //*mouse = static_cast<GYMouse*>(_inputFilter);
-    //_inputFilter->scrollWheel.x = _inputFilter->scrollWheel.y = 0.0f;
+extern "C" int gyMousePoll(GYMouse**const mouse) {
+    *mouse = (_inputFilter);
+    (*mouse)->buttonsChanged = 0;
+    for(unsigned i = 0; i < GY_MOUSE_BUT_COUNT; ++i) {
+        if(!_mouseButtonsChangedThisFrame[i]) {
+            unsigned wasDown = ((*mouse)->buttons[i] & GY_BUT_FLAGS_IS_PRESSED);
+            unsigned button = (*mouse)->buttons[i];
+            button <<= 1;
+            button |= wasDown;
+            button &= 0x03;
+            (*mouse)->buttons[i] = (GY_BUTTON_STATE)button;
+            (*mouse)->buttonsChanged = 1;
+        } else {
+            _mouseButtonsChangedThisFrame[i] = false;
+            (*mouse)->buttonsChanged = 1;
+        }
+    }
+
+    if(_mousePosChangedThisFrame) {
+        (*mouse)->screenPosChanged = 1;
+        _mousePosChangedThisFrame = false;
+    } else (*mouse)->screenPosChanged = 0;
+
+    if(_mouseScrollWheelChangedThisFrame) {
+        (*mouse)->scrollWheelChanged = 1;
+        _mouseScrollWheelChangedThisFrame = false;
+    } else (*mouse)->scrollWheelChanged = 0;
+
     return 1;
 }
 
-void gyInputDeviceDump(void) {
+extern "C" void gyInputDeviceDump(void) {
     _gyLog(GY_DEBUG_VERBOSE, "LibGyro Device Dump");
 
     _gyPush();
