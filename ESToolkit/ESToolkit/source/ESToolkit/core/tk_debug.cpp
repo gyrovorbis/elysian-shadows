@@ -461,6 +461,10 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
     Q_ASSERT(_curParent); //better never happen!
 
     _curParent->addChild(_prevItem);
+    if(src == COMMAND) {
+        _prevItem->setExpanded(true);
+        _treeWidget->scrollToItem(_prevItem);
+    }
 
     //if(flag == LOG_VERBOSE && !_filterSourceEnabled[src]) _prevItem->setHidden(true);
 
@@ -477,7 +481,8 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
             it = (flag == Debug::LOG_ERROR)? it->parent() : nullptr;
         } while(it);
 
-        if(flag == Debug::LOG_ERROR) _prevItem->setSelected(true);
+
+       // if(flag == Debug::LOG_ERROR) _prevItem->setSelected(true);
         //_treeWidget->scrollToItem(_prevItem);
 
         //If we've returned to the top level with a pending error,
@@ -493,6 +498,12 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
         } while(it);
     }*/
 
+    for(auto* it = _prevItem; it != nullptr; it = it->parent()) {
+        if(it->text(1) == "COMMAND") {
+            _treeWidget->scrollToBottom();
+            break;
+        }
+    }
 }
 
 void TkDebug::_onLogWidgetContextMenuRequested(const QPoint point) {

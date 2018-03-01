@@ -180,7 +180,7 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
  *
  *  \e{NOTE: The valid range for \a{x} is [0, 48] while the valid range for \a{y}
  *  is [0, 32] (the VMU LCD screen resolution).
- * \sa frameBufferWrite
+ * \sa frameBufferWritePixel
  *
  */
 /*!
@@ -191,7 +191,7 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
  *
  *  \e{NOTE: The valid range for \a{x} is [0, 48] while the valid range for \a{y}
  *  is [0, 32] (the VMU LCD screen resolution).
- * \sa displayIcon, frameBufferRead
+ * \sa displayIcon, frameBufferReadPixel
  */
 
 OOLUA_EXPORT_FUNCTIONS(VisualMemoryUnit,

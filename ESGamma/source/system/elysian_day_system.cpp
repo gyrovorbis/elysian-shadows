@@ -9,7 +9,6 @@
 namespace elysian {
 
 void DaySystem::update(void) {
-
     TimerSystem* timerSys = getTimerSys();
 
     if(_curArea->getUseSun() && !_sunActive) onAreaEnter();
@@ -22,10 +21,10 @@ void DaySystem::update(void) {
         ++_days;
     }
 
-    _time = _curSecs/_secsPerDay;
-    _minutes = _curSecs/60.0f;
-    _hours = _minutes/60.0f;
-    _minutes %= 60;
+    _time       =   _curSecs/_secsPerDay;
+    _minutes    =   _curSecs/60.0f;
+    _hours      =   _minutes/60.0f;
+    _minutes    %=  60;
 
     const float theta = _time*2.0f*M_PI - 0.5f*M_PI;
 
@@ -99,7 +98,7 @@ void DaySystem::_updateTimeInterval(void) {
     }
 }
 
-void DaySystem::onObserveEvent(Event *event, EventTarget *) {
+void DaySystem::onObserveEvent(Event *event, EventTarget*) {
     switch(event->getEventType()) {
     case EVENT_AREA_ENTER:
         onAreaEnter();

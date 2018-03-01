@@ -50,9 +50,9 @@ void ESToolkit::on_actionFileQuit_triggered() {
 
 void ESToolkit::on_actionFileOpenProject_triggered(void) {
     if(openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks))) {
-        statusBar()->showMessage("Project Opened Successfully!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+        showStatusBarMessage("Project Opened Successfully!");
     } else {
-        statusBar()->showMessage("Project could not be Opened!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+        showStatusBarMessage("Project could not be Opened!");
     }
 }
 
@@ -76,10 +76,10 @@ void ESToolkit::on_actionFileSaveCurrentLevel_triggered() {
 
 void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
     if(_assets.getCurrentArea()->save()) {
-        statusBar()->showMessage("Area saved successfully!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+        showStatusBarMessage("Area saved successfully!");
 
     } else {
-        statusBar()->showMessage("Error Encountered while Saving Area!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+        showStatusBarMessage("Error Encountered while Saving Area!", Qt::darkRed);
 
     }
 
@@ -92,6 +92,7 @@ void ESToolkit::on_actionAreaAddEntity_triggered() {
     Entity* entity = _assets.getCurrentArea()->newEntity();
     entity->setSaveFlag(true); //set to true by default!!!
     _assets.setCurrentSelection(new EntitySelectable(entity));
+    showStatusBarMessage("New Entity Added to the Current Area");
 }
 
 void ESToolkit::on_actionDebugViewLog_triggered()
@@ -375,6 +376,7 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     _assets.getEngine()->getCameraSys()->moveToKeyFrame(keyFrame);
     _assets.getEngine()->getCameraSys()->setStaticScale(1.0f);
     //_ui->mapView->defaultTransform();
+    showStatusBarMessage("Camera Transform Reset to Default");
 
 }
 
@@ -537,7 +539,7 @@ void ESToolkit::on_actionPrevious_Project_triggered(void) {
                 auto* area = _assets.getCurrentLevel()->getArea(_prevAreaPath);
                 if(area) {
                     _assets.setCurrentArea(area);
-                            statusBar()->showMessage("Project Reopened Successfully!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+                            showStatusBarMessage("Project Restored Successfully!");
                 }
             }
         }
@@ -548,14 +550,17 @@ void ESToolkit::on_actionInvoke_triggered(bool checked)
 {
     if(checked && (_ui->actionWindows->isChecked() || _ui->actionMac_OS_X->isChecked() || _ui->actionNix->isChecked())) {
         _engineGLView->play();
+        showStatusBarMessage("Running Engine");
     } else if(!checked) {
         _engineGLView->stop();
+        showStatusBarMessage("Stopping Engine");
     }
 }
 
 void ESToolkit::on_actionAdvance_Frame_triggered()
 {
     _engineGLView->advanceFrame();
+    showStatusBarMessage("Advancing Engine by one Frame");
 }
 
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
@@ -632,6 +637,8 @@ void ESToolkit::on_actionShadows_toggled(bool arg1)
 {
     _engineParams.shadowPassEnabled = arg1;
     if(_assets.getEngine()) {
+        if(arg1) showStatusBarMessage("Enabling Shadow Mapping");
+        else showStatusBarMessage("Disabling Shadow Mapping");
         _assets.getEngine()->getLightSys()->setShadowPassEnabled(arg1);
     }
 }
@@ -640,6 +647,8 @@ void ESToolkit::on_actionLights_toggled(bool arg1)
 {
     _engineParams.lightingEnabled = arg1;
     if(_assets.getEngine()) {
+        if(arg1) showStatusBarMessage("Enabling Dynamic Lighting");
+        else showStatusBarMessage("Disabling Dynamic Lighting");
         _assets.getEngine()->getLightSys()->setEnabled(arg1);
     }
     if(!arg1) {
@@ -654,6 +663,8 @@ void ESToolkit::on_actionManual_Camera_toggled(bool arg1)
 {
     _engineParams.manualCameraEnabled = arg1;
     if(_engineGLView) {
+        if(arg1) showStatusBarMessage("Camera Control changed to Manual");
+        else showStatusBarMessage("Camera Control Changed to In-Game");
         _engineGLView->setCameraManualOnPlay(arg1);
     }
 }
@@ -662,6 +673,8 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
 {
     _engineParams.audioEnabled = arg1;
     if(_assets.getEngine()) {
+        if(arg1) showStatusBarMessage("Audio Enabled");
+        else showStatusBarMessage("Audio Disabled");
         _assets.getEngine()->getAudioSys()->setEnabled(arg1);
     }
 
@@ -676,7 +689,7 @@ void ESToolkit::on_actionReloadProject_triggered(void)
    // gyAudInit();
     _assets.setCurrentSelection(nullptr);
     if(_assets.reloadProject()) {
-        statusBar()->showMessage("Project reloaded!", ESTOOLKIT_STATUSBAR_MSG_TIMEOUT);
+        showStatusBarMessage("Project reloaded!");
     }
 }
 
@@ -834,6 +847,8 @@ void ESToolkit::on_actionVMU_View_triggered(bool checked) {
            //evmuWindow->setParent(dock) ;	// here
             addDockWidget(Qt::RightDockWidgetArea, _vmuDockWidget);
             Debug::setEVMUActive(false);
+
+            showStatusBarMessage("Starting ElysianVMU");
         }
     }
 

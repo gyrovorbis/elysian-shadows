@@ -23,8 +23,10 @@ ELYSIAN_ASSET_TYPEDEF(Debug)
 class QToolButton;
 class QActionGroup;
 class QUndoGroup;
+class QLabel;
 class QOpenGLDebugLogger;
 class QOpenGLDebugMessage;
+class QTimer;
 
 namespace Ui {
     class ESToolkit;
@@ -147,6 +149,9 @@ private:
     QToolButton*            m_activePlatform;
     QActionGroup*           m_platformActionGroup;
     QActionGroup*           m_transformActionGroup;
+
+    QLabel*                 _statusLabel        = nullptr;
+    QTimer*                 _statusLabelTimer   = nullptr;
 
     enum MAP_VIEW_RES {
         MAP_VIEW_RES_480P,
