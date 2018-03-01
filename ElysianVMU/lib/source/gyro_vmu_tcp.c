@@ -206,8 +206,8 @@ static void _mapleProcessRecv(VMUDevice* dev, unsigned char* packetBuff, int rec
 
                 if(func == MAPLE_FUNC_CLOCK) {
                     _gyLog(GY_DEBUG_VERBOSE, "[MAPLE/TCP RECV]: Playing Sound [%x]!", *(uint32_t*)blockWriteData);
-                    uint16_t pulse = *(uint16_t*)&blockWriteData[0];
-                    uint16_t width = *(uint16_t*)&blockWriteData[2];
+                    uint8_t pulse = blockWriteData[1];
+                    uint8_t width = blockWriteData[3];
 
                     gyVmuBuzzerSoundPlay(dev, pulse, width, 0);
 
@@ -556,6 +556,7 @@ int gyVmuSerialTcpClose(VMUDevice *dev) {
     int success = 1;
     if(dev->serialPort._tcpSocket) {
         _setSerialConnectionPins(dev, VMU_SERIAL_CONNECTION_NONE);
+        success &= gyNetMonitoredConnectionsRemove(dev->serialPort._tcpSocket);
         success &= gyNetTcpSocketClose(dev->serialPort._tcpSocket);
         dev->serialPort._tcpSocket = NULL;
     }

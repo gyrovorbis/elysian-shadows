@@ -42,6 +42,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneDragDropEvent>
 
+#define Q_CSTR(a) (a.toStdString().c_str())
+
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
 #ifdef VMU_DEBUG
 //#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
@@ -163,6 +165,10 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _ui->statusbar->insertPermanentWidget(3, _iconLabel);
     setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
 
+#ifdef VMU_CHILD_APP
+    _ui->actionQuit->setEnabled(false);
+#endif
+
     //Create framebuffer label and layouts for centering and managing its size
 
     //_fbLabel = new QLabel;
@@ -193,18 +199,17 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
                QDir::homePath().toStdString().c_str() : workingDir.toStdString().c_str());
     gyFileInit(&fileParams);
 #endif
-#if 0
-    if(workingDir.isEmpty()) {
-        QDir outputDir(QDir::current());
-        if(!outputDir.cd(VMU_OUTPUT_DIR) && !outputDir.mkdir(VMU_OUTPUT_DIR)) {
-            qCritical() << QString("Could not set VMU working directory: [%s]")
-                        << QDir().current().filePath(VMU_OUTPUT_DIR);
-        } else {
-            QDir::setCurrent(QDir::current().filePath(VMU_OUTPUT_DIR));
-        }
+
+
+    _workingDir = new QDir(workingDir.isEmpty()? QDir::homePath() : workingDir);
+    if(!_workingDir->cd(VMU_OUTPUT_DIR) && !_workingDir->mkdir(VMU_OUTPUT_DIR)) {
+        qCritical() << QString("Could not set VMU working directory: [%s]")
+                    << _workingDir->filePath(VMU_OUTPUT_DIR);
+    } else {
+        // _workingDir->setPath(_workingDir->filePath(VMU_OUTPUT_DIR));
     }
-#endif
-    _logFile = fopen(VMU_LOG_FILE, "w");
+
+    _logFile = fopen(_workingDir->absoluteFilePath(VMU_LOG_FILE).toStdString().c_str(), "w");
 
     //Initialize libGyro Debug API with logging
 #ifndef VMU_CHILD_APP
@@ -352,7 +357,7 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
         QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
         QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
         QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcel Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
+        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
         QString("</table><br><br>") +
         QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
         QString("<i>ElysianVMU Copyright 2017-2018 Elysian Shadows</i><br>") +
@@ -652,10 +657,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
             } else {
 
             }
-
         }
-
-
     }
 
     if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
@@ -721,10 +723,10 @@ void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 void VMUMainWindow::on_actionSave_State_triggered(void)
 {
     if(!_running) return;
-    _gyLog(GY_DEBUG_VERBOSE, "Saving state [%s].", QDir::current().absoluteFilePath(STATE_FILE).toStdString().c_str());
+    _gyLog(GY_DEBUG_VERBOSE, "Saving state [%s].", _workingDir->absoluteFilePath(STATE_FILE).toStdString().c_str());
     _gyPush();
 
-    FILE* file = fopen(STATE_FILE, "wb");
+    FILE* file = fopen(Q_CSTR(_workingDir->absoluteFilePath(STATE_FILE)), "wb");
     if(!file) {
         _gyLog(GY_DEBUG_ERROR, "Could not open file for writing!");
     } else {
@@ -740,10 +742,10 @@ void VMUMainWindow::on_actionLoad_State_triggered(void)
 {
     if(!_running) return;
 
-    _gyLog(GY_DEBUG_VERBOSE, "Loading state [%s].", QDir::current().absoluteFilePath(STATE_FILE).toStdString().c_str());
+    _gyLog(GY_DEBUG_VERBOSE, "Loading state [%s].", _workingDir->absoluteFilePath(STATE_FILE).toStdString().c_str());
     _gyPush();
 
-    FILE* file = fopen(STATE_FILE, "rb");
+    FILE* file = fopen(Q_CSTR(_workingDir->absoluteFilePath(STATE_FILE)), "rb");
     if(!file) {
         _gyLog(GY_DEBUG_ERROR, "Could not open file for reading!");
     } else {
@@ -821,19 +823,19 @@ void VMUMainWindow::on_actionScreenshot_triggered(void)
     unsigned int number = 0;
 
     do {
-        sprintf(buffer, "%s_%d.%s", SCREENSHOT_FILENAME, ++number, SCREENSHOT_FILENAME_EXT);
+        sprintf(buffer, "%s_%d.%s", Q_CSTR(_workingDir->absoluteFilePath(SCREENSHOT_FILENAME)), ++number, SCREENSHOT_FILENAME_EXT);
     } while(QFileInfo(buffer).exists());
 
     QFile file(buffer);
     file.open(QIODevice::WriteOnly);
-    _gyLog(GY_DEBUG_VERBOSE, "Saving screenshot[%s]", QDir::current().absoluteFilePath(buffer).toStdString().c_str());
+    _gyLog(GY_DEBUG_VERBOSE, "Saving screenshot[%s]", _workingDir->absoluteFilePath(buffer).toStdString().c_str());
     _ui->statusbar->showMessage("Screenshot saved.", VMU_STATUS_TEMP_TIMEOUT);
     _fb.save(&file, SCREENSHOT_FILENAME_EXT);
 
 }
 
 void VMUMainWindow::_saveSettings(void) {
-    QSettings settings(SETTINGS_FILE, QSettings::IniFormat);
+    QSettings settings(_workingDir->absoluteFilePath(SETTINGS_FILE), QSettings::IniFormat);
     char buffer[256];
 
     _gyLog(GY_DEBUG_VERBOSE, "Saving User Settings [%s].", settings.fileName().toStdString().c_str());
@@ -859,7 +861,7 @@ void VMUMainWindow::_saveSettings(void) {
 }
 
 void VMUMainWindow::_loadSettings(void) {
-    QSettings settings(SETTINGS_FILE, QSettings::IniFormat);
+    QSettings settings(_workingDir->absoluteFilePath(SETTINGS_FILE), QSettings::IniFormat);
     char buffer[256];
 
     _gyLog(GY_DEBUG_VERBOSE, "Loading User Settings [%s].", settings.fileName().toStdString().c_str());
@@ -934,7 +936,7 @@ void VMUMainWindow::_pushRecentRom(QString path) {
 }
 
 void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
-#if 0
+#if 1
     auto* mime = event->mimeData();
     if(mime->hasUrls()) {
         for(auto&& url : mime->urls()) {
@@ -954,7 +956,7 @@ void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
 }
 
 void VMUMainWindow::dropEvent(QDropEvent* event) {
-#if 0
+#if 1
     auto* mime = event->mimeData();
     if(mime->hasUrls()) {
         for(auto&& url : mime->urls()) {
@@ -1076,10 +1078,10 @@ void VMUMainWindow::on_actionDump_Icons_triggered(void)
 
     for(int i = 0; i < _iconImages.size(); ++i) {
         sprintf(filename, "%s_%d.png", vmsDesc, i);
-        if(!_iconImages[i].save(_japCodec->toUnicode(filename).toStdString().c_str()))
-            _gyLog(GY_DEBUG_ERROR, "Could not dump icon to file [%s]!", QDir::current().absoluteFilePath(filename).toStdString().c_str());
+        if(!_iconImages[i].save(_japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
+            _gyLog(GY_DEBUG_ERROR, "Could not dump icon to file [%s]!", _workingDir->absoluteFilePath(filename).toStdString().c_str());
         else
-            _gyLog(GY_DEBUG_VERBOSE, "Dumped icon to file [%s].", QDir::current().absoluteFilePath(filename).toStdString().c_str());
+            _gyLog(GY_DEBUG_VERBOSE, "Dumped icon to file [%s].", _workingDir->absoluteFilePath(filename).toStdString().c_str());
     }
 
     _gyPop(1);
@@ -1127,10 +1129,10 @@ void VMUMainWindow::on_actionDump_Eyecatch_triggered(void)
     gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
 
     sprintf(filename, "%s_eyecatch.png", vmsDesc);
-    if(!_eyecatchImage.save(_japCodec->toUnicode(filename).toStdString().c_str()))
-        _gyLog(GY_DEBUG_ERROR, "Could not dump eyecatch to file [%s]!", QDir::current().absoluteFilePath(filename).toStdString().c_str());
+    if(!_eyecatchImage.save(_japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
+        _gyLog(GY_DEBUG_ERROR, "Could not dump eyecatch to file [%s]!", _workingDir->absoluteFilePath(filename).toStdString().c_str());
     else
-        _gyLog(GY_DEBUG_VERBOSE, "Dumped eyecatch to file [%s].", QDir::current().absoluteFilePath(filename).toStdString().c_str());
+        _gyLog(GY_DEBUG_VERBOSE, "Dumped eyecatch to file [%s].", _workingDir->absoluteFilePath(filename).toStdString().c_str());
 
     _gyPop(1);
 
@@ -1161,7 +1163,7 @@ void VMUMainWindow::on_actionQuit_triggered(void)
 
 void VMUMainWindow::on_actionView_Log_triggered(void)
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().absoluteFilePath(VMU_LOG_FILE)));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(_workingDir->absoluteFilePath(VMU_LOG_FILE)));
 }
 
 bool VMUMainWindow::loadBios(QString filepath) {
@@ -1289,24 +1291,7 @@ void VMUMainWindow::on_action64x_triggered()
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 void VMUMainWindow::on_actionSerial_COM_Connection_Manager_triggered()
 {
-#if 1
-    char* buff = (char*)malloc((ROM_SIZE+1)*400);
-
-        gyVmuBiosDisassemblyPrints(buff);
-
-        QFile file("bios_disassembly.txt");
-        if(file.open(QIODevice::ReadWrite)) {
-            QTextStream stream(&file);
-            stream << buff << endl;
-        }
-
-
-
-        free(buff);
-#else
-
     _comDialog->show();
-#endif
 }
 #endif
 
@@ -1395,5 +1380,26 @@ void VMUMainWindow::on_actionRecordAnim_toggled(bool arg1) {
         on_actionEnable_Pixel_Ghosting_toggled(_ghostingWasEnabled);
         _gyPop(2);
     }
+}
 
+bool VMUMainWindow::startTcpServer(unsigned port) {
+    _tcpDialog->setHostPort(port);
+    _tcpDialog->setAllowDcConnections(true);
+    _tcpDialog->setAllowVmuConnections(true);
+    _tcpDialog->stopTcpServer();
+    return _tcpDialog->startTcpServer();
+}
+
+void VMUMainWindow::on_actionBIOS_Runtime_Disassembly_triggered() {
+    char* buff = (char*)malloc((ROM_SIZE+1)*400);
+
+        gyVmuBiosDisassemblyPrints(buff);
+
+        QFile file(_workingDir->absoluteFilePath("bios_disassembly.txt"));
+        if(file.open(QIODevice::ReadWrite)) {
+            QTextStream stream(&file);
+            stream << buff << endl;
+        }
+
+        free(buff);
 }

@@ -59,6 +59,7 @@ public:
     QAction *actionRecordAnim;
     QAction *actionSave_Game;
     QAction *actionLoad_Game;
+    QAction *actionBIOS_Runtime_Disassembly;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QGraphicsView *graphicsView;
@@ -194,6 +195,8 @@ public:
         actionLoad_Game = new QAction(VMUMainWindow);
         actionLoad_Game->setObjectName(QStringLiteral("actionLoad_Game"));
         actionLoad_Game->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        actionBIOS_Runtime_Disassembly = new QAction(VMUMainWindow);
+        actionBIOS_Runtime_Disassembly->setObjectName(QStringLiteral("actionBIOS_Runtime_Disassembly"));
         centralwidget = new QWidget(VMUMainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -280,6 +283,7 @@ public:
         menuTools->addAction(actionDump_Icons);
         menuTools->addAction(actionDump_Eyecatch);
         menuTools->addAction(actionDisassemble_ROM);
+        menuTools->addAction(actionBIOS_Runtime_Disassembly);
         menuTools->addAction(actionView_Log);
         menuScreen_Capture->addAction(actionRecordAnim);
         menuHelp->addAction(actionAbout);
@@ -357,6 +361,7 @@ public:
 #endif // QT_NO_SHORTCUT
         actionSave_Game->setText(QApplication::translate("VMUMainWindow", "Save Game", Q_NULLPTR));
         actionLoad_Game->setText(QApplication::translate("VMUMainWindow", "Load Game", Q_NULLPTR));
+        actionBIOS_Runtime_Disassembly->setText(QApplication::translate("VMUMainWindow", "BIOS Dynamic Disassembly", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("VMUMainWindow", "File", Q_NULLPTR));
         menuLoad_Recent->setTitle(QApplication::translate("VMUMainWindow", "Open Recent", Q_NULLPTR));
         menuEmulation->setTitle(QApplication::translate("VMUMainWindow", "Emulation", Q_NULLPTR));

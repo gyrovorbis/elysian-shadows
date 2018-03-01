@@ -20,7 +20,7 @@
    <string>ElysianVMU v 0.0.1 Alpha</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource/resource.qrc">
+   <iconset resource="resource/evmu.qrc">
     <normaloff>:/icons/images/vmu_icon.ico</normaloff>:/icons/images/vmu_icon.ico</iconset>
   </property>
   <property name="layoutDirection">
@@ -156,6 +156,7 @@
     <addaction name="actionDump_Icons"/>
     <addaction name="actionDump_Eyecatch"/>
     <addaction name="actionDisassemble_ROM"/>
+    <addaction name="actionBIOS_Runtime_Disassembly"/>
     <addaction name="actionView_Log"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -497,9 +498,15 @@
     <enum>Qt::WidgetWithChildrenShortcut</enum>
    </property>
   </action>
+  <action name="actionBIOS_Runtime_Disassembly">
+   <property name="text">
+    <string>BIOS Dynamic Disassembly</string>
+   </property>
+  </action>
  </widget>
  <resources>
-  <include location="resource/resource.qrc"/>
+  <include location="resource/evmu.qrc"/>
+  <include location="resource/evmu.qrc"/>
  </resources>
  <connections/>
 </ui>
