@@ -5,6 +5,10 @@
 
 #define GYRO_CONTROLLER_SDL_X86_GUID_SIZE    1024
 
+//External symbol defined in SDL_Haptic API!
+extern int _gyRumbleSDLTryOpenHapticJoystick(SDL_Joystick* joystick, int port);
+extern int _gyRumbleSDLTryCloseHapticJoystick(SDL_Joystick* joystick, int port);
+
 typedef struct SDLControllerProfile {
     char    GUID[GYRO_CONTROLLER_SDL_X86_GUID_SIZE];
 } SDLControllerProfile;
@@ -13,10 +17,9 @@ typedef struct SDLController {
     GYController            cont;
     SDL_GameController*     sdlController;
     SDL_Joystick*           sdlJoystick;
-    SDL_Haptic*             sdlHaptic;
     SDL_JoystickID          sdlJoystickInstanceId;
     int                     deviceIndex;
-    unsigned                port;
+    int                     port;
 } SDLController;
 
 extern GYInputInitParams   _initParams;
@@ -54,9 +57,9 @@ inline static SDLController* _claimFreeController(void) {
 int _sdlControllerInit(const struct GYInputInitParams*const  params) {
     int success = 1;
     SDL_version version;
-    _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Initializing SDL_GAMECONTROLLER and SDL_HAPTIC.");
+    _gyLog(GY_DEBUG_VERBOSE, "[GYRO_INPUT_API]: Initializing SDL_GAMECONTROLLER and SDL_HAPTIC.");
     _gyPush();
-    if(SDL_Init(SDL_INIT_GAMECONTROLLER|SDL_INIT_HAPTIC) < 0) {
+    if(SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
         success = 0;
         _gyLog(GY_DEBUG_ERROR, "Could not initialize SDL_GAMECONTROLLER! [%s]", SDL_GetError());
     }
@@ -85,10 +88,10 @@ int _sdlControllerInit(const struct GYInputInitParams*const  params) {
 }
 
 int _sdlControllerUninit(void) {
-    _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Uninitializing SDL_GAMECONTROLLER and SDL_HAPTIC");
+    _gyLog(GY_DEBUG_VERBOSE, "[GYRO_INPUT_API]: Uninitializing SDL_GAMECONTROLLER and SDL_HAPTIC");
 
     free(_devices);
-    SDL_Quit();
+    SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
 
     return 1;
 }
@@ -104,28 +107,18 @@ static int _sdlOpenController(const int deviceIndex, SDLController*const cont) {
     cont->sdlJoystickInstanceId = SDL_JoystickInstanceID(cont->sdlJoystick);
     cont->deviceIndex = deviceIndex;
 
-    if(SDL_JoystickIsHaptic(cont->sdlJoystick)) {
-        cont->sdlHaptic = SDL_HapticOpenFromJoystick(cont->sdlJoystick);
-        if (SDL_HapticRumbleSupported(cont->sdlHaptic)) {
-            if (SDL_HapticRumbleInit(cont->sdlHaptic) != 0) {
-                _gyLog(GY_DEBUG_ERROR, "Haptic Rumble Init Failed: %s", SDL_GetError());
-                SDL_HapticClose(cont->sdlHaptic);
-                cont->sdlHaptic = NULL;
-            }
-        }
-    }
+    _gyRumbleSDLTryOpenHapticJoystick(cont->sdlJoystick, cont->port);
 
     return 1;
 
 }
 
 static int _sdlCloseController(SDLController *const cont) {
-    if(cont->sdlHaptic) SDL_HapticClose(cont->sdlHaptic);
+    _gyRumbleSDLTryCloseHapticJoystick(cont->sdlJoystick, cont->port);
     if(cont->sdlController) SDL_GameControllerClose(cont->sdlController);
     SDL_JoystickClose(cont->sdlJoystick);
 
     cont->sdlController             = NULL;
-    cont->sdlHaptic                 = NULL;
     cont->sdlJoystick               = NULL;
     cont->sdlJoystickInstanceId     = -1;
     cont->deviceIndex               = -1;
@@ -150,7 +143,7 @@ static void _sdlPrintControllerStats(SDLController*const cont) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Buttons", SDL_JoystickNumButtons(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Hats", SDL_JoystickNumHats(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Balls", SDL_JoystickNumBalls(cont->sdlJoystick));
-
+#if 0
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Haptic Support", cont->sdlHaptic? "TRUE" : "FALSE");
 
     if(cont->sdlHaptic) {
@@ -160,6 +153,7 @@ static void _sdlPrintControllerStats(SDLController*const cont) {
         _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Haptic Rumble Support", SDL_HapticRumbleSupported(cont->sdlHaptic)? "TRUE" : "FALSE");
         _gyPop(1);
     }
+#endif
 
 }
 
@@ -192,6 +186,7 @@ static void _sdlAttachController(const int deviceIndex) {
 
     if(!cont) {
         cont = &tempController;
+        tempController.port = -1;
     }
 
     if(cont != &tempController)
