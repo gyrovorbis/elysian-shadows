@@ -144,6 +144,14 @@ OOLUA_EXPORT_NO_FUNCTIONS(EventObserver)
             \li Event
             \li Existing Mouse device has been removed
         \row
+            \li Event.RUMBLE_DEVICE_ATTACHED
+            \li Event
+            \li New \l{RumbleDevice} has been detected
+        \row
+            \li Event.RUMBLE_DEVICE_REMOVED
+            \li Event
+            \li Existing \l{RumbleDevice} has been removed
+        \row
             \li Event.VMU_ATTACHED
             \li Event
             \li New Visual Memory device has been detected

@@ -290,12 +290,10 @@ namespace elysian {
         }
     }
 
-#if 0
     void GridLayout::_updateSizes(AXIS axis) {
 
 
     }
-#endif
 
 
 

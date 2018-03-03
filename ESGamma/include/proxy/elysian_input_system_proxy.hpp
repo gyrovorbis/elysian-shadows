@@ -7,14 +7,14 @@
 
 namespace OOLUA {
     typedef elysian::PlayerIODevice     PlayerIODevice;
-    typedef elysian::Mouse              Mouse;
-    typedef elysian::VisualMemoryUnit   VisualMemoryUnit;
     typedef elysian::Keyboard           Keyboard;
+    typedef elysian::Mouse              Mouse;
     typedef elysian::VirtualDPad        VirtualDPad;
     typedef elysian::Controller         Controller;
+    typedef elysian::RumbleDevice       RumbleDevice;
+    typedef elysian::VisualMemoryUnit   VisualMemoryUnit;
     typedef elysian::InputSystem        InputSystem;
 }
-
 
 OOLUA_PROXY(PlayerIODevice)
     OOLUA_TAGS (
@@ -71,6 +71,15 @@ OOLUA_PROXY(Controller, PlayerIODevice)
     OOLUA_MEM_FUNC_CONST(const VirtualDPad&, getVirtualDPad, GY_CONTROLLER_ANALOG)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(RumbleDevice, PlayerIODevice)
+    OOLUA_TAGS(
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(stop)
+    OOLUA_MFUNC_CONST(play)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(VisualMemoryUnit, PlayerIODevice)
     OOLUA_TAGS (
         No_public_constructors,
@@ -91,6 +100,7 @@ OOLUA_PROXY(InputSystem)
     OOLUA_MEM_FUNC(Keyboard*, getKeyboard)
     OOLUA_MFUNC(getMouse)
     OOLUA_MFUNC(getVMU)
+    OOLUA_MFUNC(getRumbleDevice)
 OOLUA_PROXY_END
 
 

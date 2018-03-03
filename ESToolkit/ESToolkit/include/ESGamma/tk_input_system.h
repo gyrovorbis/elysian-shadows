@@ -6,6 +6,12 @@
 
 class TkInputSystem: public QObject, public elysian::InputSystemBase {
 Q_OBJECT
+public:
+
+    void _onControllerAttached(int slot);
+    void _onControllerRemoved(int slot);
+    void _onVMUAttached(int slot);
+    void _onVMURemoved(int slot);
 
 Q_SIGNALS:
 

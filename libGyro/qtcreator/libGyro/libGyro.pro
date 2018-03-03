@@ -140,12 +140,8 @@ HEADERS += \
     ../../include/gyro_rumble_api.h \
     ../../include/gyro_test_api.h \
     ../../include/glal/gyro_gl_utils.h \
-<<<<<<< HEAD
-    ../../include/x86/gyro_sdl_input.h
-=======
+    ../../include/x86/gyro_sdl_input.h \
     ../../include/gyro_visual_memory_api.h
->>>>>>> master
-
 
 vulkan {
     HEADERS += \
@@ -207,11 +203,8 @@ SOURCES += \
     ../../source/common/gyro_timer.c \
     ../../source/common/gyro_test.c \
     ../../source/glal/gyro_gl_utils.c \
-<<<<<<< HEAD
-    ../../source/x86/gyro_rumble_sdl_x86.c
-=======
+    ../../source/x86/gyro_rumble_sdl_x86.c \
     ../../source/common/gyro_visual_memory_common.c
->>>>>>> master
 
 vulkan {
     SOURCES += \

@@ -4,6 +4,7 @@
 #define ELYSIAN_INPUT_PLAYERS_MAX                       4
 #define ELYSIAN_INPUT_CONTROLLERS_MAX                   ELYSIAN_INPUT_PLAYERS_MAX
 #define ELYSIAN_INPUT_VMUS_MAX                          ELYSIAN_INPUT_PLAYERS_MAX
+#define ELYSIAN_INPUT_RUMBLE_DEVICES_MAX                ELYSIAN_INPUT_PLAYERS_MAX
 #define ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT    0
 
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MIN    0.3f
@@ -100,7 +101,7 @@ namespace elysian {
 
     class ControllerEvent: public Event {
     private:
-        Controller*         _controller    = nullptr;
+        Controller*         _controller     = nullptr;
         int                  _slot          = 1;
     public:
                              ControllerEvent(EventType type, const Controller* controller);
@@ -138,52 +139,32 @@ namespace elysian {
         unsigned            getPort(void) const;
         void                setPort(const unsigned port);
 
-
-        //void setVmuIcon();
-        //void rumble();
-        //bool hasRumble();
-        //bool hasVmu();
         //bool hasRAnalog();
         //bool hasLAnalog();
-        //bool isAttached();
-        //registerButtonCallback
 
     };
-#if 0
-    bool                gyRumbleInit(struct GYRumbleInitParams* params);
-    bool                gyRumbleUninit(void);
+
+    class RumbleDevice;
+
+    class RumbleDeviceEvent: public Event {
+    private:
+        RumbleDevice* _dev;
+    public:
+                        RumbleDeviceEvent(EventType type, RumbleDevice* rumble);
+        RumbleDevice*   getRumbleDevice(void) const;
+    };
 
 
-    struct GYRumble*    gyRumblePoll(unsigned slot);
-    void                gyRumbleDeviceDump(const struct GYRumble* dev);
-    void                gyRumbleDeviceEffectsDump(const struct GYRumble* dev);
-
-    bool                gyRumblePlay(struct GYRumble* dev, float intensity, float duration);
-    bool                gyRumbleStop(struct GYRumble* dev);
-
-    bool                gyRumbleEffectInit(struct GYRumbleEffect* effect, const GYRumbleEffectInitParams* params);
-    bool                gyRumbleEffectPlay(struct GYRumble* dev, const struct GYRumbleEffect* effect);
-    int                 gyRumbleEffectStatus(const struct GYRumble* dev, const struct GYRumbleEffect* effect); // <0 - error, 0 - stopped, 1 - playing
-#endif
-
-#if 0
-    class RumbleDevice {
+    class RumbleDevice: public PlayerIODevice {
     private:
         GYRumble*   _gyHandle = nullptr;
-        bool        _attached = false;
     public:
 
-        bool        pollInput(void);
-        bool        isAttached(void) const;
-        bool        play(float intensity, float duration);
-        bool        playEffect(const RumbleEffect* effect);
-        //EFFECT_STATUS getEffectStatus(const RumbleEffect* effect);
-        bool        stop();
-
-        void        dumpInfo(void) const;
-        void        dumpEffects(void) const;
+        bool        pollDevice(void);
+        bool        play(float intensity, float duration) const;
+        bool        stop(void) const;
     };
-#endif
+
 
     class VisualMemoryUnit;
 
@@ -191,8 +172,8 @@ namespace elysian {
      private:
         VisualMemoryUnit* _vmu;
     public:
-        VisualMemoryUnit* getVMU(void) const;
-                            VisualMemoryUnitEvent(EventType type, VisualMemoryUnit* vmu);
+                        VisualMemoryUnitEvent(EventType type, VisualMemoryUnit* vmu);
+    VisualMemoryUnit*   getVMU(void) const;
     };
 
 
@@ -245,6 +226,7 @@ namespace elysian {
 
         Controller          _controllers[ELYSIAN_INPUT_CONTROLLERS_MAX];
         VisualMemoryUnit    _vmus[ELYSIAN_INPUT_VMUS_MAX];
+        RumbleDevice        _rumbleDevices[ELYSIAN_INPUT_RUMBLE_DEVICES_MAX];
         Keyboard            _keyboard;
         Mouse               _mouse;
 
@@ -259,6 +241,8 @@ namespace elysian {
         void                _onMouseRemoved(void);
         void                _onVMUAttached(unsigned slot);
         void                _onVMURemoved(unsigned slot);
+        void                _onRumbleDeviceAttached(unsigned slot);
+        void                _onRumbleDeviceRemoved(unsigned slot);
 
         void                _mapKeyboardToController(const int port);
 
@@ -280,6 +264,7 @@ namespace elysian {
         Keyboard*           getKeyboard(void);
         Mouse*              getMouse(void);
         VisualMemoryUnit*   getVMU(const unsigned port);
+        RumbleDevice*       getRumbleDevice(const unsigned port);
 
         void                setKeyboardAsControllerPort(const int port);
 
@@ -364,6 +349,12 @@ namespace elysian {
         _gyHandle->analogSticks[stick] = vec;
     }
 
+    //====== RUMBLE INLINEZ =======
+    inline RumbleDeviceEvent::RumbleDeviceEvent(EventType type, RumbleDevice *rumble):
+        Event(type), _dev(rumble) {}
+    inline RumbleDevice* RumbleDeviceEvent::getRumbleDevice(void) const { return _dev; }
+
+
     //====== VMU INLINEZ =======
 
     inline VisualMemoryUnit* VisualMemoryUnitEvent::getVMU(void) const { return _vmu; }
@@ -380,6 +371,7 @@ namespace elysian {
     inline Keyboard* InputSystemBase::getKeyboard(void) { return &_keyboard; }
     inline Mouse* InputSystemBase::getMouse(void) { return &_mouse; }
     inline VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) { return &_vmus[port]; }
+    inline RumbleDevice* InputSystemBase::getRumbleDevice(const unsigned port) { return &_rumbleDevices[port]; }
     inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
 
 }

@@ -73,6 +73,18 @@ bool Controller::pollInput(void) {
     return _attached;
 }
 
+bool RumbleDevice::pollDevice(void) {
+    return _attached = gyRumblePoll(_playerIndex, &_gyHandle);
+}
+
+bool RumbleDevice::play(float intensity, float duration) const {
+    return gyRumblePlay(_gyHandle, intensity, duration*1000.0f);
+}
+
+bool RumbleDevice::stop(void) const {
+    return gyRumbleStop(_gyHandle);
+}
+
 bool VisualMemoryUnit::frameBufferReadPixel(uint8_t x, uint8_t y) const {
     if(x >= 48 || y >= 32) {
         errprintf("Attempting to read oustide of VMU framebuffer boundaries: <%d, %d>", x, y);
@@ -149,20 +161,26 @@ bool VisualMemoryUnit::connectToEVMU(const char* hostName, unsigned port) {
 }
 
 bool VisualMemoryUnit::disconnectFromEVMU(void) {
-    if(_gyHandle) gyVisualMemoryDeviceRemoteDisconnect(_gyHandle);
+    bool success = true;
+    if(_gyHandle) success = gyVisualMemoryDeviceRemoteDisconnect(_gyHandle);
     free(_tcpSettings);
     _tcpSettings = nullptr;
+    return success;
 }
 
-
-
-bool InputSystemBase::_initialized = false;
-bool InputSystemBase::_managedExternally = false;
+bool InputSystemBase::_initialized          = false;
+bool InputSystemBase::_managedExternally    = false;
 const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
 
 InputSystemBase::InputSystemBase(void) {
+
+    GYRumbleInitParams rumbleInitParams = {
+        ELYSIAN_INPUT_RUMBLE_DEVICES_MAX
+    };
+    gyRumbleInit(&rumbleInitParams);
+
     GYVisualMemoryInitParams vmuInitParams = {
-        4
+        ELYSIAN_INPUT_VMUS_MAX
     };
     gyVisualMemoryInit(&vmuInitParams);
 
@@ -172,6 +190,9 @@ InputSystemBase::InputSystemBase(void) {
     }
     _keyboard.setPlayerIndex(0);
     _mouse.setPlayerIndex(0);
+    for(unsigned i = 0; i < ELYSIAN_INPUT_RUMBLE_DEVICES_MAX; ++i) {
+        _rumbleDevices[i].setPlayerIndex(i);
+    }
     for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
         _vmus[i].setPlayerIndex(i);
     }
@@ -181,6 +202,7 @@ InputSystemBase::InputSystemBase(void) {
 
 InputSystemBase::~InputSystemBase(void) {
     gyVisualMemoryUninit();
+    gyRumbleUninit();
 }
 
 bool InputSystemBase::initialize(const GYInputInitParams*const params) {
@@ -238,6 +260,14 @@ void InputSystemBase::_onVMUAttached(unsigned slot) {
 
 void InputSystemBase::_onVMURemoved(unsigned slot) {
     dbgprintf("InputSystem: VMU Removed! [Port: %d]", slot);
+}
+
+void InputSystemBase::_onRumbleDeviceAttached(unsigned slot) {
+    dbgprintf("InputSystem: RumbleDevice Attached! [Port: %d]", slot);
+}
+
+void InputSystemBase::_onRumbleDeviceRemoved(unsigned slot) {
+    dbgprintf("InputSystem: RumbleDevice Removed! [Port: %d]", slot);
 }
 
 void InputSystemBase::_mapKeyboardToController(const int port) {
@@ -318,6 +348,21 @@ void InputSystemBase::update(void) {
 
         if(isAttached && !wasAttached)      static_cast<InputSystem*>(this)->_onControllerAttached(i);
         else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onControllerRemoved(i);
+    }
+
+    //update rumble devices
+    for(unsigned i = 0; i < ELYSIAN_INPUT_RUMBLE_DEVICES_MAX; ++i) {
+        const auto wasAttached  = _rumbleDevices[i].isAttached();
+        const auto isAttached   = _rumbleDevices[i].pollDevice();
+
+        if(isAttached && !wasAttached) {
+            static_cast<InputSystem*>(this)->_onRumbleDeviceAttached(i);
+            getEventSys()->broadcastEvent(RumbleDeviceEvent(EVENT_RUMBLE_DEVICE_ATTACHED, &_rumbleDevices[i]));
+        } else if(!isAttached && wasAttached) {
+            static_cast<InputSystem*>(this)->_onRumbleDeviceRemoved(i);
+            getEventSys()->broadcastEvent(RumbleDeviceEvent(EVENT_RUMBLE_DEVICE_REMOVED, &_rumbleDevices[i]));
+        }
+
     }
 
     //update VMUs

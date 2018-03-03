@@ -7,7 +7,7 @@
     \inmodule Engine
     \brief Base class for all user interface devices (controllers, keyboards, mice, VMUs, etc)
 
-    \sa {Input Devices}, {InputSystem}, {Controller}, {Keyboard}, {Mouse}, {VisualMemoryUnit}
+    \sa {Input Devices}, {InputSystem}, {Controller}, {Keyboard}, {Mouse}, {RumbleDevice}, {VisualMemoryUnit}
 
     PlayerIODevice is the base-level abstraction for all interactive input and output devices used
     by a player to interface with the engine (or vice-versa). These devices include input devices
@@ -45,7 +45,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PlayerIODevice,
     going to have mice, so do not count on a mouse always being connected and active.
 
 
-    \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {VisualMemoryUnit}
+    \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {RumbleDevice}, {VisualMemoryUnit}
 */
 /*!
   \qmlproperty enumeration Mouse::BUT_TYPE
@@ -100,6 +100,84 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Mouse,
                              getButtonState)
 OOLUA_EXPORT_FUNCTIONS(Mouse)
 
+
+/*!
+    \qmltype RumbleDevice
+    \since 1.6.1
+    \inherits PlayerIODevice
+    \inmodule Engine
+    \brief Generic class representing force-feedback capable devices
+
+    A RumbleDevice object represents any device capable of outputting any sort of rumble, vibration, or force-feedback
+    to the player. Most controllers have this type of functionality built-in, but some controllers (such as the Sega Dreamcast),
+    use additional peripherals that can be plugged into a slot located on the controller. RumbleDevice will handle all of these
+    uniformly.
+
+    \section2 Effects Support
+    There is a wide array of different rumble effects that can be played by the Engine, but due to variation in
+    hardware, no particular effect (other than the simple \l{play} functionality) can be guaranteed to be supported on
+    any particular device. The Engine will do its best to play the closest suitable effect on devices incapable of playing
+    the exact effect provided.
+
+    For example, some devices support 3D directional rumble, while others support simple 2D directional rumble. Then devices
+    like the Sega Dreamcast's Rumble (PuruPuru) with only a single motor can only play simple, nondirectional effects. If a
+    3D effect is played on a 2D device, the z component is dropped, and it is played in 2D. If a 3D effect is played on a
+    single-motor device like the Dreamcast, it will be converted from a positional effect to a simple intensity-based effect.
+
+
+    \section2 Playing A Simple Effect
+    \code
+        --grab reference to the RumbleDevice attached to slot 0
+        local rumbleDev = Engine.getInputSys():getRumbleDevice(0)
+
+        --play a simple rumble effect at half intensity for 3 seconds
+        rumbleDev:play(0.5, 3.0)
+
+        --stop the effect
+        rumbleDev:stop()
+    \endcode
+
+    \section2 Events
+    \table
+        \header
+            \li Event
+            \li Description
+         \row
+            \li Event.RUMBLE_DEVICE_ATTACHED
+            \li Emitted whenever a new rumble-capable device is detected
+         \row
+            \li Event.RUMBLE_DEVICE_REMOVED
+            \li Emitted whenever an existing rumble-capable device is removed
+    \endtable
+
+    \section2 LibGyro Driver Implementation
+    Rumble support is implemented via the SDL2Haptic API on non-Dreamcast platforms and uses the KallistiOS Maple API on the
+    Dreamcast.
+
+    \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {RumbleDevice}, {VisualMemoryUnit}
+*/
+
+/*!
+ * \qmlmethod bool RumbleDevice::play(float intensity, float duration)
+ *
+ *  Plays a simple rumble effect with the given \a{intensity} for the specified \a{duration}, in seconds.
+ *  Returns true if successful or false otherwise.
+ * \e{NOTE: \a{intensity} is a normalized float ranging from 0.0 (min) to 1.0 (max).}
+ * \sa stop
+ */
+/*!
+ * \qmlmethod bool RumbleDevice::stop()
+ *  Stops any effect currently being played on the RumbleDevice. Returns true if the command was successful,
+ *  or false otherwise.
+ * \sa play
+ */
+
+
+OOLUA_EXPORT_FUNCTIONS_CONST(RumbleDevice,
+                             stop,
+                             play)
+OOLUA_EXPORT_FUNCTIONS(RumbleDevice)
+
 /*!
     \qmltype VisualMemoryUnit
     \since 1.6.0
@@ -140,7 +218,7 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
     it's only referencing the local cache, and the Engine will handle updating the actual device
     screen for you.
 
-    \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {Mouse}
+    \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {Mouse}, {RumbleDevice}
 */
 /*!
  * \qmlmethod bool VisualMemoryUnit::beep(unsigned pulseTotalLength, unsigned pulseActiveLength)
@@ -179,7 +257,7 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
  *  black, and false if it is white.
  *
  *  \e{NOTE: The valid range for \a{x} is [0, 48] while the valid range for \a{y}
- *  is [0, 32] (the VMU LCD screen resolution).
+ *  is [0, 32] (the VMU LCD screen resolution).}
  * \sa frameBufferWritePixel
  *
  */
@@ -190,7 +268,7 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
  *  black if \a{value} is true or white if \a{value} is false.
  *
  *  \e{NOTE: The valid range for \a{x} is [0, 48] while the valid range for \a{y}
- *  is [0, 32] (the VMU LCD screen resolution).
+ *  is [0, 32] (the VMU LCD screen resolution).}
  * \sa displayIcon, frameBufferReadPixel
  */
 
@@ -473,10 +551,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Controller,
     \li 1 \l{Mouse}
     \li 1 \e {Touch Screen}
     \li 4 \l{VisualMemoryUnit}s
-    \li 4 \e{RumbleDevice}s
+    \li 4 \l{RumbleDevice}s
     \endlist
 
-    \sa {Controller}, {Keyboard}, {Mouse}, {VisualMemoryUnit}, {PlayerIODevice}, {Input Devices}
+    \sa {Controller}, {Keyboard}, {Mouse}, {RumbleDevice}, {VisualMemoryUnit}, {PlayerIODevice}, {Input Devices}
 */
 
 /*!
@@ -508,6 +586,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Controller,
  * \sa VisualMemoryUnit
  */
 
+/*!
+ * \qmlmethod RumbleDevice* InputSystem::getRumbleDevice(int port)
+ *
+ * Returns a RumbleDevice object associated with the specified \a{port} or nil if there
+ * isn't one.
+ * \sa RumbleDevice
+ */
 
 
 /*!
@@ -530,6 +615,7 @@ OOLUA_EXPORT_FUNCTIONS(InputSystem,
                        getController,
                        getKeyboard,
                        getMouse,
+                       getRumbleDevice,
                        getVMU)
 OOLUA_EXPORT_FUNCTIONS_CONST(InputSystem)
 

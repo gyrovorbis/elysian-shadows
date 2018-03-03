@@ -18,6 +18,7 @@ namespace elysian {
 
                     Vector2(void);
                     Vector2(const float x, const float y);
+                    Vector2(const float val);
                     Vector2(GYVector2*const vec2);
                     Vector2(const Vector2& other);
                     ~Vector2(void) = default;
@@ -27,9 +28,19 @@ namespace elysian {
         Vector2     operator+(const Vector2& rhs) const;
         Vector2     operator-(const Vector2& rhs) const;
         Vector2     operator*(const Vector2& rhs) const;
-        Vector2     operator*(float scalar) const;
         Vector2     operator/(const Vector2& rhs) const;
         Vector2&    operator=(const Vector2& rhs);
+
+        Vector2&    operator+=(const Vector2& rhs);
+        Vector2&    operator-=(const Vector2& rhs);
+        Vector2&    operator*=(const Vector2& rhs);
+        Vector2&    operator/=(const Vector2& rhs);
+
+        Vector2     operator*(float scalar) const;
+        Vector2     operator/(float scalar) const;
+        Vector2&    operator*=(float scalar);
+        Vector2&    operator/=(float scalar);
+
 
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
@@ -46,6 +57,8 @@ namespace elysian {
         Vector2     scalarMult(float scalar) const;
         float       scalarCrossProduct(const Vector2& rhs) const;
         Vector2     vectorCrossProduct(float scalar) const;
+
+        float       toAngle(void) const;
     };
 
     struct Vector3: public GYVector3, public VirtualArray<Vector3, int, float>, public LuaTableProxy<Vector3> {
@@ -266,6 +279,7 @@ namespace elysian {
     //Vector2
     inline Vector2::Vector2(void): Vector2(0.0f, 0.0f) {}
     inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}), _ptr(this) {}
+    inline Vector2::Vector2(const float val): Vector2(val, val) {}
     inline Vector2::Vector2(GYVector2 * const vec2): _ptr(vec2) {}
     inline Vector2::Vector2(const Vector2 &other) : LuaTableProxy<Vector2>() {
         if(other._ptr != &other) {
@@ -349,6 +363,47 @@ namespace elysian {
         return gyVec2Dist(this, &rhs);
    }
 
+   inline Vector2& Vector2::operator +=(const Vector2& rhs) {
+        gyVec2AddAccum(this, &rhs);
+        return *this;
+   }
+
+   inline Vector2& Vector2::operator -=(const Vector2& rhs) {
+       gyVec2SubFrom(this, &rhs);
+       return *this;
+   }
+
+   inline Vector2& Vector2::operator *=(const Vector2& rhs) {
+       setX(getX()*rhs.getX());
+       setY(getY()*rhs.getY());
+       return *this;
+   }
+
+   inline Vector2& Vector2::operator /=(const Vector2& rhs) {
+       setX(getX()/rhs.getX());
+       setY(getY()/rhs.getY());
+       return *this;
+   }
+
+   inline Vector2 Vector2::operator/(float scalar) const {
+       return Vector2(getX()/scalar, getY()/scalar);
+
+   }
+
+   inline Vector2& Vector2::operator*=(float scalar) {
+        gyVec2ScaleAccum(this, scalar);
+        return *this;
+   }
+
+   inline Vector2& Vector2::operator/=(float scalar) {
+       setX(getX()/scalar);
+       setY(getY()/scalar);
+       return *this;
+   }
+
+    inline float Vector2::toAngle(void) const {
+        return atan2f(getY(), getX());
+    }
 
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}

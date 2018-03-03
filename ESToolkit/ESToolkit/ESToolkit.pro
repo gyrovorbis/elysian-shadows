@@ -221,7 +221,8 @@ SOURCES += \
     ../../AssetIO/source/proxy/elysian_event_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_event_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_collision_system_proxy.cpp \
-    ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp
+    ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp \
+    source/ESGamma/tk_input_system.cpp
 
 !ios: !dreamcast: !android {
 

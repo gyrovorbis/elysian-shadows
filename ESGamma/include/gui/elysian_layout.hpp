@@ -111,10 +111,11 @@ namespace elysian {
     };
 
     class GridLayout: public Layout {
+
                         GridLayout(Widget* parent=nullptr);
 
-        virtual void    _updateSizes(AXIS axis);
-        virtual void    _updatePositions(AXIS axis);
+                        virtual void    _updateSizes(AXIS axis);
+                        virtual void    _updatePositions(AXIS axis){}
     };
 
 

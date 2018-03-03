@@ -307,49 +307,41 @@ namespace elysian {
         s->register_class_static<Layout>("ALIGN_POSITIVE",      Layout::ALIGN_POSITIVE);
 
         typedef elysian::EventTarget EventTarget;
-        s->register_class_static<EventTarget>("INVALID",        EVENT_TARGET_INVALID);
-        s->register_class_static<EventTarget>("ENTITY",         EVENT_TARGET_ENTITY);
-        s->register_class_static<EventTarget>("BEHAVIOR",       EVENT_TARGET_BEHAVIOR);
-        s->register_class_static<EventTarget>("WIDGET",         EVENT_TARGET_WIDGET);
-        s->register_class_static<EventTarget>("LUA",            EVENT_TARGET_LUA);
+        s->register_class_static<EventTarget>("INVALID",            EVENT_TARGET_INVALID);
+        s->register_class_static<EventTarget>("ENTITY",             EVENT_TARGET_ENTITY);
+        s->register_class_static<EventTarget>("BEHAVIOR",           EVENT_TARGET_BEHAVIOR);
+        s->register_class_static<EventTarget>("WIDGET",             EVENT_TARGET_WIDGET);
+        s->register_class_static<EventTarget>("LUA",                EVENT_TARGET_LUA);
 
         typedef elysian::Event Event;
-        s->register_class_static<EventTarget>("STATE_PENDING",  EVENT_STATE_PENDING);
-        s->register_class_static<EventTarget>("STATE_ACCEPTED", EVENT_STATE_ACCEPTED);
-        s->register_class_static<EventTarget>("STATE_IGNORED",  EVENT_STATE_IGNORED);
+        s->register_class_static<EventTarget>("STATE_PENDING",      EVENT_STATE_PENDING);
+        s->register_class_static<EventTarget>("STATE_ACCEPTED",     EVENT_STATE_ACCEPTED);
+        s->register_class_static<EventTarget>("STATE_IGNORED",      EVENT_STATE_IGNORED);
 
-        s->register_class_static<Event>("ENTITY_ACTIVATE",      EVENT_ENTITY_ACTIVATE);
-        s->register_class_static<Event>("ENTITY_DEACTIVATE",    EVENT_ENTITY_DEACTIVATE);
-        s->register_class_static<Event>("KEYBOARD_ATTACHED",    EVENT_KEYBOARD_ATTACHED);
-        s->register_class_static<Event>("KEYBOARD_REMOVED",     EVENT_KEYBOARD_REMOVED);
-        s->register_class_static<Event>("MOUSE_ATTACHED",       EVENT_MOUSE_ATTACHED);
-        s->register_class_static<Event>("MOUSE_REMOVED",        EVENT_MOUSE_REMOVED);
-        s->register_class_static<Event>("VMU_ATTACHED",         EVENT_VMU_ATTACHED);
-        s->register_class_static<Event>("VMU_REMOVED",          EVENT_VMU_REMOVED);
-        s->register_class_static<Event>("CONTROLLER_ATTACHED",  EVENT_CONTROLLER_ATTACHED);
-        s->register_class_static<Event>("CONTROLLER_REMOVED",   EVENT_CONTROLLER_REMOVED);
-        s->register_class_static<Event>("MOUSE_MOVE",           EVENT_MOUSE_MOVE);
-      //  s->register_class_static<Event>("MOUSE_BUTTON",         EVENT_MOUSE_BUTTON);
-        s->register_class_static<Event>("MOUSE_WHEEL",          EVENT_MOUSE_WHEEL);
-        s->register_class_static<Event>("COLLISION_ENTER",      EVENT_COLLISION_ENTER);
-        s->register_class_static<Event>("COLLISION_EXIT",       EVENT_COLLISION_EXIT);
-        s->register_class_static<Event>("AREA_ENTER",           EVENT_AREA_ENTER);
-        s->register_class_static<Event>("AREA_EXIT",            EVENT_AREA_EXIT);
-        s->register_class_static<Event>("AREA_CHANGED",         EVENT_AREA_CHANGED);
-        s->register_class_static<Event>("GAME_TIME_DAWN",       EVENT_GAME_TIME_DAWN);
-        s->register_class_static<Event>("GAME_TIME_NOON",       EVENT_GAME_TIME_NOON);
-        s->register_class_static<Event>("GAME_TIME_DUSK",       EVENT_GAME_TIME_DUSK);
-        s->register_class_static<Event>("GAME_TIME_MIDNIGHT",   EVENT_GAME_TIME_MIDNIGHT);
-
-        /*
-        s->register_class_static<Event>("WIDGET_ACTIVE",         EVENT_VMU_ATTACHED);
-        s->register_class_static<Event>("VMU_REMOVED",          EVENT_VMU_REMOVED);
-        s->register_class_static<Event>("CONTROLLER_ATTACHED",  EVENT_CONTROLLER_ATTACHED);
-        s->register_class_static<Event>("CONTROLLER_REMOVED",   EVENT_CONTROLLER_REMOVED);
-        s->register_class_static<Event>("MOUSE_MOVE",           EVENT_MOUSE_MOVE);
-        s->register_class_static<Event>("MOUSE_BUTTON",         EVENT_ENTITY_ACTIVATE);
-        */
-        s->register_class_static<Event>("LUA",                  EVENT_LUA);
+        s->register_class_static<Event>("ENTITY_ACTIVATE",          EVENT_ENTITY_ACTIVATE);
+        s->register_class_static<Event>("ENTITY_DEACTIVATE",        EVENT_ENTITY_DEACTIVATE);
+        s->register_class_static<Event>("KEYBOARD_ATTACHED",        EVENT_KEYBOARD_ATTACHED);
+        s->register_class_static<Event>("KEYBOARD_REMOVED",         EVENT_KEYBOARD_REMOVED);
+        s->register_class_static<Event>("MOUSE_ATTACHED",           EVENT_MOUSE_ATTACHED);
+        s->register_class_static<Event>("MOUSE_REMOVED",            EVENT_MOUSE_REMOVED);
+        s->register_class_static<Event>("RUMBLE_DEVICE_ATTACHED",   EVENT_RUMBLE_DEVICE_ATTACHED);
+        s->register_class_static<Event>("RUMBLE_DEVICE_REMOVED",    EVENT_RUMBLE_DEVICE_REMOVED);
+        s->register_class_static<Event>("VMU_ATTACHED",             EVENT_VMU_ATTACHED);
+        s->register_class_static<Event>("VMU_REMOVED",              EVENT_VMU_REMOVED);
+        s->register_class_static<Event>("CONTROLLER_ATTACHED",      EVENT_CONTROLLER_ATTACHED);
+        s->register_class_static<Event>("CONTROLLER_REMOVED",       EVENT_CONTROLLER_REMOVED);
+        s->register_class_static<Event>("MOUSE_MOVE",               EVENT_MOUSE_MOVE);
+        s->register_class_static<Event>("MOUSE_WHEEL",              EVENT_MOUSE_WHEEL);
+        s->register_class_static<Event>("COLLISION_ENTER",          EVENT_COLLISION_ENTER);
+        s->register_class_static<Event>("COLLISION_EXIT",           EVENT_COLLISION_EXIT);
+        s->register_class_static<Event>("AREA_ENTER",               EVENT_AREA_ENTER);
+        s->register_class_static<Event>("AREA_EXIT",                EVENT_AREA_EXIT);
+        s->register_class_static<Event>("AREA_CHANGED",             EVENT_AREA_CHANGED);
+        s->register_class_static<Event>("GAME_TIME_DAWN",           EVENT_GAME_TIME_DAWN);
+        s->register_class_static<Event>("GAME_TIME_NOON",           EVENT_GAME_TIME_NOON);
+        s->register_class_static<Event>("GAME_TIME_DUSK",           EVENT_GAME_TIME_DUSK);
+        s->register_class_static<Event>("GAME_TIME_MIDNIGHT",       EVENT_GAME_TIME_MIDNIGHT);
+        s->register_class_static<Event>("LUA",                      EVENT_LUA);
 
     }
 
@@ -473,6 +465,7 @@ namespace elysian {
 		_mainState->register_class<LevelSystem>();
         _mainState->register_class<Controller>();
         _mainState->register_class<Mouse>();
+        _mainState->register_class<RumbleDevice>();
         _mainState->register_class<VisualMemoryUnit>();
         _mainState->register_class<Keyboard>();
         _mainState->register_class<InputSystem>();
