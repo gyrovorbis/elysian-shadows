@@ -73,18 +73,6 @@ bool Controller::pollInput(void) {
     return _attached;
 }
 
-bool RumbleDevice::pollDevice(void) {
-    return _attached = gyRumblePoll(_playerIndex, &_gyHandle);
-}
-
-bool RumbleDevice::play(float intensity, float duration) const {
-    return gyRumblePlay(_gyHandle, intensity, duration*1000.0f);
-}
-
-bool RumbleDevice::stop(void) const {
-    return gyRumbleStop(_gyHandle);
-}
-
 bool VisualMemoryUnit::frameBufferReadPixel(uint8_t x, uint8_t y) const {
     if(x >= 48 || y >= 32) {
         errprintf("Attempting to read oustide of VMU framebuffer boundaries: <%d, %d>", x, y);
@@ -174,11 +162,6 @@ const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
 
 InputSystemBase::InputSystemBase(void) {
 
-    GYRumbleInitParams rumbleInitParams = {
-        ELYSIAN_INPUT_RUMBLE_DEVICES_MAX
-    };
-    gyRumbleInit(&rumbleInitParams);
-
     GYVisualMemoryInitParams vmuInitParams = {
         ELYSIAN_INPUT_VMUS_MAX
     };
@@ -202,7 +185,6 @@ InputSystemBase::InputSystemBase(void) {
 
 InputSystemBase::~InputSystemBase(void) {
     gyVisualMemoryUninit();
-    gyRumbleUninit();
 }
 
 bool InputSystemBase::initialize(const GYInputInitParams*const params) {
@@ -211,6 +193,11 @@ bool InputSystemBase::initialize(const GYInputInitParams*const params) {
     if(!_initialized) {
         success &= gyInputInit(params? params : &_defaultInitParams);
         if(params != &_defaultInitParams) _managedExternally = true;
+
+        GYRumbleInitParams rumbleInitParams = {
+            ELYSIAN_INPUT_RUMBLE_DEVICES_MAX
+        };
+        gyRumbleInit(&rumbleInitParams);
         _initialized = true;
     }
 
@@ -223,6 +210,7 @@ bool InputSystemBase::uninitialize(void) {
     bool success = true;
 
     success &= gyInputUninit();
+    success &= gyRumbleUninit();
 
     _initialized = false;
     return success;

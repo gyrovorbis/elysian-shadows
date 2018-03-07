@@ -222,7 +222,8 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_event_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_collision_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp \
-    source/ESGamma/tk_input_system.cpp
+    source/ESGamma/tk_input_system.cpp \
+    ../../ESGamma/source/device/elysian_rumble_device.cpp
 
 !ios: !dreamcast: !android {
 
@@ -500,7 +501,9 @@ HEADERS += \
     ../../AssetIO/include/proxy/elysian_event_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_event_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_collision_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp
+    ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp \
+    ../../ESGamma/include/device/elysian_rumble_device.hpp \
+    ../../ESGamma/include/device/elysian_player_io_device.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

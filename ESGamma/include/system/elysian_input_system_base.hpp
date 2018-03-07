@@ -11,8 +11,8 @@
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MAX    0.7f
 
 #include <system/elysian_system.hpp>
+#include <device/elysian_rumble_device.hpp>
 #include <gyro_input_api.h>
-#include <gyro_rumble_api.h>
 #include <gyro_visual_memory_api.h>
 #include <system/elysian_event_system.hpp>
 
@@ -20,17 +20,6 @@ namespace elysian {
     class Mouse;
     class Controller;
 
-    class PlayerIODevice    {
-    protected:
-        bool        _attached;
-        unsigned    _playerIndex;
-
-    public:
-        bool        isAttached(void) const;
-        unsigned    getPlayerIndex(void) const;
-        void        setPlayerIndex(unsigned index);
-
-    };
 
     class TouchDevice: public PlayerIODevice {
 
@@ -144,27 +133,6 @@ namespace elysian {
 
     };
 
-    class RumbleDevice;
-
-    class RumbleDeviceEvent: public Event {
-    private:
-        RumbleDevice* _dev;
-    public:
-                        RumbleDeviceEvent(EventType type, RumbleDevice* rumble);
-        RumbleDevice*   getRumbleDevice(void) const;
-    };
-
-
-    class RumbleDevice: public PlayerIODevice {
-    private:
-        GYRumble*   _gyHandle = nullptr;
-    public:
-
-        bool        pollDevice(void);
-        bool        play(float intensity, float duration) const;
-        bool        stop(void) const;
-    };
-
 
     class VisualMemoryUnit;
 
@@ -272,15 +240,6 @@ namespace elysian {
     };
 
 
-
-
-
-    //===== PLAYER I/O DEVICE ==========
-    inline bool PlayerIODevice::isAttached(void) const { return _attached; }
-    inline void PlayerIODevice::setPlayerIndex(unsigned index) { _playerIndex = index; }
-    inline unsigned PlayerIODevice::getPlayerIndex(void) const { return _playerIndex; }
-
-
     //====== KEYBOARD INLINEZ ===========
     inline GY_BUTTON_STATE Keyboard::getButtonState(const GY_KEY key) const { return (GY_BUTTON_STATE)_gyHandle->keys[key]; }
     inline bool Keyboard::isPressed(const GY_KEY key) const { return (_gyHandle->keys[key] & GY_BUT_FLAGS_IS_PRESSED); }
@@ -348,11 +307,6 @@ namespace elysian {
     inline void Controller::setAnalogStick(const GY_CONTROLLER_ANALOG stick, const GYVector2 &vec) {
         _gyHandle->analogSticks[stick] = vec;
     }
-
-    //====== RUMBLE INLINEZ =======
-    inline RumbleDeviceEvent::RumbleDeviceEvent(EventType type, RumbleDevice *rumble):
-        Event(type), _dev(rumble) {}
-    inline RumbleDevice* RumbleDeviceEvent::getRumbleDevice(void) const { return _dev; }
 
 
     //====== VMU INLINEZ =======

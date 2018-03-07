@@ -168,8 +168,8 @@ namespace elysian {
         s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER_INDEX",    Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX);
         s->register_class_static<Behavior>("ON_BUTTON_PRESS_INDEX",                     Behavior::ON_BUTTON_PRESS_INDEX);
         s->register_class_static<Behavior>("ON_BUTTON_RELEASE_INDEX",                   Behavior::ON_BUTTON_RELEASE_INDEX);
-        s->register_class_static<Behavior>("ON_RECEIVE_EVENT",                          Behavior::ON_RECEIVE_EVENT);
-        s->register_class_static<Behavior>("ON_OBSERVE_EVENT",                          Behavior::ON_OBSERVE_EVENT);
+        s->register_class_static<Behavior>("ON_EVENT_RECEIVE",                          Behavior::ON_RECEIVE_EVENT);
+        s->register_class_static<Behavior>("ON_EVENT_OBSERVE",                          Behavior::ON_OBSERVE_EVENT);
         s->register_class_static<Behavior>("ON_TK_SELECT_INDEX",                        Behavior::ON_TK_SELECT_INDEX);
         s->register_class_static<Behavior>("ON_TK_UNSELECT_INDEX",                      Behavior::ON_TK_UNSELECT_INDEX);
         s->register_class_static<Behavior>("TRIGGER_MAX_INDEX",                         Behavior::TRIGGER_MAX_INDEX);
@@ -300,6 +300,15 @@ namespace elysian {
         s->register_class_static<Character>("STATE_KNOCKBACK", Character::STATE_KNOCKBACK);
         s->register_class_static<Character>("STATE_DEATH", Character::STATE_DEATH);
         s->register_class_static<Character>("STATE_LUA", Character::STATE_LUA);
+
+        typedef elysian::RumbleEffect   RumbleEffect;
+        s->register_class_static<RumbleEffect>("INFINITE",              GY_RUMBLE_EFFECT_DURATION_INFINITE);
+
+        typedef elysian::PeriodicRumbleEffect PeriodicRumbleEffect;
+        s->register_class_static<PeriodicRumbleEffect>("SINE",          GY_RUMBLE_EFFECT_PERIODIC_SINE);
+        s->register_class_static<PeriodicRumbleEffect>("TRIANGLE",      GY_RUMBLE_EFFECT_PERIODIC_TRIANGLE);
+        s->register_class_static<PeriodicRumbleEffect>("SAWTOOTHUP",    GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHUP);
+        s->register_class_static<PeriodicRumbleEffect>("SAWTOOTHDOWN",  GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHDOWN);
 
         typedef elysian::Layout Layout;
         s->register_class_static<Layout>("ALIGN_NEGATIVE",      Layout::ALIGN_NEGATIVE);
@@ -465,6 +474,12 @@ namespace elysian {
 		_mainState->register_class<LevelSystem>();
         _mainState->register_class<Controller>();
         _mainState->register_class<Mouse>();
+        _mainState->register_class<RumbleEffect>();
+        _mainState->register_class<DirectionalRumbleEffect>();
+        _mainState->register_class<LeftRightRumbleEffect>();
+        _mainState->register_class<ConstantRumbleEffect>();
+        _mainState->register_class<RampRumbleEffect>();
+        _mainState->register_class<PeriodicRumbleEffect>();
         _mainState->register_class<RumbleDevice>();
         _mainState->register_class<VisualMemoryUnit>();
         _mainState->register_class<Keyboard>();

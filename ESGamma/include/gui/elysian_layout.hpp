@@ -111,12 +111,33 @@ namespace elysian {
     };
 
     class GridLayout: public Layout {
-
+    private:
+        std::map<std::pair<unsigned, unsigned>, Widget*> _widgets;
+        unsigned _cols      = 0;
+        unsigned _rows      = 0;
+    public:
                         GridLayout(Widget* parent=nullptr);
+
+        unsigned        getColumnCount(void) const;
+        unsigned        getRowCount(void) const;
+        void            insertWidget(unsigned row, unsigned col, Widget* widget);
+        void            removeWidget(unsigned row, unsigned col);
 
                         virtual void    _updateSizes(AXIS axis);
                         virtual void    _updatePositions(AXIS axis){}
     };
+
+    inline void GridLayout::insertWidget(unsigned row, unsigned col, Widget *widget) {
+        auto pair = std::make_pair(row, col);
+        bool replacing = _widgets[pair];
+        _widgets[pair] = widget;
+
+        if(!replacing) {
+            if(row+1 > _rows) _rows = row + 1;
+            if(col+1 > _cols) _cols = col + 1;
+        }
+    }
+
 
 
 

@@ -102,6 +102,460 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
 
 
 /*!
+    \qmltype RumbleEffect
+    \since 1.6.2
+    \inmodule Engine
+    \brief Base class for all playable effects for RumbleDevices
+
+    RumbleEffect is the base class for all effects that can be played on a \l{RumbleDevice}.
+    This is a noninstantiable base-class with only one attribute common to all effects: duration.
+    Refer to specific effects for more details.
+
+    \table
+        \header
+            \li Effect Type
+            \li Description
+        \row
+            \li \l{LeftRightRumbleEffect}
+            \li Direct, low-level control over the intensities of the large and small motor.
+        \row
+            \li \l{ConstantRumbleEffect}
+            \li Constant-intensity directional effect.
+        \row
+            \li \l{RampRumbleEffect}
+            \li Linearly interpolate between two intensity levels (with direction).
+        \row
+            \li \l{PeriodicRumbleEffect}
+            \li Wave-like oscillating effects (with direction)
+    \endtable
+
+    \section2 Demo Area
+    Refer to \l{Rumble Test and Demo Area} for a live demo and source code.
+
+    \sa {RumbleDevice}, {LeftRightRumbleEffect}, {ConstantRumbleEffect}, {RampRumbleEffect}, {PeriodicRumbleEffect}
+*/
+/*!
+ * \qmlproperty float RumbleEffect::INFINITE
+ *
+ *  Constant used to specify the duration of an effect that plays indefinitely until the effect has been manually stopped.
+ * \e{NOTE: Many \l{RumbleDevice}s do not honor infinite effects!}
+ */
+/*!
+ * \qmlmethod void RumbleEffect::setDuration(float secs)
+ *
+ *  Sets the duration of the effect in seconds to \a{secs}.
+ * \sa {RumbleEffect::INFINITE}
+ */
+
+OOLUA_EXPORT_FUNCTIONS(RumbleEffect,
+                       setDuration)
+OOLUA_EXPORT_FUNCTIONS_CONST(RumbleEffect)
+
+
+/*!
+    \qmltype LeftRightRumbleEffect
+    \since 1.6.2
+    \inherits RumbleEffect
+    \inmodule Engine
+    \brief Low-level, direct 2-motor intensity control
+
+    LeftRightRumbleEffect is the lowest-level primitive RumbleEffect for directly controlling the intensity
+    of each motor, without any additional abstraction or functionality. Most RumbleDevices contain two
+    different motors, a small one (right) and large one (left) which can be operated independently and whose
+    combined characteristics define the type of effect.
+
+    \e{NOTE: This is normally not the preferred effect type, as the higher-level effects (\l{ConstantRumbleEffect}, \l{RampRumbleEffect},
+    \l{PeriodicRumbleEffect}) offer a more powerful level of abstraction.}
+
+    \section2 Demo Area
+    Refer to \l{Rumble Test and Demo Area} for a live demo and source code.
+
+    \sa {RumbleDevice}, {RumbleEffect}, {ConstantRumbleEffect}, {RampRumbleEffect}, {PeriodicRumbleEffect}
+*/
+/*!
+ * \qmlmethod void LeftRightRumbleEffect::LeftRightRumbleEffect()
+ *
+ *  Default constructs a LeftRightRumble effect. The default large motor intensity, small motor intensity, and
+ *  duration are all 0, meaning the effect will do nothing.
+ */
+/*!
+ * \qmlmethod void LeftRightRumbleEffect::LeftRightRumbleEffect(float duration, float largeIntensity, float smallIntensity)
+ *
+ *  Constructs a LeftRightRumbleEffect with the given \a{duration}, setting the large motor intensity to \a{largeIntensity} and
+ *  the small motor intensity to \a{smallIntensity}.
+ */
+/*!
+ * \qmlmethod void LeftRightRumbleEffect::setLargeIntensity(float intensity)
+ *
+ *  Sets the intensity of the RumbleDevice's large motor to \a{intensity}.
+ *
+ * \e{NOTE: \a{intensity} is a normalized float, meaning it can range from 0 (off) to 1 (highest intensity).}
+ *   \sa setSmallIntensity
+ */
+/*!
+ * \qmlmethod void LeftRightRumbleEffect::setSmallIntensity(float intensity)
+ *
+ *  Sets the intensity of the RumbleDevice's small motor to \a{intensity}.
+ *
+ * \e{NOTE: \a{intensity} is a normalized float, meaning it can range from 0 (off) to 1 (highest intensity).}
+ *   \sa setLargeIntensity
+ */
+
+OOLUA_EXPORT_FUNCTIONS(LeftRightRumbleEffect,
+                       setLargeIntensity,
+                       setSmallIntensity)
+OOLUA_EXPORT_FUNCTIONS_CONST(LeftRightRumbleEffect)
+
+
+/*!
+    \qmltype DirectionalRumbleEffect
+    \since 1.6.2
+    \inherits RumbleEffect
+    \inmodule Engine
+    \brief Base-class for all RumbleEffects supporting direction and envelope
+
+    DirectionalRumbleEffect is a noninstantiable base class inherited by all directional RumbleEffects providing several common
+    properties and shared functionality. DirectionalRumbleEffects have a delay, a direction vector, and an "envelope."
+
+    \section2 Direction
+    All DirectionalRumbleEffects can have a 3D direction vector represting the direction of the force to be applied. MANY devices
+    will completely ignore the directional parameter(s), and certain devices may only support 2D or 1D directions. Whether the device
+    fully supports the dimensionality of the provided direction or not, libGyro should play the closest effect the hardware is capable
+    of, so you should not have to worry about varying levels of support.
+
+    \section2 Envelope
+    Rumble "Envelope" is an SDL2 Haptic term used to describe the fade-in and fade-out characteristics of a particular effect. Again,
+    many devices will totally ignore this too, in which case the main effect will be played for the entire duration without any fade-in
+    or fade-out, so you should once again not have to worry about this. You may have a better chance at implementing fade-ins and fade-outs
+    stringing together two \l{RampRumbleEffect}s and one \l{ConstantRumbleEffect}, if this functionality is absolutely necessary.
+    \code
+    intensity
+    ^
+    |
+    |       intensity -->  _________________
+    |                     /                 \
+    |                    /                   \
+    |                   /                     \
+    |                  /                       \
+    startIntensity --> |                        \
+    |                  |                        |  <---  endIntensity
+    |
+    +--------------------------------------------------> Time
+
+                       [--]                 [---]
+                  fadeInDuration       fadeOutDuration
+
+    [------------------][-----------------------]
+           delay                 duration
+    \endcode
+
+    \table
+        \header
+            \li Property
+            \li Description
+            \li Value
+        \row
+            \li intensity
+            \li Intensity of main effect (handled and stored separtely for each subtype)
+            \li [0 (no effect) - 1 (max)]
+        \row
+            \li delay
+            \li Amount of time to wait before playing (or fading into) the effect
+            \li seconds (must be less than total duration)
+        \row
+            \li startIntensity
+            \li The initial intensity of the effect, before the fade starts
+            \li [0 (no effect) - 1 (max)]
+        \row
+            \li fadeInDuration
+            \li Amount of time the effect takes to fade from the startIntensity to the effect intensity
+            \li seconds (must be less than total duration)
+        \row
+            \li endIntensity
+            \li The final intensity of the effect, once fading has ended
+            \li [0 (no effect) - 1 (max)]
+        \row
+            \li fadeOutDuration
+            \li Amount of time the effect takes to fade from intensity to endIntensity
+            \li seconds (must be less than total duration)
+   \endtable
+
+    \section2 Types of Directional Effects
+    For more detailed descriptions of the different types of DirectionalRumbleEffects, refer to the documentation of each child class.
+    \list
+        \li \l{ConstantRumbleEffect}
+        \li \l{RampRumbleEffect}
+        \li \l{PeriodicRumbleEffect}
+    \endlist
+
+    \section2 Demo Area
+    Refer to \l{Rumble Test and Demo Area} for a live demo and source code.
+
+    \sa {RumbleDevice}, {RumbleEffect}, {ConstantRumbleEffect}, {RampRumbleEffect}, {PeriodicRumbleEffect}, {LeftRightRumbleEffect}
+*/
+/*!
+ * \qmlmethod void DirectionalRumbleEffect::setDelay(float secs)
+ *
+ *  Sets the delay of the applied effect to the value given by \a{secs} in seconds.
+ */
+/*!
+ * \qmlmethod void DirectionalRumbleEffect::setDirection(Vector3 dir)
+ *
+ *  Sets the direction of the applied effect to the direction vector given by \a{dir}.
+ */
+/*!
+ * \qmlmethod void DirectionalRumbleEffect::setEnvelope(float startIntensity, float fadeInDuration, float endIntensity, float fadeOutDuration)
+ *
+ *  Sets the properties of the effect's envelope. See \l{Envelope} for more details.
+ */
+
+OOLUA_EXPORT_FUNCTIONS(DirectionalRumbleEffect,
+                       setDirection,
+                       setDelay,
+                       setEnvelope)
+OOLUA_EXPORT_FUNCTIONS_CONST(DirectionalRumbleEffect)
+
+
+/*!
+    \qmltype ConstantRumbleEffect
+    \since 1.6.2
+    \inherits DirectionalRumbleEffect
+    \inmodule Engine
+    \brief Simple, constant-intensity directional rumble effect
+
+    ConstantRumbleEffect is the most basic instantiable type of DirectionalRumbleEffect. It has only a single property,
+    intensity, which is used to create a constant-level rumble effect.
+
+    \section2 Demo Area
+    Refer to \l{Rumble Test and Demo Area} for a live demo and source code.
+
+    \sa {RumbleDevice}, {RumbleEffect}, {DirectionalRumbleEffect}, {RampRumbleEffect}, {PeriodicRumbleEffect}, {LeftRightRumbleEffect}
+*/
+/*!
+ * \qmlmethod void ConstantRumbleEffect::ConstantRumbleEffect()
+ *
+ *  Default constructs a ConstantRumbleEffect. The default duration and intensity are both set to 0,
+ * meaning the effect will do nothing.
+ */
+/*!
+ * \qmlmethod void ConstantRumbleEffect::ConstantRumbleEffect(float duration, float intensity)
+ *
+ * Constructs a ConstantRumbleEffect with the given \a{duration} in seconds and the given normalized
+ * \a{intensity} ranging from 0 (no effect) to 1 (maximum intensity).
+ */
+/*!
+ * \qmlmethod void ConstantRumbleEffect::setIntensity(float intensity)
+ *
+ * Sets the normalized constant effect level to \a{intensity} which can range from 0 (no effect) to 1 (maximum intensity).
+ */
+OOLUA_EXPORT_FUNCTIONS(ConstantRumbleEffect,
+                       setIntensity)
+OOLUA_EXPORT_FUNCTIONS_CONST(ConstantRumbleEffect)
+
+
+/*!
+    \qmltype RampRumbleEffect
+    \since 1.6.2
+    \inherits DirectionalRumbleEffect
+    \inmodule Engine
+    \brief Increasing or decreasing intensity fading rumble effect
+
+    RampRumbleEffect is a DirectionalRumbleEffect producing an effect that either increases or decreases from an initial to a
+    final intensity over the given duration through linear interpolation. When startIntensity is smaller than endIntensity,
+    the effect produces a rumble fade-in. When startIntensity is greater than endIntensity, the effect produces a rumble fade-out.
+
+    \e{NOTE: When a RampRumbleEffect is used with a fadeIn/fadeOut \l{Envelope}, the two fades are multiplied together, resulting
+    in a quadratic rate of change, but all devices support envelopes, and not all envelope-supporting devices support this functionality}
+
+    \section2 Demo Area
+    Refer to \l{Rumble Test and Demo Area} for a live demo and source code.
+
+    \sa {RumbleDevice}, {RumbleEffect}, {DirectionalRumbleEffect}, {ConstantRumbleEffect}, {PeriodicRumbleEffect}, {LeftRightRumbleEffect}
+*/
+/*!
+ * \qmlmethod void RampRumbleEffect::RampRumbleEffect()
+ *
+ *  Default constructs a RampRumbleEffect. The default duration, rampStartIntensity, and rampEndIntensity are all set to 0,
+ *  meaning the effect will do nothing.
+ */
+/*!
+ * \qmlmethod void RampRumbleEffect::RampRumbleEffect(float duration, float rampStartIntensity, float rampEndIntensity)
+ *
+ * Constructs a RampRumbleEffect with the given \a{duration} in seconds and the given normalized
+ * \a{rampStartIntensity} and \a{rampEndIntensity} ranging from 0 (no effect) to 1 (maximum intensity).
+ */
+/*!
+ * \qmlmethod void RampRumbleEffect::setRampStartIntensity(float intensity)
+ *
+ * Sets the normalized starting intensity of the ramp to \a{intensity} which can range from 0 (no effect) to 1 (maximum intensity).
+ * \sa setRampEndIntensity
+ */
+/*!
+ * \qmlmethod void RampRumbleEffect::setRampEndIntensity(float intensity)
+ *
+ * Sets the normalized ending intensity of the ramp to \a{intensity} which can range from 0 (no effect) to 1 (maximum intensity).
+ * \sa setRampStartIntensity
+ */
+OOLUA_EXPORT_FUNCTIONS(RampRumbleEffect,
+                       setRampStartIntensity,
+                       setRampEndIntensity)
+OOLUA_EXPORT_FUNCTIONS_CONST(RampRumbleEffect)
+
+
+/*!
+    \qmltype PeriodicRumbleEffect
+    \since 1.6.2
+    \inherits DirectionalRumbleEffect
+    \inmodule Engine
+    \brief Wave-like oscillating directional rumble effects
+
+    PeriodicRumbleEffect is a DirectionalRumbleEffect used to create different types of oscillating, wave-like effects. Its properties
+    offer full control over the shape of the waves and its characteristics.
+
+    \section2 Waveform Properties
+    \code
+                      period
+                     |     |
+                __    __    __    __    __    _
+               |  |  |  |  |  |  |  |  |  |   peakIntensity
+               |  |__|  |__|  |__|  |__|  |   _
+          -----
+            |
+          delay
+
+        -------------------------------------
+                      duration
+        ===================================================
+    \endcode
+    \table
+        \header
+            \li Property
+            \li Description
+            \li Values
+        \row
+            \li period
+            \li Time between two rising edges of the wave
+            \li seconds
+        \row
+            \li intensityPeak
+            \li Peak value; negative results in a 180 degree extra phase shift
+            \li [0 - 1]
+        \row
+            \li intensityOffset
+            \li Average value; extra intensity added at every point of the waveform
+            \li [0 - 1]
+        \row
+            \li phaseShift
+            \li Positive phase shift, moving the wave along the x (time) axis
+            \li 1/100th of a degree
+    \endtable
+
+    \section2 Wave Shape Types
+    The waveform generated by a PeriodicRumbleEffect may take one of the following shapes (by setting the appropriate
+    \l{PERIODIC_TYPE}). Note not every device supports every wave type, but libGyro will choose the closest-supported waveform,
+    so you should not have to worry about whether a device supports an exact shape or not.
+    \table
+        \header
+            \li Type
+            \li Waveform
+         \row
+            \li SINE
+            \li \code
+                  __      __      __      __
+                 /  \    /  \    /  \    /
+                /    \__/    \__/    \__/
+                \endcode
+        \row
+            \li TRIANGLE
+            \li \code
+                  /\    /\    /\    /\    /\
+                 /  \  /  \  /  \  /  \  /
+                /    \/    \/    \/    \/
+                \endcode
+        \row
+            \li SAWTOOTHUP
+            \li \code
+                  /|  /|  /|  /|  /|  /|  /|
+                 / | / | / | / | / | / | / |
+                /  |/  |/  |/  |/  |/  |/  |
+                \endcode
+        \row
+            \li SAWTOOTHDOWN
+            \li \code
+                \  |\  |\  |\  |\  |\  |\  |
+                 \ | \ | \ | \ | \ | \ | \ |
+                  \|  \|  \|  \|  \|  \|  \|
+                \endcode
+    \endtable
+
+    \section2 Demo Area
+    Refer to \l{Rumble Test and Demo Area} for a live demo and source code.
+
+    \sa {RumbleDevice}, {RumbleEffect}, {DirectionalRumbleEffect}, {ConstantRumbleEffect}, {RampRumbleEffect}, {LeftRightRumbleEffect}
+*/
+
+/*!
+\qmlproperty enumeration PeriodicRumbleEffect::PERIODIC_TYPE
+
+Selects the desired shape of the periodic waveform. See \l{Wave Shape Types} for a more detailed description of the waveform shapes.
+
+PERIODIC_TYPE can have one of the following values
+\list
+\li PeriodicRumbleEffect.SINE
+\li PeriodicRumbleEffect.TRIANGLE
+\li PeriodicRumbleEffect.SAWTOOTHUP
+\li PeriodicRumbleEffect.SAWTOOTHDOWN
+\endlist
+
+\sa {Wave Shape Types}
+*/
+
+/*!
+ * \qmlmethod void PeriodicRumbleEffect::PeriodicRumbleEffect(PeriodicRumbleEffect::PERIODIC_TYPE type)
+ *
+ *  Default constructs a PeriodicRumbleEffect with the waveform shape given by \a{type}. The period and all other
+ *  waveform properties default to 0, so the effect will do nothing if played.
+ * \sa {PeriodicRumbleEffect::PERIODIC_TYPE}, {Wave Shape Types}
+ */
+/*!
+ * \qmlmethod void PeriodicRumbleEffect::PeriodicRumbleEffect(float duration, float period, float intensityPeak)
+ *
+ * Constructs a RampRumbleEffect with the given \a{duration}, \a{period}, and \a{intensityPeak}.
+ * \sa {Waveform Properties}
+ */
+/*!
+ * \qmlmethod void PeriodicRumbleEffect::setPeriod(float secs)
+ *
+ * Sets the period of the intensity waveform to the duration given by \a{secs} in seconds.
+ * \sa {Waveform Properties}, setIntensityPeak, setIntensityOffset, setPhaseShift
+ */
+/*!
+ * \qmlmethod void PeriodicRumbleEffect::setIntensityPeak(float intensity)
+ *
+ * Sets the peak intensity of the intensity waveform to \a{intensity}, ranging from 0 (min) to 1 (max).
+ * \sa {Waveform Properties}, setPeriod, setIntensityOffset, setPhaseShift
+ */
+/*!
+ * \qmlmethod void PeriodicRumbleEffect::setIntensityOffset(float intensity)
+ *
+ * Sets the intensity offset to the value given by \a{intensity} ranging from 0 (min) to 1 (max).
+ * \sa {Waveform Properties}, setPeriod, setIntensityPeak, setPhaseShift
+ */
+/*!
+ * \qmlmethod void PeriodicRumbleEffect::setPhaseShift(float val)
+ *
+ * Sets the phaseShift of the intensity waveform to \a{val} given in 1/100ths of a degree.
+ * \sa {Waveform Properties}, setPeriod, setIntensityPeak, setIntensityOffset
+ */
+
+OOLUA_EXPORT_FUNCTIONS(PeriodicRumbleEffect,
+                       setPeriod,
+                       setPhaseShift,
+                       setIntensityPeak,
+                       setIntensityOffset)
+OOLUA_EXPORT_FUNCTIONS_CONST(PeriodicRumbleEffect)
+
+/*!
     \qmltype RumbleDevice
     \since 1.6.1
     \inherits PlayerIODevice
@@ -154,6 +608,40 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
     Rumble support is implemented via the SDL2Haptic API on non-Dreamcast platforms and uses the KallistiOS Maple API on the
     Dreamcast.
 
+    \section2 Rumble Test and Demo Area
+    An Example \l{Area} has been provided that serves as an example of working with RumbleDevices and RumbleEffects and also
+    as a means of testing the various different types of effects on different devices. The area provides and interactive
+    means of playing and modifying the attributes of each RumbleEffect type. Interactive commands and outputs are provided
+    via the \l{Real-Time Lua Terminal}.
+
+    The behavior script is located at: \l{file:/assets/level/Examples/area/RumbleTest/rumble_behavior.lua}
+    The Demo Area is located at: \l{file:/assets/level/Examples/area/RumbleTest}
+
+    \section3 Keyboard Controls
+    \table
+        \header
+            \li Key
+            \li Action
+        \row
+            \li T
+            \li Sets the Toolkit's selection to the various effect attributes tables, allowing you to configure the properties of each effect
+        \row
+            \li S
+            \li Stops any active effect
+        \row
+            \li L
+            \li Plays a LeftRightRumbleEffect with the given parameters
+        \row
+            \li C
+            \li Plays a ConstantRumbleEffect with the given parameters
+        \row
+            \li R
+            \li Plays a RampRumbleEffect with the given parameters
+        \row
+            \li P
+            \li Plays a PeriodicRumbleEffect with the given parameters
+   \endtable
+
     \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {RumbleDevice}, {VisualMemoryUnit}
 */
 
@@ -175,7 +663,8 @@ OOLUA_EXPORT_FUNCTIONS(Mouse)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RumbleDevice,
                              stop,
-                             play)
+                             play,
+                             playEffect)
 OOLUA_EXPORT_FUNCTIONS(RumbleDevice)
 
 /*!

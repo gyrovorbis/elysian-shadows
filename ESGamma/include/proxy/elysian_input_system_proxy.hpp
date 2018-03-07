@@ -6,14 +6,20 @@
 #include <proxy/elysian_instance_transform_proxy.hpp>
 
 namespace OOLUA {
-    typedef elysian::PlayerIODevice     PlayerIODevice;
-    typedef elysian::Keyboard           Keyboard;
-    typedef elysian::Mouse              Mouse;
-    typedef elysian::VirtualDPad        VirtualDPad;
-    typedef elysian::Controller         Controller;
-    typedef elysian::RumbleDevice       RumbleDevice;
-    typedef elysian::VisualMemoryUnit   VisualMemoryUnit;
-    typedef elysian::InputSystem        InputSystem;
+    typedef elysian::PlayerIODevice             PlayerIODevice;
+    typedef elysian::Keyboard                   Keyboard;
+    typedef elysian::Mouse                      Mouse;
+    typedef elysian::VirtualDPad                VirtualDPad;
+    typedef elysian::Controller                 Controller;
+    typedef elysian::RumbleEffect               RumbleEffect;
+    typedef elysian::DirectionalRumbleEffect    DirectionalRumbleEffect;
+    typedef elysian::LeftRightRumbleEffect      LeftRightRumbleEffect;
+    typedef elysian::ConstantRumbleEffect       ConstantRumbleEffect;
+    typedef elysian::RampRumbleEffect           RampRumbleEffect;
+    typedef elysian::PeriodicRumbleEffect       PeriodicRumbleEffect;
+    typedef elysian::RumbleDevice               RumbleDevice;
+    typedef elysian::VisualMemoryUnit           VisualMemoryUnit;
+    typedef elysian::InputSystem                InputSystem;
 }
 
 OOLUA_PROXY(PlayerIODevice)
@@ -71,6 +77,61 @@ OOLUA_PROXY(Controller, PlayerIODevice)
     OOLUA_MEM_FUNC_CONST(const VirtualDPad&, getVirtualDPad, GY_CONTROLLER_ANALOG)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(RumbleEffect)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC(setDuration)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LeftRightRumbleEffect, RumbleEffect)
+    OOLUA_CTORS(
+        OOLUA_CTOR(float, float, float)
+    )
+    OOLUA_MFUNC(setLargeIntensity)
+    OOLUA_MFUNC(setSmallIntensity)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(DirectionalRumbleEffect, RumbleEffect)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC(setDirection)
+    OOLUA_MFUNC(setDelay)
+    OOLUA_MFUNC(setEnvelope)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ConstantRumbleEffect, DirectionalRumbleEffect)
+    OOLUA_CTORS(
+        OOLUA_CTOR(float, float)
+    )
+    OOLUA_MFUNC(setIntensity)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(RampRumbleEffect, DirectionalRumbleEffect)
+    OOLUA_CTORS(
+        OOLUA_CTOR(float, float, float)
+    )
+    OOLUA_MFUNC(setRampStartIntensity)
+    OOLUA_MFUNC(setRampEndIntensity)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(PeriodicRumbleEffect, DirectionalRumbleEffect)
+    OOLUA_TAGS(
+        No_default_constructor
+    )
+    OOLUA_CTORS(
+        OOLUA_CTOR(GY_RUMBLE_EFFECT_PERIODIC_TYPE)
+        OOLUA_CTOR(GY_RUMBLE_EFFECT_PERIODIC_TYPE, float, float, float)
+    )
+    OOLUA_MFUNC(setPeriod)
+    OOLUA_MFUNC(setPhaseShift)
+    OOLUA_MFUNC(setIntensityPeak)
+    OOLUA_MFUNC(setIntensityOffset)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(RumbleDevice, PlayerIODevice)
     OOLUA_TAGS(
         No_public_constructors,
@@ -78,6 +139,7 @@ OOLUA_PROXY(RumbleDevice, PlayerIODevice)
     )
     OOLUA_MFUNC_CONST(stop)
     OOLUA_MFUNC_CONST(play)
+    OOLUA_MFUNC_CONST(playEffect)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(VisualMemoryUnit, PlayerIODevice)
