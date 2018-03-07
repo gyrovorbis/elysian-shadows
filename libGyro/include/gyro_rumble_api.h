@@ -3,6 +3,7 @@
 
 #include <gyro_platform.h>
 #include <gyro_matrix_api.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

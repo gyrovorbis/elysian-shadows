@@ -140,14 +140,12 @@ private:
         "LIBGYRO", "ENGINE", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL", "EVMU"
     };
 
-    constexpr static const char* const _filterList[] = {
+    constexpr static char _filterList[2][500] = {
         "libpng warning: iCCP: known incorrect sRGB profile ((null):0, (null))",
         "libpng warning: iCCP: known incorrect sRGB profile"
     };
 
 };
-
-
 
 
 

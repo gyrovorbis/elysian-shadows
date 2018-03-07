@@ -1278,6 +1278,7 @@ void ESToolkit::on_actionTexture_Dump_triggered()
 
 
 void ESToolkit::showStatusBarMessage(QString message, QColor color) {
+    if(!_instance || !_instance->_statusLabel) return;
     auto pal = _instance->_statusLabel->palette();
     pal.setColor(QPalette::WindowText, QColor(color));
     _instance->_statusLabel->setPalette(pal);
