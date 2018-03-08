@@ -257,6 +257,33 @@ int gyRumbleStop(struct GYRumble* dev) {
     return success;
 }
 
+inline static int _gyPeriodicTypeToSDLType(int type) {
+    switch(type) {
+    case GY_RUMBLE_EFFECT_PERIODIC_SINE:            return SDL_HAPTIC_SINE;
+    case GY_RUMBLE_EFFECT_PERIODIC_TRIANGLE:        return SDL_HAPTIC_TRIANGLE;
+    case GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHUP:      return SDL_HAPTIC_SAWTOOTHUP;
+    case GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHDOWN:    return SDL_HAPTIC_SAWTOOTHDOWN;
+    default:                                        return 0;
+    }
+}
+
+inline static const char* _gyRumblePeriodicTypeStr(int type) {
+    switch(type) {
+    case SDL_HAPTIC_SINE:           return "SINE";
+    case SDL_HAPTIC_TRIANGLE:       return "TRIANGLE";
+    case SDL_HAPTIC_SAWTOOTHDOWN:   return "SAWTOOTHDOWN";
+    case SDL_HAPTIC_SAWTOOTHUP:     return "SAWTOOTHUP";
+    default:                        return "DIRECT";
+    }
+}
+
+inline static int _gyRumbleEffectPeriodicSupportPriority(int flags, int mask1, int mask2, int mask3) {
+    if(flags & mask1) return mask1;
+    else if(flags & mask2) return mask2;
+    else if(flags & mask3) return mask3;
+    else return 0;
+}
+
 
 int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t iterations) {
     assert(effect);
@@ -265,15 +292,16 @@ int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t ite
     SDLHapticDevice* sdlDev = _getSDLHapticDeviceByGYRumble(dev);
     if(!sdlDev || !sdlDev->_haptic) return 0;
 
+    uint32_t duration = (effect->duration == GY_RUMBLE_EFFECT_DURATION_INFINITE)? SDL_HAPTIC_INFINITY : effect->duration  * 1000.0f * iterations;
     SDL_HapticEffect sdlEffect;
     switch(effect->effectType) {
     case GY_RUMBLE_EFFECT_LEFTRIGHT:
         if(!(dev->featureFlags & SDL_HAPTIC_LEFTRIGHT)) {
-            _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support LEFTRIGHT effects!");
-            return 0;
+            _gyLog(GY_DEBUG_WARNING, "[GYRO_RUMBLE] RumbleDevice does not support LEFTRIGHT effects! (Falling through to direct playback)");
+            return gyRumblePlay(dev, (effect->leftRight.largeIntensity > 0)? effect->leftRight.largeIntensity : effect->leftRight.smallIntensity, duration);
         }
         sdlEffect.leftright.type            = SDL_HAPTIC_LEFTRIGHT;
-        sdlEffect.leftright.length          = (effect->duration == GY_RUMBLE_EFFECT_DURATION_INFINITE)? SDL_HAPTIC_INFINITY : effect->duration  * 1000.0f;
+        sdlEffect.leftright.length          = duration;
         sdlEffect.leftright.large_magnitude = effect->leftRight.largeIntensity * UINT16_MAX;
         sdlEffect.leftright.small_magnitude = effect->leftRight.smallIntensity * UINT16_MAX;
 
@@ -281,12 +309,12 @@ int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t ite
 
     case GY_RUMBLE_EFFECT_CONSTANT:
         if(!(dev->featureFlags & SDL_HAPTIC_CONSTANT)) {
-            _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support CONSTANT effects!");
-            return 0;
+            _gyLog(GY_DEBUG_WARNING, "[GYRO_RUMBLE] RumbleDevice does not support CONSTANT effects! (Falling through to direct playback)");
+            return gyRumblePlay(dev, effect->constant.intensity, duration);
         }
 
         sdlEffect.constant.type             = SDL_HAPTIC_CONSTANT;
-        sdlEffect.constant.length           = (effect->duration == GY_RUMBLE_EFFECT_DURATION_INFINITE)? SDL_HAPTIC_INFINITY : effect->duration  * 1000.0f;
+        sdlEffect.constant.length           = duration;
         sdlEffect.constant.attack_level     = effect->constant.startIntensity  * UINT16_MAX;
         sdlEffect.constant.fade_level       = effect->constant.endIntensity    * UINT16_MAX;
         sdlEffect.constant.attack_length    = effect->constant.fadeInDuration  * 1000.0f;
@@ -301,12 +329,12 @@ int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t ite
 
     case GY_RUMBLE_EFFECT_RAMP:
         if(!(dev->featureFlags & SDL_HAPTIC_RAMP)) {
-            _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support RAMP effects!");
-            return 0;
+            _gyLog(GY_DEBUG_WARNING, "[GYRO_RUMBLE] RumbleDevice does not support RAMP effects! (Falling through to direct playback)");
+            return gyRumblePlay(dev, (effect->ramp.startIntensity + effect->ramp.endIntensity)*0.5f, duration);
         }
 
         sdlEffect.ramp.type             = SDL_HAPTIC_CONSTANT;
-        sdlEffect.ramp.length           = (effect->duration == GY_RUMBLE_EFFECT_DURATION_INFINITE)? SDL_HAPTIC_INFINITY : effect->duration  * 1000.0f;
+        sdlEffect.ramp.length           = duration;
         sdlEffect.ramp.attack_level     = effect->ramp.startIntensity  * UINT16_MAX;
         sdlEffect.ramp.fade_level       = effect->ramp.endIntensity    * UINT16_MAX;
         sdlEffect.ramp.attack_length    = effect->ramp.fadeInDuration  * 1000.0f;
@@ -321,38 +349,43 @@ int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t ite
         break;
 
 
-    case GY_RUMBLE_EFFECT_PERIODIC:
-        switch(effect->periodic.periodicType) {
+    case GY_RUMBLE_EFFECT_PERIODIC: {
+        int actualType = _gyPeriodicTypeToSDLType(effect->periodic.periodicType);
+
+        switch(actualType) {
         case GY_RUMBLE_EFFECT_PERIODIC_SINE:
             if(!(dev->featureFlags & SDL_HAPTIC_SINE)) {
-                _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support Periodic SINE effects!");
-                return 0;
+                actualType = _gyRumbleEffectPeriodicSupportPriority(dev->featureFlags, SDL_HAPTIC_TRIANGLE, SDL_HAPTIC_SAWTOOTHUP, SDL_HAPTIC_SAWTOOTHDOWN);
             }
-            sdlEffect.type = SDL_HAPTIC_SINE;
             break;
         case GY_RUMBLE_EFFECT_PERIODIC_TRIANGLE:
             if(!(dev->featureFlags & SDL_HAPTIC_TRIANGLE)) {
-                _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support Periodic TRIANGLE effects!");
-                return 0;
+                actualType = _gyRumbleEffectPeriodicSupportPriority(dev->featureFlags, SDL_HAPTIC_SINE, SDL_HAPTIC_SAWTOOTHUP, SDL_HAPTIC_SAWTOOTHDOWN);
             }
-            sdlEffect.type = SDL_HAPTIC_TRIANGLE;
             break;
         case GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHUP:
             if(!(dev->featureFlags & SDL_HAPTIC_SAWTOOTHUP)) {
-                _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support Periodic SAWTOOTHUP effects!");
-                return 0;
+                actualType = _gyRumbleEffectPeriodicSupportPriority(dev->featureFlags, SDL_HAPTIC_SAWTOOTHDOWN, SDL_HAPTIC_TRIANGLE, SDL_HAPTIC_SINE);
             }
-            sdlEffect.type = SDL_HAPTIC_SAWTOOTHUP;
             break;
         case GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHDOWN:
             if(!(dev->featureFlags & SDL_HAPTIC_SAWTOOTHDOWN)) {
-                _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] RumbleDevice does not support Periodic SAWTOOTHDOWN effects!");
-                return 0;
+                actualType = _gyRumbleEffectPeriodicSupportPriority(dev->featureFlags, SDL_HAPTIC_SAWTOOTHUP, SDL_HAPTIC_TRIANGLE, SDL_HAPTIC_SINE);
             }
-            sdlEffect.type = SDL_HAPTIC_SAWTOOTHDOWN;
             break;
         }
-        sdlEffect.periodic.length           = (effect->duration == GY_RUMBLE_EFFECT_DURATION_INFINITE)? SDL_HAPTIC_INFINITY : effect->duration  * 1000.0f;
+        int sdlEffectType = _gyPeriodicTypeToSDLType(effect->periodic.periodicType);
+
+        if(actualType != sdlEffectType) {
+            _gyLog(GY_DEBUG_WARNING, "[GYRO_RUMBLE] Periodic type %s not supported on device. Falling back to %s.", _gyRumblePeriodicTypeStr(sdlEffectType), _gyRumblePeriodicTypeStr(actualType));
+
+            if(!actualType) {
+                return gyRumblePlay(dev, effect->periodic.intensityPeak, duration);
+            }
+        }
+
+        sdlEffect.periodic.type             = actualType;
+        sdlEffect.periodic.length           = duration;
         sdlEffect.periodic.attack_level     = effect->periodic.startIntensity  * UINT16_MAX;
         sdlEffect.periodic.fade_level       = effect->periodic.endIntensity    * UINT16_MAX;
         sdlEffect.periodic.attack_length    = effect->periodic.fadeInDuration  * 1000.0f;
@@ -367,6 +400,7 @@ int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t ite
         sdlEffect.periodic.offset           = effect->periodic.intensityOffset * ((effect->periodic.intensityOffset < 0)? -INT16_MIN : INT16_MAX);
         sdlEffect.periodic.phase            = effect->periodic.phaseShift * 1000.0f;
         break;
+    }
     case GY_RUMBLE_EFFECT_NONE:
         _gyLog(GY_DEBUG_ERROR, "[GYRO_RUMBLE] Tried to play a RumbleEffect of type NONE!");
         break;
@@ -381,11 +415,13 @@ int gyRumblePlayEffect(GYRumble *dev, const GYRumbleEffect *effect, uint32_t ite
     sdlDev->_curEffect = SDL_HapticNewEffect(sdlDev->_haptic, &sdlEffect);
     if(sdlDev->_curEffect < 0) {
         GY_SDL_CHECK_ERROR();
+        gyRumblePlay(dev, effect->periodic.intensityPeak, duration);
         return 0;
     }
 
     if(SDL_HapticRunEffect(sdlDev->_haptic, sdlDev->_curEffect, iterations) < 0) {
         GY_SDL_CHECK_ERROR();
+        gyRumblePlay(dev, effect->periodic.intensityPeak, duration);
         return 0;
     }
 
