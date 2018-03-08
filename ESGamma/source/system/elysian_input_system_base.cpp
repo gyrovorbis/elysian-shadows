@@ -244,6 +244,9 @@ void InputSystemBase::_onKeyboardRemoved(void) {
 
 void InputSystemBase::_onVMUAttached(unsigned slot) {
     dbgprintf("InputSystem: VMU Attached! [Port: %d]", slot);
+    if(strlen(_vmuDefaultIcon)) {
+        getVMU(slot)->loadIcon(_vmuDefaultIcon);
+    }
 }
 
 void InputSystemBase::_onVMURemoved(unsigned slot) {
@@ -367,7 +370,18 @@ void InputSystemBase::update(void) {
         }
     }
 
+}
 
+void InputSystemBase::broadcastVMUBeep(uint8_t pulseWidth, uint8_t dutyCycle) {
+    for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
+        if(getVMU(i)->isAttached()) getVMU(i)->beep(pulseWidth, dutyCycle);
+    }
+}
+
+void InputSystemBase::broadcastVMUIcon(const char* path) {
+    for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
+        if(getVMU(i)->isAttached()) getVMU(i)->loadIcon(path);
+    }
 }
 
 }

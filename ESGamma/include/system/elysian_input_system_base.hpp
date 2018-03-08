@@ -128,6 +128,8 @@ namespace elysian {
         unsigned            getPort(void) const;
         void                setPort(const unsigned port);
 
+
+
         //bool hasRAnalog();
         //bool hasLAnalog();
 
@@ -197,6 +199,7 @@ namespace elysian {
         RumbleDevice        _rumbleDevices[ELYSIAN_INPUT_RUMBLE_DEVICES_MAX];
         Keyboard            _keyboard;
         Mouse               _mouse;
+        char                _vmuDefaultIcon[GYRO_PATH_MAX_SIZE]         = { '\0' };
 
         int                 _keyboardAsControllerPort = ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT;
 
@@ -236,6 +239,9 @@ namespace elysian {
 
         void                setKeyboardAsControllerPort(const int port);
 
+        void                setDefaultVMUIcon(const char* path);
+        void                broadcastVMUIcon(const char* path);
+        void                broadcastVMUBeep(uint8_t pulseWidth, uint8_t dutyCycle);
 
     };
 
@@ -327,6 +333,7 @@ namespace elysian {
     inline VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) { return &_vmus[port]; }
     inline RumbleDevice* InputSystemBase::getRumbleDevice(const unsigned port) { return &_rumbleDevices[port]; }
     inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
+    inline void InputSystemBase::setDefaultVMUIcon(const char* path) { strcpy(_vmuDefaultIcon, path); }
 
 }
 
