@@ -375,6 +375,8 @@ Engine::~Engine(void) {
     //gyInputUninit();
     //gyTimerUninit();
 
+    delete _partySystem;
+    delete _characterSystem;
     LuaManager::uninitialize();
 
     delete _inputSystem;
@@ -386,8 +388,6 @@ Engine::~Engine(void) {
     delete _levelSystem;
     delete _mapSystem;
     delete _cameraSystem;
-    delete _characterSystem;
-    delete _partySystem;
     delete _timerSystem;
     delete _audioSystem;
     delete _lightSystem;
