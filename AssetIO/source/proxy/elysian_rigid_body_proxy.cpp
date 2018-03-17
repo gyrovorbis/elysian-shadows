@@ -8,7 +8,7 @@
     \brief Attribute data used by the RigidBody Compoonent.
 
     RigidBodyAttrib is a collection of miscellaneous attributes that gives
-    a \l{RigidBody} characteristics such as its durability, force mask, and
+    a \l{RigidBody} characteristics such as its base durability, force mask, and
     whether or not it can be picked up and held.
 
     These data are contained within a separate object so that multiple similar
@@ -32,7 +32,7 @@ This defaults to false.
 \sa isBreakable(), setBreakable()
 */
 /*!
-\qmlproperty float RigidBodyAttrib::durability
+\qmlproperty float RigidBodyAttrib::baseDurability
 
 Floating point variable representing how easily the object can be broken.
 The default value is -1, since the \l{breakable} property is false by default.
@@ -76,14 +76,14 @@ the Entity.
 /*!
  * \qmlmethod float RigidBodyAttrib::getBaseDurability()
  *
- * Returns the value of the \l{durability} property.
- * \sa durability, setBaseDurability()
+ * Returns the value of the \l{baseDurability} property.
+ * \sa baseDurability, setBaseDurability()
  */
 /*!
  * \qmlmethod void RigidBodyAttrib::setBaseDurability(float val)
  *
- * Sets the value of the \l{durability} property to \a{val}.
- * \sa durability, getBaseDurability()
+ * Sets the value of the \l{baseDurability} property to \a{val}.
+ * \sa baseDurability, getBaseDurability()
  */
 /*!
  * \qmlmethod BitMask32* RigidBodyAttrib::getForceMask()
@@ -403,8 +403,8 @@ every frame when moving through the \l{Tile}.
 Property containing the floating point durability value representing how
 much "damage" the Entity can take before breaking. This is set to -1.0
 by default, meaning the Entity is not breakable. The initial value
-(or maximum HP before breaking) is set from RigidBodyAttrib::durability.
-\sa getDurability(), setDurability(), RigidBodyAttrib::durability, RigidBodyAttrib::breakable
+(or maximum HP before breaking) is set from RigidBodyAttrib::baseDurability.
+\sa getDurability(), setDurability(), RigidBodyAttrib::baseDurability, RigidBodyAttrib::breakable
 */
 /*!
 \qmlproperty RigidBodyAttrib* RigidBody::attrib

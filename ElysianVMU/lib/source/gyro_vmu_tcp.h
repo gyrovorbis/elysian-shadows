@@ -9,7 +9,7 @@ extern "C" {
 
 //#define VMU_SERIAL_TCP_SERVER_USE_LATEST_CLIENT IMPLEMENT OPTION FOR ME
 #define VMU_SERIAL_TCP_POLL_TIMEOUT           0
-#define VMU_SERIAL_TCP_PACKET_SIZE_MAX        MAPLE_FRAME_SIZE_MAX + 100
+#define VMU_SERIAL_TCP_PACKET_SIZE_MAX        UINT16_MAX
 
 struct          VMUDevice;
 typedef void    GYTcpSocket;
@@ -44,7 +44,7 @@ void gyVmuSerialTcpServerUseMostRecentClientSet(struct VMUDevice* dev, int val);
 
 int gyVmuSerialTcpOpen(struct VMUDevice* dev, const char* host, unsigned port);
 int gyVmuSerialTcpClose(struct VMUDevice* dev);
-int gyVmuSerialTcpSend(struct VMUDevice* dev, const unsigned char* byte, int size);
+int gyVmuSerialTcpSend(struct VMUDevice* dev, void* data, int size);
 
 void gyVmuSerialTcpSconUpdate(struct VMUDevice* dev, int sfr, unsigned char val);
 

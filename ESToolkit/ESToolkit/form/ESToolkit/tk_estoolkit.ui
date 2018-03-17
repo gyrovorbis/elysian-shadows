@@ -1668,6 +1668,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/assetIcons/images/vmu_icon.png</normaloff>:/assetIcons/images/vmu_icon.png</iconset>
+   </property>
    <property name="text">
     <string>VMU View</string>
    </property>

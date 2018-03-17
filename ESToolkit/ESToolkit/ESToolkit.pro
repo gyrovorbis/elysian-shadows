@@ -211,10 +211,8 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_entity_widget.cpp \
     ../../ESGamma/source/proxy/elysian_widget_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_layout_proxy.cpp \
-    ../../game/source/elysian_playable_pane.cpp \
     ../../ESGamma/source/gui/elysian_menu_widget.cpp \
     ../../ESGamma/source/system/elysian_event_system.cpp \
-    ../../game/source/elysian_pause_menu.cpp \
     ../../AssetIO/source/primitive/elysian_color_base.cpp \
     ../../ESGamma/source/system/elysian_particle_system_base.cpp \
     ../../AssetIO/source/level/elysian_event.cpp \
@@ -223,7 +221,12 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_collision_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp \
     source/ESGamma/tk_input_system.cpp \
-    ../../ESGamma/source/device/elysian_rumble_device.cpp
+    ../../ESGamma/source/device/elysian_rumble_device.cpp \
+    ../../game/source/pause_menu/es_options_menu.cpp \
+    ../../game/source/pause_menu/es_pause_menu.cpp \
+    ../../game/source/pause_menu/es_playable_pane.cpp \
+    ../../game/source/pause_menu/es_party_menu.cpp \
+    ../../game/source/pause_menu/es_inventory_menu.cpp
 
 !ios: !dreamcast: !android {
 
@@ -485,12 +488,10 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_label_widget.hpp \
     ../../ESGamma/include/proxy/elysian_widget_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_layout_proxy.hpp \
-    ../../game/include/elysian_playable_pane.hpp \
     ../../AssetIO/include/utility/elysian_cpp_lua_callback.hpp \
     ../../ESGamma/include/gui/elysian_menu_widget.hpp \
     ../../AssetIO/include/utility/elysian_associative_aggregate_array.hpp \
     ../../ESGamma/include/system/elysian_event_system.hpp \
-    ../../game/include/elysian_pause_menu.hpp \
     ../../ESGamma/include/utility/elysian_performance_monitor.hpp \
     ../../AssetIO/include/crtp/elysian_color.hpp \
     ../../AssetIO/include/primitive/elysian_color_base.hpp \
@@ -503,7 +504,12 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_collision_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp \
     ../../ESGamma/include/device/elysian_rumble_device.hpp \
-    ../../ESGamma/include/device/elysian_player_io_device.hpp
+    ../../ESGamma/include/device/elysian_player_io_device.hpp \
+    ../../game/include/pause_menu/es_options_menu.hpp \
+    ../../game/include/pause_menu/es_pause_menu.hpp \
+    ../../game/include/pause_menu/es_playable_pane.hpp \
+    ../../game/include/pause_menu/es_party_menu.hpp \
+    ../../game/include/pause_menu/es_inventory_menu.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

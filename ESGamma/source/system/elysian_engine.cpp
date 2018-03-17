@@ -377,6 +377,7 @@ Engine::~Engine(void) {
 
     delete _partySystem;
     delete _characterSystem;
+    delete _guiSystem;
     LuaManager::uninitialize();
 
     delete _inputSystem;
@@ -393,7 +394,6 @@ Engine::~Engine(void) {
     delete _lightSystem;
     delete _rigidBodySystem;
     delete _collisionSystem;
-    delete _guiSystem;
     delete _skeletonSystem;
     delete _behaviorSystem;
     delete _pathfindingSystem;

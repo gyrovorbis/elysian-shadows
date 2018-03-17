@@ -14,8 +14,8 @@
 #include <crtp/elysian_examinable.hpp>
 #include <crtp/elysian_combat.hpp>
 #include <crtp/elysian_renderable.hpp>
-#include "gui/elysian_label_widget.hpp"
-#include <elysian_pause_menu.hpp>
+#include <gui/elysian_label_widget.hpp>
+#include <pause_menu/es_pause_menu.hpp>
 #include <crtp/elysian_input_system.hpp>
 
 namespace elysian {
@@ -92,7 +92,7 @@ bool GuiSystem::loadAssets(void) {
     adventureLog.setLabelFont(&pragmata22);
     adventureLog.setTextFont(&pragmata18);
 
-    _menuWidget = new game::PauseMenu;
+    _menuWidget = new ElysianShadows::PauseMenu;
 
     Debug::pop();
     return success;
