@@ -8,15 +8,16 @@ using namespace elysian;
 namespace ElysianShadows {
 
     class InventoryPauseMenuScreen: public PauseMenuScreen {
+
     private:
         char            _helpInfoText[ELYSIAN_PAUSE_MENU_HELP_INFO_TEXT_SIZE_MAX]
                                                 = "Inventory";
 
         GroupWidget*    _centralWidget          = nullptr;
-        GroupWidget*    _optionsWidget          = nullptr;
         GroupWidget*    _detailsWidget          = nullptr;
         GroupWidget*    _helpWidget             = nullptr;
 
+        MenuWidget*     _itemTypeMenu           = nullptr; //optionsPaneWidget
         MenuWidget*     _itemSubtypeMenu        = nullptr;
         MenuWidget*     _itemMenu               = nullptr;
         MenuWidget*     _itemSelectionMenu      = nullptr;
