@@ -586,7 +586,7 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
 
 
 
-static int gyVmuCpuInstrExecuteNext(VMUDevice* device) {
+int gyVmuCpuInstrExecuteNext(VMUDevice* device) {
     //Fetch instruction
     memset(&device->curInstr, 0, sizeof(VMUInstr));
     gyVmuInstrFetch(&device->imem[device->pc], &device->curInstr);
