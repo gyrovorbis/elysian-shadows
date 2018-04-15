@@ -36,7 +36,7 @@ namespace elysian {
 
 
     //===== INLINEZ ======
-    inline EntityWidget::EntityWidget(Entity* entity): _entity(entity) {}
+    inline EntityWidget::EntityWidget(Entity* entity): Widget(), _entity(entity) {}
     inline Entity* EntityWidget::getEntity(void) const { return _entity; }
     inline void EntityWidget::setEntity(Entity* entity) { _entity = entity; }
 

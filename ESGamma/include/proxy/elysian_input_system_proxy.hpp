@@ -163,6 +163,9 @@ OOLUA_PROXY(InputSystem)
     OOLUA_MFUNC(getMouse)
     OOLUA_MFUNC(getVMU)
     OOLUA_MFUNC(getRumbleDevice)
+    OOLUA_MFUNC(setDefaultVMUIcon)
+    OOLUA_MFUNC(broadcastVMUIcon)
+    OOLUA_MFUNC(broadcastVMUBeep)
 OOLUA_PROXY_END
 
 

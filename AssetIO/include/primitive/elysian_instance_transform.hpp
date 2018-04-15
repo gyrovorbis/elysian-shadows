@@ -50,8 +50,21 @@ namespace elysian {
         void        setX(const float val) const;
         void        setY(const float val) const;
 
+        void        addVec(const Vector2& rhs);
+        void        subVec(const Vector2& rhs);
+        void        multVec(const Vector2& rhs);
+        void        divVec(const Vector2& rhs);
+        void        multScalar(float scalar);
+        void        divScalar(float scalar);
+
         float       getMagnitude(void) const;
+        float       squaredDistance(const Vector2& rhs) const;
         float       distance(const Vector2& rhs) const;
+        Vector2     getUnitVector(void) const;
+        Vector2     getRotatedVector(float radians) const;
+        Vector2     getRotatedVectorAboutPoint(const Vector2& point, float radians) const;
+        void        rotateAboutPoint(const Vector2& point, float radians);
+        void        rotate(float radians);
         void        normalize(void);
         float       dotProduct(const Vector2& rhs) const;
         Vector2     scalarMult(float scalar) const;
@@ -75,9 +88,26 @@ namespace elysian {
                     Vector3(GYVector3*const vec3);
                     Vector3(const GYVector3& vec3);
                     Vector3(const Vector3& other);
+                    Vector3(const Vector2& other, float z=0.0f);
                     ~Vector3(void) = default;
 
+        bool        operator==(const Vector3& rhs) const;
+        bool        operator!=(const Vector3& rhs) const;
+        Vector3     operator+(const Vector3& rhs) const;
+        Vector3     operator-(const Vector3& rhs) const;
+        Vector3     operator*(const Vector3& rhs) const;
+        Vector3     operator/(const Vector3& rhs) const;
         Vector3&    operator=(const Vector3& rhs);
+
+        Vector3&    operator+=(const Vector3& rhs);
+        Vector3&    operator-=(const Vector3& rhs);
+        Vector3&    operator*=(const Vector3& rhs);
+        Vector3&    operator/=(const Vector3& rhs);
+
+        Vector3     operator*(float scalar) const;
+        Vector3     operator/(float scalar) const;
+        Vector3&    operator*=(float scalar);
+        Vector3&    operator/=(float scalar);
 
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
@@ -89,7 +119,14 @@ namespace elysian {
         void        setY(const float val) const;
         void        setZ(const float val) const;
 
+        float       getMagnitude(void) const;
+        float       squaredDistance(const Vector3& rhs) const;
+        float       distance(const Vector3& rhs) const;
+        Vector3     getUnitVector(void) const;
         void        normalize(void);
+        float       dotProduct(const Vector3& rhs) const;
+        Vector3     scalarMult(float scalar) const;
+        Vector3     crossProduct(const Vector3& rhs) const;
     };
 
     struct Vector4: public GYVector4, public VirtualArray<Vector4, int, float>, public LuaTableProxy<Vector4> {
@@ -309,8 +346,18 @@ namespace elysian {
     inline void Vector2::normalize(void) {
         gyVec2Normalize(_ptr);
     }
+    inline Vector3 Vector3::getUnitVector(void) const {
+        Vector3 vec(*this);
+        gyVec3Normalize(&vec);
+        return vec;
+    }
+    inline Vector2 Vector2::getUnitVector(void) const {
+        Vector2 vec(*this);
+        gyVec2Normalize(&vec);
+        return vec;
+    }
     inline bool Vector2::operator==(const Vector2& rhs) const {
-        return (x == rhs.x && y == rhs.y);
+        return (getX() == rhs.getX() && getY() == rhs.getY());
     }
     inline bool Vector2::operator!=(const Vector2& rhs) const {
         return !(*this == rhs);
@@ -321,6 +368,46 @@ namespace elysian {
         setY(rhs.getY());
         return *this;
     }
+    inline void Vector2::addVec(const Vector2& rhs) {
+        setX(getX() + rhs.getX()); setY(getY() + rhs.getY());
+    }
+    inline void Vector2::subVec(const Vector2& rhs) {
+        setX(getX() - rhs.getX()); setY(getY() - rhs.getY());
+    }
+    inline void Vector2::multVec(const Vector2& rhs) {
+        setX(getX() * rhs.getX()); setY(getY() * rhs.getY());
+    }
+    inline void Vector2::divVec(const Vector2& rhs) {
+        setX(getX() / rhs.getX()); setY(getY() / rhs.getY());
+    }
+    inline void Vector2::multScalar(float scalar) {
+        setX(getX() * scalar); setY(getY() * scalar);
+    }
+    inline void Vector2::divScalar(float scalar) {
+        setX(getX() / scalar); setY(getY() / scalar);
+    }
+
+    inline Vector2 Vector2::getRotatedVector(float radians) const {
+        Vector2 dest;
+        gyVec2RotOrigin(&dest, this, radians);
+        return dest;
+    }
+
+    inline void Vector2::rotate(float radians) {
+        gyVec2RotOrigin(this, this, radians);
+    }
+
+    inline Vector2 Vector2::getRotatedVectorAboutPoint(const Vector2& point, float radians) const {
+        Vector2 dest;
+        gyVec2RotPoint(&dest, this, &point, radians);
+        return dest;
+    }
+
+    inline void Vector2::rotateAboutPoint(const Vector2& point, float radians) {
+        Vector2 src(this);
+        gyVec2RotPoint(this, &src, &point, radians);
+    }
+
 
     inline Vector2 Vector2::operator+(const Vector2& rhs) const {
         return Vector2(x + rhs.x, y + rhs.y);
@@ -357,6 +444,10 @@ namespace elysian {
 
    inline float Vector2::scalarCrossProduct(const Vector2 &rhs) const {
         return gyVec2ScalarCrossProd(this, &rhs);
+   }
+
+   inline float Vector2::squaredDistance(const Vector2& rhs) const {
+       return gyVec2SquareDist(this, &rhs);
    }
 
    inline float Vector2::distance(const Vector2 &rhs) const {
@@ -412,6 +503,8 @@ namespace elysian {
     inline Vector3::Vector3(const Vector3 &other) : LuaTableProxy<Vector3>() {
         *this = other;
     }
+    inline Vector3::Vector3(const Vector2& other, float z):
+        Vector3(other.getX(), other.getY(), z) {}
     inline Vector3& Vector3::operator =(const Vector3& other) {
         if(other._ptr != static_cast<const GYVector3*>(&other)) {
             _ptr = other._ptr;
@@ -455,6 +548,104 @@ namespace elysian {
             break;
         }
     }
+    inline bool Vector3::operator==(const Vector3& rhs) const {
+        return (getX() == rhs.getX() && getY() == rhs.getY() && getZ() == rhs.getZ());
+    }
+    inline bool Vector3::operator!=(const Vector3& rhs) const {
+        return !(*this == rhs);
+    }
+
+    inline Vector3 Vector3::operator+(const Vector3& rhs) const {
+        Vector3 vec;
+        gyVec3Add(&vec, this, &rhs);
+        return vec;
+    }
+
+    inline Vector3 Vector3::operator-(const Vector3& rhs) const {
+        Vector3 vec;
+        gyVec3Sub(&vec, this, &rhs);
+        return vec;
+    }
+
+    inline Vector3 Vector3::operator*(const Vector3& rhs) const {
+        Vector3 vec;
+        gyVec3Mult(&vec, this, &rhs);
+        return vec;
+    }
+    inline Vector3 Vector3::operator*(float scalar) const {
+        Vector3 vec;
+        gyVec3Scale(&vec, this, scalar);
+        return vec;
+    }
+
+    inline Vector3 Vector3::operator/(const Vector3& rhs) const {
+        Vector3 vec;
+        gyVec3Div(&vec, this, &rhs);
+        return vec;
+    }
+
+    inline float Vector3::getMagnitude(void) const {
+        return gyVec3Magnitude(this);
+    }
+
+    inline Vector3 Vector3::scalarMult(float scalar) const {
+        return *this * scalar;
+    }
+
+   inline float Vector3::dotProduct(const Vector3& rhs) const {
+        return gyVec3DotProd(this, &rhs);
+   }
+
+   inline Vector3 Vector3::crossProduct(const Vector3& rhs) const {
+        Vector3 result;
+        gyVec3CrossProd((GYVector3*)&result, this, &rhs);
+        return result;
+   }
+
+   inline float Vector3::distance(const Vector3 &rhs) const {
+        return gyVec3Dist(this, &rhs);
+   }
+
+   inline float Vector3::squaredDistance(const Vector3& rhs) const {
+       return gyVec3SquareDist(this, &rhs);
+   }
+
+   inline Vector3& Vector3::operator +=(const Vector3& rhs) {
+        gyVec3AddAccum(this, &rhs);
+        return *this;
+   }
+
+   inline Vector3& Vector3::operator -=(const Vector3& rhs) {
+       gyVec3SubFrom(this, &rhs);
+       return *this;
+   }
+
+   inline Vector3& Vector3::operator *=(const Vector3& rhs) {
+       gyVec3MultAccum(this, &rhs);
+       return *this;
+   }
+
+   inline Vector3& Vector3::operator /=(const Vector3& rhs) {
+       gyVec3DivAccum(this, &rhs);
+       return *this;
+   }
+
+   inline Vector3 Vector3::operator/(float scalar) const {
+       Vector3 vec;
+       gyVec3Scale(&vec, this, 1.0f/scalar);
+       return vec;
+
+   }
+
+   inline Vector3& Vector3::operator*=(float scalar) {
+        gyVec3ScaleAccum(this, scalar);
+        return *this;
+   }
+
+   inline Vector3& Vector3::operator/=(float scalar) {
+       gyVec3ScaleAccum(this, 1.0f/scalar);
+       return *this;
+   }
 
     inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}
     inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}), _ptr(this){}

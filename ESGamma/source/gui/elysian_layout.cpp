@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <float.h>
 #include <gui/elysian_widget.hpp>
 #include <gui/elysian_layout.hpp>
 #include <proxy/elysian_entity_proxy.hpp>
@@ -184,7 +185,7 @@ namespace elysian {
                 if(curSize < parentSize) {
 
                     //Try to evenly distribute the difference to expandable widgets
-                    int intDelta = (int)delta;
+                    int intDelta = (int)(delta + 0.5f);
                     while(intDelta) {
                         bool didExpand = false;
 
@@ -290,11 +291,172 @@ namespace elysian {
         }
     }
 
-    void GridLayout::_updateSizes(AXIS axis) {
 
+
+    void GridLayout::_updateSizes(AXIS axis) {
+        GY_ASSERT(_parent);
+        auto toRow = [&](unsigned i, unsigned j) {
+            return (axis == X)? j : i;
+        };
+        auto toCol = [&](unsigned i, unsigned j) {
+            return (axis == X)? i : j;
+        };
+
+        float totalSize                                           = 0.0f;
+        float totalShrink                                         = 0.0f;
+        float totalGrowth                                         = 0.0f;
+        float largestSize[ELYSIAN_GRID_LAYOUT_DIM_MAX]            = { 0.0f };   //pendingSize
+        float minSize[ELYSIAN_GRID_LAYOUT_DIM_MAX]                = { 0.0f };
+        float maxSize[ELYSIAN_GRID_LAYOUT_DIM_MAX];
+        for(unsigned i = 0; i < ELYSIAN_GRID_LAYOUT_DIM_MAX; ++i) maxSize[i] = FLT_MAX;
+
+        int primarySize = getDimension(axis);
+        int secondarySize = getDimension(getSecondaryAxis(axis));
+
+        //Find sizing properties for each row/column and accumulate total sizes
+        for(unsigned i = 0; i < primarySize; ++i) {
+            for(unsigned j = 0; j < secondarySize; ++j) {
+                Widget* w = getWidget(toRow(i, j), toCol(i, j));
+                if(!w) continue;
+                float size = w->getSize((Widget::AXIS)axis);
+                if(size > largestSize[i]) largestSize[i] = size;
+                float min = w->getMinSize((Widget::AXIS)axis);
+                if(min > minSize[i]) minSize[i] = min;
+                float max = w->getMaxSize((Widget::AXIS)axis);
+                if(max < maxSize[i]) maxSize[i] = max;
+            }
+            totalSize   += largestSize[i];
+            totalShrink += (largestSize[i] - minSize[i]);
+            totalGrowth += (maxSize[i] - largestSize[i]);
+        }
+
+        float parentSize = _parent->getSize((Widget::AXIS)axis);
+        float sizeDelta = fabs(parentSize - totalSize);
+
+        //Check if there's a descrepency between total col/row sizes and parent size
+        //(and whether we actually give a fuck or not)
+        if(sizeDelta > ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON) {
+            //Row/column size is larger than parents' size
+            if(totalSize > parentSize) {
+                float shrinkDelta       = min(totalShrink, sizeDelta);
+                int intDelta = (int)(shrinkDelta+0.5f);
+
+                //Shink rows/columns to match parent's size
+                while(intDelta) {
+                    bool didShrink = false;
+                    for(unsigned i = 0; i < getDimension(axis); ++i) {
+                        if(1.0f < (largestSize[i] - minSize[i])) {
+                            largestSize[i] -= 1.0f;
+                            didShrink = true;
+                            if(--intDelta <= 0) break;
+
+                        }
+                    }
+                    if(!didShrink) break;
+                }
+
+                //Try to grow the parent by any remaining delta to match rows/cols
+                const float parentMaxDelta = _parent->getMaximizeDelta((Widget::AXIS)axis);
+                int growDelta = (intDelta < parentMaxDelta)? intDelta : parentMaxDelta;
+                if(growDelta) {
+                    _parent->expand((Widget::AXIS)axis, growDelta);
+                }
+
+
+            } else {
+
+                float growDelta       = min(totalGrowth, sizeDelta);
+                int intDelta = (int)(growDelta+0.5f);
+
+                //Grow rows/columns to match parent's size.
+                while(intDelta) {
+                    bool didGrow = false;
+                    for(unsigned i = 0; i < getDimension(axis); ++i) {
+                        if(1.0f < (maxSize[i] - largestSize[i])) {
+                            largestSize[i] += 1.0f;
+                            didGrow = true;
+                            if(--intDelta <= 0) break;
+                        }
+                    }
+                    if(!didGrow) break;
+                }
+#if 0
+                //Try to expand parent by any remaining delta to match rows/cols
+                const float parentMinDelta = _parent->getMinimizeDelta((Widget::AXIS)axis);
+                int shrinkDelta = (intDelta < parentMinDelta)? intDelta : parentMinDelta;
+                if(shrinkDelta) {
+                    _parent->expand((Widget::AXIS)axis, shrinkDelta);
+                }
+#endif
+            }
+
+            //Actually apply new sizes to rows/cols
+#if 1
+            for(unsigned i = 0; i < getDimension(axis); ++i) {
+                for(unsigned j = 0; j < getDimension(getSecondaryAxis(axis)); ++j) {
+                    Widget* w = getWidget(toRow(i, j), toCol(i, j));
+
+                    float size = w->getSize((Widget::AXIS)axis);
+                    if(size < largestSize[i]) {
+                        w->expand((Widget::AXIS)axis, largestSize[i]-size);
+                    } else if(size > largestSize[i]) {
+                        w->shrink((Widget::AXIS)axis, size-largestSize[i]);
+                    }
+                }
+            }
+#endif
+        }
 
     }
 
+    void GridLayout::_updatePositions(AXIS axis_) {
+        GY_ASSERT(_parent);
+        auto toRow = [&](unsigned i, unsigned j) {
+            return (axis_ == X)? j : i;
+        };
+        auto toCol = [&](unsigned i, unsigned j) {
+            return (axis_ == X)? i : j;
+        };
+
+        const Widget::AXIS axis = (Widget::AXIS)axis_;
+        const float parentPos     = _parent->getPosition(axis);
+
+        for(unsigned j = 0; j < getDimension(getSecondaryAxis(axis_)); ++j) {
+            float startPos = parentPos - 0.5f*_parent->getSize(axis);
+            float endPos;
+
+            for(unsigned i = 0; i < getDimension(axis_); ++i) {
+                Widget* widget = getWidget(toRow(i, j), toCol(i, j));
+                endPos = startPos + widget->getSize(axis);
+                widget->setPosition(axis, (endPos+startPos)*0.5f);
+                startPos = endPos;
+            }
+
+        }
+    }
+
+    void GridLayout::update(void) {
+        for(auto& widget: _widgets) widget.second->update();
+
+        Layout::_updateSizes();
+
+       // _updateSizes(X);
+        Layout::_updatePositions();
+        _updatePositionsZ();
+    }
+
+    void GridLayout::render(void) const {
+        for(auto&& widget: _widgets) widget.second->render();
+
+    }
+
+    void GridLayout::_updatePositionsZ(void) {
+        GY_ASSERT(_parent);
+        float zCoord = _parent->getPositionZ() + ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET;
+        for(auto&& widget : _widgets) {
+            widget.second->setPositionZ(zCoord);
+        }
+    }
 
 
 }

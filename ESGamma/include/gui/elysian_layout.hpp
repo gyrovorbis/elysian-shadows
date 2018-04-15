@@ -6,6 +6,7 @@
 
 #define ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET   0.1f
 #define ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON 0.1f
+#define ELYSIAN_GRID_LAYOUT_DIM_MAX         100
 
 namespace elysian {
 
@@ -38,13 +39,15 @@ namespace elysian {
         virtual void    _updatePositions(AXIS axis);
         void            _updateSizes(void);
         void            _updatePositions(void);
-        void            _updatePositionsZ(void);
+        virtual void            _updatePositionsZ(void);
 
     public:
 
                     Layout(AXIS groupingAxis, Widget* parent=nullptr);
                     Layout(AXIS groupingAxis, std::vector<Widget*>&& widgets, Widget* parent=nullptr);
                     Layout(AXIS groupingAxis, std::vector<Widget*>& widgets, Widget* parent=nullptr);
+
+        static AXIS getSecondaryAxis(AXIS primary);
 
         virtual     ~Layout(void);
 
@@ -84,8 +87,8 @@ namespace elysian {
 
         void        activate(void) const;
         void        deactivate(void) const;
-        void        update(void);
-        void        render(void) const;
+        virtual void        update(void);
+        virtual void        render(void) const;
 
         void        controllerEvent(const Controller& cont);
         void        touchEvent(const TouchDevice& touch);
@@ -112,30 +115,60 @@ namespace elysian {
 
     class GridLayout: public Layout {
     private:
-        std::map<std::pair<unsigned, unsigned>, Widget*> _widgets;
-        unsigned _cols      = 0;
-        unsigned _rows      = 0;
+        std::map<std::pair<unsigned, unsigned>, Widget*>
+                        _widgets;
+        unsigned        _cols      = 0;
+        unsigned        _rows      = 0;
+
+        void            _updateDimensions(void);
     public:
                         GridLayout(Widget* parent=nullptr);
 
-        unsigned        getColumnCount(void) const;
-        unsigned        getRowCount(void) const;
+        unsigned        getColumns(void) const;
+        unsigned        getRows(void) const;
+        unsigned        getDimension(AXIS axis) const;
         void            insertWidget(unsigned row, unsigned col, Widget* widget);
-        void            removeWidget(unsigned row, unsigned col);
+        Widget*         removeWidget(unsigned row, unsigned col);
+        Widget*         getWidget(unsigned row, unsigned col) const;
 
-                        virtual void    _updateSizes(AXIS axis);
-                        virtual void    _updatePositions(AXIS axis){}
+        virtual void    update(void) override;
+        virtual void    render(void) const override;
+        virtual void    _updateSizes(AXIS axis)     override;
+        virtual void    _updatePositions(AXIS axis) override;
+        virtual void    _updatePositionsZ(void) override;
     };
 
-    inline void GridLayout::insertWidget(unsigned row, unsigned col, Widget *widget) {
-        auto pair = std::make_pair(row, col);
-        bool replacing = _widgets[pair];
-        _widgets[pair] = widget;
+    inline unsigned GridLayout::getDimension(AXIS axis) const {
+        return (axis == X)? _cols : _rows;
+    }
 
-        if(!replacing) {
-            if(row+1 > _rows) _rows = row + 1;
-            if(col+1 > _cols) _cols = col + 1;
+    inline void GridLayout::insertWidget(unsigned row, unsigned col, Widget *widget) {
+        _widgets[std::make_pair(row, col)] = widget;
+        _updateDimensions();
+    }
+
+    inline Widget* GridLayout::removeWidget(unsigned row, unsigned col) {
+        auto key = std::make_pair(row, col);
+        Widget* widget = _widgets[key];
+        _widgets.erase(key);
+        _updateDimensions();
+        return widget;
+    }
+
+    inline Widget* GridLayout::getWidget(unsigned row, unsigned col) const {
+        auto it = _widgets.find(std::make_pair(row, col));
+        return (it != _widgets.end())? (*it).second : nullptr;
+    }
+
+    inline void GridLayout::_updateDimensions(void) {
+        int rows = -1;
+        int cols = -1;
+        for(auto&& it: _widgets) {
+            if((int)it.first.first > rows) rows = it.first.first;
+            if((int)it.first.second > cols) cols = it.first.second;
         }
+        _rows = rows + 1;
+        _cols = cols + 1;
     }
 
 
@@ -143,10 +176,10 @@ namespace elysian {
 
 
 
-
-
     //======== INLINEZ =============
-
+    inline auto Layout::getSecondaryAxis(AXIS primary) -> AXIS {
+        return (primary == X)? Y : X;
+    }
     inline Layout::Layout(AXIS groupingAxis, Widget* parent):
         _parent(parent),
         _groupingAxis(groupingAxis){}
@@ -211,6 +244,9 @@ namespace elysian {
     //----- GRID ------
     inline GridLayout::GridLayout(Widget* parent):
         Layout(X_Y, parent) {}
+
+    inline unsigned GridLayout::getColumns(void) const { return _cols; }
+    inline unsigned GridLayout::getRows(void) const { return _rows; }
 }
 
 #endif // ELYSIAN_LAYOUT_HPP

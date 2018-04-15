@@ -64,9 +64,9 @@ private Q_SLOTS:
     void                    onBytesWritten(qint64 bytes);
     void                    onWriteTimeout(void);
 
-    void on_portNameComboBox_currentIndexChanged(int index);
-    void on_mainButtonBox_accepted();
-    void on_openPortButton_clicked();
+    void                    on_portNameComboBox_currentIndexChanged(int index);
+    void                    on_mainButtonBox_accepted();
+    void                    on_openPortButton_clicked();
 
 private:
 

@@ -1105,6 +1105,9 @@ OOLUA_EXPORT_FUNCTIONS(InputSystem,
                        getKeyboard,
                        getMouse,
                        getRumbleDevice,
-                       getVMU)
+                       getVMU,
+                       setDefaultVMUIcon,
+                       broadcastVMUIcon,
+                       broadcastVMUBeep)
 OOLUA_EXPORT_FUNCTIONS_CONST(InputSystem)
 

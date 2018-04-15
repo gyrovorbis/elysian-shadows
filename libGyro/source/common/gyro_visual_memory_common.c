@@ -28,7 +28,7 @@ static void _destroyDeviceOnPort(unsigned port) {
     --_deviceCount;
 }
 
-static int _tcpSend(GYVisualMemoryDevice* dev, const unsigned char* bytes, int size) {
+static int _tcpSend(GYVisualMemoryDevice* dev, void* bytes, int size) {
     assert(dev && bytes);
     int bytesSent = 0;
     int success = 0;
@@ -77,14 +77,13 @@ int gyVisualMemoryUninit(void) {
 int gyVisualMemoryDeviceBlockRead(GYVisualMemoryDevice* device, uint8_t* buffer, uint8_t block) {
     GYMapleFrame    frame;
     uint32_t        frameBytes;
-    uint8_t*        data                    = &frame[MAPLE_FRAME_DATA_OFFSET];
-    data[MAPLE_FRAME_DATA_FUNC_OFFSET]      = MAPLE_FUNC_MEMCARD;
-    data[MAPLE_FRAME_DATA_PARTITION_OFFSET] = 0;
-    data[MAPLE_FRAME_DATA_BLOCK_OFFSET]     = block;
-    data[MAPLE_FRAME_DATA_PHASE_OFFSET]     = 0;
+    frame.payload.blockRead.func            = MAPLE_FUNC_MEMCARD;
+    frame.payload.blockRead.part            = 0;
+    frame.payload.blockRead.block           = block;
+    frame.payload.blockRead.phase           = 0;
 
-    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_READ, 0, 0, frame, 4, &frameBytes);
-    _tcpSend(device, frame, frameBytes);
+    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_READ, 0, 0, &frame, 4, &frameBytes);
+    _tcpSend(device, (uint8_t*)&frame, frameBytes);
 
     return 1;
 }
@@ -92,32 +91,29 @@ int gyVisualMemoryDeviceBlockRead(GYVisualMemoryDevice* device, uint8_t* buffer,
 int gyVisualMemoryDeviceBlockWrite(GYVisualMemoryDevice* device, const uint8_t* buffer, uint8_t block) {
     GYMapleFrame    frame;
     uint32_t        frameBytes;
-    uint8_t*        data                    = &frame[MAPLE_FRAME_DATA_OFFSET];
-    data[MAPLE_FRAME_DATA_FUNC_OFFSET]      = MAPLE_FUNC_MEMCARD;
-    data[MAPLE_FRAME_DATA_PARTITION_OFFSET] = 0;
-    data[MAPLE_FRAME_DATA_BLOCK_OFFSET]     = block;
-    data[MAPLE_FRAME_DATA_PHASE_OFFSET]     = 0;
+    frame.payload.blockWrite.func           = MAPLE_FUNC_MEMCARD;
+    frame.payload.blockWrite.part           = 0;
+    frame.payload.blockWrite.block          = block;
+    frame.payload.blockWrite.phase          = 0;
+    memcpy(&frame.payload.blockWrite.data, buffer, VMU_MAPLE_WRITE_SIZE_MAX);
 
-    memcpy(&data[MAPLE_FRAME_DATA_WRITE_OFFSET], buffer, VMU_MAPLE_WRITE_SIZE_MAX);
-
-    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_WRITE, 0, 0, frame, 4, &frameBytes);
-    _tcpSend(device, frame, frameBytes);
+    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_WRITE, 0, 0, &frame, 4, &frameBytes);
+    _tcpSend(device, (uint8_t*)&frame, frameBytes);
     return 1;
 }
 
 int gyVisualMemoryDeviceDisplayImage(GYVisualMemoryDevice* device, uint8_t* buffer) {
     GYMapleFrame    frame;
     uint32_t        frameBytes;
-    uint8_t*        data                    = &frame[MAPLE_FRAME_DATA_OFFSET];
-    data[MAPLE_FRAME_DATA_FUNC_OFFSET]      = MAPLE_FUNC_LCD;
-    data[MAPLE_FRAME_DATA_PARTITION_OFFSET] = 0;
-    data[MAPLE_FRAME_DATA_BLOCK_OFFSET]     = 0;
-    data[MAPLE_FRAME_DATA_PHASE_OFFSET]     = 0;
+    frame.payload.blockWrite.func           = MAPLE_FUNC_LCD;
+    frame.payload.blockWrite.part           = 0;
+    frame.payload.blockWrite.block          = 0;
+    frame.payload.blockWrite.phase          = 0;
 
-    memcpy(&data[MAPLE_FRAME_DATA_WRITE_OFFSET], buffer, 192);
+    memcpy(&frame.payload.blockWrite.data, buffer, 192);
 
-    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_WRITE, MAPLE_ADDR_SUB(2)|MAPLE_ADDR_PORTB, MAPLE_DC_ADDR|MAPLE_ADDR_PORTB, frame, 196, &frameBytes);
-    _tcpSend(device, frame, frameBytes);
+    gyVisualMemoryMapleFrame(MAPLE_CMD_BLOCK_WRITE, MAPLE_ADDR_SUB(2)|MAPLE_ADDR_PORTB, MAPLE_DC_ADDR|MAPLE_ADDR_PORTB, &frame, 196, &frameBytes);
+    _tcpSend(device, &frame, frameBytes);
 
     assert(device && buffer);
     return 1;
@@ -125,20 +121,18 @@ int gyVisualMemoryDeviceDisplayImage(GYVisualMemoryDevice* device, uint8_t* buff
 int gyVisualMemoryDeviceBeep(GYVisualMemoryDevice* device, uint8_t cycleLength, uint8_t pulseWidth) {
     GYMapleFrame    frame;
     uint32_t        frameBytes;
-    uint8_t*        data                    = &frame[MAPLE_FRAME_DATA_OFFSET];
-    data[MAPLE_FRAME_DATA_FUNC_OFFSET]      = MAPLE_FUNC_CLOCK;
-    data[MAPLE_FRAME_DATA_PARTITION_OFFSET] = 0;
-    data[MAPLE_FRAME_DATA_BLOCK_OFFSET]     = 0;
-    data[MAPLE_FRAME_DATA_PHASE_OFFSET]     = 0;
+    frame.payload.blockWrite.func           = MAPLE_FUNC_CLOCK;
+    frame.payload.blockWrite.part           = 0;
+    frame.payload.blockWrite.block          = 0;
+    frame.payload.blockWrite.phase          = 0;
 
-    uint8_t* writeData = &data[MAPLE_FRAME_DATA_WRITE_OFFSET];
-    writeData[0] = 0x0;
-    writeData[1] = cycleLength;
-    writeData[2] = 0x0;
-    writeData[3] = pulseWidth;
+    frame.payload.blockWrite.data[0] = 0x0;
+    frame.payload.blockWrite.data[1] = cycleLength;
+    frame.payload.blockWrite.data[2] = 0x0;
+    frame.payload.blockWrite.data[3] = pulseWidth;
 
-    gyVisualMemoryMapleFrame(MAPLE_CMD_SET_CONDITION, 0, 0, frame, 8, &frameBytes);
-    _tcpSend(device, frame, frameBytes);
+    gyVisualMemoryMapleFrame(MAPLE_CMD_SET_COND, 0, 0, &frame, 8, &frameBytes);
+    _tcpSend(device, &frame, frameBytes);
 
     assert(device);
     return 1;
@@ -205,15 +199,21 @@ int gyVisualMemoryDeviceRemoteDisconnect(GYVisualMemoryDevice* device) {
     return success;
 }
 
-int gyVisualMemoryMapleFrame(uint8_t cmd, uint8_t destAddr, uint8_t srcAddr, void*data, uint32_t dataBytes, uint32_t* totalBytes) {
-    const int dataWords = dataBytes/MAPLE_WORD_SIZE;
+int gyVisualMemoryMapleFrame(int8_t cmd, uint8_t destAddr, uint8_t srcAddr, GYMapleFrame* frame, uint32_t dataBytes, uint32_t* totalBytes) {
+    int dataWords = dataBytes/MAPLE_WORD_SIZE;
+    if(dataBytes % MAPLE_WORD_SIZE) {
+        ++dataWords;
+        dataBytes += MAPLE_WORD_SIZE;
+    }
     if(dataWords > 256) {
         _gyLog(GY_DEBUG_ERROR, "[GYRO_VISUAL_MEMORY]: Data is too large for requested Maple frame: %d", dataBytes);
         *totalBytes = 0;
         return 0;
     } else {
-        uint32_t* dataPtr = data;
-        dataPtr[0] = MAPLE_HEADER(cmd, destAddr, srcAddr, dataWords);
+        frame->header.cmd       = cmd;
+        frame->header.sendAddr  = srcAddr;
+        frame->header.recvAddr  = destAddr;
+        frame->header.dataWords = dataWords;
         *totalBytes = dataBytes + MAPLE_HEADER_SIZE;
         return 1;
     }
@@ -233,27 +233,11 @@ int gyVisualMemoryDevicePoll(unsigned port, GYVisualMemoryDevice** device) {
 
         if(gyNetTcpSocketReady(dev->tcpSocket)) {
 
-            if((recvBytes = gyNetTcpSocketRecv(dev->tcpSocket, mapleFrame, MAPLE_FRAME_SIZE_MAX)) > 0) {
-                char cmd                        = mapleFrame[MAPLE_FRAME_CMD_OFFSET];
-                uint8_t       dstAddr           = mapleFrame[MAPLE_FRAME_DST_ADDR_OFFSET];
-                uint8_t       srcAddr           = mapleFrame[MAPLE_FRAME_SRC_ADDR_OFFSET];
-                uint8_t       dataWords         = mapleFrame[MAPLE_FRAME_LENGTH_OFFSET];
-                uint8_t*      data              = &mapleFrame[MAPLE_FRAME_DATA_OFFSET];
+            if((recvBytes = gyNetTcpSocketRecv(dev->tcpSocket, &mapleFrame, MAPLE_FRAME_SIZE_MAX)) > 0) {
 
-                //Extract Maple Data
-                unsigned char func              = data[MAPLE_FRAME_DATA_FUNC_OFFSET];
-                unsigned char partitionNumber   = data[MAPLE_FRAME_DATA_PARTITION_OFFSET];      //should be 0?
-                unsigned char phase             = data[MAPLE_FRAME_DATA_PHASE_OFFSET];          //sequence number for piecewise block access
-                unsigned char block             = data[MAPLE_FRAME_DATA_BLOCK_OFFSET];          //0 for LCD screens (when cmd is WRITE)
-                unsigned char* blockWriteData   = &data[MAPLE_FRAME_DATA_WRITE_OFFSET];
-
-                uint32_t      dataBytes         = dataWords * MAPLE_WORD_SIZE;
-                uint32_t      mapleFrameSize    = dataBytes + MAPLE_HEADER_SIZE;
-                uint32_t      dataWriteBytes    = dataBytes - MAPLE_FRAME_DATA_WRITE_OFFSET;
-
-                _gyLog(GY_DEBUG_VERBOSE, "[GYRO_VMU_API]: Maple Recv (cmd: %d)", cmd);
+                _gyLog(GY_DEBUG_VERBOSE, "[GYRO_VMU_API]: Maple Recv (cmd: %d)", mapleFrame.header.cmd);
                 _gyPush();
-                if(cmd == MAPLE_CMD_DATA_TRANSFER) {
+                if(mapleFrame.header.cmd == MAPLE_CMD_DATA_XFER) {
                     _gyLog(GY_DEBUG_VERBOSE, "TRANSFER COMPLETE!!!");
 
                 }

@@ -22,12 +22,13 @@ OOLUA_PROXY(GYVector2)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Vector2)
-    OOLUA_TAGS(
+    OOLUA_TAGS (
         Equal_op,
         Add_op,
         Sub_op,
         Mul_op,
-        Div_op)
+        Div_op
+    )
     OOLUA_CTORS(
         OOLUA_CTOR(const Vector2&)
         OOLUA_CTOR(float, float)
@@ -36,12 +37,25 @@ OOLUA_PROXY(Vector2)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC_CONST(void, setX, float)
     OOLUA_MEM_FUNC_CONST(void, setY, float)
+    OOLUA_MFUNC(addVec)
+    OOLUA_MFUNC(subVec)
+    OOLUA_MFUNC(multVec)
+    OOLUA_MFUNC(divVec)
+    OOLUA_MFUNC(multScalar)
+    OOLUA_MFUNC(divScalar)
     OOLUA_MFUNC(normalize)
     OOLUA_MFUNC_CONST(getMagnitude)
+    OOLUA_MFUNC_CONST(squaredDistance)
     OOLUA_MFUNC_CONST(distance)
     OOLUA_MFUNC_CONST(dotProduct)
     OOLUA_MFUNC_CONST(scalarCrossProduct)
     OOLUA_MFUNC_CONST(vectorCrossProduct)
+    OOLUA_MFUNC_CONST(getUnitVector)
+    OOLUA_MFUNC(rotate)
+    OOLUA_MFUNC_CONST(toAngle)
+    OOLUA_MFUNC_CONST(getRotatedVector)
+    OOLUA_MFUNC(rotateAboutPoint)
+    OOLUA_MFUNC_CONST(getRotatedVectorAboutPoint)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector3)
@@ -51,8 +65,18 @@ OOLUA_PROXY(GYVector3)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Vector3)
+    OOLUA_TAGS(
+        Equal_op,
+        Add_op,
+        Sub_op,
+        Mul_op,
+        Div_op
+     )
     OOLUA_CTORS(
+        OOLUA_CTOR(const Vector2&)
         OOLUA_CTOR(const Vector3&)
+        OOLUA_CTOR(const Vector2&, float)
+        OOLUA_CTOR(float, float, float)
     )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
@@ -60,6 +84,12 @@ OOLUA_PROXY(Vector3)
     OOLUA_MEM_FUNC_CONST(void, setX, float)
     OOLUA_MEM_FUNC_CONST(void, setY, float)
     OOLUA_MEM_FUNC_CONST(void, setZ, float)
+    OOLUA_MFUNC_CONST(getMagnitude)
+    OOLUA_MFUNC_CONST(squaredDistance)
+    OOLUA_MFUNC_CONST(distance)
+    OOLUA_MFUNC_CONST(dotProduct)
+    OOLUA_MFUNC_CONST(crossProduct)
+    OOLUA_MFUNC_CONST(getUnitVector)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector4)

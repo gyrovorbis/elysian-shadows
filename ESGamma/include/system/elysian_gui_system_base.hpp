@@ -40,7 +40,7 @@
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
-namespace game {
+namespace ElysianShadows {
     class PauseMenu;
 }
 
@@ -111,7 +111,7 @@ namespace elysian {
 
 
         bool                        _pauseMenuActive         = false;
-        ::game::PauseMenu*         _menuWidget          = nullptr;
+        ElysianShadows::PauseMenu*  _menuWidget          = nullptr;
 
         void            _printDebugLine(const char*title, const char*str, ...);
         void            _renderDebugOverlay(void);
