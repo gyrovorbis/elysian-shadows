@@ -157,6 +157,7 @@
     <addaction name="actionDump_Eyecatch"/>
     <addaction name="actionDisassemble_ROM"/>
     <addaction name="actionBIOS_Runtime_Disassembly"/>
+    <addaction name="actionBuzzer_Tool"/>
     <addaction name="actionView_Log"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -501,6 +502,11 @@
   <action name="actionBIOS_Runtime_Disassembly">
    <property name="text">
     <string>BIOS Dynamic Disassembly</string>
+   </property>
+  </action>
+  <action name="actionBuzzer_Tool">
+   <property name="text">
+    <string>Buzzer Tool</string>
    </property>
   </action>
  </widget>

@@ -14,6 +14,7 @@
 #include "gyro_vmu_vmi.h"
 #include "gyro_vmu_main_window.hpp"
 #include "gyro_vmu_tcp_dialog.hpp"
+#include "gyro_vmu_buzzer_dialog.hpp"
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 #   include "gyro_vmu_com_dialog.hpp"
 #endif
@@ -142,6 +143,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconConnected(ICON_TCP_CONNECTED_PATH),
     _iconRecording(ICON_RECORDING_PATH),
     _tcpDialog(new VmuTcpDialog),
+    _buzzerDialog(new VmuBuzzerDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
     _recordingLabel(new QLabel()),
@@ -263,6 +265,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
     //Initialize external file menu dialogs
     _tcpDialog->setVmuDevice(_dev);
+    _buzzerDialog->setVmuDevice(_dev);
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     QAction* comConfig = new QAction("Serial/COM Connection Manager");
     connect(comConfig, SIGNAL(triggered()), this, SLOT(on_actionSerial_COM_Connection_Manager_triggered()));
@@ -410,6 +413,9 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 
 
 void VMUMainWindow::update(void) {
+    //Render scene no matter what in case resolution changed, if nothing changed, it'll exit early.
+    _updateScene();
+
     bool ranThisFrame = false;
     int64_t deltaTicks;
 
@@ -464,7 +470,6 @@ void VMUMainWindow::update(void) {
         else _updateLcdAnimStatusMessage();
         _updateIcon();
 
-        _updateScene();
     }
 }
 
@@ -1389,8 +1394,17 @@ bool VMUMainWindow::startTcpServer(unsigned port) {
     _tcpDialog->stopTcpServer();
     return _tcpDialog->startTcpServer();
 }
+#include <gyro_wav_api.h>
+
 
 void VMUMainWindow::on_actionBIOS_Runtime_Disassembly_triggered() {
+
+    GYWav* wav = gyAudWavCreate("/Users/falcogirgis/square.wav");
+    GYAudioSource* src = gyAudSourceCreate();
+    gyAudSourcePlayWav(src, wav);
+
+#if 0
+
     char* buff = (char*)malloc((ROM_SIZE+1)*400);
 
         gyVmuBiosDisassemblyPrints(buff);
@@ -1402,4 +1416,10 @@ void VMUMainWindow::on_actionBIOS_Runtime_Disassembly_triggered() {
         }
 
         free(buff);
+
+#endif
+}
+
+void VMUMainWindow::on_actionBuzzer_Tool_triggered() {
+    _buzzerDialog->show();
 }
