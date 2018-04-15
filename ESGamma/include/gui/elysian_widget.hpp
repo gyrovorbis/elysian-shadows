@@ -18,7 +18,7 @@ namespace elysian {
     class Mouse;
     class VirtualDPad;
     class TouchDevice;
-    class Layout;
+    class TableLayout;
 
     //maybe want alpha values/states so all menu shit can fade out?
     class Widget: public EventTarget, public KeyboardEventObserver {
@@ -47,8 +47,8 @@ namespace elysian {
         Vector2         _sizeHint;
         Vector2         _margins;
         uint16_t        _sizePolicy[AXIS_COUNT] = { EXPANDING, EXPANDING };
-        Layout*         _layout                 = nullptr;
-        Layout*         _parentLayout           = nullptr;
+        TableLayout*    _layout                 = nullptr;
+        TableLayout*    _parentLayout           = nullptr;
         bool            _enabled                = true;
         bool            _focus                  = false;
         bool            _mouseTracking          = false;
@@ -57,7 +57,7 @@ namespace elysian {
     public:
 
                         Widget(void) = default;
-                        Widget(Layout* layout);
+                        Widget(TableLayout* layout);
         virtual         ~Widget(void);
 
         Vector2         getPosition(void) const;
@@ -92,12 +92,14 @@ namespace elysian {
         float           getMarginSize(AXIS axis) const;
         void            setMarginSize(Vector2 size);
 
-        Layout*         getLayout(void) const;
-        void            setLayout(Layout* layout);
-        Layout*         getParentLayout(void) const;
-        void            setParentLayout(Layout* layout);
+        template<typename T=TableLayout>
+        T*              getLayout(void) const;
+
+        void            setLayout(TableLayout* layout);
+        TableLayout*    getParentLayout(void) const;
+        void            setParentLayout(TableLayout* layout);
         Widget*         findChildWidget(const char* name);
-        Widget*         getChildWidget(unsigned index);
+        //Widget*         getChildWidget(unsigned index);
         Widget*         getParentWidget(void) const;
 
         bool            isEnabled(void) const;
@@ -161,7 +163,7 @@ namespace elysian {
         Vector2         _size;
     public:
                         GroupWidget(void) = default;
-                        GroupWidget(Layout* layout);
+                        GroupWidget(TableLayout* layout);
 
         virtual float   getPosition(AXIS axis) const override;
         virtual void    setPosition(AXIS axis, float pos) override;
@@ -173,25 +175,14 @@ namespace elysian {
 
     };
 
-    class FrameWidget: public GroupWidget {
-    public:
-                FrameWidget(void) = default;
-                FrameWidget(Layout* layout);
-                FrameWidget(Widget* centralWidget);
-                FrameWidget(std::nullptr_t);
-        void    setCentralWidget(Widget* centralWidget);
-        Widget* getCentralWidget(void) const;
-    };
-
 
 
 
 
 
     //========== INLINEZ =============
-    inline Widget::Widget(Layout *layout) { setLayout(layout); }
-    inline Layout* Widget::getLayout(void) const { return _layout; }
-    inline Layout* Widget::getParentLayout(void) const { return _parentLayout; }
+    inline Widget::Widget(TableLayout *layout) { setLayout(layout); }
+    inline TableLayout* Widget::getParentLayout(void) const { return _parentLayout; }
     inline Vector2 Widget::getPosition(void) const { return Vector2(getPosition(X), getPosition(Y)); }
     inline void Widget::setPosition(Vector2 pos) { setPosition(X, pos.getX()); setPosition(Y, pos.getY()); }
     inline Vector2 Widget::getSize(void) const { return Vector2(getSize(X), getSize(Y)); }
@@ -216,11 +207,14 @@ namespace elysian {
     inline void Widget::enable(void) { _enabled = true; }
     inline bool Widget::hasFocus(void) const { return _focus; }
     inline bool Widget::hasMouseTracking(void) const { return _mouseTracking; }
-
     inline void Widget::maximize(void) { maximize(X); maximize(Y); }
     inline void Widget::minimize(void) { minimize(X); minimize(Y); }
+    template<typename T>
+    inline T* Widget::getLayout(void) const {
+        return static_cast<T*>(_layout);
+    }
 
-    inline GroupWidget::GroupWidget(Layout *layout): Widget(layout) {}
+    inline GroupWidget::GroupWidget(TableLayout *layout): Widget(layout) {}
     inline float GroupWidget::getPosition(AXIS axis) const { return _pos[axis]; }
     inline void GroupWidget::setPosition(AXIS axis, float pos) { _pos[axis] = pos; }
     inline float GroupWidget::getSize(AXIS axis) const { return _size[axis]; }

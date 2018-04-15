@@ -27,6 +27,27 @@ static unsigned char _freqResponse[0xff] = {
     [0xfe]          = 66
 };
 
+static uint8_t _noteTL1RLut[GY_VMU_BUZZER_NOTE_COUNT] = {
+    [GY_VMU_BUZZER_NOTE_C4] = 0xeb, //261.63Hz actual (260.213Hz VMU)
+    [GY_VMU_BUZZER_NOTE_D4] = 0xed, //293.66Hz actual (287.604Hz VMU)
+    [GY_VMU_BUZZER_NOTE_E4] = 0xef, //329.63Hz actual (321.220Hz VMU)
+    [GY_VMU_BUZZER_NOTE_F4] = 0xf0, //349.23Hz actual (341.530Hz VMU)
+    [GY_VMU_BUZZER_NOTE_G4] = 0xf2, //392.00Hz actual (390.320Hz VMU)
+    [GY_VMU_BUZZER_NOTE_A4] = 0xf4, //440.00Hz actual (455.373Hz VMU)
+    [GY_VMU_BUZZER_NOTE_B4] = 0xf5, //493.88Hz actual (496.771Hz VMU)
+};
+
+
+uint8_t gyVmuBuzzerT1LRValueFromNote(GY_VMU_BUZZER_NOTE note) {
+    return _noteTL1RLut[note];
+}
+
+void gyVmuBuzzerSoundPlayNote(struct VMUDevice* dev, GY_VMU_BUZZER_NOTE note, GY_VMU_BUZZER_NOTE_DURATION duration) {
+    uint8_t period = 256 - gyVmuBuzzerT1LRValueFromNote(note);
+    gyVmuBuzzerSoundPlay(dev, period, period/2, 1);
+}
+
+
 void gyVmuBuzzerMemorySink(VMUDevice *dev, int addr, uint8_t value) {
     (void)value;
 
@@ -50,8 +71,14 @@ void gyVmuBuzzerMemorySink(VMUDevice *dev, int addr, uint8_t value) {
     }
 }
 
+int gyVmuBuzzerIsSoundPlaying(VMUDevice* dev) {
+    return dev->buzzer._soundPlaying;
+}
+
 void gyVmuBuzzerSoundPlay(VMUDevice* dev, int period, int pulseWidth, int db) {
-    db = (pulseWidth == period*0.5f)? _freqResponse[256-period] : 0;
+    if(db == -1) {
+        db = (pulseWidth == period*0.5f && db == -1)? _freqResponse[256-period] : 0;
+    }
 
     if(!dev->buzzer._enabled) return;
 
@@ -118,6 +145,9 @@ int gyVmuBuzzerInit(VMUDevice* dev) {
     dev->buzzer._soundPlaying   = 0;
     dev->buzzer._period         = -1;
     dev->buzzer._pulseWidth     = -1;
+    dev->buzzer._bpm            = 100;
+    dev->buzzer._noteDuration   = -1.0f;
+    dev->buzzer._noteElapsed    = 0.0f;
 
     GYVector3 pos = { 0.0f, 0.0f, 0.0f };
     gyAudListenerSetPos(&pos);
@@ -147,4 +177,14 @@ int gyVmuBuzzerEnabled(const VMUDevice* dev) {
 
 void gyVmuBuzzerEnabledSet(VMUDevice* dev, int value) {
     dev->buzzer._enabled = value;
+}
+
+void gyVmuBuzzerUpdate(struct VMUDevice* dev, float deltaTime) {
+    if(dev->buzzer._noteDuration != -1.0f) {
+        dev->buzzer._noteElapsed += deltaTime;
+        if(dev->buzzer._noteElapsed >= deltaTime) {
+            gyVmuBuzzerSoundStop(dev);
+        }
+    }
+
 }

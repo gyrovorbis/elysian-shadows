@@ -897,6 +897,8 @@ static bool _convertVMUImageToIco(const QImage& img, QString outFile) {
 }
 
 void ESToolkit::on_actionGenerate_VMU_Icons_triggered(void) {
+#define VMU_SCREEN_WIDTH    48
+#define VMU_SCREEN_HEIGHT   32
     QString vmuDir = FileUtilities::getAbsoluteAssetPath("/assets/graphics/vmu");
     DbgEvent dbg("Scanning VMU Directory for Icons: %s", Q_CSTR(vmuDir));
     (void)dbg;
@@ -909,20 +911,24 @@ void ESToolkit::on_actionGenerate_VMU_Icons_triggered(void) {
         (void)dbg2;
         if(fileInfo.suffix() == "png") {
             QImage png(filePath);
-            if(png.width() == VMU_DISP_PIXEL_WIDTH && png.height() == VMU_DISP_PIXEL_HEIGHT) {
+            if(png.width() == VMU_SCREEN_WIDTH && png.height() == VMU_SCREEN_HEIGHT) {
                 _convertVMUImageToIco(png, filePath.split(".").first()+QString(".vmuico"));
 
             } else errprintf("Invalid PNG resolutions. Expected <%d, %d>, Got <%d, %d>",
-                             VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT, png.width(), png.height());
+                             VMU_SCREEN_WIDTH, VMU_SCREEN_HEIGHT, png.width(), png.height());
         }
     }
+#undef VMU_SCREEN_WIDTH
+#undef VMU_SCREEN_HEIGHT
 }
 
 void ESToolkit::on_actionConnectEVMUTcp_toggled(bool arg1)
 {
     if(!_evmuWindow) return;
     if(arg1) {
+#ifdef VMU_CHILD_APP
         _evmuWindow->startTcpServer(1234);
+#endif
         _assets.getEngine()->getInputSys()->getVMU(0)->connectToEVMU("localhost", 1234);
     } else {
         _assets.getEngine()->getInputSys()->getVMU(0)->disconnectFromEVMU();

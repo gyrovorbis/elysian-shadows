@@ -9,9 +9,9 @@ unsigned gyVmuOscCyclesPerSec(VMUDevice* dev) {
 
     //INACCURATE, THERE IS A REMAINDER FROM THESE DIVISIONS!!!!
     if(ocr&SFR_OCR_OCR5_MASK) {
-        val = 32768/((ocr&SFR_OCR_OCR7_MASK)? 6 : 12);
+        val = VMU_OSC_QUARTZ_FREQ_HZ/((ocr&SFR_OCR_OCR7_MASK)? 6 : 12);
     } else {
-        val =  879236/((ocr&SFR_OCR_OCR7_MASK)? 6 : 12);
+        val =  VMU_OSC_RC_FREQ_HZ/((ocr&SFR_OCR_OCR7_MASK)? 6 : 12);
     }
 
     return val;

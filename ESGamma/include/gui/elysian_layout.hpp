@@ -16,8 +16,10 @@ namespace elysian {
     class TouchDevice;
     class VirtualDPad;
 
-    class Layout {
+    class TableLayout {
     public:
+        typedef std::pair<int, int> RowColPair;
+
         enum AXIS {
             X, Y, AXIS_COUNT, X_Y
         };
@@ -29,41 +31,44 @@ namespace elysian {
         };
 
     protected:
-        std::vector<Widget*>    _widgets;
-        Widget*                 _parent                 = nullptr;
-        int                     _spacing[AXIS_COUNT]    = { 0 };
-        ALIGNMENT               _alignment[AXIS_COUNT]  = { ALIGN_CENTER };
-        const AXIS              _groupingAxis;
+        const static constexpr int      InvalidIndex            = -1;
+        //
+        const static constexpr int      DynamicSize             = -1;
+
+        std::map<RowColPair, Widget*>   _widgets;
+        unsigned                        _dimSize[AXIS_COUNT]    = { 0 };
+        Widget*                         _parent                 = nullptr;
+        int                             _spacing[AXIS_COUNT]    = { 0 };
+        ALIGNMENT                       _alignment[AXIS_COUNT]  = { ALIGN_CENTER };
+        const AXIS                      _groupingAxis;
 
         virtual void    _updateSizes(AXIS axis);
         virtual void    _updatePositions(AXIS axis);
-        void            _updateSizes(void);
-        void            _updatePositions(void);
-        virtual void            _updatePositionsZ(void);
+        void            _updatePositionsZ(void);
+        void            _updateDimensions(void);
+
+    protected:
+                    TableLayout(AXIS groupingAxis, Widget* parent=nullptr);
 
     public:
 
-                    Layout(AXIS groupingAxis, Widget* parent=nullptr);
-                    Layout(AXIS groupingAxis, std::vector<Widget*>&& widgets, Widget* parent=nullptr);
-                    Layout(AXIS groupingAxis, std::vector<Widget*>& widgets, Widget* parent=nullptr);
+                    TableLayout(Widget* parent=nullptr);
+        virtual     ~TableLayout(void);
 
-        static AXIS getSecondaryAxis(AXIS primary);
-
-        virtual     ~Layout(void);
-
-        void        addWidget(Widget* widget);
-        void        insertWidget(unsigned index, Widget* widget);
-        Widget*     removeWidget(Widget* widget);   //Returns widget given as argument (for owernship change in Lua API).
+        void        insertWidget(unsigned row, unsigned col, Widget* widget);
+        virtual Widget*     removeWidget(Widget* widget);   //Returns widget given as argument (for owernship change in Lua API).
+        Widget*     removeWidget(unsigned r, unsigned c);
         void        clearWidgets(void);
-        void        setWidget(unsigned index, Widget* widget);
-        void        setWidgets(std::vector<Widget*> widgets);
-        void        setWidgetsLua(LuaVariant array);
-        auto        getWidgets(void) const -> const std::vector<Widget*>&;
-        auto        getWidgets(void) -> std::vector<Widget*>&;
-        LuaVariant  getWidgetsLua(void) const;
-        unsigned    getWidgetCount(void) const;
-        Widget*     getWidget(unsigned index) const;
         Widget*     findWidget(const char* name) const;
+        Widget*     getWidget(unsigned r, unsigned c) const;
+
+
+        unsigned    getWidgetCount(void) const;
+        unsigned    getRowCount(void) const;
+        unsigned    getColumnCount(void) const;
+        unsigned    getDimensionSize(AXIS axis) const;
+        static auto toRowIndex(AXIS primaryAxis, unsigned primaryIndex, unsigned secondaryIndex) -> unsigned;
+        static auto toColIndex(AXIS primaryAxis, unsigned primaryIndex, unsigned secondaryIndex) -> unsigned;
 
         AXIS        getGroupingAxis(void) const;
         Widget*     getParent(void) const;
@@ -87,166 +92,161 @@ namespace elysian {
 
         void        activate(void) const;
         void        deactivate(void) const;
-        virtual void        update(void);
-        virtual void        render(void) const;
+        void        update(void);
+        void        render(void) const;
 
         void        controllerEvent(const Controller& cont);
         void        touchEvent(const TouchDevice& touch);
         void        virtualDPadEvent(const VirtualDPad& dpad);
+
+        static AXIS getSecondaryAxis(AXIS primary);
     };
 
 
-    class HorizontalLayout: public Layout {
+    class SingleAxisLayout: public TableLayout {
+    protected:
+
+        RowColPair  _indexToRowColPair(int index) const;
+
+        //overridden from TableLayout
+        virtual void    _updateSizes(AXIS axis) override;
+        virtual void    _updatePositions(AXIS axis) override;
+
+    public:
+                        SingleAxisLayout(AXIS groupingAxis, Widget* parent=nullptr);
+                        SingleAxisLayout(AXIS groupingAxis, const std::vector<Widget*>& widgets, Widget* parent=nullptr);
+
+        void            addWidget(Widget* widget);
+        Widget*         getWidget(unsigned index) const;
+        void            insertWidget(unsigned index, Widget* widget);
+        Widget*         removeWidget(unsigned index);
+        auto            getWidgets(void) const -> std::vector<Widget*>;
+        LuaVariant      getWidgetsLua(void) const;
+        void            setWidgets(const std::vector<Widget*>& widgets);
+        void            setWidgetsLua(LuaVariant array);
+
+        //Overridden from TableLayout
+        virtual Widget* removeWidget(Widget* widget) override;   //Returns widget given as argument (for owernship change in Lua API).
+    };
+
+    class HorizontalLayout: public SingleAxisLayout {
     public:
 
                     HorizontalLayout(Widget* parent=nullptr);
-                    HorizontalLayout(std::vector<Widget*>&& widgets, Widget* parent=nullptr);
-                    HorizontalLayout(std::vector<Widget*>& widgets, Widget* parent=nullptr);
+                    HorizontalLayout(const std::vector<Widget*>& widgets, Widget* parent=nullptr);
 
     };
 
-    class VerticalLayout: public Layout {
+    class VerticalLayout: public SingleAxisLayout {
     public:
                     VerticalLayout(Widget* parent=nullptr);
-                    VerticalLayout(std::vector<Widget*>&& widgets, Widget* parent=nullptr);
-                    VerticalLayout(std::vector<Widget*>& widgets, Widget* parent=nullptr);
+                    VerticalLayout(const std::vector<Widget*>& widgets, Widget* parent=nullptr);
 
     };
 
-    class GridLayout: public Layout {
-    private:
-        std::map<std::pair<unsigned, unsigned>, Widget*>
-                        _widgets;
-        unsigned        _cols      = 0;
-        unsigned        _rows      = 0;
 
-        void            _updateDimensions(void);
-    public:
-                        GridLayout(Widget* parent=nullptr);
 
-        unsigned        getColumns(void) const;
-        unsigned        getRows(void) const;
-        unsigned        getDimension(AXIS axis) const;
-        void            insertWidget(unsigned row, unsigned col, Widget* widget);
-        Widget*         removeWidget(unsigned row, unsigned col);
-        Widget*         getWidget(unsigned row, unsigned col) const;
 
-        virtual void    update(void) override;
-        virtual void    render(void) const override;
-        virtual void    _updateSizes(AXIS axis)     override;
-        virtual void    _updatePositions(AXIS axis) override;
-        virtual void    _updatePositionsZ(void) override;
-    };
 
-    inline unsigned GridLayout::getDimension(AXIS axis) const {
-        return (axis == X)? _cols : _rows;
-    }
 
-    inline void GridLayout::insertWidget(unsigned row, unsigned col, Widget *widget) {
-        _widgets[std::make_pair(row, col)] = widget;
-        _updateDimensions();
-    }
 
-    inline Widget* GridLayout::removeWidget(unsigned row, unsigned col) {
-        auto key = std::make_pair(row, col);
-        Widget* widget = _widgets[key];
-        _widgets.erase(key);
-        _updateDimensions();
-        return widget;
-    }
-
-    inline Widget* GridLayout::getWidget(unsigned row, unsigned col) const {
+    //===== INLINEZ ======
+    inline TableLayout::TableLayout(AXIS groupingAxis, Widget* parent):
+        _parent(parent),
+        _groupingAxis(groupingAxis) {}
+    inline TableLayout::TableLayout(Widget* parent):
+        TableLayout(X_Y, parent) {}
+    inline unsigned TableLayout::getWidgetCount(void) const { return (unsigned)_widgets.size(); }
+    inline unsigned TableLayout::getRowCount(void) const { return _dimSize[Y]; }
+    inline unsigned TableLayout::getColumnCount(void) const { return _dimSize[X]; }
+    inline unsigned TableLayout::getDimensionSize(AXIS axis) const { return _dimSize[axis]; }
+    inline auto TableLayout::getGroupingAxis(void) const -> AXIS { return _groupingAxis; }
+    inline Widget* TableLayout::getParent(void) const { return _parent; }
+    inline void TableLayout::setParent(Widget* parent) { _parent = parent; }
+    inline int TableLayout::getSpacing(AXIS axis) const { return _spacing[axis]; }
+    inline void TableLayout::setSpacing(AXIS axis, int spacing) { _spacing[axis] = spacing; }
+    inline int TableLayout::getHorizontalSpacing(void) const { return _spacing[X]; }
+    inline int TableLayout::getVerticalSpacing(void) const { return _spacing[Y]; }
+    inline void TableLayout::setHorizontalSpacing(int spacing) { _spacing[X] = spacing; }
+    inline void TableLayout::setVerticalSpacing(int spacing) { _spacing[Y] = spacing; }
+    inline void TableLayout::setSpacing(int horizontal, int vertical) { _spacing[X] = horizontal; _spacing[Y] = vertical; }
+    inline auto TableLayout::getAlignment(AXIS axis) const -> ALIGNMENT { return _alignment[axis]; }
+    inline void TableLayout::setAlignment(AXIS axis, ALIGNMENT align) { _alignment[axis] = align; }
+    inline auto TableLayout::getHorizontalAlignment(void) const -> ALIGNMENT { return _alignment[X]; }
+    inline auto TableLayout::getVerticalAlignment(void) const -> ALIGNMENT { return _alignment[Y]; }
+    inline void TableLayout::setHorizontalAlignment(ALIGNMENT align) { _alignment[X] = align; }
+    inline void TableLayout::setVerticalAlignment(ALIGNMENT align) { _alignment[Y] = align; }
+    inline void TableLayout::setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical) { _alignment[X] = horizontal; _alignment[Y] = vertical; }
+    inline Widget* TableLayout::getWidget(unsigned row, unsigned col) const {
         auto it = _widgets.find(std::make_pair(row, col));
         return (it != _widgets.end())? (*it).second : nullptr;
     }
-
-    inline void GridLayout::_updateDimensions(void) {
+    inline void TableLayout::_updateDimensions(void) {
         int rows = -1;
         int cols = -1;
         for(auto&& it: _widgets) {
             if((int)it.first.first > rows) rows = it.first.first;
             if((int)it.first.second > cols) cols = it.first.second;
         }
-        _rows = rows + 1;
-        _cols = cols + 1;
+        _dimSize[Y] = rows + 1;
+        _dimSize[X] = cols + 1;
     }
-
-
-
-
-
-
-    //======== INLINEZ =============
-    inline auto Layout::getSecondaryAxis(AXIS primary) -> AXIS {
+    inline auto TableLayout::getSecondaryAxis(AXIS primary) -> AXIS {
         return (primary == X)? Y : X;
     }
-    inline Layout::Layout(AXIS groupingAxis, Widget* parent):
-        _parent(parent),
-        _groupingAxis(groupingAxis){}
-
-    inline Widget* Layout::getWidget(unsigned index) const {
-        //GY_ASSERT(index < _widgets.size());
-        return (index < _widgets.size())? _widgets[index] : nullptr;
+    inline auto TableLayout::toRowIndex(AXIS primaryAxis, unsigned primaryIndex, unsigned secondaryIndex) -> unsigned {
+        return (primaryAxis == X)? secondaryIndex: primaryIndex;
     }
-    inline unsigned Layout::getWidgetCount(void) const { return (unsigned)_widgets.size();}
-    inline auto Layout::getGroupingAxis(void) const -> AXIS { return _groupingAxis; }
-    inline Widget* Layout::getParent(void) const { return _parent; }
-    inline void Layout::setParent(Widget* parent) { _parent = parent; }
-    inline void Layout::setWidget(unsigned index, Widget *widget) {
-        GY_ASSERT(index <= _widgets.size());
-        if(index == _widgets.size())  _widgets.push_back(widget);   //Insertion
-        else _widgets[index] = widget;                              //Modify existing
+    inline auto TableLayout::toColIndex(AXIS primaryAxis, unsigned primaryIndex, unsigned secondaryIndex) -> unsigned {
+        return (primaryAxis == X)? primaryIndex : secondaryIndex;
     }
-    inline void Layout::setWidgets(std::vector<Widget*> widgets) { _widgets = std::move(widgets); }
-    inline auto Layout::getWidgets(void) const -> const std::vector<Widget*>& { return _widgets; }
-    inline auto Layout::getWidgets(void) -> std::vector<Widget*>& { return _widgets; }
-    inline int Layout::getSpacing(AXIS axis) const { return _spacing[axis]; }
-    inline void Layout::setSpacing(AXIS axis, int spacing) { _spacing[axis] = spacing; }
-    inline int Layout::getHorizontalSpacing(void) const { return _spacing[X]; }
-    inline int Layout::getVerticalSpacing(void) const { return _spacing[Y]; }
-    inline void Layout::setHorizontalSpacing(int spacing) { _spacing[X] = spacing; }
-    inline void Layout::setVerticalSpacing(int spacing) { _spacing[Y] = spacing; }
-    inline void Layout::setSpacing(int horizontal, int vertical) { _spacing[X] = horizontal; _spacing[Y] = vertical; }
-    inline auto Layout::getAlignment(AXIS axis) const -> ALIGNMENT { return _alignment[axis]; }
-    inline void Layout::setAlignment(AXIS axis, ALIGNMENT align) { _alignment[axis] = align; }
-    inline auto Layout::getHorizontalAlignment(void) const -> ALIGNMENT { return _alignment[X]; }
-    inline auto Layout::getVerticalAlignment(void) const -> ALIGNMENT { return _alignment[Y]; }
-    inline void Layout::setHorizontalAlignment(ALIGNMENT align) { _alignment[X] = align; }
-    inline void Layout::setVerticalAlignment(ALIGNMENT align) { _alignment[Y] = align; }
-    inline void Layout::setAlignment(ALIGNMENT horizontal, ALIGNMENT vertical) { _alignment[X] = horizontal; _alignment[Y] = vertical; }
-    inline void Layout::_updatePositions(void) { _updatePositions(X); _updatePositions(Y); }
-    inline void Layout::_updateSizes(void) { _updateSizes(X); _updateSizes(Y); }
 
-    //----- HORIZONTAL ------
+
+
+    //==========================================================================
+    inline SingleAxisLayout::SingleAxisLayout(AXIS groupingAxis, Widget* parent):
+        TableLayout(groupingAxis, parent)
+    {}
+
+    inline auto SingleAxisLayout::_indexToRowColPair(int index) const -> RowColPair {
+        switch(getGroupingAxis()) {
+            case X: return std::make_pair(0, index);
+            case Y: return std::make_pair(index, 0);
+            default: GY_ASSERT(false); return std::make_pair(InvalidIndex, InvalidIndex);
+        }
+    }
+
+    inline void SingleAxisLayout::addWidget(Widget* widget) {
+        auto pair = _indexToRowColPair(getDimensionSize(getGroupingAxis()));
+        TableLayout::insertWidget(pair.first, pair.second, widget);
+    }
+
+    inline Widget* SingleAxisLayout::getWidget(unsigned index) const {
+        auto pair = _indexToRowColPair(index);
+        return TableLayout::getWidget(pair.first, pair.second);
+    }
+
+    inline Widget* SingleAxisLayout::removeWidget(unsigned index) {
+        auto pair = _indexToRowColPair(index);
+        return TableLayout::removeWidget(pair.first, pair.second);
+    }
+
     inline HorizontalLayout::HorizontalLayout(Widget* parent):
-        Layout(X, parent) {}
+        SingleAxisLayout(X, parent) {}
 
-    inline HorizontalLayout::HorizontalLayout(std::vector<Widget*>&& widgets, Widget* parent):
-        Layout(X, std::move(widgets), parent)
-        {}
+    inline HorizontalLayout::HorizontalLayout(const std::vector<Widget *> &widgets, Widget *parent):
+        SingleAxisLayout(X, widgets, parent) {    }
 
-    inline HorizontalLayout::HorizontalLayout(std::vector<Widget*>& widgets, Widget* parent):
-        Layout(X, widgets, parent)
-        {}
-
-    //----- VERTICAL ------
     inline VerticalLayout::VerticalLayout(Widget* parent):
-        Layout(Y, parent) {}
+        SingleAxisLayout(Y, parent) {}
 
-    inline VerticalLayout::VerticalLayout(std::vector<Widget*>&& widgets, Widget* parent):
-        Layout(Y, std::move(widgets), parent)
-        {}
+    inline VerticalLayout::VerticalLayout(const std::vector<Widget *> &widgets, Widget *parent):
+        SingleAxisLayout(Y, widgets, parent) {}
 
-    inline VerticalLayout::VerticalLayout(std::vector<Widget*>& widgets, Widget* parent):
-        Layout(Y, widgets, parent)
-        {}
 
-    //----- GRID ------
-    inline GridLayout::GridLayout(Widget* parent):
-        Layout(X_Y, parent) {}
 
-    inline unsigned GridLayout::getColumns(void) const { return _cols; }
-    inline unsigned GridLayout::getRows(void) const { return _rows; }
+
+
 }
 
 #endif // ELYSIAN_LAYOUT_HPP

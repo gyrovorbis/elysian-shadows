@@ -208,6 +208,7 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_widget.cpp \
     ../../ESGamma/source/gui/elysian_layout.cpp \
     ../../ESGamma/source/gui/elysian_label_widget.cpp \
+    ../../ESGamma/source/gui/elysian_frame_widget.cpp \
     ../../ESGamma/source/gui/elysian_entity_widget.cpp \
     ../../ESGamma/source/proxy/elysian_widget_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_layout_proxy.cpp \
@@ -226,7 +227,8 @@ SOURCES += \
     ../../game/source/pause_menu/es_pause_menu.cpp \
     ../../game/source/pause_menu/es_playable_pane.cpp \
     ../../game/source/pause_menu/es_party_menu.cpp \
-    ../../game/source/pause_menu/es_inventory_menu.cpp
+    ../../game/source/pause_menu/es_inventory_menu.cpp \
+
 
 !ios: !dreamcast: !android {
 
@@ -505,6 +507,7 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp \
     ../../ESGamma/include/device/elysian_rumble_device.hpp \
     ../../ESGamma/include/device/elysian_player_io_device.hpp \
+    ../../ESGamma/include/gui/elysian_frame_widget.hpp \
     ../../game/include/pause_menu/es_options_menu.hpp \
     ../../game/include/pause_menu/es_pause_menu.hpp \
     ../../game/include/pause_menu/es_playable_pane.hpp \

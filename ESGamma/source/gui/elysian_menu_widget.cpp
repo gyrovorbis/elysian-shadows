@@ -58,7 +58,7 @@ Widget* MenuWidget::_getWidgetFromIndex(int index) {
     GY_ASSERT(_layout);
     const int count = _layout->getWidgetCount();
     if(index < 0 || index >= count) return nullptr;
-    else return _layout->getWidget(index);
+    else return getLayout<SingleAxisLayout>()->getWidget(index);
 }
 
 int MenuWidget::_getIndexFromWidget(const Widget *widget) {
@@ -66,7 +66,7 @@ int MenuWidget::_getIndexFromWidget(const Widget *widget) {
     const unsigned widgetCount = _layout->getWidgetCount();
 
     for(unsigned i = 0; i < widgetCount; ++i) {
-        if(_layout->getWidget(i) == widget)
+        if(getLayout<SingleAxisLayout>()->getWidget(i) == widget)
             return i;
     }
     return InvalidIndex;

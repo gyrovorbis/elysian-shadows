@@ -168,13 +168,13 @@ inline Widget* MenuWidget::getCursor(void) const { return _cursor; }
 inline uint32_t MenuWidget::getFlags(void) const { return _flags; }
 inline void MenuWidget::setFlags(uint32_t flags) { _flags = flags; }
 
-inline void MenuWidget::setSelectionChangeCb(SelectionChangeCb cb) {
+inline void MenuWidget::setSelectionChangeCb(SelectionChangeCb) {
   //  _selectionChangeCb = cb;
 }
-inline void MenuWidget::setCurrentChangeCb(CurrentChangeCb cb) {
+inline void MenuWidget::setCurrentChangeCb(CurrentChangeCb) {
     //_currentChangeCb = cb;
 }
-inline void MenuWidget::setCancelCb(CancelCb cb) {
+inline void MenuWidget::setCancelCb(CancelCb) {
     //_cancelCb = cb;
 }
 

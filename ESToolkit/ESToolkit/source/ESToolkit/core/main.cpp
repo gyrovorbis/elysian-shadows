@@ -98,7 +98,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QSurfaceFormat fmt;
-    fmt.setVersion( 3, 3 );
+    fmt.setVersion( 4, 1 );
    // fmt.setStencilBufferSize(0);
     fmt.setDepthBufferSize(32);
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
@@ -109,6 +109,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     QGLFormat glfmt;
     //glfmt.setStencil(false);
     //glfmt.setDirectRendering(true);
+
     glfmt.setSwapInterval(0);
     glfmt.setDepthBufferSize(32);
     glfmt.setStencilBufferSize(0);

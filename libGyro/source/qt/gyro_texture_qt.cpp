@@ -41,14 +41,20 @@ int _gyVidTexAlloc(GYTexture *const tex) {
             //qDebug() << fileName;
         }
     }
+    QImage qimg(fileName);
+        tex->bpp    = qimg.depth();
+#if 1
+        qimg = qimg.mirrored();
 
-    QImage pixmap(fileName);
-    tex->width  = pixmap.width();
-    tex->height = pixmap.height();
-    tex->bpp    = pixmap.depth();
+         qimg = QGLWidget::convertToGLFormat(qimg);
+#endif
 
-    if(pixmap.isNull()) {
-        tex->_data = 0;
+
+    tex->width  = qimg.width();
+    tex->height = qimg.height();
+
+    if(qimg.isNull()) {
+        tex->_data = nullptr;
 //         static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
         return 0; //fuck.
     }
@@ -59,16 +65,23 @@ int _gyVidTexAlloc(GYTexture *const tex) {
 
     static_cast<QGLWidget*>(_initParams.glWidget)->makeCurrent();
 
-     tex->_data = (void*)(uintptr_t) static_cast<QGLWidget*>(_initParams.glWidget)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA, QGLContext::NoBindOption);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  //  tex->_data = (void*)(uintptr_t)glTexture->textureId();
-      //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
- //   _qTextures[(GLuint)(uintptr_t)tex->_data] = glTexture;
+#if 0
+     tex->_data = (void*)(uintptr_t) static_cast<QGLWidget*>(_initParams.glWidget)->bindTexture(qimg, GL_TEXTURE_2D, GL_RGBA, QGLContext::NoBindOption);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+#else
+    glGenTextures(1, (GLuint*)&tex->_data);
+    glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)tex->_data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, qimg.width(), qimg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, qimg.bits());
+    glEnable(GL_TEXTURE_2D);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+#endif
 
-   //  static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
     return (int)(uintptr_t)tex->_data;
 }
 

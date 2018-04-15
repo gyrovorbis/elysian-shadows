@@ -7,14 +7,14 @@
 #include <oolua.h>
 
 namespace OOLUA {
-    typedef elysian::Widget         Widget;
-    typedef elysian::GroupWidget    GroupWidget;
-    typedef elysian::EntityWidget   EntityWidget;
-    typedef elysian::LabelWidget    LabelWidget;
-    typedef elysian::Layout         Layout;
-    typedef elysian::Color4         Color4;
+    typedef elysian::Widget             Widget;
+    typedef elysian::GroupWidget        GroupWidget;
+    typedef elysian::EntityWidget       EntityWidget;
+    typedef elysian::LabelWidget        LabelWidget;
+    typedef elysian::TableLayout        TableLayout;
+    typedef elysian::Color4             Color4;
 
-    template<> class Proxy_class<elysian::Layout>;
+    template<> class Proxy_class<elysian::TableLayout>;
 }
 
 OOLUA_PROXY(Widget)
@@ -34,11 +34,11 @@ OOLUA_PROXY(Widget)
     OOLUA_MEM_FUNC(void, setHorizontalSizePolicy, uint16_t)
     OOLUA_MEM_FUNC(void, setVerticalSizePolicy, uint16_t)
     OOLUA_MEM_FUNC(void, setSizePolicy, uint16_t, uint16_t)
-    OOLUA_MEM_FUNC(void, setLayout, Layout*)
+    OOLUA_MEM_FUNC(void, setLayout, TableLayout*)
     OOLUA_MEM_FUNC(void, setEnabled, bool)
     OOLUA_MEM_FUNC_CONST(uint16_t, getHorizontalSizePolicy)
     OOLUA_MEM_FUNC_CONST(uint16_t, getVerticalSizePolicy)
-    OOLUA_MEM_FUNC_CONST(Layout*, getLayout)
+    OOLUA_MEM_FUNC_CONST(TableLayout*, getLayout)
     OOLUA_MEM_FUNC_CONST(bool, isEnabled)
 OOLUA_PROXY_END
 
