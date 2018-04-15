@@ -4,6 +4,7 @@
 #include <gyro_file_api.h>
 #include <gyro_texture_api.h>
 #include <gyro_system_api.h>
+#include <glal/gyro_gl.h>
 #include <QGLWidget>
 //#include <QOpenGLWidget>
 #include <gyro_input_api.h>
