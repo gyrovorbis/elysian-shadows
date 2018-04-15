@@ -11,6 +11,9 @@ extern "C" {
 
 #define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024*4)
 
+#define GLAL_RENDERBUFFER_WIDTH     1024
+#define GLAL_RENDERBUFFER_HEIGHT    1024
+
 struct GYTexture;
 struct GYCamera;
 

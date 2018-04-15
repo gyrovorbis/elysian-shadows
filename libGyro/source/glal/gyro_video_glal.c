@@ -181,8 +181,44 @@ static int                  _vertexQueueLastSize        = 0;
 static GLintptr             _vertexQueueLastOffset      = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
+GLuint                      _glalMainFbo                = 0;
+GLuint                      _glalColorRT                = 0;
+GLuint                      _glalGlowRT                 = 0;
+GLuint                      _glalColorTex               = 0;
+GLuint                      _glalGlowTex                = 0;
+GLuint                      _glalDepthBuffer            = 0;
+
+
+void glalBindMainMrtFbo(void) {
+
+
+}
 
 void gyVidSceneBegin(void) {
+    glalVidBindDefaultFbo();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#if 1
+    glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
+    unsigned int scrWidth, scrHeight;
+    gyVidResolution(&scrWidth, &scrHeight);
+    glViewport(0, 0, (float)scrWidth, (float)scrHeight);
+#if 0
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _glalColorTex, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _glalGlowTex, 0);
+#endif
+#if 1
+    //uint32_t buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    //glDrawBuffers(2, buffers);
+#endif
+ /*
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
+    }*/
+#endif
+
+    //glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
 
@@ -301,6 +337,67 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glalLoadDefaultShaders();
         glalVidInitializeBloom();
         gyVidSetDefaultShaderProgram();
+
+        _gyLog(GY_DEBUG_VERBOSE, "Creating FBO(s)");
+        _gyPush();
+        GY_GL_CHECK_ERROR();
+        glGenFramebuffers(1, &_glalMainFbo);
+        glGenRenderbuffers(1, &_glalColorRT);
+        glGenRenderbuffers(1, &_glalGlowRT);
+        glGenRenderbuffers(1, &_glalDepthBuffer);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
+
+#if 0
+        glBindRenderbuffer(GL_RENDERBUFFER, _glalColorRT);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _glalColorRT);
+
+
+        glBindRenderbuffer(GL_RENDERBUFFER, _glalGlowRT);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, _glalGlowRT);
+#endif
+        glBindRenderbuffer(GL_RENDERBUFFER, _glalDepthBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _glalDepthBuffer);
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if(status != GL_FRAMEBUFFER_COMPLETE) {
+            _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
+        }
+
+        glGenTextures(1, &_glalColorTex);
+        glBindTexture(GL_TEXTURE_2D, _glalColorTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _glalColorTex, 0);
+              status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if(status != GL_FRAMEBUFFER_COMPLETE) {
+            _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
+        }
+
+        glGenTextures(1, &_glalGlowTex);
+        glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _glalGlowTex, 0);
+
+        uint32_t buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, buffers);
+
+       status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if(status != GL_FRAMEBUFFER_COMPLETE) {
+            _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
+        }
+        glalVidBindDefaultFbo();
+        _gyPop(1);
+
         _gyLog(GY_DEBUG_VERBOSE, "Creating UBOs");
         GY_GL_CHECK_ERROR();
         glGenBuffers(1, &glalLightingUBO);
@@ -317,7 +414,10 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
         glalDefaultShadersLoadUniforms();
         //HAVE TO SET DEFAULT GL STATES OR THE STATE CACHES WILL BE DIRTY
-        glDisable(GL_CULL_FACE);
+        //K the fact that this reests spine needs to be reinvestigated!!!
+        //glCullFace(GL_FRONT);
+        //glEnable(GL_CULL_FACE);
+
         //gyVidDepthTest(0);
         //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         //gyVidAlphaLevel(GY_ALPHA_NONE);
@@ -411,7 +511,7 @@ static inline void _flushStreamVertices(void* data) {
 
     glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
 
-     GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), /*GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT/* | GL_MAP_UNSYNCHRONIZED_BIT*/);
+     GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), /*GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 
     if(ptr) {
         memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
@@ -530,6 +630,8 @@ void gyVidBlendMode(const GY_BLEND_MODE mode) {
 }
 
 void gyVidDepthTest(const int enable) {
+    glDisable(GL_DEPTH_TEST);
+#if 0
     if(gyVidShadowPass()) return;
     static int wasShadow = 0;
     int passChange = wasShadow != gyVidShadowPass();
@@ -541,6 +643,7 @@ void gyVidDepthTest(const int enable) {
         glalDepthTest = enable;
         wasShadow = gyVidShadowPass();
     }
+#endif
 }
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
