@@ -60,6 +60,7 @@ public:
     QAction *actionSave_Game;
     QAction *actionLoad_Game;
     QAction *actionBIOS_Runtime_Disassembly;
+    QAction *actionBuzzer_Tool;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QGraphicsView *graphicsView;
@@ -197,6 +198,8 @@ public:
         actionLoad_Game->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         actionBIOS_Runtime_Disassembly = new QAction(VMUMainWindow);
         actionBIOS_Runtime_Disassembly->setObjectName(QStringLiteral("actionBIOS_Runtime_Disassembly"));
+        actionBuzzer_Tool = new QAction(VMUMainWindow);
+        actionBuzzer_Tool->setObjectName(QStringLiteral("actionBuzzer_Tool"));
         centralwidget = new QWidget(VMUMainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -284,6 +287,7 @@ public:
         menuTools->addAction(actionDump_Eyecatch);
         menuTools->addAction(actionDisassemble_ROM);
         menuTools->addAction(actionBIOS_Runtime_Disassembly);
+        menuTools->addAction(actionBuzzer_Tool);
         menuTools->addAction(actionView_Log);
         menuScreen_Capture->addAction(actionRecordAnim);
         menuHelp->addAction(actionAbout);
@@ -362,6 +366,7 @@ public:
         actionSave_Game->setText(QApplication::translate("VMUMainWindow", "Save Game", Q_NULLPTR));
         actionLoad_Game->setText(QApplication::translate("VMUMainWindow", "Load Game", Q_NULLPTR));
         actionBIOS_Runtime_Disassembly->setText(QApplication::translate("VMUMainWindow", "BIOS Dynamic Disassembly", Q_NULLPTR));
+        actionBuzzer_Tool->setText(QApplication::translate("VMUMainWindow", "Buzzer Tool", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("VMUMainWindow", "File", Q_NULLPTR));
         menuLoad_Recent->setTitle(QApplication::translate("VMUMainWindow", "Open Recent", Q_NULLPTR));
         menuEmulation->setTitle(QApplication::translate("VMUMainWindow", "Emulation", Q_NULLPTR));

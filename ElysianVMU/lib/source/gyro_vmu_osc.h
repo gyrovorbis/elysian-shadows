@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#define VMU_OSC_QUARTZ_FREQ_HZ  32768
+#define VMU_OSC_RC_FREQ_HZ      879236
 
 struct VMUDevice;
 

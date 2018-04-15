@@ -71,7 +71,8 @@ SOURCES += \
     gif/gif_hash.c \
     gif/gifalloc.c \
     gif/quantize.c \
-    ../../lib/source/gyro_vmu_maple.c
+    ../../lib/source/gyro_vmu_maple.c \
+    gyro_vmu_buzzer_dialog.cpp
 
 !vmu_child_app {
     SOURCES += ../../console/main.cpp
@@ -116,7 +117,8 @@ HEADERS += \
     gif/qgifglobal.h \
     gif/qgifimage.h \
     gif/qgifimage_p.h \
-    ../../lib/source/gyro_vmu_maple.h
+    ../../lib/source/gyro_vmu_maple.h \
+    gyro_vmu_buzzer_dialog.hpp
 
 
 !raspberrypi {
@@ -135,7 +137,8 @@ DEPENDPATH += ../../../libGyro/include \
 FORMS += \
     gyro_vmu_main_window.ui \
     gyro_vmu_tcp_dialog.ui \
-    gyro_vmu_com_dialog.ui
+    gyro_vmu_com_dialog.ui \
+    gyro_vmu_buzzer_dialog.ui
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/ -llibGyro

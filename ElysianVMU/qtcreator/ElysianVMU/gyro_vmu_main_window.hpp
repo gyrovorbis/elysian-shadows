@@ -40,6 +40,7 @@ struct  GYAudBuffer;
 struct  VMUDevice;
 struct  VMSFileInfo;
 class   VmuTcpDialog;
+class   VmuBuzzerDialog;
 class   QGraphicsPixmapItem;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 class   VmuComDialog;
@@ -120,6 +121,8 @@ protected Q_SLOTS:
     void on_actionSerial_COM_Connection_Manager_triggered();
 #endif
     void on_actionBIOS_Runtime_Disassembly_triggered();
+    void on_actionBuzzer_Tool_triggered();
+
 
 private:
 
@@ -161,6 +164,7 @@ private:
     QImage              _eyecatchImage;
     QString             _romDir;
     VmuTcpDialog*       _tcpDialog          = nullptr;
+    VmuBuzzerDialog*    _buzzerDialog       = nullptr;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     VmuComDialog*       _comDialog          = nullptr;
 #endif

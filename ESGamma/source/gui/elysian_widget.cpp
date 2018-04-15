@@ -22,12 +22,12 @@ namespace elysian {
         _mouseTracking = enabled;
     }
 
-    void Widget::setLayout(Layout *layout) {
+    void Widget::setLayout(TableLayout *layout) {
         _layout = layout;
         _layout->setParent(this);
     }
 
-    void Widget::setParentLayout(Layout* layout) {
+    void Widget::setParentLayout(TableLayout* layout) {
         if(_parentLayout && layout) {
             errprintf("Adding an entity to a layout that is already being used in another layout!");
         }
@@ -50,12 +50,12 @@ namespace elysian {
         if(_layout) return _layout->findWidget(name);
         else return nullptr;
     }
-
+/*
     Widget* Widget::getChildWidget(unsigned index) {
         GY_ASSERT(_layout && index < _layout->getWidgetCount());
         return _layout->getWidget(index);
     }
-
+*/
     inline void Widget::activate(void) {
         if(_layout) {
             _layout->activate();
@@ -146,32 +146,52 @@ namespace elysian {
 
     float Widget::getMinimizeDelta(AXIS axis) const {
         float maxDelta = 0.0f;
-
+#if 0
         if(getSizePolicy(axis) & (shrinkFlag)) {
-            maxDelta = getSize(axis) - getMinSize(axis);
+            maxDelta = getSize(axis) - getMinSize(axis);    //maximum amount a parent can theoretically shrink
+            //If parent can technically shrink in size
             if(maxDelta > 0.0f) {
+                //If parent has children, have to take their sizes into account as well
                 if(_layout) {
+                    //get total size of largest row/col
                     float layoutDelta = 0.0f;
+
+                    for(int j = 0; j < _layout->getDimensionSize(TableLayout::getSecondaryAxis(axis)); ++j) {
+                        float currentDelta = 0.0f;
+                        for(int i = 0; i < _layout->getDimensionSize(axis); ++i) {
+                            Widget* w = _layout->getWidget(TableLayout::toRowIndex(axis, i, j), TableLayout::toColIndex(axis, i, j));
+                            if(w) currentDelta += w->getSize(axis);
+                        }
+                        if(currentDelta > layoutDelta) layoutDelta = currentDelta;
+                    }
+
+#if 0
                     for(auto&& widget : _layout->getWidgets()) {
                         layoutDelta += widget->getSize(axis);
                     }
 
-                    if(layoutDelta < getSize(axis)) {
+#endif
+                    //Check if children don't take up all of parent's space
+                    if(layoutDelta < getSize(axis)) {               //Parent can shrink to size of children
                         layoutDelta = getSize(axis)-layoutDelta;
-                    } else layoutDelta = 0.0f;
+                    } else layoutDelta = 0.0f;                      //Parent cannot shrink anymore, children won't allow it.
 
+                    //Try to figure out the largest amount we can shrink a child to give parent room to shrink
                     float minChildDelta = 0.0f;
                     const auto& widgets = _layout->getWidgets();
                     for(auto&& widget : widgets) {
                         const float childDelta = widget->getMinimizeDelta(axis);
-                        if(childDelta < minChildDelta) minChildDelta = childDelta;
+                        if(childDelta < minChildDelta) minChildDelta = childDelta; //Keep track of child that can shrink the most
                     }
+                    //add the most shrinkable child's shrink delta to amount of room parent has to shrink
                     layoutDelta += minChildDelta;
+
+                    //Make sure we don't shrink the parent beyond what it's minimum size will allow.
                     if(layoutDelta < maxDelta) maxDelta = layoutDelta;
                 }
             }
         }
-
+#endif
         return maxDelta;
     }
 
@@ -206,7 +226,7 @@ void Widget::setMinSize(Vector2 size) {
 }
 
 Widget* Widget::getParentWidget(void) const {
-    const Layout* layout = getParentLayout();
+    const TableLayout* layout = getParentLayout();
     if(layout) return layout->getParent();
     else return nullptr;
 }
@@ -250,40 +270,8 @@ void Widget::onMouseMoveEvent(const Mouse &mouse) {
 void Widget::onMouseWheelEvent(const Mouse &mouse) {
 }
 
-
-FrameWidget::FrameWidget(Layout* layout):
-    GroupWidget(layout)
-{}
-
 void Widget::setFocus(bool enabled) {
     _focus = enabled;
-}
-
-FrameWidget::FrameWidget(Widget* centralWidget) {
-    setLayout(new ELYSIAN_FRAME_WIDGET_LAYOUT_TYPE_DEFAULT());
-    setCentralWidget(centralWidget);
-}
-
-FrameWidget::FrameWidget(std::nullptr_t):
-    FrameWidget((Widget*)nullptr)
-{}
-
-void FrameWidget::setCentralWidget(Widget* centralWidget) {
-    GY_ASSERT(getLayout());
-    GY_ASSERT(getLayout()->getWidgetCount() <= 1);
-
-    //get rid of any existing shit
-    if(getLayout()->getWidgetCount() && getLayout()->getWidget(0) && getLayout()->getWidget(0) != centralWidget) {
-        getLayout()->removeWidget(getLayout()->getWidget(0));
-    }
-
-    //add new shit (if there is new shit)
-    if(centralWidget) getLayout()->addWidget(centralWidget);
-}
-
-Widget* FrameWidget::getCentralWidget(void) const {
-    GY_ASSERT(getLayout());
-    return getLayout()->getWidget(0);
 }
 
 }

@@ -27,10 +27,11 @@ PartyMenu::~PartyMenu(void) {
 //GET RID OF THIS BULLSHIT AND CHANGE TO
 //ON PARTY CHANGED EVENT!!!
 void PartyMenu::update(void) {
-    _layout->clearWidgets();
+    auto* vertLayout = static_cast<VerticalLayout*>(getLayout());
+    vertLayout->clearWidgets();
     for(unsigned i = 0; i < getPartySys()->getPartySize(); ++i) {
         _playablePane[i]->setPartyMember(getPartySys()->getPartyMember(i));
-        _layout->addWidget(_playablePane[i]);
+        vertLayout->addWidget(_playablePane[i]);
     }
     MenuWidget::update();
 }
@@ -38,12 +39,13 @@ void PartyMenu::update(void) {
 void PartyMenu::onCurrentChange(Widget* prev, Widget* next) {
     auto* prevPlayablePane = static_cast<PlayablePane*>(prev);
     auto* nextPlayablePane = static_cast<PlayablePane*>(next);
+    auto* vertLayout = static_cast<VerticalLayout*>(getLayout());
 
     for(unsigned i = 0; i < getLayout()->getWidgetCount(); ++i) {
-        auto* widget = getLayout()->getWidget(i);
+        auto* widget = vertLayout->getWidget(i);
         auto* entity = static_cast<EntityWidget*>(widget)->getEntity();
         auto sprAttrib = entity->getRenderable()->getSpriteAttrib();
-        char alpha = 0;
+        unsigned char alpha = 0;
 
         if(hasFocus()) {
             if(widget == next) {
@@ -135,8 +137,7 @@ void PartyMenu::onCancel(void) {
 }
 
 GridLayoutTestWidget::GridLayoutTestWidget(void) {
-    auto* layout = new GridLayout();
-
+    auto* layout = new TableLayout();
 
     const int rowCount = 30;
     const int colCount = 25;

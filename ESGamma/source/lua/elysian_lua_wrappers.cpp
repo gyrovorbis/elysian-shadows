@@ -310,10 +310,10 @@ namespace elysian {
         s->register_class_static<PeriodicRumbleEffect>("SAWTOOTHUP",    GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHUP);
         s->register_class_static<PeriodicRumbleEffect>("SAWTOOTHDOWN",  GY_RUMBLE_EFFECT_PERIODIC_SAWTOOTHDOWN);
 
-        typedef elysian::Layout Layout;
-        s->register_class_static<Layout>("ALIGN_NEGATIVE",      Layout::ALIGN_NEGATIVE);
-        s->register_class_static<Layout>("ALIGN_CENTER",        Layout::ALIGN_CENTER);
-        s->register_class_static<Layout>("ALIGN_POSITIVE",      Layout::ALIGN_POSITIVE);
+        typedef elysian::TableLayout TableLayout;
+        s->register_class_static<TableLayout>("ALIGN_NEGATIVE",      TableLayout::ALIGN_NEGATIVE);
+        s->register_class_static<TableLayout>("ALIGN_CENTER",        TableLayout::ALIGN_CENTER);
+        s->register_class_static<TableLayout>("ALIGN_POSITIVE",      TableLayout::ALIGN_POSITIVE);
 
         typedef elysian::EventTarget EventTarget;
         s->register_class_static<EventTarget>("INVALID",            EVENT_TARGET_INVALID);

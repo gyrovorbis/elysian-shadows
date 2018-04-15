@@ -3,16 +3,14 @@
 #include <proxy/elysian_widget_proxy.hpp>
 
 /*!
-    \qmltype Layout
+    \qmltype TableLayout
     \since 1.6.0
     \inmodule Engine
     \brief Abstract class for organizing Widgets as child GUI elements within a parent Widget.
 */
 
-OOLUA_EXPORT_FUNCTIONS(Layout,
-                       addWidget,
+OOLUA_EXPORT_FUNCTIONS(TableLayout,
                        removeWidget,
-                       setWidgets,
                        setHorizontalSpacing,
                        setVerticalSpacing,
                        setSpacing,
@@ -20,15 +18,26 @@ OOLUA_EXPORT_FUNCTIONS(Layout,
                        setVerticalAlignment,
                        setAlignment)
 
-OOLUA_EXPORT_FUNCTIONS_CONST(Layout,
-                             getWidgets,
+OOLUA_EXPORT_FUNCTIONS_CONST(TableLayout,
                              getWidgetCount,
-                             getWidget,
                              getParent,
                              getHorizontalSpacing,
                              getVerticalSpacing,
                              getHorizontalAlignment,
                              getVerticalAlignment)
+/*!
+    \qmltype SingleAxisLayout
+    \inherits TableLayout
+    \since 1.6.0
+    \inmodule Engine
+    \brief Abstract class for TableLayouts whose size is limited to only a single dimension
+*/
+OOLUA_EXPORT_FUNCTIONS(SingleAxisLayout,
+                       setWidgets,
+                       addWidget)
+OOLUA_EXPORT_FUNCTIONS_CONST(SingleAxisLayout,
+                             getWidget,
+                             getWidgets)
 
 
 /*!
