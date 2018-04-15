@@ -23,6 +23,10 @@ typedef struct _BloomShaderProgram {
     GLint						uniformLoc[BLOOM_SHADER_UNIFORM_MAX];
 } _BloomShaderProgram;
 
+extern GLuint               _glalMainFbo;
+extern GLuint               _glalColorTex;
+extern GLuint               _glalGlowTex;
+
 
 //TERMINLOLOGY
 //
@@ -136,6 +140,16 @@ int glalVidInitializeBloom(void) {
     glVertexAttribPointer(_bloomShader.attribLoc[BLOOM_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)0);
     glVertexAttribPointer(_bloomShader.attribLoc[BLOOM_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
     gyVidVertexArrayBind(0);
+    
+    //=====ATTACH BLOOM ATTACHMENT TO DEFAULT FRAMEBUFFER=======
+    //glBindFramebuffer(GL_READ_FRAMEBUFFER, glalVidDefaultFbo());
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _bloomBuffFbo);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D,
+                           _bloomBuffTex,
+                           0);
+    //gyVidResolution(&scrWidth, &scrHeight);
 
     _gyPop(2);
 
@@ -169,19 +183,25 @@ void gyVidApplyBloom(void) {
     };
 
     unsigned int scrWidth, scrHeight;
+    gyVidResolution(&scrWidth, &scrHeight);
 
     //1 - Copy backbuffer to texture.
     gyVidVertexBatchEnd();
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, glalVidDefaultFbo());
+
+#if 0
+
+#if 0
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, _glalMainFbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _bloomBuffFbo);
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                            GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D,
                            _bloomBuffTex,
                            0);
     gyVidResolution(&scrWidth, &scrHeight);
-    glBlitFramebuffer(0, 0, scrWidth, scrHeight, 0, 0, GYRO_GLAL_BLOOM_TEXTURE_WIDTH, GYRO_GLAL_BLOOM_TEXTURE_HEIGHT, GL_COLOR_BUFFER_BIT, GYRO_GLAL_BLOOM_BLIT_FILTER);
-
+    glBlitFramebuffer(0, 0, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, 0, GYRO_GLAL_BLOOM_TEXTURE_WIDTH, GYRO_GLAL_BLOOM_TEXTURE_HEIGHT, GL_COLOR_BUFFER_BIT, GYRO_GLAL_BLOOM_BLIT_FILTER);
+#endif
 
     //===== 2 - Perform horizontal convolution on BLOOM buffer texture =====
     gyVidSetCurrentShaderProgram(_bloomShader.program);
@@ -204,7 +224,7 @@ void gyVidApplyBloom(void) {
      }
 
     //Render fullscreen quad
-    glBindTexture(GL_TEXTURE_2D, _bloomBuffTex);
+    glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
     gyVidVertexArrayBind(_bloomVao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -228,18 +248,25 @@ void gyVidApplyBloom(void) {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     //===== 4 - Additively blend blurred bloom texture over backbuffer as a fullscreen quad.  =====
-    GYColor4 color = { 255, 255, 255, 255 };
+#endif
+    GYColor4 color = { 0, 255, 255, 100 };
     gyVidSetDefaultShaderProgram();
     gyVidVertexArrayBind(0);
     glalVidBindDefaultFbo();
     glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
 
+#if 0
+    gyVidAlphaLevel(GY_ALPHA_NONE);
+#else
+    gyVidDepthTest(0);
+    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_ONE);
-    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    glBindTexture(GL_TEXTURE_2D, _finalConvTex);
-
+#endif
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, _glalColorTex);
+    gyVidNormalMapBind(NULL);
+    gyVidSpecularMapBind(NULL);
     //Render fullscreen quad.
     gyMatPush();
     gyMatLoadIdentity();
@@ -252,8 +279,29 @@ void gyVidApplyBloom(void) {
     gyVidVertexBatchEnd();
     gyMatPop();
 
+#if 0
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+    gyVidBlendMode(GY_BLEND_ONE);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);    
+    glBindTexture(GL_TEXTURE_2D, _finalConvTex);
+    //Render fullscreen quad.
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
+    gyMatScale(scrWidth, scrHeight, 1.0f);
+    gyVidTexCoordArray(texCoords);
+    gyVidQuadListBegin(&color);
+    gyVidRect(-1);
+    gyVidQuadListEnd();
+    gyVidVertexBatchEnd();
+    gyMatPop();
+#endif
+
     gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidAlphaLevel(GY_ALPHA_NONE);
+
+        gyVidVertexBatchEnd();
 }
 
 

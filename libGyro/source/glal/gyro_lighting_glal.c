@@ -9,6 +9,8 @@
 #include <stdlib.h>
 
 
+extern GLuint       _glalMainFbo;
+
 LightSourceUniforms _lightSourceUniforms[GYRO_VIDEO_LIGHT_SOURCES_MAX];
 GYLightSource*		glalLightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
 unsigned			glalLightSourceCount								= 0;
@@ -16,6 +18,7 @@ int					glalLightingEnabled									= 1;
 int					glalLightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { 0 };
 static int          _shadowPass                                         = 0;
 static int          _firstShadowPass                                    = 0;
+
 
 int gyVidShadowPass(void) {
     return _shadowPass;
@@ -34,6 +37,7 @@ void _lightSourceToLightingUBOLightsource(const GYLightSource* lightSrc, Lightin
 }
 
 void _updateLightingUBO(void) {
+    return;
         GY_GL_CHECK_ERROR();
     glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
             GY_GL_CHECK_ERROR();
@@ -779,7 +783,9 @@ gyVidVertexBatchFlush();
     //glBindFramebuffer(GL_FRAMEBUFFER, iosFramebuffer);
         glalVidBindDefaultFbo();
 #else
-    glalVidBindDefaultFbo();
+    //glalVidBindDefaultFbo();
+    glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
+
 
     unsigned width, height;
     gyVidResolution(&width, &height);
