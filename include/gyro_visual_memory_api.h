@@ -15,17 +15,17 @@ extern "C" {
 #define MAPLE_CMD_DEV_INFO_RESP                 5
 #define MAPLE_CMD_EXT_DEV_INFO_RESP             6
 #define MAPLE_CMD_ACK                           7
-#define MAPLE_CMD_DATA_TRANSFER                 8
-#define MAPLE_CMD_GET_CONDITION                 9
-#define MAPLE_CMD_GET_MEMORY_INFO               10
+#define MAPLE_CMD_DATA_XFER                     8
+#define MAPLE_CMD_GET_COND                      9
+#define MAPLE_CMD_GET_MEM_INFO                  10
 #define MAPLE_CMD_BLOCK_READ                    11
 #define MAPLE_CMD_BLOCK_WRITE                   12
-#define MAPLE_CMD_SET_CONDITION                 14
+#define MAPLE_CMD_SET_COND                      14
 #define MAPLE_CMD_NO_RESP                       -1
 #define MAPLE_CMD_FUNC_CODE_UNSUPPORTED_RESP    -2
 #define MAPLE_CMD_UNKNOWN_CMD_RESP              -3
 #define MAPLE_CMD_RESEND_RESP                   -4
-#define MAPLE_CMD_FILE_ERROR                    -5
+#define MAPLE_CMD_FILE_ERROR_RESP               -5
 
 #define MAPLE_ERROR_CODE_INVALID_PARTITION      0x1
 #define MAPLE_ERROR_CODE_PHASE                  0x2
@@ -60,10 +60,10 @@ extern "C" {
 #define MAPLE_FRAME_DATA_SIZE_MAX               MAPLE_FRAME_DATA_WORD_SIZE_MAX * MAPLE_WORD_SIZE
 #define MAPLE_FRAME_SIZE_MAX                    MAPLE_FRAME_DATA_SIZE_MAX + MAPLE_HEADER_SIZE
 
-#define MAPLE_FRAME_CMD_OFFSET                  3
-#define MAPLE_FRAME_DST_ADDR_OFFSET             2
-#define MAPLE_FRAME_SRC_ADDR_OFFSET             1
-#define MAPLE_FRAME_LENGTH_OFFSET               0
+#define MAPLE_FRAME_CMD_OFFSET                  0
+#define MAPLE_FRAME_DST_ADDR_OFFSET             1
+#define MAPLE_FRAME_SRC_ADDR_OFFSET             2
+#define MAPLE_FRAME_LENGTH_OFFSET               3
 #define MAPLE_FRAME_DATA_OFFSET                 4
 
 #define MAPLE_FRAME_DATA_FUNC_OFFSET            3
@@ -79,14 +79,95 @@ extern "C" {
 
 #define GY_VISUAL_MEMORY_TCP_HOSTNAME_SIZE      200
 
-typedef unsigned char GYMapleFrame[MAPLE_FRAME_SIZE_MAX];
+#define GY_MAPLE_FUNCTION_DATA_SIZE             3
+#define GY_MAPLE_PRODUCT_NAME_SIZE              30
+#define GY_MAPLE_PRODUCT_LICENSE_SIZE           60
+
+#define GY_MAPLE_DEVICE_INFO_SIZE               (28 * MAPLE_WORD_SIZE)
+
+typedef struct GYMapleDeviceInfo {
+    int32_t     func;                                           // function codes supported by this peripheral (or:ed together) (big endian)
+    int32_t     function_data[GY_MAPLE_FUNCTION_DATA_SIZE];     // additional info for the supported function codes (3 max) (big endian)
+    int8_t      area_code;                                      // regional code of peripheral
+    int8_t      connector_direction;                            // physical orientation of bus connection
+    char        product_name[GY_MAPLE_PRODUCT_LICENSE_SIZE];    // name of peripheral
+    char        product_license[GY_MAPLE_PRODUCT_LICENSE_SIZE]; // license statement
+    int16_t     standby_power;                                  // standby power consumption (little endian)
+    int16_t     max_power;                                      // maximum power consumption (little endian)
+} GYMapleDeviceInfo;
+
+#define MAPLE_PAYLOAD_SIZE MAPLE_FRAME_SIZE_MAX-MAPLE_HEADER_SIZE
+
+//MAPLE_CMD_BLOCK_WRITE
+typedef struct GYMapleMemoryPayload {
+    uint8_t func;
+    uint8_t part;
+    uint8_t phase;
+    uint8_t block;
+    uint8_t data[MAPLE_PAYLOAD_SIZE-4];
+} GYMapleMemoryPayload;
+
+//MAPLE_CMD_EXT_DEV_INFO_RESP
+typedef struct GYMapleExtDevInfoPayload {
+    GYMapleDeviceInfo   devInfo;
+    uint8_t             versionStr[MAPLE_PAYLOAD_SIZE-GY_MAPLE_DEVICE_INFO_SIZE];
+} GYMapleExtDevInfoPayload;
+
+typedef struct GYMapleCondPayload {
+    uint8_t func;
+    uint8_t cond[MAPLE_PAYLOAD_SIZE-1];
+} GYMapleCondPayload;
+
+
+typedef struct GYMapleFrame {
+    union {
+        struct {
+            struct {                            //header
+                union {
+                    struct {
+                        int8_t                              cmd;
+                        uint8_t                             recvAddr;
+                        uint8_t                             sendAddr;
+                        uint8_t                             dataWords;
+                    };
+                    uint8_t     bytes[MAPLE_HEADER_SIZE];
+                };
+            }                                   header;
+            struct {                            //payload
+                union {
+                    GYMapleDeviceInfo                       devInfoResp;                    //(5) MAPLE_CMD_DEV_INFO_RESP
+                    GYMapleExtDevInfoPayload                extDevInfoResp;                 //(6) MAPLE_CMD_EXT_DEV_INFO_RESP
+                    GYMapleCondPayload                      getCondDataXferResp;            //(8) MAPLE_CMD_DATA_XFER [(9) MAPLE_CMD_GET_COND resp]
+                    GYMapleMemoryPayload                    blockReadDataXferResp;          //(8) MAPLE_CMD_DATA_XFER [(11) MAPLE_CMD_BLOCK_READ resp]
+                    struct {
+                        uint8_t cond;
+                    }                                       getCond;                        //(9) MAPLE_CMD_GET_COND
+                    struct {
+                        uint8_t func;
+                        uint8_t part;
+                    }                                       getMemInfo;                     //(10) MAPLE_CMD_GET_MEM_INFO
+                    struct {
+                        uint8_t func;
+                        uint8_t part;
+                        uint8_t phase;
+                        uint8_t block;
+                    }                                       blockRead;                      //(11) MAPLE_CMD_BLOCK_READ
+                    GYMapleMemoryPayload                    blockWrite;                     //(12) MAPLE_CMD_BLOCK_WRITE
+                    GYMapleCondPayload                      setCond;                        //(14) MAPLE_CMD_SET_COND
+                    struct {
+                        uint8_t                             error;
+                    }                                       fileErrorResp;                  //(-5) MAPLE_CMD_FILE_ERROR_RESP
+                    uint8_t                                 bytes[MAPLE_PAYLOAD_SIZE];      //raw access
+                };
+            }                                   payload;
+        };
+       uint8_t                                  bytes[MAPLE_FRAME_SIZE_MAX];
+    };
+} GYMapleFrame;
+
 
 typedef enum GY_VMU_TCP_COMMAND_TYPE {
-    GY_VMU_TCP_COMMAND_CONNECTION_TYPE,
-    GY_VMU_TCP_COMMAND_DC_READ,
-    GY_VMU_TCP_COMMAND_DC_WRITE,
-    GY_VMU_TCP_COMMAND_DC_LCD,
-    GY_VMU_TCP_COMMAND_DC_BUZZER
+    GY_VMU_TCP_COMMAND_CONNECTION_TYPE
 } GY_VMU_TCP_COMMAND_TYPE;
 
 typedef enum GY_VMU_TCP_CONNECTION_TYPE {
@@ -98,15 +179,21 @@ typedef enum GY_VMU_TCP_CONNECTION_TYPE {
 typedef struct GYVisualMemoryTCPSettings {
     char        hostname[GY_VISUAL_MEMORY_TCP_HOSTNAME_SIZE];
     unsigned    port;
-
 } GYVisualMemoryTCPSettings;
 
+typedef enum GY_VMU_STATE {
+    GY_VMU_STATE_INACTIVE,
+    GY_VMU_STATE_WAIT_DEV_INFO,
+    GY_VMU_STATE_WAIT_EXT_DEV_INFO,
+    GY_VMU_STATE_WAIT_ACK
+} GY_VMU_STATE;
 
 typedef struct GYVisualMemoryDevice {
     GYVisualMemoryTCPSettings*  tcpSettings;
-    GYTcpSocket*                 tcpSocket;
+    GYTcpSocket*                tcpSocket;
     unsigned                    port;
     void*                       _physicalDevHandle;
+    float                       elapsedTime;
 } GYVisualMemoryDevice;
 
 typedef struct GYVisualMemoryInitParams {
@@ -126,7 +213,7 @@ int gyVisualMemoryDeviceBeep(GYVisualMemoryDevice* device, uint8_t cycleLength, 
 int gyVisualMemoryDeviceRemoteConnect(unsigned port, const GYVisualMemoryTCPSettings* settings);
 int gyVisualMemoryDeviceRemoteDisconnect(GYVisualMemoryDevice* device);
 
-int gyVisualMemoryMapleFrame(uint8_t cmd, uint8_t destAddr, uint8_t srcAddr, void*data, uint32_t dataBytes, uint32_t* totalBytes);
+int gyVisualMemoryMapleFrame(int8_t cmd, uint8_t destAddr, uint8_t srcAddr, GYMapleFrame* frame, uint32_t dataBytes, uint32_t* totalBytes);
 
 
 #ifdef __cplusplus
