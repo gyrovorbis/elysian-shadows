@@ -6,6 +6,8 @@ include(../../qtcreator/ESDev/ESDev.pri)
 
 TARGET = ESToolkit
 
+DEFINES += ELYSIAN_OPENCL_ACCELERATED
+
 TEMPLATE = app
 
 dreamcast {
@@ -865,6 +867,7 @@ win32 {
 macx {
   LIBS +=  -L../../libGyro/lib/osx \
         -framework OpenGL \
+        -framework OpenCL \
         -framework OpenAL \
         -lz \
         -F../../ESGamma/lib/osx \

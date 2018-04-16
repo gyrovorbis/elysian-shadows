@@ -30,7 +30,7 @@ CollisionSystem::CollisionSystem(void):
     _entityDetectMonitor("entities")
 {
     Collidable::_colSys = this;
-    _sortSweepPool.initialize();
+  //  _sortSweepPool.initialize();
 }
 
 //This is a pretty DAMN expensive operation

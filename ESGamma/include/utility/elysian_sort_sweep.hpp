@@ -5,6 +5,11 @@
 #include <utility/elysian_asset_typedefs.hpp>
 #include <elysian_debug.hpp>
 #include <utility/elysian_generic.hpp>
+#include <glal/gyro_gl.h>
+
+#include <OpenCL/cl_gl_ext.h>
+#include <OpenGL/CGLDevice.h>
+#include <OpenGL/CGLCurrent.h>
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
 #	ifdef __APPLE__
@@ -46,6 +51,25 @@ struct SortSweepAABB {
 
 typedef SortSweepAABB<Collidable> SortSweepCollidable;
 
+#ifdef ELYSIAN_OPENCL_ACCELERATED
+ extern  cl_platform_id*     _platforms;
+extern   cl_uint             _platformCount;
+ extern  cl_device_id**      _devices;
+extern   cl_uint*            _deviceCount;
+extern     cl_uint             _curPlatformIndex;
+extern     cl_uint             _curDeviceIndex;
+ extern    cl_context          _context;
+ extern    cl_command_queue    _cmdQueue;
+  extern   cl_program          _program;
+extern     cl_kernel           _kernel;
+ extern    cl_mem              _aabbListBuff;
+ extern    cl_mem              _aabbListSizeBuff;
+ extern    cl_mem              _aabbContactListBuff;
+ extern    cl_mem              _aabbContactListSizeBuff;
+ extern GLuint                       glalLightingUBO;
+#endif
+
+
 
 template<typename T>
 class SortSweepAABBPool: public Pool<SortSweepAABB<T>> {
@@ -55,104 +79,13 @@ private:
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
 
-static inline void _checkClError(const cl_int status, const char*const str) {
-  if(status != CL_SUCCESS) {
-    dbgprintf("! - OpenCL Error: %s\n", str);
-    exit(1);
-  }
-}
-
-void _clPrintDeviceInfo(const cl_device_id device) {
-  auto CL_CHECK = [](const cl_int status) {
-    if(status != CL_SUCCESS) {
-            dbgprintf("! - OpenCL Error querying device attribute!");
-    }
-  };
-
-  char buffer[10240];
-     cl_uint buf_uint;
-     cl_ulong buf_ulong;
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, nullptr));
-         dbgprintf("Device Name:\t%s", buffer);
-     dbgpush();
-
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, nullptr));
-         dbgprintf("Vendor:\t%s", buffer);
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_VERSION, sizeof(buffer), buffer, nullptr));
-         dbgprintf("Device Version:\t%s", buffer);
-         CL_CHECK(clGetDeviceInfo(device, CL_DRIVER_VERSION, sizeof(buffer), buffer, nullptr));
-         dbgprintf("Driver Version:\t%s", buffer);
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(buf_uint), &buf_uint, nullptr));
-         dbgprintf("Max Compute Units:\t%u", (unsigned int)buf_uint);
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(buf_uint), &buf_uint, nullptr));
-         dbgprintf("Max Clock Frequency:\t%u", (unsigned int)buf_uint);
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(buf_ulong), &buf_ulong, nullptr));
-         dbgprintf("Global Memory Size:\t%llu", (unsigned long long)buf_ulong);
-         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(buf_ulong), &buf_ulong, nullptr));
-         dbgprintf("Max Workgroup Size:\t%llu", (unsigned long long)buf_ulong);
-
-     // CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
-     size_t workitem_dims;
-         clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(workitem_dims), &workitem_dims, nullptr);
-         dbgprintf("Max Work Item Dimensions:\t %u", (unsigned int) workitem_dims);
-
-     size_t workitem_size[3];
-         clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(workitem_size), &workitem_size, nullptr);
-         dbgprintf("Max Work Item Sizes:\t%u / %u / %u", workitem_size[0], workitem_size[1], workitem_size[2]);
-
-     dbgpop();
-}
-
- void _clPrintPlatformInfo(void) {
-  char stringBuff[ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE];
-
-  auto queryCLPlat = [&](const unsigned index, const cl_platform_info info, const char* string) {
-    cl_int status = clGetPlatformInfo(_platforms[index], info, sizeof(char)*ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE, stringBuff, nullptr);
-    if(status == CL_SUCCESS) {
-      dbgprintf("%s:\t%s", string, stringBuff);
-    } else {
-      dbgprintf("Query failed: %s", string);
-    }
-  };
-
-  for(unsigned i = 0; i < _platformCount; ++i) {
-    queryCLPlat(i, CL_PLATFORM_NAME, "Platform Name");
-    dbgpush();
-
-    queryCLPlat(i, CL_PLATFORM_VENDOR,		"Vendor");
-    queryCLPlat(i, CL_PLATFORM_VERSION,		"Version");
-    queryCLPlat(i, CL_PLATFORM_PROFILE,		"Profile");
-    queryCLPlat(i, CL_PLATFORM_EXTENSIONS,	"Extensions");
-
-    for(unsigned j = 0; j < _deviceCount[i]; ++j) {
-      _clPrintDeviceInfo(_devices[i][j]);
-    }
-
-    dbgpop();
-  }
-}
 
 
 #endif
 
 
 
-#ifdef ELYSIAN_OPENCL_ACCELERATED
-  cl_platform_id*     _platforms				= nullptr;
-  cl_uint             _platformCount			= 0;
-  cl_device_id**      _devices				= nullptr;
-  cl_uint*            _deviceCount			= nullptr;
-    cl_uint             _curPlatformIndex       = 0;
-    cl_uint             _curDeviceIndex         = 1;
-    cl_context          _context;
-    cl_command_queue    _cmdQueue;
-    cl_program          _program;
-    cl_kernel           _kernel;
-    cl_mem              _aabbListBuff;
-    cl_mem              _aabbListSizeBuff;
-    cl_mem              _aabbContactListBuff;
-    cl_mem              _aabbContactListSizeBuff;
-#endif
+
 
     SortSweepAABBContact _aabbContacts[ELYSIAN_SORT_SWEEP_AABB_CONTACT_LIST_SIZE];
     unsigned            _aabbContactsSize = 0;
@@ -243,12 +176,86 @@ inline void SortSweepAABBPool<T>::_sort(void) {
 
 template<typename T>
 inline void SortSweepAABBPool<T>::sortAndSweep(void) {
-
-
     _sort();
     _sweep();
+}
 
 
+static inline void _checkClError(const cl_int status, const char*const str) {
+  if(status != CL_SUCCESS) {
+    dbgprintf("! - OpenCL Error: %s\n", str);
+    exit(1);
+  }
+}
+
+inline void _clPrintDeviceInfo(const cl_device_id device) {
+  auto CL_CHECK = [](const cl_int status) {
+    if(status != CL_SUCCESS) {
+            dbgprintf("! - OpenCL Error querying device attribute!");
+    }
+  };
+
+  char buffer[10240];
+     cl_uint buf_uint;
+     cl_ulong buf_ulong;
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, nullptr));
+         dbgprintf("Device Name:\t%s", buffer);
+     dbgpush();
+
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, nullptr));
+         dbgprintf("Vendor:\t%s", buffer);
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_VERSION, sizeof(buffer), buffer, nullptr));
+         dbgprintf("Device Version:\t%s", buffer);
+         CL_CHECK(clGetDeviceInfo(device, CL_DRIVER_VERSION, sizeof(buffer), buffer, nullptr));
+         dbgprintf("Driver Version:\t%s", buffer);
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(buf_uint), &buf_uint, nullptr));
+         dbgprintf("Max Compute Units:\t%u", (unsigned int)buf_uint);
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(buf_uint), &buf_uint, nullptr));
+         dbgprintf("Max Clock Frequency:\t%u", (unsigned int)buf_uint);
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(buf_ulong), &buf_ulong, nullptr));
+         dbgprintf("Global Memory Size:\t%llu", (unsigned long long)buf_ulong);
+         CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(buf_ulong), &buf_ulong, nullptr));
+         dbgprintf("Max Workgroup Size:\t%llu", (unsigned long long)buf_ulong);
+
+     // CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
+     size_t workitem_dims;
+         clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(workitem_dims), &workitem_dims, nullptr);
+         dbgprintf("Max Work Item Dimensions:\t %u", (unsigned int) workitem_dims);
+
+     size_t workitem_size[3];
+         clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(workitem_size), &workitem_size, nullptr);
+         dbgprintf("Max Work Item Sizes:\t%u / %u / %u", workitem_size[0], workitem_size[1], workitem_size[2]);
+
+     dbgpop();
+}
+
+ inline void _clPrintPlatformInfo(void) {
+  char stringBuff[ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE];
+
+  auto queryCLPlat = [&](const unsigned index, const cl_platform_info info, const char* string) {
+    cl_int status = clGetPlatformInfo(_platforms[index], info, sizeof(char)*ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE, stringBuff, nullptr);
+    if(status == CL_SUCCESS) {
+      dbgprintf("%s:\t%s", string, stringBuff);
+    } else {
+      dbgprintf("Query failed: %s", string);
+    }
+  };
+
+  for(unsigned i = 0; i < _platformCount; ++i) {
+    queryCLPlat(i, CL_PLATFORM_NAME, "Platform Name");
+    dbgpush();
+
+    queryCLPlat(i, CL_PLATFORM_VENDOR,		"Vendor");
+    queryCLPlat(i, CL_PLATFORM_VERSION,		"Version");
+    queryCLPlat(i, CL_PLATFORM_PROFILE,		"Profile");
+    queryCLPlat(i, CL_PLATFORM_EXTENSIONS,	"Extensions");
+
+    for(unsigned j = 0; j < _deviceCount[i]; ++j) {
+      _clPrintDeviceInfo(_devices[i][j]);
+    }
+
+    dbgpop();
+  }
 }
 
 template<typename T>
@@ -369,9 +376,12 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
     }
 }
 
-
+#if 0
 template<typename T>
 inline void SortSweepAABBPool<T>::initialize(void) {
+#else
+inline void initializeOpenCL(void) {
+#endif
 #ifdef ELYSIAN_OPENCL_ACCELERATED
     dbgprintf("OpenCL Initialization");
     dbgpush();
@@ -395,8 +405,23 @@ inline void SortSweepAABBPool<T>::initialize(void) {
     status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, _deviceCount[i], _devices[i], nullptr);
     _checkClError(status, "Could not populate device array!");
 
+    CGLContextObj kCGLContext = CGLGetCurrentContext(); // GL Context
+    CGLShareGroupObj kCGLShareGroup =
+    CGLGetShareGroup(kCGLContext); // Share Group
+    cl_context_properties props[] =
+    {
+    CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+    (cl_context_properties) kCGLShareGroup, 0
+        /*
+        ,
+
+        CL_CONTEXT_PLATFORM,
+    (cl_context_properties) cpPlatform, 0*/
+    };
+
+
     //Create context
-    _context = clCreateContext(nullptr, _deviceCount[i], _devices[i], nullptr, nullptr, &status);
+    _context = clCreateContext(props, _deviceCount[i], _devices[i], nullptr, nullptr, &status);
     _checkClError(status, "Could not create context!");
   }
   _clPrintPlatformInfo();
@@ -414,7 +439,7 @@ inline void SortSweepAABBPool<T>::initialize(void) {
     _checkClError(status, "Could not allocate aabbContactListBuff");
     _aabbContactListSizeBuff    = clCreateBuffer(_context, CL_MEM_WRITE_ONLY, sizeof(cl_uint), nullptr, &status);
     _checkClError(status, "Could not allocate aabbContactListSizeBuff");
-
+#if 0
     //Load program source from file
     GYFile* fp;
     size_t fileLen;
@@ -464,6 +489,17 @@ inline void SortSweepAABBPool<T>::initialize(void) {
     _checkClError(status, "Could not set arg 2!");
     status = clSetKernelArg(_kernel, 3, sizeof(cl_mem), &_aabbContactListSizeBuff);
     _checkClError(status, "Could not set arg 3!");
+#endif
+
+    cl_mem ubo_cl = clCreateFromGLBuffer(_context, CL_MEM_READ_WRITE, glalLightingUBO, nullptr);
+
+    cl_gl_object_type objType;
+    GLuint objName;
+    cl_int stats = clGetGLObjectInfo(ubo_cl, &objType, &objName);
+
+    dbgprintf("Status: %d, GL ID - %d, CL ID - %d, CL TYPE - %d", stats, ubo, objName, objType);
+   // CL_GL_OBJECT_BUFFER
+
 
     dbgpop();
 #else

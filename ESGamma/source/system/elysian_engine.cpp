@@ -29,6 +29,7 @@
 #include "elysian_pathfinding_system.hpp"
 #include <crtp/elysian_input_system.hpp>
 #include <system/elysian_event_system.hpp>
+#include <utility/elysian_sort_sweep.hpp>
 
 namespace elysian {
 
@@ -45,6 +46,7 @@ Engine::Engine(void):
     //gyAudInit();
     System::setProcessInput();
     LuaManager::initialize();
+    initializeOpenCL();
 
     //allocate systems
     _eventSystem        = new EventSystem;
