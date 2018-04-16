@@ -6,6 +6,7 @@
 #include <gyro_system_api.h>
 #include <glal/gyro_gl.h>
 #include <QGLWidget>
+#include <QOpenGLContext>
 //#include <QOpenGLWidget>
 #include <gyro_input_api.h>
 #include <QHash>
@@ -16,10 +17,9 @@
 
 extern GYInputInitParams    _initParams;
 //static QHash<GLuint, QOpenGLTexture*> _qTextures;
-
-int glalDefaultFbo(void) {
-    //return reinterpret_cast<QOpenGLWidget*>(_initParams.glWidget)->defaultFramebufferObject();
-return 0;
+uint32_t glalDefaultFbo(void) {
+    if(!_initParams.glWidget) return 0;
+    return static_cast<QGLWidget*>(_initParams.glWidget)->context()->contextHandle()->defaultFramebufferObject();
 }
 
 int _gyVidTexAlloc(GYTexture *const tex) {

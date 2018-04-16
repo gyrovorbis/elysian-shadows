@@ -186,7 +186,7 @@ void gyVidApplyBloom(void) {
     gyVidResolution(&scrWidth, &scrHeight);
 
     //1 - Copy backbuffer to texture.
-    gyVidVertexBatchEnd();
+    gyVidVertexBatchFlush();
 
 #if 0
 
@@ -205,10 +205,10 @@ void gyVidApplyBloom(void) {
 
     //===== 2 - Perform horizontal convolution on BLOOM buffer texture =====
     gyVidSetCurrentShaderProgram(_bloomShader.program);
-    glUniform1i(_bloomShader.uniformLoc[BLOOM_SHADER_CONV_DIR], 0);
+    glUniform1i(_bloomShader.uniformLoc[BLOOM_SHADER_CONV_DIR], 0);FRONT
     glBindFramebuffer(GL_FRAMEBUFFER, _horizontalConvFbo);
     glBindTexture(GL_TEXTURE_2D, _horizontalConvTex);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,        gyVidVertexBatchEnd();
                            GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D,
                            _horizontalConvTex,
@@ -250,23 +250,27 @@ void gyVidApplyBloom(void) {
     //===== 4 - Additively blend blurred bloom texture over backbuffer as a fullscreen quad.  =====
 #endif
     GYColor4 color = { 0, 255, 255, 100 };
-    gyVidSetDefaultShaderProgram();
-    gyVidVertexArrayBind(0);
+    //gyVidSetDefaultShaderProgram();
+  //  gyVidVertexArrayBind(0);
     glalVidBindDefaultFbo();
-    glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
+   // glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
 
 #if 0
     gyVidAlphaLevel(GY_ALPHA_NONE);
+
 #else
     gyVidDepthTest(0);
-    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
+   // gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+    //gyVidAlphaLevel(GY_ALPHA_FULL);
 #endif
-    glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, _glalColorTex);
-    gyVidNormalMapBind(NULL);
-    gyVidSpecularMapBind(NULL);
+
+    static GYTexture tex;
+    tex._data = _glalColorTex;
+    gyVidTexBind(NULL);
+    gyVidTexBind(&tex);
+            glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
+   // gyVidNormalMapBind(NULL);
+    //gyVidSpecularMapBind(NULL);
     //Render fullscreen quad.
     gyMatPush();
     gyMatLoadIdentity();
@@ -275,8 +279,8 @@ void gyVidApplyBloom(void) {
     gyVidTexCoordArray(texCoords);
     gyVidQuadListBegin(&color);
     gyVidRect(-1);
-    gyVidQuadListEnd();
-    gyVidVertexBatchEnd();
+    //gyVidQuadListEnd();
+    //gyVidVertexBatchEnd();
     gyMatPop();
 
 #if 0
@@ -298,10 +302,9 @@ void gyVidApplyBloom(void) {
     gyMatPop();
 #endif
 
-    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-    gyVidAlphaLevel(GY_ALPHA_NONE);
+    gyVidVertexBatchFlush();
 
-        gyVidVertexBatchEnd();
+
 }
 
 
