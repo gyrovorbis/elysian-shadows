@@ -1,16 +1,21 @@
 
 #include <glal/gyro_gl.h>
 
-extern "C" int glalVidDefaultFbo(void) {
-    return 0;
-}
+
+uint32_t glalDefaultFbo(void);
 
 
 extern "C" void glalVidBindDefaultFbo(void) {
     //fucking disgusting.
    // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
+
+    GLenum buffs[] = {
+        GL_BACK_LEFT
+    };
+
+    //glDrawBuffers(1, buffs);
 #ifdef GYRO_GLAL_GL_Desktop
-    glDrawBuffer(GL_BACK);
+ //  glDrawBuffer(GL_BACK);
 #endif
 }

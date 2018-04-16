@@ -917,6 +917,7 @@ dreamcast {
 else:linux {
     LIBS += \
         -lSDL2 \
+        -lSDL2_net \
         -lGL \
         -lopenal \
         -lGLU \

@@ -195,14 +195,12 @@ void glalBindMainMrtFbo(void) {
 }
 
 void gyVidSceneBegin(void) {
-    glalVidBindDefaultFbo();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #if 1
+
     glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
-    unsigned int scrWidth, scrHeight;
-    gyVidResolution(&scrWidth, &scrHeight);
-    glViewport(0, 0, (float)scrWidth, (float)scrHeight);
+    glViewport(0, 0, (float)GLAL_RENDERBUFFER_WIDTH, (float)GLAL_RENDERBUFFER_HEIGHT);
 #if 0
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _glalColorTex, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _glalGlowTex, 0);
@@ -215,11 +213,12 @@ void gyVidSceneBegin(void) {
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE) {
         _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }*/
 #endif
 
-    //glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     gyMatLoadIdentity();
 
     glalPrevVertexRenderCount   = glalVertexRenderCount;
@@ -232,8 +231,9 @@ void gyVidSceneBegin(void) {
 
 void gyVidSceneEnd(void) {
     gyVidVertexBatchFlush();
-  //  glFlush();
 }
+
+
 
 
 void gyVidClearColor(const GYColor4 color) {
@@ -321,7 +321,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     glalVidGlewInit();
 
     static int once = 0;
-    if(!once) {
+    if(!once) {    glFlush();
         GLint glint[2];
         _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing OpenGL.");
         _gyPush();
@@ -368,7 +368,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
         glGenTextures(1, &_glalColorTex);
         glBindTexture(GL_TEXTURE_2D, _glalColorTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -381,7 +381,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
         glGenTextures(1, &_glalGlowTex);
         glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -424,7 +424,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     //    glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);    glFlush();
       //  glDepthFunc(GL_LESS);
      //   glClearDepth(1.0f);
     //    glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -630,8 +630,7 @@ void gyVidBlendMode(const GY_BLEND_MODE mode) {
 }
 
 void gyVidDepthTest(const int enable) {
-    glDisable(GL_DEPTH_TEST);
-#if 0
+#if 1
     if(gyVidShadowPass()) return;
     static int wasShadow = 0;
     int passChange = wasShadow != gyVidShadowPass();
@@ -974,6 +973,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 vertex->normalZ = 1.0f;
                 ++vertex;
             }
+
 
         } else if (attachment->type == SP_ATTACHMENT_SKINNED_MESH) {
             skinnedMesh = (spSkinnedMeshAttachment*)attachment;
