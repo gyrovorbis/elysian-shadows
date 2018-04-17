@@ -23,12 +23,14 @@
 #define ELYSIAN_SORT_SWEEP_DIMENSIONS               2
 #define ELYSIAN_SORT_SWEEP_POOL_SIZE                500
 #define ELYSIAN_SORT_SWEEP_AABB_CONTACT_LIST_SIZE   10000
-#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH        "/assets/opencl/sweep_kernel.cl"
-#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME        "aabb_sweep"
+#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH        "/assets/opencl/ubo_write_test_kernel.cl"
+#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME        "drawUBO"
 #define ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE      100
 #define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS       "-D ELYSIAN_SORT_SWEEP_DIMENSIONS=" ELYSIAN_EXPAND_STRINGIFY_MACRO(ELYSIAN_SORT_SWEEP_DIMENSIONS)
 
 ELYSIAN_ASSET_TYPEDEF(Collidable)
+
+ extern "C" GLuint                       glalLightingUBO;
 
 namespace elysian {
 
@@ -262,7 +264,7 @@ inline void _clPrintDeviceInfo(const cl_device_id device) {
 template<typename T>
 inline void SortSweepAABBPool<T>::_sweep(void) {
         if(!_useGPU) {
-#ifndef ELYSIAN_OPENCL_ACCELERATED
+#if 1
 
         const unsigned curIndex = SortSweepAABB<T>::curIndex;
 
@@ -382,9 +384,7 @@ template<typename T>
 inline void SortSweepAABBPool<T>::initialize(void) {
 #else
 
-
   void initializeOpenCL(void);
-#endif
 
 template<typename T>
 inline void SortSweepAABBPool<T>::uninitialize(void) {

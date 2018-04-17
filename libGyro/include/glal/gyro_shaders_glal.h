@@ -102,8 +102,12 @@ typedef struct LightingUBOLightSource {
 } LightingUBOLightSource;
 
 typedef struct LightingUBOData {
+#if 1
     GLint                   count;
     LightingUBOLightSource  sources[32];
+#else
+    float color[32*32*3];
+#endif
 } LightingUBOData;
 
 typedef struct LightSourceUniforms {

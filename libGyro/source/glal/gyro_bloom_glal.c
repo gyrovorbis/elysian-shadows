@@ -188,8 +188,8 @@ void gyVidApplyBloom(void) {
     //1 - Copy backbuffer to texture.
     gyVidVertexBatchFlush();
 
-#if 0
 
+#if 1
 #if 0
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _glalMainFbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _bloomBuffFbo);
@@ -201,14 +201,16 @@ void gyVidApplyBloom(void) {
                            0);
     gyVidResolution(&scrWidth, &scrHeight);
     glBlitFramebuffer(0, 0, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, 0, GYRO_GLAL_BLOOM_TEXTURE_WIDTH, GYRO_GLAL_BLOOM_TEXTURE_HEIGHT, GL_COLOR_BUFFER_BIT, GYRO_GLAL_BLOOM_BLIT_FILTER);
+#else
+
 #endif
 
     //===== 2 - Perform horizontal convolution on BLOOM buffer texture =====
     gyVidSetCurrentShaderProgram(_bloomShader.program);
-    glUniform1i(_bloomShader.uniformLoc[BLOOM_SHADER_CONV_DIR], 0);FRONT
+    glUniform1i(_bloomShader.uniformLoc[BLOOM_SHADER_CONV_DIR], 0);
     glBindFramebuffer(GL_FRAMEBUFFER, _horizontalConvFbo);
     glBindTexture(GL_TEXTURE_2D, _horizontalConvTex);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,        gyVidVertexBatchEnd();
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                            GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D,
                            _horizontalConvTex,
@@ -227,6 +229,7 @@ void gyVidApplyBloom(void) {
     glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
     gyVidVertexArrayBind(_bloomVao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        gyVidVertexBatchFlush();
 
 
     //===== 3 - Perform vertical convolution on horizontal convolution texture =====
@@ -246,14 +249,13 @@ void gyVidApplyBloom(void) {
     glBindTexture(GL_TEXTURE_2D, _horizontalConvTex);
     gyVidVertexArrayBind(_bloomVao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
+    gyVidVertexBatchFlush();
     //===== 4 - Additively blend blurred bloom texture over backbuffer as a fullscreen quad.  =====
 #endif
-    GYColor4 color = { 0, 255, 255, 100 };
-    //gyVidSetDefaultShaderProgram();
-  //  gyVidVertexArrayBind(0);
+    gyVidSetDefaultShaderProgram();
+   gyVidVertexArrayBind(0);
     glalVidBindDefaultFbo();
-   // glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
+    glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
 
 #if 0
     gyVidAlphaLevel(GY_ALPHA_NONE);
@@ -263,12 +265,36 @@ void gyVidApplyBloom(void) {
    // gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
     //gyVidAlphaLevel(GY_ALPHA_FULL);
 #endif
+        GYColor4 col = { 0, 0, 0, 255 };
+    gyVidTexBind(NULL);
 
+            glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 0);
+   // gyVidNormalMapBind(NULL);
+    //gyVidSpecularMapBind(NULL);
+    //Render fullscreen quad.
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
+    gyMatScale(scrWidth, scrHeight, 1.0f);
+    gyVidTexCoordArray(texCoords);
+    gyVidQuadListBegin(&col);
+    gyVidRect(-1);
+    //gyVidQuadListEnd();
+    //gyVidVertexBatchEnd();
+    gyMatPop();
+
+    gyVidVertexBatchFlush();
+
+  //  gyVidAlphaLevel(GY_ALPHA_FULL);
+                glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
+  //  gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+
+        GYColor4 color = { 255, 255, 255, 255 };
     static GYTexture tex;
     tex._data = _glalColorTex;
     gyVidTexBind(NULL);
     gyVidTexBind(&tex);
-            glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
+            glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
    // gyVidNormalMapBind(NULL);
     //gyVidSpecularMapBind(NULL);
     //Render fullscreen quad.
@@ -282,28 +308,34 @@ void gyVidApplyBloom(void) {
     //gyVidQuadListEnd();
     //gyVidVertexBatchEnd();
     gyMatPop();
+        gyVidVertexBatchFlush();
 
-#if 0
+#if 1
     gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_ONE);
+        GYColor4 color2 = { 255, 255, 255, 255 };
+gyVidBlendMode(GY_BLEND_ONE);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);    
-    glBindTexture(GL_TEXTURE_2D, _finalConvTex);
+
+    tex._data = _finalConvTex;
+    gyVidTexBind(NULL);
+    gyVidTexBind(&tex);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
     //Render fullscreen quad.
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
     gyMatScale(scrWidth, scrHeight, 1.0f);
     gyVidTexCoordArray(texCoords);
-    gyVidQuadListBegin(&color);
+    gyVidQuadListBegin(&color2);
     gyVidRect(-1);
-    gyVidQuadListEnd();
-    gyVidVertexBatchEnd();
+   // gyVidVertexBatchEnd();
     gyMatPop();
+
 #endif
 
     gyVidVertexBatchFlush();
-
+    gyVidAlphaLevel(GY_ALPHA_NONE);
 
 }
 

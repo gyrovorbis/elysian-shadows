@@ -194,6 +194,7 @@ namespace elysian {
         direction       = rhs.direction;
         spotCutoffAngle = rhs.spotCutoffAngle;
         properties      = rhs.properties;
+        _attrib         = rhs._attrib;
         setLightType(rhs.type);
         return *this;
     }
