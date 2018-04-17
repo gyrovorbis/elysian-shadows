@@ -6,6 +6,7 @@
 #include <elysian_debug.hpp>
 #include <utility/elysian_generic.hpp>
 #include <glal/gyro_gl.h>
+#include <gyro_file_api.h>
 
 #include <OpenCL/cl_gl_ext.h>
 #include <OpenGL/CGLDevice.h>
@@ -22,12 +23,14 @@
 #define ELYSIAN_SORT_SWEEP_DIMENSIONS               2
 #define ELYSIAN_SORT_SWEEP_POOL_SIZE                500
 #define ELYSIAN_SORT_SWEEP_AABB_CONTACT_LIST_SIZE   10000
-#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH        "/assets/opencl/sweep_kernel.cl"
-#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME        "aabb_sweep"
+#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH        "/assets/opencl/ubo_write_test_kernel.cl"
+#define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME        "drawUBO"
 #define ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE      100
 #define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS       "-D ELYSIAN_SORT_SWEEP_DIMENSIONS=" ELYSIAN_EXPAND_STRINGIFY_MACRO(ELYSIAN_SORT_SWEEP_DIMENSIONS)
 
 ELYSIAN_ASSET_TYPEDEF(Collidable)
+
+ extern "C" GLuint                       glalLightingUBO;
 
 namespace elysian {
 
@@ -66,7 +69,7 @@ extern     cl_kernel           _kernel;
  extern    cl_mem              _aabbListSizeBuff;
  extern    cl_mem              _aabbContactListBuff;
  extern    cl_mem              _aabbContactListSizeBuff;
- extern GLuint                       glalLightingUBO;
+
 #endif
 
 
@@ -261,7 +264,7 @@ inline void _clPrintDeviceInfo(const cl_device_id device) {
 template<typename T>
 inline void SortSweepAABBPool<T>::_sweep(void) {
         if(!_useGPU) {
-#ifndef ELYSIAN_OPENCL_ACCELERATED
+#if 1
 
         const unsigned curIndex = SortSweepAABB<T>::curIndex;
 
@@ -429,7 +432,7 @@ inline void initializeOpenCL(void) {
     //Create command queue
     _cmdQueue = clCreateCommandQueue(_context, _devices[_curPlatformIndex][_curDeviceIndex], 0, &status);
     _checkClError(status, "Could not create command queue!");
-
+#if 0
     //Initialize buffers
     _aabbListBuff               = clCreateBuffer(_context, CL_MEM_READ_ONLY, ELYSIAN_SORT_SWEEP_POOL_SIZE*sizeof(SortSweepCollidable), nullptr, &status);
     _checkClError(status, "Could not allocate aabbListBuff");
@@ -439,12 +442,13 @@ inline void initializeOpenCL(void) {
     _checkClError(status, "Could not allocate aabbContactListBuff");
     _aabbContactListSizeBuff    = clCreateBuffer(_context, CL_MEM_WRITE_ONLY, sizeof(cl_uint), nullptr, &status);
     _checkClError(status, "Could not allocate aabbContactListSizeBuff");
-#if 0
+#endif
+#if 1
     //Load program source from file
     GYFile* fp;
     size_t fileLen;
     char* programSource;
-    dbgprintf("Compiling program: %s [%s]", ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS);
+  //  dbgprintf("Compiling program: %s [%s]", ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS);
     dbgpush();
     if(!gyFileOpen(ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, "r", &fp)) {
         Debug::printf(Debug::LOG_WARNING, "Could not open source file!");
@@ -458,7 +462,7 @@ inline void initializeOpenCL(void) {
     //Create and compile program
     _program = clCreateProgramWithSource(_context, 1, (const char**)&programSource, nullptr, &status);
     _checkClError(status, "Could not create program object!");
-    status = clBuildProgram(_program, _deviceCount[_curPlatformIndex], _devices[_curPlatformIndex], ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS, nullptr, nullptr);
+    status = clBuildProgram(_program, _deviceCount[_curPlatformIndex], _devices[_curPlatformIndex], nullptr, nullptr, nullptr);
 
     //Check for compilation errors
     if(status != CL_SUCCESS) {
@@ -470,7 +474,7 @@ inline void initializeOpenCL(void) {
         buildLog[logSize] = '\0';
         dbgprintf("Build failed!");
         dbgprintf("%s", buildLog);
-        free(buildLog);
+      //  free(buildLog);
     } else dbgprintf("Compiled successfully!");
     free(programSource);
     dbgpop();
@@ -480,16 +484,6 @@ inline void initializeOpenCL(void) {
     _kernel = clCreateKernel(_program, ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME, &status);
     _checkClError(status, "Could not create kernel!");
 
-    //Set kernel arguments
-    status = clSetKernelArg(_kernel, 0, sizeof(cl_mem), &_aabbListBuff);
-    _checkClError(status, "Could not set arg 0!");
-    status = clSetKernelArg(_kernel, 1, sizeof(cl_mem), &_aabbListSizeBuff);
-    _checkClError(status, "Could not set arg 1!");
-    status = clSetKernelArg(_kernel, 2, sizeof(cl_mem), &_aabbContactListBuff);
-    _checkClError(status, "Could not set arg 2!");
-    status = clSetKernelArg(_kernel, 3, sizeof(cl_mem), &_aabbContactListSizeBuff);
-    _checkClError(status, "Could not set arg 3!");
-#endif
 
     cl_mem ubo_cl = clCreateFromGLBuffer(_context, CL_MEM_READ_WRITE, glalLightingUBO, nullptr);
 
@@ -497,7 +491,44 @@ inline void initializeOpenCL(void) {
     GLuint objName;
     cl_int stats = clGetGLObjectInfo(ubo_cl, &objType, &objName);
 
-    dbgprintf("Status: %d, GL ID - %d, CL ID - %d, CL TYPE - %d", stats, ubo, objName, objType);
+    dbgprintf("Status: %d, GL ID - %d, CL ID - %d, CL TYPE - %d", stats, glalLightingUBO, objName, objType);
+
+    //Set kernel arguments
+    status = clSetKernelArg(_kernel, 0, sizeof(cl_mem), &ubo_cl);
+    _checkClError(status, "Could not set arg 0!");
+
+
+    //======= RUN SHIT!!!!!!!!!! =============
+    glFlush();
+
+    status = clEnqueueAcquireGLObjects(_cmdQueue, 1, &ubo_cl, 0,0,0);
+    if(status != CL_SUCCESS) {
+        dbgprintf("Couldn't acquire shit!");
+    }
+
+    size_t globalWorkSize[1];
+    globalWorkSize[0] = 32*32;
+
+    status = clEnqueueNDRangeKernel(_cmdQueue,
+                                    _kernel,
+                                    1,              //work dim
+                                    nullptr,        //global work offset
+                                    globalWorkSize,
+                                    nullptr,        //local work size
+                                    0,
+                                    nullptr,
+                                    nullptr);
+
+    _checkClError(status, "Could not enqueue kernel on device!");
+
+    status = clEnqueueReleaseGLObjects(_cmdQueue, 1, &ubo_cl, 0,0,0);
+    _checkClError(status, "Could release shit!!");
+
+    status = clFinish(_cmdQueue);
+    _checkClError(status, "Finish failed!!!");
+#endif
+
+
    // CL_GL_OBJECT_BUFFER
 
 
