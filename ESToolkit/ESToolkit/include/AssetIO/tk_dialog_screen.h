@@ -1,8 +1,8 @@
 #ifndef TK_DIALOG_SCREEN
 #define TK_DIALOG_SCREEN
 
-#include <level/elysian_dialog_screen_base.hpp>
 #include <ESGamma/tk_lua_wrappers.h>
+#include <level/elysian_dialog_screen_base.hpp>
 
 class TkDialog;
 

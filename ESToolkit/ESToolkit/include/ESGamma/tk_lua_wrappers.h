@@ -1,12 +1,11 @@
 #ifndef TK_LUAWRAPPERS_H
 #define TK_LUAWRAPPERS_H
 
-
+#include <QESTkUtils/ui/delegate/tk_property_item_delegate.h>
 #include <oolua.h>
 #include <ESToolkit/ui/tk_estoolkit.h>
 #include <lua/elysian_lua_singleton.hpp>
 #include <AssetIO/tk_area.h>
-#include <QESTkUtils/ui/delegate/tk_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>

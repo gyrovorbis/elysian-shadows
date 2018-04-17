@@ -918,6 +918,7 @@ else:linux {
     LIBS += \
         -lSDL2 \
         -lSDL2_net \
+        -lOpenCL \
         -lGL \
         -lopenal \
         -lGLU \

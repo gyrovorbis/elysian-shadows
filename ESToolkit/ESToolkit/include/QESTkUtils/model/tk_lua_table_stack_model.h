@@ -1,12 +1,13 @@
 #ifndef ESTK_LUA_TABLE_STANDARD_ITEM_MODEL_HPP
 #define ESTK_LUA_TABLE_STANDARD_ITEM_MODEL_HPP
 
+#include <QESTkUtils/model/tk_property_standard_item.h>
 #include <QString>
 #include <ESToolkit/core/tk_asset_manager.h>
 #include <crtp/elysian_lua_manager.hpp>
 #include <QESTkUtils/tk_lua_qt_utils.h>
 #include <crtp/elysian_lua_variant.hpp>
-#include <QESTkUtils/model/tk_property_standard_item.h>
+
 
 #define ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR     QColor(Qt::blue)
 

@@ -1,4 +1,5 @@
-#include "elysian_collision_system.hpp"
+#include <crtp/elysian_depth_buff_entry.hpp>
+#include <elysian_collision_system.hpp>
 #include <crtp/elysian_collidable.hpp>
 #include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_level.hpp>
@@ -7,7 +8,6 @@
 #include "elysian_debug.hpp"
 #include "elysian_timer_system_base.hpp"
 #include <level/elysian_zcoords.hpp>
-#include <crtp/elysian_depth_buff_entry.hpp>
 #include <crtp/elysian_map_system.hpp>
 #include "elysian_party_system.hpp"
 

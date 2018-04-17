@@ -5,7 +5,7 @@
 #include "elysian_engine.hpp"
 #include <elysian_timer_system.hpp>
 #include <system/elysian_light_system.hpp>
-#include <ESToolkit/ui/widget/tk_map_view.h>
+
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
 #include <ESToolkit/ui/tk_estoolkit.h>
@@ -16,6 +16,7 @@
 #include <QMouseEvent>
 #include <spine/spine.h>
 #include <QOpenGLContext>
+#include <ESToolkit/ui/widget/tk_map_view.h>
 
 EngineGLSceneWidget* EngineGLSceneWidget::_self = nullptr;
 
