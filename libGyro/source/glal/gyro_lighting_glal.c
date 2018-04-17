@@ -37,7 +37,7 @@ void _lightSourceToLightingUBOLightsource(const GYLightSource* lightSrc, Lightin
 }
 
 void _updateLightingUBO(void) {
-    return;
+
         GY_GL_CHECK_ERROR();
     glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
             GY_GL_CHECK_ERROR();
@@ -420,10 +420,13 @@ void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const 
 }
 
 void gyVidLightSourceClear(void) {
-    if(gyVidShadowPass()) return;
+    //if(gyVidShadowPass()) return;
     gyVidVertexBatchFlush();
+   #if 1
     glalLightingUBOData.count = 0;
     _updateLightingUBO();
+#endif
+
     glalLightSourceCount = 0;
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i]) {

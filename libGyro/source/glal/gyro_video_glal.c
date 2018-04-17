@@ -200,7 +200,7 @@ void gyVidSceneBegin(void) {
 #if 1
 
     glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
-    glViewport(0, 0, (float)GLAL_RENDERBUFFER_WIDTH, (float)GLAL_RENDERBUFFER_HEIGHT);
+    glViewport(0, 0, (float)_projWidth, (float)_projHeight);
 #if 0
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _glalColorTex, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _glalGlowTex, 0);
@@ -313,6 +313,71 @@ int glalVidGlewInit(void) {
 }
 
 
+int glalVidViewportResize(const int initialization, const int viewWidth, const int viewHeight) {
+
+    if(!initialization) {
+
+
+        //delete depth buffer render target
+        GLuint renderBuffers[] = {
+            _glalDepthBuffer
+        };
+        glDeleteRenderbuffers(1, renderBuffers);
+
+    } else {
+        //create main FBO object
+        glGenFramebuffers(1, &_glalMainFbo);
+
+        //create color texture and bind it to FBO as color attachment 0
+        glGenTextures(1, &_glalColorTex);
+
+
+        //create glow texture and bind it to FBO as color attachment 1
+        glGenTextures(1, &_glalGlowTex);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
+
+    //create and attach depth buffer render target to FBO
+    glGenRenderbuffers(1, &_glalDepthBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, viewWidth, viewHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _glalDepthBuffer);
+
+    //set color texture attachment size
+    glBindTexture(GL_TEXTURE_2D, _glalColorTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, viewWidth, viewHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _glalColorTex, 0);
+
+    //set glow texture attachment size
+    glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, viewWidth, viewHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _glalGlowTex, 0);
+
+    //Set both color attachments as draw buffers for the FBO
+    uint32_t buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, buffers);
+
+    //check the status of the FBO now that shit's hopefully good to go
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    glalVidBindDefaultFbo();
+
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        _gyLog(GY_DEBUG_ERROR, "FBO %s failed: %d", initialization? "initialization" : "reinitialization", status);
+        return 0;
+    }
+
+    return 1;
+}
+
 
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
     _projWidth = projWidth;
@@ -321,7 +386,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     glalVidGlewInit();
 
     static int once = 0;
-    if(!once) {    glFlush();
+    if(!once) {
         GLint glint[2];
         _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing OpenGL.");
         _gyPush();
@@ -337,7 +402,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glalLoadDefaultShaders();
         glalVidInitializeBloom();
         gyVidSetDefaultShaderProgram();
-
+#if 0
         _gyLog(GY_DEBUG_VERBOSE, "Creating FBO(s)");
         _gyPush();
         GY_GL_CHECK_ERROR();
@@ -346,7 +411,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glGenRenderbuffers(1, &_glalGlowRT);
         glGenRenderbuffers(1, &_glalDepthBuffer);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
+
 
 #if 0
         glBindRenderbuffer(GL_RENDERBUFFER, _glalColorRT);
@@ -358,13 +423,11 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, _glalGlowRT);
 #endif
-        glBindRenderbuffer(GL_RENDERBUFFER, _glalDepthBuffer);
+
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _glalDepthBuffer);
         GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if(status != GL_FRAMEBUFFER_COMPLETE) {
-            _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
-        }
+
 
         glGenTextures(1, &_glalColorTex);
         glBindTexture(GL_TEXTURE_2D, _glalColorTex);
@@ -375,21 +438,6 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _glalColorTex, 0);
               status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if(status != GL_FRAMEBUFFER_COMPLETE) {
-            _gyLog(GY_DEBUG_ERROR, "FBO Initialization failed: %d", status);
-        }
-
-        glGenTextures(1, &_glalGlowTex);
-        glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, GLAL_RENDERBUFFER_WIDTH, GLAL_RENDERBUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _glalGlowTex, 0);
-
-        uint32_t buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-        glDrawBuffers(2, buffers);
 
        status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if(status != GL_FRAMEBUFFER_COMPLETE) {
@@ -397,6 +445,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         }
         glalVidBindDefaultFbo();
         _gyPop(1);
+#endif
 
         _gyLog(GY_DEBUG_VERBOSE, "Creating UBOs");
         GY_GL_CHECK_ERROR();
@@ -404,7 +453,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         GY_GL_CHECK_ERROR();
         glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
         GY_GL_CHECK_ERROR();
-        glalLightingUBOData.count = 0;
+       // glalLightingUBOData.count = 0;
         glBufferData(GL_UNIFORM_BUFFER, sizeof(LightingUBOData), &glalLightingUBOData, GL_DYNAMIC_DRAW);
         GY_GL_CHECK_ERROR();
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, glalLightingUBO);
@@ -473,12 +522,12 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
                 glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
             }
         }
-        once = 1;
         gyVidVertexArrayBind(0);
         _gyPop(1);
     }
 
-
+    glalVidViewportResize(!once, viewWidth, viewHeight);
+    if(!once) once = 1;
     glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS
     glViewport(0, 0, viewWidth, viewHeight);
