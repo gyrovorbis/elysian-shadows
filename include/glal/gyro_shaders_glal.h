@@ -99,6 +99,7 @@ typedef struct LightingUBOLightSource {
     GYVector3       attenuationFactors;
     float           spotExponent;
     float           spotCutoffAngle;
+    GLint           shadowMapIdx;
 } LightingUBOLightSource;
 
 typedef struct LightingUBOData {
