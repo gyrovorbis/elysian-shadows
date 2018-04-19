@@ -43,7 +43,18 @@ int _gyVidTexAlloc(GYTexture *const tex) {
         }
     }
     QImage qimg(fileName);
+    tex->width  = qimg.width();
+    tex->height = qimg.height();
+
+    if(qimg.isNull()) {
+        _gyLog(GY_DEBUG_ERROR,"SHIT HAS REESTED TO ALL FUCK! <%d, %d>", tex->width, tex->height);
+        tex->_data = nullptr;
+//         static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
+        return 0; //fuck.
+    }
+
         tex->bpp    = qimg.depth();
+        _gyLog(GY_DEBUG_WARNING, "BIT DEPTH BITCH - %d", tex->bpp);
 #if 1
         qimg = qimg.mirrored();
 
@@ -55,6 +66,7 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     tex->height = qimg.height();
 
     if(qimg.isNull()) {
+        _gyLog(GY_DEBUG_ERROR,"SHIT HAS REESTED TO ALL FUCK!");
         tex->_data = nullptr;
 //         static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
         return 0; //fuck.

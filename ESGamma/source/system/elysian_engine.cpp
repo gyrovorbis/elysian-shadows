@@ -46,7 +46,7 @@ Engine::Engine(void):
     //gyAudInit();
     System::setProcessInput();
     LuaManager::initialize();
-    initializeOpenCL();
+    //initializeOpenCL();
 
     //allocate systems
     _eventSystem        = new EventSystem;

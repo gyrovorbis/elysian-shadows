@@ -12,7 +12,8 @@
     #endif
 
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
-#       include <GL/glx.h>
+#include <glal/gyro_gl.h>
+//#       include <GL/glx.h>
 #       include <GL/glext.h>
 #		include <CL/cl.h>
 #       include <CL/cl_gl.h>
@@ -69,6 +70,8 @@ cl_uint*            _deviceCount			= nullptr;
      status = clGetPlatformIDs(_platformCount, _platforms, nullptr);
      _checkClError(status, "Could not populate platform array!");
 
+
+
      //Initialize devices
    for(unsigned i = 0; i < _platformCount; ++i) {
      status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, 0, nullptr, &_deviceCount[i]);
@@ -91,15 +94,6 @@ cl_uint*            _deviceCount			= nullptr;
      (cl_context_properties) cpPlatform, 0*/
      };
  #elif defined(__WIN32)
-     cl_context_properties props[] =
-     {
-     CL_GL_CONTEXT_KHR,
-     (cl_context_properties) wglGetCurrentContext(), // HGLRC handle
-     CL_WGL_HDC_KHR,
-     (cl_context_properties) wglGetCurrentDC(), // HDC handle
-     CL_CONTEXT_PLATFORM,
-     (cl_context_properties)cpPlatform, 0
-     };
 
  #else
      cl_context_properties props[] = {
@@ -113,12 +107,21 @@ cl_uint*            _deviceCount			= nullptr;
      };
 
  #endif
-
-     //Create context
-     _context = clCreateContext(props, _deviceCount[i], _devices[i], nullptr, nullptr, &status);
-     _checkClError(status, "Could not create context!");
    }
+   cl_context_properties props[] =
+   {
+   CL_GL_CONTEXT_KHR,
+   (cl_context_properties) wglGetCurrentContext(), // HGLRC handle
+   CL_WGL_HDC_KHR,
+   (cl_context_properties) wglGetCurrentDC(), // HDC handle
+   CL_CONTEXT_PLATFORM,
+   (cl_context_properties)_platforms[0], 0
+   };
+
    _clPrintPlatformInfo();
+   //Create context
+   _context = clCreateContext(props, _deviceCount[0], _devices[0], nullptr, nullptr, &status);
+   _checkClError(status, "Could not create context!");
 
      //Create command queue
      _cmdQueue = clCreateCommandQueue(_context, _devices[_curPlatformIndex][_curDeviceIndex], 0, &status);
