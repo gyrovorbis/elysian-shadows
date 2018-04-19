@@ -30,8 +30,6 @@
 
 ELYSIAN_ASSET_TYPEDEF(Collidable)
 
- extern "C" GLuint                       glalLightingUBO;
-
 namespace elysian {
 
 struct SortSweepAABBContact {
@@ -378,11 +376,6 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
 #endif
     }
 }
-
-#if 0
-template<typename T>
-inline void SortSweepAABBPool<T>::initialize(void) {
-#else
 
   void initializeOpenCL(void);
 

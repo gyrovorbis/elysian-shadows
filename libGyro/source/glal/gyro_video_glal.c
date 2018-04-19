@@ -298,10 +298,10 @@ int glalVidGlewInit(void) {
             _gyLog(GY_DEBUG_ERROR, "Error: %s", glewGetErrorString(err));
         }
 
-        if(GLEW_VERSION_3_3) {
-            _gyLog(GY_DEBUG_VERBOSE, "OpenGL 3.3 Extensions detected");
+        if(GLEW_VERSION_4_1) {
+            _gyLog(GY_DEBUG_VERBOSE, "OpenGL 4.1 Extensions detected");
         } else {
-            _gyLog(GY_DEBUG_ERROR, "OpenGL 3.3 Extensions NOT detected! Prepare for crash!");
+            _gyLog(GY_DEBUG_ERROR, "OpenGL 4.1 Extensions NOT detected! Prepare for crash!");
         }
         _gyPop(1);
         once = 1;

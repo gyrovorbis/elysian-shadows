@@ -171,7 +171,7 @@ cl_uint*            _deviceCount			= nullptr;
      status = clSetKernelArg(_kernel, 3, sizeof(cl_mem), &_aabbContactListSizeBuff);
      _checkClError(status, "Could not set arg 3!");
  #endif
-
+/*
      cl_mem ubo_cl = clCreateFromGLBuffer(_context, CL_MEM_READ_WRITE, glalLightingUBO, nullptr);
 
      cl_gl_object_type objType;
@@ -181,7 +181,7 @@ cl_uint*            _deviceCount			= nullptr;
      dbgprintf("Status: %d, GL ID - %d, CL ID - %d, CL TYPE - %d", stats, ubo_cl, objName, objType);
     // CL_GL_OBJECT_BUFFER
 
-
+*/
      dbgpop();
  #else
 
