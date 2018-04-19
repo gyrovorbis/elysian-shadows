@@ -843,6 +843,7 @@ win32 {
         -lglu32 \
         -lopengl32 \
         -lopenal32.dll \
+        -lOpenCL \
         #-lDbgHelp.dll \
         -lz \
         -lz.dll \

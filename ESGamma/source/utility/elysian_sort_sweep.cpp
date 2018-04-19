@@ -7,6 +7,10 @@
 #include <OpenGL/CGLCurrent.h>
 #		include <OpenCL/opencl.h>
 #	else
+    #ifdef __WIN32
+        #include <windows.h>
+    #endif
+
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #       include <GL/glx.h>
 #       include <GL/glext.h>
@@ -45,6 +49,7 @@ cl_uint*            _deviceCount			= nullptr;
 #ifdef __APPLE__
 
 #elif defined(__WIN32)
+
 
 #else
      /*
@@ -86,7 +91,15 @@ cl_uint*            _deviceCount			= nullptr;
      (cl_context_properties) cpPlatform, 0*/
      };
  #elif defined(__WIN32)
-
+     cl_context_properties props[] =
+     {
+     CL_GL_CONTEXT_KHR,
+     (cl_context_properties) wglGetCurrentContext(), // HGLRC handle
+     CL_WGL_HDC_KHR,
+     (cl_context_properties) wglGetCurrentDC(), // HDC handle
+     CL_CONTEXT_PLATFORM,
+     (cl_context_properties)cpPlatform, 0
+     };
 
  #else
      cl_context_properties props[] = {
