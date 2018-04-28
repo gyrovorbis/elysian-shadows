@@ -141,7 +141,9 @@ HEADERS += \
     ../../include/gyro_test_api.h \
     ../../include/glal/gyro_gl_utils.h \
     ../../include/x86/gyro_sdl_input.h \
-    ../../include/gyro_visual_memory_api.h
+    ../../include/gyro_visual_memory_api.h \
+    ../../include/glal/gyro_radial_blur_glal.h \
+    ../..//include/glal/gyro_chromatic_aberration_glal.h
 
 vulkan {
     HEADERS += \
@@ -204,7 +206,9 @@ SOURCES += \
     ../../source/common/gyro_test.c \
     ../../source/glal/gyro_gl_utils.c \
     ../../source/x86/gyro_rumble_sdl_x86.c \
-    ../../source/common/gyro_visual_memory_common.c
+    ../../source/common/gyro_visual_memory_common.c \
+    ../../source/glal/gyro_radial_blur_glal.c \
+    ../../source/glal/gyro_chromatic_aberration_glal.c
 
 vulkan {
     SOURCES += \

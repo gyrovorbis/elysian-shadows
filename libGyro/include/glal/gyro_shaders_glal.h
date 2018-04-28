@@ -4,7 +4,8 @@
 #include <gyro_shader_api.h>
 #include <glal/gyro_gl.h>
 
-#define GLAL_SHADOW_MAP_SIZE	1024
+#define GLAL_SHADOW_MAP_SIZE        1024
+#define GLAL_SHADOW_MAP_ARRAY_SIZE  10
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,14 +15,9 @@ typedef enum __GLAL_TEXTURE_UNITS {
     GLAL_TEXTURE_MAP,
     GLAL_NORMAL_MAP,
     GLAL_SPECULAR_MAP,
-    GLAL_SHADOW1_MAP,
-    GLAL_SHADOW2_MAP,
-    GLAL_SHADOW3_MAP,
-    GLAL_SHADOW4_MAP,
-    GLAL_SHADOW1_CUBE_MAP,
-    GLAL_SHADOW2_CUBE_MAP,
-    GLAL_SHADOW3_CUBE_MAP,
-    GLAL_SHADOW4_CUBE_MAP,
+    GLAL_SPOT_SHADOW_MAP,
+        GLAL_DIRECTIONAL_SHADOW_MAP,
+    GLAL_POINT_SHADOW_CUBE_MAP,
     GLAL_TEMP_MAP,
     GLAL_TEXTURE_MAP_MAX
 } GLAL_TEXTURE_UNITS;
@@ -54,6 +50,9 @@ typedef enum __GLAL_SHADER_UNIFORM {
     GLAL_SHADER_NORMAL_MAP,
     GLAL_SHADER_SPECULAR_MAP_ENABLED,
     GLAL_SHADER_SPECULAR_MAP,
+    GLAL_SHADER_DIRECTIONAL_SHADOW_MAPS,
+    GLAL_SHADER_SPOT_SHADOW_MAPS,
+    GLAL_SHADER_POINT_SHADOW_CUBE_MAPS,
     GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT,
     GLAL_SHADER_UNIFORM_MAX
 } _GLAL_SHADER_UNIFORM;
@@ -86,10 +85,11 @@ typedef struct __LightingShaderProgram {
 typedef struct __LightInternals {
     GLuint fbo;
     GLuint shadowMap;
+    int shadowMapIdx;
 } _LightInternals;
 
 typedef struct LightingUBOLightSource {
-    GYMatrix4 projViewMat;
+    GYMatrix4       projViewMat;
     GYVector4       position;
     //GYVector4       ambientColor;
     GYVector4       diffuseColor;
