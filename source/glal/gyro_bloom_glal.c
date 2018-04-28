@@ -167,6 +167,8 @@ int glalVidUninitializeBLOOM(void) {
     glDeleteTextures(1, &_bloomBuffTex);
     glDeleteTextures(1, &_horizontalConvTex);
     glDeleteTextures(1, &_finalConvTex);
+    glDeleteVertexArrays(1, &_bloomVao);
+    glDeleteBuffers(1, &_bloomVbo);
 
     _gyPop(1);
     return success;

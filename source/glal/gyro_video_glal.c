@@ -4,6 +4,8 @@
 #include <gyro_shader_api.h>
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
+#include <glal/gyro_radial_blur_glal.h>
+#include <glal/gyro_chromatic_aberration_glal.h>
 #include <glal/gyro_bloom_glal.h>
 #include <glal/gyro_gl_utils.h>
 #include <common/gyro_spine_common.h>
@@ -121,14 +123,23 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
         {0.5f, 0.5f, 0.0f, 1.0f}
     },
     #endif
-
+#if 0
     //LEFT_SLOPE_45
     {
-        {0.5f, -0.5f, 1.0f, 1.0f},
-        {0.5f, 0.5f, 1.0f, 1.0f},
-        {0.5f, -0.5f, 0.0f, 1.0f},
-        {0.5f, 0.5f, 0.0f, 1.0f}
+        {-0.5f, 0.0f, 1.0f, 1.0f},
+        {0.0f, -0.5f, 1.0f, 1.0f},
+        {0.0f, 0.5f, 0.0f, 1.0f},
+        {0.5f, 0.0f, 0.0f, 1.0f}
     },
+    #else
+    {
+        {-0.5f, 0.5f, 1.0f, 1.0f},
+        {0.5f, -0.5f, 1.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f},
+        {0.5f, -0.5f, 0.0f, 1.0f}
+    },
+    #endif
+#if 0
     //RIGHT_SLOPE_45
     {
         {0.5f, -0.5f, 1.0f, 1.0f},
@@ -136,6 +147,15 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
         {0.5f, -0.5f, 0.0f, 1.0f},
         {0.5f, 0.5f, 0.0f, 1.0f}
     },
+    #else
+    {
+        {-0.5f, -0.5f, 1.0f, 1.0f},
+        {0.5f, 0.5f, 1.0f, 1.0f},
+        {-0.5f, -0.5f, 0.0f, 1.0f},
+        {0.5f,  0.5f, 0.0f, 1.0f}
+    },
+    #endif
+
 };
 
 
@@ -182,8 +202,6 @@ static GLintptr             _vertexQueueLastOffset      = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
 GLuint                      _glalMainFbo                = 0;
-GLuint                      _glalColorRT                = 0;
-GLuint                      _glalGlowRT                 = 0;
 GLuint                      _glalColorTex               = 0;
 GLuint                      _glalGlowTex                = 0;
 GLuint                      _glalDepthBuffer            = 0;
@@ -401,6 +419,8 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
         glalLoadDefaultShaders();
         glalVidInitializeBloom();
+        glalVidInitializeRadialBlur();
+        glalVidInitializeChromaticAberration();
         gyVidSetDefaultShaderProgram();
 #if 0
         _gyLog(GY_DEBUG_VERBOSE, "Creating FBO(s)");
@@ -453,7 +473,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         GY_GL_CHECK_ERROR();
         glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
         GY_GL_CHECK_ERROR();
-       // glalLightingUBOData.count = 0;
+        glalLightingUBOData.count = 0;
         glBufferData(GL_UNIFORM_BUFFER, sizeof(LightingUBOData), &glalLightingUBOData, GL_DYNAMIC_DRAW);
         GY_GL_CHECK_ERROR();
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, glalLightingUBO);
@@ -461,6 +481,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glUniformBlockBinding(glalLightingShader.program->program, glalLightingShader.lightingUBOIndex, 0);
         GY_GL_CHECK_ERROR();
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
         glalDefaultShadersLoadUniforms();
         //HAVE TO SET DEFAULT GL STATES OR THE STATE CACHES WILL BE DIRTY
         //K the fact that this reests spine needs to be reinvestigated!!!
@@ -473,7 +494,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     //    glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_DEPTH_TEST);    glFlush();
+        glDisable(GL_DEPTH_TEST);   // glFlush();
       //  glDepthFunc(GL_LESS);
      //   glClearDepth(1.0f);
     //    glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -661,8 +682,8 @@ void gyVidTexBind(const GYTexture *const tex) {
 }
 
 void gyVidBlendMode(const GY_BLEND_MODE mode) {
-    if(gyVidShadowPass()) return;
-    if(mode != glalBlendMode) {
+    //if(gyVidShadowPass()) return;
+    //if(mode != glalBlendMode) {
         gyVidVertexBatchFlush();
         switch(mode) {
         case GY_BLEND_ONE_MINUS_SRC_ALPHA:
@@ -674,8 +695,8 @@ void gyVidBlendMode(const GY_BLEND_MODE mode) {
         case GY_BLEND_ADDITIVE:
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         }
-        glalBlendMode = mode;
-    }
+      //  glalBlendMode = mode;
+  //  }
 }
 
 void gyVidDepthTest(const int enable) {
@@ -701,20 +722,20 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
 
     //Does this even do anything now that we're shader based?
 
-    if(lev != glalAlphaLevel) {
+   // if(lev != glalAlphaLevel) {
         gyVidVertexBatchFlush();
         switch(lev) {
         case GY_ALPHA_NONE:
+        case GY_ALPHA_PUNCHTHRU:
             glDisable(GL_BLEND);
             break;
         default:
-        case GY_ALPHA_PUNCHTHRU:
             glEnable(GL_BLEND);
             break;
         }
         glalAlphaLevel = lev;
       //  wasShadow = gyVidShadowPass();
-    }
+  //  }
 }
 
 
