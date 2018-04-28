@@ -68,6 +68,8 @@ namespace elysian {
         void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
         GYVector3       			getVelocity(void) const;
         void						setVelocity(const GYVector3& _vel);
+        void                        setAccel(const GYVector3& accel);
+        void                        setForceAccum(const GYVector3& forceAccum);
         void						clearKinetic(void);
 
         void						setRotation(const float rotation);
@@ -175,6 +177,8 @@ namespace elysian {
     inline Vector3 ForceTarget::getVel(void) { return Vector3(&vel); }
     inline Vector3 ForceTarget::getAccel(void) { return Vector3(&accel); }
     inline Vector3 ForceTarget::getForceAccum(void) { return Vector3(&forceAccum); }
+    inline void ForceTarget::setAccel(const GYVector3& accel) { this->accel = accel; }
+    inline void ForceTarget::setForceAccum(const GYVector3& forceAccum) { this->forceAccum = forceAccum; }
 
 
     inline RigidBodyBase::RigidBodyBase(Entity& entity, RigidBodyBase*const prefab): Component(entity) {

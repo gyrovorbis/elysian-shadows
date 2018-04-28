@@ -3,6 +3,7 @@
 #include "elysian_gui_system_base.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_area.hpp>
+#include <primitive/elysian_rect.hpp>
 #include <crtp/elysian_level.hpp>
 #include <elysian_timer_system.hpp>
 #include <system/elysian_input_system_base.hpp>
@@ -305,6 +306,34 @@ void CameraSystemBase::initializeProjMatrix(void) {
 
 }
 
+Vector2 CameraSystemBase::getScreenResolution(void) const {
+    unsigned w, h;
+    gyVidResolution(&w, &h);
+    return Vector2(w, h);
+}
+
+void CameraSystemBase::ensureVisibleRect(const Rectf& in, Rectf& out, const Rectf margins) const {
+    Vector2 res = getScreenResolution();
+    Rectf boundaries(margins.top, res.getY() - margins.bottom, margins.left, res.getX() - margins.right);
+    out = in;
+
+    if(in.getLeft() < boundaries.getLeft()) {
+        out.translate(boundaries.getLeft() - in.getLeft(), 0.0f);
+    }
+
+    if(in.getRight() > boundaries.getRight()) {
+        out.translate(boundaries.getRight() - in.getRight(), 0.0f);
+    }
+
+    if(in.getTop() < boundaries.getTop()) {
+        out.translate(0.0f, boundaries.getTop() - in.getTop());
+    }
+
+    if(in.getBottom() > boundaries.getBottom()) {
+        out.translate(0.0f, boundaries.getBottom() - in.getBottom());
+    }
+}
+
 void CameraSystemBase::setCurrentCamera(Camera*const state) {
     _states[_depth] = state;
     static_cast<CameraSystem*>(this)->setCurrentIndex(_depth);
@@ -569,6 +598,23 @@ void CameraSystemBase::update(void) {
    _curState->updateViewVolumeBoundingRegion();
    _curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
 }
+
+Vector3 CameraSystemBase::transformWorldToScreen(const Vector3& vec) {
+   GYVector3 out;
+   GYVector3 in = { vec.getX(), vec.getY(), vec.getZ() };
+   transform(&out, &in);
+   return out;
+}
+
+void CameraSystemBase::transformWorldToScreen(const Rectf &in, Rectf &out) {
+    GYVector3 topLeft = { in.getLeft(), in.getTop(), 0.0f };
+    GYVector3 bottomRight = { in.getRight(), in.getBottom(), 0.0f };
+    GYVector3 scrTopLeft, scrBotRight;
+    transform(&scrTopLeft, &topLeft);
+    transform(&scrBotRight, &bottomRight);
+    out.setBoundaries(scrTopLeft.y, scrBotRight.y, scrTopLeft.x, scrBotRight.x);
+}
+
 
 //VERY INEFFICIENT. BATCH THIS BITCH! THESE DON'T WORK ANYMORE!!!!
 void CameraSystemBase::transform(GYVector3* dest, const GYVector3* src) {

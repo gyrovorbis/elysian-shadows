@@ -266,7 +266,7 @@ namespace elysian {
 
         gyVidVertexBatchBegin(&flushVertexBatchCallback, this);
 
-//        glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
+       // glBindVertexArray(_curArea->vao[gyVidShadowPass()]);
 
        // glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
     }
@@ -394,7 +394,7 @@ break;
 
         //Blending mode state change
         if(entry.renderPass > 1) {
-            disableDepthTest();
+          //  disableDepthTest();
         }
         //We don't give a fuck about blend modes when blending is off
         else if(entry.renderPass == 1) {
@@ -413,8 +413,8 @@ break;
         //glPolygonOffset(2.0f, 2.0f);
       //  glDepthMask(GL_FALSE);
      //   glDepthFunc(GL_EQUAL);
-     gyVidAlphaLevel(GY_ALPHA_FULL);
-       gyVidBlendMode(GY_BLEND_ONE);
+   //  gyVidAlphaLevel(GY_ALPHA_FULL);
+     //  gyVidBlendMode(GY_BLEND_ONE);
   //      _blendPass = true;
     }
 

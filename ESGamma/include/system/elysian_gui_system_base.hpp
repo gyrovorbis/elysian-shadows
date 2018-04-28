@@ -6,6 +6,7 @@
 #include "elysian_adventure_log.hpp"
 #include <utility/elysian_mem_pool.hpp>
 #include <crtp/elysian_entity.hpp>
+#include <system/elysian_event_system.hpp>
 #include <memory>
 
 #include <gyro_video_api.h>
@@ -49,7 +50,7 @@ namespace elysian {
 	class GuiSystem;
     class Widget;
 
-    class GuiSystem: public System {
+    class GuiSystem: public System, public EventObserver {
 	private:
 
         class CombatStatusIndicator {
@@ -117,6 +118,10 @@ namespace elysian {
         void            _renderDebugOverlay(void);
         void            _renderCombatText(void);
         void            _renderExamineEntity(void);
+
+    protected:
+        virtual void    onObserveEvent(Event* event, EventTarget* target) override;
+
 	public:
 
                         GuiSystem(void);

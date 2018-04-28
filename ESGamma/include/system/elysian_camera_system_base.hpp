@@ -6,6 +6,7 @@
 #include <utility/elysian_subprocess_manager.hpp>
 #include <level/elysian_zcoords.hpp>
 #include <utility/elysian_camera_shake_subprocess.hpp>
+#include <primitive/elysian_rect.hpp>
 
 #include <stdlib.h>
 #include <cstdlib>
@@ -153,10 +154,14 @@ namespace elysian {
         void                    getVisibleTileRegion(int& startX, int& startY, int& endX, int& endY, const Camera* state=nullptr) const;
         void                    pushViewMatrixToStack(void);
         void                    popViewMatrixFromStack(void);
+        Vector2                 getScreenResolution(void) const;
+        void                    ensureVisibleRect(const Rectf& in, Rectf& out, const Rectf margins=Rectf(16.0f, 16.0f, 16.0f, 16.0f)) const;
 
         //Transforms a WORLD COORDINATE vector into SCREEN COORDINATES
         void                    transform(GYVector3* dest, const GYVector3* src);
         void                    transform(GYVector4* dest, const GYVector4* src);
+        Vector3                 transformWorldToScreen(const Vector3& vec);
+        void                    transformWorldToScreen(const Rectf& in, Rectf& out);
 
         //Transforms a SCREEN COORDINATE vector into WORLD COORDINATES
         void                    inverseTransform(GYVector3* dest, const GYVector3* src);

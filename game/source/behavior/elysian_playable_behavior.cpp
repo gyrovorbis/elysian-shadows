@@ -8,6 +8,7 @@
 #include <crtp/elysian_entity.hpp>
 #include <gyro_input_api.h>
 #include <system/elysian_engine.hpp>
+#include <crtp/elysian_combat.hpp>
 
 namespace elysian {
 
@@ -16,7 +17,7 @@ namespace game {
 void PlayableBehavior::onUpdate(void) {
     auto* partyMember       = getEntity();
     auto* partySys          = Singletons::getPartySys();
-    auto* cont              = Singletons::getInputSys()->getController(_playerNum);
+    auto* cont              = Singletons::getInputSys()->getController(_playerIndex);
     const float deltaTime   = Singletons::getTimerSys()->getDeltaTime();
 
         if(System::getEngineState() == Engine::ENGINE_WARPING) return;
@@ -28,6 +29,7 @@ void PlayableBehavior::onUpdate(void) {
         _processJump(deltaTime, cont, partyMember);
         _processExamine(deltaTime, cont, partyMember, partySys);
         _processPickup(deltaTime, cont, partyMember, partySys);
+        _processSwapPartyMember(deltaTime, cont, partyMember, partySys);
     }
 }
 
@@ -47,16 +49,24 @@ void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Control
 //    };
 
     auto emitDashParticles = [&](void) {
-        partySys->getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
+        //partySys->getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, 8.0, 7.0f/*7.0f*//*6.5f*/ });
         partySys->getPartSys()->getAttrib(0)->setForceMask(0);
+
+        partySys->getPartSys()->getAttrib(0)->setStartSize(1);
+        partySys->getPartSys()->getAttrib(0)->setEndSize(6);
         partySys->getPartSys()->getAttrib(0)->setEndColor(Color4(255, 255, 255, 0));
         partySys->getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
-        partySys->getPartSys()->getAttrib(0)->setMaxLife(30);
+        partySys->getPartSys()->getAttrib(0)->setIntensityFactor(10.0f);
+        partySys->getPartSys()->getAttrib(0)->setMaxLifeTime(0.3f);
         partySys->getPartSys()->getAttrib(0)->setStick(false);
-        GYVector3 pos = entity->_transform._pos;
+        GYVector3 pos = entity->getCollidable()->getWorldPos();
+        pos.y += 0.5f * entity->getCollidable()->getWorldSize().y;
         pos.z += 5.0f;
-        pos.y = entity->getDepthBaseY();
-       // partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
+        GYVector2 dir = cont->getAnalogDir(GY_CONTROLLER_ANALOG_LEFT);
+        GYVector3 dirNorm = { -dir.x, -dir.y, 1.0f };
+        gyVec3Normalize(&dirNorm);
+        //partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
+        partySys->getPartSys()->emitFromPointInDir(0, pos, dirNorm, 100, angle);
         _dashPartTimer = 0.0f;
     };
 
@@ -184,6 +194,57 @@ void PlayableBehavior::_processCarry(const float /*deltaTime*/, const Controller
 }
 
 void PlayableBehavior::_processPushPull(const float /*deltaTime*/, const Controller*const /*cont*/, Entity*const /*entity*/) {
+}
+
+int PlayableBehavior::getPartySlot(void) const {
+    return Singletons::getPartySys()->getPartySlot(_entity);
+}
+
+bool PlayableBehavior::isAlive(void) const {
+    return (getEntity()->getCombat()->getStatus().getHp() > 0);
+}
+
+
+void PlayableBehavior::_processSwapPartyMember(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
+    unsigned activeCount = partySys->getActivePartyMemberCount();
+    unsigned slot = partySys->getPartySlot(entity);
+    unsigned newSlot = slot;
+
+
+
+  //  Singletons::getPartySys()->getPartyMember(i)->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME);
+
+    auto swapToAvailableSlot = [&](int i) {
+        Entity* entity = Singletons::getPartySys()->getPartyMember(i);
+        if(entity) {
+            PlayableBehavior* playable = static_cast<PlayableBehavior*>(entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME));
+            if(playable) {
+                if(playable->isAlive() && playable->getPlayerIndex() == -1) {
+
+
+                }
+            }
+        }
+        return false;
+    };
+
+
+    if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_DOWN)) {
+
+        for(int i = slot-1; i <= 0; --i) {
+            if(swapToAvailableSlot(i)) {
+
+            }
+        }
+
+
+
+
+    } else if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_UP)) {
+
+    }
+
+
 }
 
 }

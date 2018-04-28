@@ -131,11 +131,11 @@
 */
 
 /*!
-\qmlproperty int ParticleEmitterAttrib::maxLife
+\qmlproperty int ParticleEmitterAttrib::maxLifeTime
 
-The maximum number of frames an emitted particle can exist before being removed.
+The maximum amount of time (in seconds) an emitted particle can exist before being removed.
 
-\sa getMaxLife(), setMaxLife()
+\sa getMaxLifeTime(), setMaxLifeTime()
 */
 /*!
 \qmlproperty int ParticleEmitterAttrib::startSize
@@ -185,9 +185,9 @@ check whether or not particles should be effected by the force.
 \sa getForceMask(), setForceMask()
 */
 /*!
-\qmlproperty int ParticleEmitterAttrib::animFrameDuration
+\qmlproperty float ParticleEmitterAttrib::animFrameDuration
 
-When using a texture with animations, this is how many frames of engine updates each animation
+When using a texture with animations, this is how many seconds each animation
 frame will last before advancing to the next.
 
 \sa getAnimFrameDuration(), setAnimFrameDuration()
@@ -211,16 +211,16 @@ pool size, when they need to be recycled and reemitted later.
 \sa getStick(), setStick()
 */
 /*!
- * \qmlmethod int ParticleEmitterAttrib::getMaxLife()
+ * \qmlmethod float ParticleEmitterAttrib::getMaxLifeTime()
  *
- * Returns the value of the \l{maxLife} property.
- * \sa maxLife, setMaxLife()
+ * Returns the value of the \l{maxLifeTime} property.
+ * \sa maxLifeTime, setMaxLifeTime()
  */
 /*!
- * \qmlmethod void ParticleEmitterAttrib::setMaxLife(int life)
+ * \qmlmethod void ParticleEmitterAttrib::setMaxLife(float secs)
  *
- * Sets the value of the \l{maxLife} property to \a{life}.
- * \sa maxLife, getMaxLife()
+ * Sets the value of the \l{maxLifeTime} property to \a{secs}.
+ * \sa maxLifeTime, getMaxLifeTime()
  */
 /*!
  * \qmlmethod int ParticleEmitterAttrib::getStartSize()
@@ -295,15 +295,15 @@ pool size, when they need to be recycled and reemitted later.
  * \sa forceMask, getForceMask()
  */
 /*!
- * \qmlmethod int ParticleEmitterAttrib::getAnimFrameDuration()
+ * \qmlmethod float ParticleEmitterAttrib::getAnimFrameDuration()
  *
  * Returns the value of the \l{animFrameDuration} property.
  * \sa animFrameDuration, setAnimFrameDuration()
  */
 /*!
- * \qmlmethod void ParticleEmitterAttrib::setAnimFrameDuration(int duration)
+ * \qmlmethod void ParticleEmitterAttrib::setAnimFrameDuration(float secs)
  *
- * Sets the value of the \l{animFrameDuration} property to \a{duration}.
+ * Sets the value of the \l{animFrameDuration} property to \a{secs}.
  * \sa animFrameDuration, getAnimFrameDuration()
  */
 /*!
@@ -351,7 +351,7 @@ pool size, when they need to be recycled and reemitted later.
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
                        setAcceleration,
-                       setMaxLife,
+                       setMaxLifeTime,
                        setForceMask,
                        setIntensityFactor,
                        setStartSize,
@@ -373,7 +373,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib,
                        getEndSize,
                        getStartSize,
                        getIntensityFactor,
-                       getMaxLife)
+                       getMaxLifeTime)
 
 
 /*!

@@ -158,7 +158,7 @@ void LightSystem::shadowRenderPasses(void) {
     _shadowPass = true;
     //bool dbgCam = camSys->isDebug();
     if(_shadowPassEnabled) gyVidLightSourceBeginShadowPasses();
-    camSys->pushState();
+    //camSys->pushState();
 
     if(_enabled)
     for(auto it : sources) {
@@ -175,7 +175,7 @@ void LightSystem::shadowRenderPasses(void) {
 
             if(it->isShadowCaster() && _shadowPassEnabled) {
                 gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
-                getCameraSys()->setCurrentCamera(it->getCameraState());
+               // getCameraSys()->setCurrentCamera(it->getCameraState());
                 //_renderShadowVolumes();
                 /*if(_shadowPassEnabled)*/ getMapSys()->render();
             }
@@ -192,7 +192,7 @@ void LightSystem::shadowRenderPasses(void) {
                     if(it->isShadowCaster() && _shadowPassEnabled) {
                         gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 
-                        getCameraSys()->setCurrentCamera(it->getCameraState());
+                       // getCameraSys()->setCurrentCamera(it->getCameraState());
                         //_renderShadowVolumes();
                         /*if(_shadowPassEnabled)*/ getMapSys()->render();
 
@@ -255,6 +255,8 @@ void LightSystem::getLightPassTileRegion(int& startX, int& startY, int& endX, in
 }
 
 uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
+    lightsLeft = 0;
+    return ~0;
     static int call = 0;
     if(gyVidShadowPass()) {
         lightsLeft = 0;

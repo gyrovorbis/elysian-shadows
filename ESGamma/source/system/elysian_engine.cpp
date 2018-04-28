@@ -30,6 +30,8 @@
 #include <crtp/elysian_input_system.hpp>
 #include <system/elysian_event_system.hpp>
 #include <utility/elysian_sort_sweep.hpp>
+#include <glal/gyro_radial_blur_glal.h>
+#include <glal/gyro_chromatic_aberration_glal.h>
 
 namespace elysian {
 
@@ -46,7 +48,7 @@ Engine::Engine(void):
     //gyAudInit();
     System::setProcessInput();
     LuaManager::initialize();
-    //initializeOpenCL();
+    initializeOpenCL();
 
     //allocate systems
     _eventSystem        = new EventSystem;
@@ -77,6 +79,7 @@ Engine::Engine(void):
     _behaviorSystem->initialize();
     _warpSystem->initialize();
     _combatSystem->initialize();
+    _examinableSystem->initialize();
     MapSystem::staticInitialize();
 
     //register Lua dependencies
@@ -345,7 +348,8 @@ void Engine::render(void) {
           //  func();
 
              _lightSystem->removeLightSourcesFromScene();
-
+             //glalVidApplyRadialBlur();
+            //glalVidApplyChromaticAberration();
              guiRenderMonitor.start();
              _guiSystem->render();
              guiRenderMonitor.stop();
@@ -373,6 +377,7 @@ Engine::~Engine(void) {
     //SHIT ALL NEEDS SOME WORK
     MapSystem::staticUninitialize();
     InputSystem::uninitialize();
+    _examinableSystem->uninitialize();
 
     //gyInputUninit();
     //gyTimerUninit();

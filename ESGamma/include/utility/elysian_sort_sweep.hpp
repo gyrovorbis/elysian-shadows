@@ -92,8 +92,6 @@ private:
     unsigned            _aabbContactsSize = 0;
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
-    bool        _useGPU = true;
-#else
     bool        _useGPU = false;
 #endif
 

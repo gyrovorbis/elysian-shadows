@@ -164,6 +164,7 @@ namespace elysian {
         void setFollowLogicEnabled(bool val=true);
         void setSlotFollowLogicEnabled(const unsigned int slot, bool enabled=true);
         bool isSlotFollowLogicEnabled(const unsigned int slot) const;
+
 		
 		//bool SwapPlayablePartyMembersBySlot();
 		//bool SwapLeader();

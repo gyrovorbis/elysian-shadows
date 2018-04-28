@@ -194,7 +194,7 @@ void PartySystem::addCharacterToParty(Entity* entity) {
     if(!entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME)) {
         auto* behav = new game::PlayableBehavior(*entity);
         entity->addBehavior(behav);
-        behav->setPlayerNum(0);
+        behav->setPlayerIndex(0);
     }
 
     Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity->getName());
@@ -445,7 +445,7 @@ void Player::_processMovement(const float /*deltaTime*/, const Controller*const 
         partySys->getPartSys()->getAttrib(0)->setForceMask(0);
         partySys->getPartSys()->getAttrib(0)->setEndColor(Color4(255, 255, 255, 0));
         partySys->getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
-        partySys->getPartSys()->getAttrib(0)->setMaxLife(30);
+        partySys->getPartSys()->getAttrib(0)->setMaxLifeTime(1.0f);
         partySys->getPartSys()->getAttrib(0)->setStick(false);
         GYVector3 pos = entity->_transform._pos;
         pos.z += 5.0f;
@@ -586,6 +586,7 @@ void Player::processInput(const Controller* const cont, PartySystem*const partyS
     _processExamine(deltaTime, cont, partyMember, partySys);
     _processPickup(deltaTime, cont, partyMember, partySys);
 }
+
 
 void PartySystem::swapPartyMemberSlots(unsigned int slot1, unsigned int slot2) {
     auto* slot1Entity = getPartyMember(slot1);

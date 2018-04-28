@@ -751,7 +751,10 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
         }
 
-        shard->_transform.setSize(xinc, yinc, 9.0f);
+        shard->_transform.setSize(xinc, yinc, yinc);
+        shard->_transform.setScale(1.0f, 1.0f, 1.0f);
+        shard->_transform.setOrient(0.0f, 0.0f, 0.0f);
+        shard->_transform.setAngle(0.0f);
 
         if(!shard->getRenderable()) {
             auto* renderable = shard->addRenderable();
@@ -794,10 +797,10 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         *shard->getRigidBody()->getAttrib() = *entity->getRigidBody()->getAttrib();
         shard->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
         shard->getCollidable()->getAttrib()->getStaticAttrib()->invMomOfInertia = 1/5000000.0f * 16.0f;
-        shard->getCollidable()->getAttrib()->getStaticAttrib()->angDamping = 0.1f;
-        gyVec2ScaleAccum((GYVector2*)&shard->getCollidable()->getAttrib()->getStaticAttrib()->damping, 1.0f/(ySize * xSize));
-        shard->getCollidable()->getAttrib()->getStaticAttrib()->damping.z = 0.5f;
-        shard->getCollidable()->getAttrib()->getStaticAttrib()->zCoeffOfRest = 0.0f;
+        //shard->getCollidable()->getAttrib()->getStaticAttrib()->angDamping = 0.1f;
+        //gyVec2ScaleAccum((GYVector2*)&shard->getCollidable()->getAttrib()->getStaticAttrib()->damping, 1.0f/(ySize * xSize));
+        //shard->getCollidable()->getAttrib()->getStaticAttrib()->damping.z = 0.5f;
+        //shard->getCollidable()->getAttrib()->getStaticAttrib()->zCoeffOfRest = 0.0f;
 
         shard->getCollidable()->setRestingOnBody(false);
         shard->getCollidable()->setStackedOnGround(false);
@@ -805,7 +808,9 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         shard->getRigidBody()->getAttrib()->setCanHold(false);
         shard->getRigidBody()->clearKinetic();
 
-        GYVector3 velDir = entity->getRigidBody()->getVelocity();
+        shard->getRigidBody()->setVelocity(entity->getRigidBody()->getVelocity());
+        //shard->getRigidBody()->setForceAccum(entity->getRigidBody()->getForceAccum());
+        //shard->getRigidBody()->setAccel(entity->getRigidBody()->getAccel());
        //gyVec3ScaleAccum(&velDir, -1.0f);
         //Z AXIS STAYS NEGATIVE!!!!
         //if(bodyA) gyVec2ScaleAccum((GYVector2*)&velDir, -1.0f);
@@ -842,7 +847,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         };
 
        // GYVector3 normal = getContactNormal();
-
+#if 0
 #if 1
         GYVector3 localPos;
         gyVec3Sub(&localPos, &shard->_transform._pos, &entity->_transform._pos);
@@ -919,7 +924,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         shard->getRigidBody()->setVelocity(velDir);
 
 #endif
-
+#endif
     };
 
     //float invMass = rigidBody->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;

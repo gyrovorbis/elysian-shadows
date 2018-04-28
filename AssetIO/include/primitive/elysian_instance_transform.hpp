@@ -74,7 +74,7 @@ namespace elysian {
         float       toAngle(void) const;
     };
 
-    struct Vector3: public GYVector3, public VirtualArray<Vector3, int, float>, public LuaTableProxy<Vector3> {
+    struct Vector3: public GYVector3, public LuaTableProxy<Vector3>, public VirtualArray<Vector3, int, float> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
@@ -215,8 +215,11 @@ namespace elysian {
         }
 
         GYVector3& getPos(void);
+        Vector3    getPos(void) const;
         GYVector3& getSize(void);
+        Vector3    getSize(void) const;
         GYVector3& getScale(void);
+        Vector3    getScale(void) const;
         GYVector3& getOrient(void);
 
         //void setPosVec(const OOLUA::Lua_table_ref valTable);
@@ -726,8 +729,11 @@ namespace elysian {
     inline void InstanceTransform::setOrientY(const float orient) { _orient.y = orient; }
     inline void InstanceTransform::setOrientZ(const float orient) { _orient.z = orient; }
     inline GYVector3& InstanceTransform::getPos(void) { return _pos; }
+    inline Vector3 InstanceTransform::getPos(void) const { return Vector3(_pos); }
     inline GYVector3& InstanceTransform::getSize(void) { return _size; }
+    inline Vector3 InstanceTransform::getSize(void) const { return Vector3(_size); }
     inline GYVector3& InstanceTransform::getScale(void) { return _scale; }
+    inline Vector3 InstanceTransform::getScale(void) const { return Vector3(_scale); }
     inline GYVector3& InstanceTransform::getOrient(void) { return _orient; }
 
     //inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }

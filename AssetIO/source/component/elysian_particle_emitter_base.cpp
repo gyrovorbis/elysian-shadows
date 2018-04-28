@@ -8,6 +8,8 @@
 #include <level/elysian_map_depth_buffer.hpp>
 #include <crtp/elysian_area.hpp>
 #include <level/elysian_tile.hpp>
+#include <crtp/elysian_timer_system.hpp>
+#include <lua/elysian_lua_singleton.hpp>
 
 namespace elysian {
 
@@ -71,12 +73,14 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
         part->position.x = pos.x + ((rand() % 6) - 3);
         part->position.y = pos.y + ((rand() % 6) - 3);
         part->position.z = pos.z + ((rand() % 6) - 3);
-        part->life = _attrib->_maxLife;// - (rand() % ((int)((float)scaledIntensity/20.0f) + 1));
+        if(part->position.z <= 0.0f) part->position.z = 1.0f;
+        //part->life = _attrib->_maxLife;// - (rand() % ((int)((float)scaledIntensity/20.0f) + 1));
+        part->lifeTime = _attrib->_maxLifeTime;
 
         part->animRow = (_attrib->_animGridHeight > 1)? rand()%(_attrib->_animGridHeight) : 0;
         part->frame = _attrib->_animGrid[part->animRow][(_attrib->_randomStartFrame)? rand()%_attrib->_animGridWidth : 0];
 
-        if(part->life <= 0) part->life = 1;
+        if(part->lifeTime <= 0) part->lifeTime = 0.001f;
         part->size = _attrib->_startSize;
 
         const float angleRatio = angle/360.0f;
@@ -101,7 +105,7 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
                                 dir.y * (float)scaledIntensity/(float)(rand()%14 + 10),
                                 dir.z * (float)scaledIntensity/(float)(rand()%14 + 10) };
 
-        GYVector3 finalVel;
+        GYVector3 finalVel = velocity;
         gyVec3Add(&finalVel, &velocity, &dirOffset);
 
         part->setVelocity(finalVel);
@@ -174,7 +178,10 @@ void ParticleEmitterInternals::update(const Camera*const cam, const float deltaT
             continue;
         }
 
-        if(--(*it).life == 0) {
+        (*it).lifeTime -= System::getTimerSys()->getDeltaTime();
+
+        float lifeTime = _attrib->_maxLifeTime - (*it).lifeTime;
+        if((*it).lifeTime <= 0.0f) {
             _pool.remove(it);
             continue;
         }
@@ -186,20 +193,18 @@ void ParticleEmitterInternals::update(const Camera*const cam, const float deltaT
             if((*it).zIndex >= ELYSIAN_DEPTH_BUFFER_HEIGHT) (*it).zIndex = ELYSIAN_DEPTH_BUFFER_HEIGHT;
         }
 
-        const int curLife = _attrib->_maxLife - (*it).life;
-
         //Linearly interpolate shit
-        GYRO_LINEAR_INTERP((*it).size, _attrib->_startSize, _attrib->_endSize, _attrib->_maxLife, curLife);
+        GYRO_LINEAR_INTERP((*it).size, _attrib->_startSize, _attrib->_endSize, _attrib->_maxLifeTime, lifeTime);
 
-        GYRO_LINEAR_INTERP((*it).color.a, _attrib->getColor().a, _attrib->_endColor.a, _attrib->_maxLife, curLife);
-        GYRO_LINEAR_INTERP((*it).color.r, _attrib->getColor().r, _attrib->_endColor.r, _attrib->_maxLife, curLife);
-        GYRO_LINEAR_INTERP((*it).color.g, _attrib->getColor().g, _attrib->_endColor.g, _attrib->_maxLife, curLife);
-        GYRO_LINEAR_INTERP((*it).color.b, _attrib->getColor().b, _attrib->_endColor.b, _attrib->_maxLife, curLife);
+        GYRO_LINEAR_INTERP((*it).color.a, _attrib->getColor().a, _attrib->_endColor.a, _attrib->_maxLifeTime, lifeTime);
+        GYRO_LINEAR_INTERP((*it).color.r, _attrib->getColor().r, _attrib->_endColor.r, _attrib->_maxLifeTime, lifeTime);
+        GYRO_LINEAR_INTERP((*it).color.g, _attrib->getColor().g, _attrib->_endColor.g, _attrib->_maxLifeTime, lifeTime);
+        GYRO_LINEAR_INTERP((*it).color.b, _attrib->getColor().b, _attrib->_endColor.b, _attrib->_maxLifeTime, lifeTime);
 
         unsigned animCol;
-        unsigned animDuration = (_attrib->_animFrameDuration > 0)? _attrib->_animFrameDuration : _attrib->_maxLife;
+        float animDuration = (_attrib->_animFrameDuration > 0.0f)? _attrib->_animFrameDuration : _attrib->_maxLifeTime;
         if(_attrib->getTexture()) {
-            GYRO_LINEAR_INTERP(animCol, 0, _attrib->_animGridWidth, animDuration, curLife);
+            GYRO_LINEAR_INTERP(animCol, 0, _attrib->_animGridWidth, animDuration, lifeTime);
             if(_attrib->_animGridWidth != 0) animCol %= _attrib->_animGridWidth;
             else animCol = 0;
             (*it).frame = _attrib->_animGrid[(*it).animRow][animCol];
@@ -232,7 +237,6 @@ void ParticleEmitterInternals::render(void) {
         gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
 
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        gyVidAlphaLevel(GY_ALPHA_FULL);
 
         //loop unroll my bitch ass
 
@@ -266,7 +270,7 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
         //Check if we are within the range of this level of elevation
         if((*it).zIndex != elev)  continue;
 
-        if(!initialized) {
+      //  if(!initialized) {
             gyVidTexBind(_attrib->getTexture());
 
             gyVidNormalMapBind(_attrib->_normalMap);
@@ -276,9 +280,9 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
             gyVidAlphaLevel(GY_ALPHA_FULL);
 
             gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-            initialized = true;
+           // initialized = true;
 
-        }
+        //}
 
        // gyVidRectPlaneType((*it).flat? GY_RECT_PLANE_BOTTOM : GY_RECT_PLANE_FRONT);
 

@@ -66,6 +66,8 @@ GuiSystem::GuiSystem(void):
     _projHeight(0)
 {
     gyVidResolution(&_projWidth, &_projHeight);
+
+    getEventSys()->addEventObserver(this, EVENT_AREA_EXIT);
 }
 
 GuiSystem::~GuiSystem(void) {
@@ -173,6 +175,7 @@ void GuiSystem::renderForeground(void) {
     gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidDepthTest(false);
+    _renderExamineEntity();
     _renderDebugOverlay();
     if(_fgFadeAlpha == 0.0f) return;
     //if(!_debugOverlayEnabled) return;
@@ -280,7 +283,6 @@ void GuiSystem::render(void) {
     gyVidDepthTest(false);
 
     _renderCombatText();
-    _renderExamineEntity();
     for(auto it = _combatStatIndicator.begin(); it < _combatStatIndicator.end(); ++it) {
         if((*it).getEntity()) (*it).render();
     }
@@ -344,8 +346,21 @@ void GuiSystem::_renderExamineEntity(void) {
     const InstanceTransform* xform = &_examineEntity->_transform;
 
     const GYColor4 color = { 255, 255, 255, 255 };
-    pragmata18._transform._pos.x = xform->_pos.x;
-    pragmata18._transform._pos.y = xform->_pos.y + 0.5f * xform->_size.y;
+
+    GYVector3 worldPos = { _examineEntity->_transform.getPosX(), _examineEntity->_transform.getPosY() - 0.5f*_examineEntity->_transform.getSizeY()*_examineEntity->_transform.getScaleY(), _examineEntity->_transform.getPosZ() };
+    GYVector3 screenPos;
+
+    getCameraSys()->transform(&screenPos, &worldPos);
+
+    int textWidth = pragmata18.getStringPixelWidth(_examineEntity->getDispName());
+    Rectf textRect = Rectf::fromPosSize(screenPos.x, screenPos.y, textWidth, pragmata18.getCharacterHeight());
+    Rectf adjustedRect;
+    getCameraSys()->ensureVisibleRect(textRect, adjustedRect);
+    float midX, midY;
+    adjustedRect.getMidPoint(midX, midY);
+
+    pragmata18._transform._pos.x = midX;
+    pragmata18._transform._pos.y = midY;
     pragmata18._transform._pos.z = xform->_pos.z + xform->_size.y + ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_LOG_OFFSET;
 
     pragmata18.setColor(color);
@@ -399,6 +414,16 @@ void GuiSystem::processInput(void) {
         }
 
    // }
+}
+
+void GuiSystem::onObserveEvent(Event* event, EventTarget* target) {
+    switch(event->getEventType()) {
+        case EVENT_AREA_EXIT:
+            _examineEntity = nullptr;
+        default:
+            break;
+    }
+
 }
 
 

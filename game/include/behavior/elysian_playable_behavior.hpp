@@ -17,7 +17,7 @@ namespace elysian {
         private:
             enum DASH_STATE         { DASH_NONE, DASH_FIRST_TAP, DASH_RELEASE, DASH_SECOND_TAP, DASH_ACTIVE };
 
-            unsigned                _playerNum                  = 0;
+            int                     _playerIndex                = -1;
             bool                    _aiControlled               = false;
             unsigned                _dashState                  = DASH_NONE;
             bool                    _dashing                    = false;
@@ -36,14 +36,16 @@ namespace elysian {
             void                    _processPickup(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys);
             void                    _processCarry(const float deltaTime, const Controller*const cont, Entity*const entity);
             void                    _processPushPull(const float deltaTime, const Controller*const cont, Entity*const entity);
-            void                    _processSwapPartyMember(const float deltaTime, const Controller*const cont, PartySystem*const partySys);
+            void                    _processSwapPartyMember(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys);
 
         public:
 
                                     PlayableBehavior(Entity& entity);
 
-            unsigned                getPlayerNum(void) const;
-            void                    setPlayerNum(const unsigned num);
+            int                     getPlayerIndex(void) const;
+            void                    setPlayerIndex(const int num);
+            int                     getPartySlot(void) const;
+            bool                    isAlive(void) const;
 
             //overridden from Behavior
             virtual const char*     getBehavName(void) const override;
@@ -58,8 +60,8 @@ namespace elysian {
 
         // ==== INLINEZ ======
 
-        inline unsigned PlayableBehavior::getPlayerNum(void) const { return _playerNum; }
-        inline void PlayableBehavior::setPlayerNum(const unsigned num) { _playerNum = num; }
+        inline int PlayableBehavior::getPlayerIndex(void) const { return _playerIndex; }
+        inline void PlayableBehavior::setPlayerIndex(const int index) { _playerIndex = index; }
         inline const char* PlayableBehavior::getBehavName(void) const { return ELYSIAN_PLAYABLE_BEHAVIOR_NAME; }
         inline PlayableBehavior::PlayableBehavior(Entity &entity): Behavior(entity) {
             addTrigger(Behavior::ON_UPDATE);

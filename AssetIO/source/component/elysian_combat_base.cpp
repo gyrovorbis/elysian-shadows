@@ -3,6 +3,8 @@
 #include <crtp/elysian_collidable.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_area.hpp>
+#include <system/elysian_system.hpp>
+#include <crtp/elysian_timer_system.hpp>
 
 namespace elysian {
 
@@ -27,6 +29,16 @@ void CombatBase::setDmgType(const DMG_TYPE type) {
 	}
 
 	getEntity()->getCollidable()->setContactEventMonitorMask(mask);
+}
+
+
+void CombatBase::update(void) {
+    if(_dmgRecovering) {
+        _dmgRecoveryElapsed += System::getTimerSys()->getDeltaTime();
+        if(_dmgRecoveryElapsed >= _dmgRecoveryTime) {
+            _dmgRecovering = false;
+        }
+    }
 
 }
 

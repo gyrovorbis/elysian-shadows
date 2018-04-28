@@ -9,6 +9,8 @@
 #include "elysian_gui_system_base.hpp"
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_camera_system.hpp>
+#include <system/elysian_audio_system.hpp>
+#include <gyro_audio_api.h>
 
 namespace elysian {
 
@@ -58,8 +60,21 @@ void ExaminableSystem::processInput(void) {
             }
         }
 
-        getGuiSys()->setExamineEntity(curExamine);
-
+        if(_curEntity != curExamine) {
+            if(curExamine) getAudioSys()->playSfxChannel(-1, *_examineSfx);
+            getGuiSys()->setExamineEntity(curExamine);
+            _curEntity = curExamine;
+        }
 }
+
+bool ExaminableSystem::initialize(void) {
+    _examineSfx = gyAudWavCreate(ELYSIAN_EXAMINABLE_SYSTEM_EXAMINE_SFX);
+    return (_examineSfx);
+}
+
+void ExaminableSystem::uninitialize(void) {
+    gyAudWavDestroy(_examineSfx);
+}
+
 
 }

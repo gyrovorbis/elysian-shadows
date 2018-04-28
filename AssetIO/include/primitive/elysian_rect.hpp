@@ -16,6 +16,8 @@ namespace elysian {
                 Rect(T value);
                 Rect(T top, T bottom, T left, T right);
 
+        Rect&   operator=(const Rect& rhs);
+
         T       getTop(void) const;
         T       getBottom(void) const;
         T       getLeft(void) const;
@@ -24,8 +26,16 @@ namespace elysian {
         void    setBottom(T bottom);
         void    setLeft(T left);
         void    setRight(T right);
+        T       getWidth(void) const;
+        T       getHeight(void) const;
+        void    getMidPoint(T& x, T& y) const;
+        void    translate(T x, T y);
+        void    scale(T x, T y);
 
         void    setBoundaries(T top, T bottom, T left, T right);
+        static  Rect fromPosSize(T centerX, T centerY, T sizeX, T sizeY);
+
+
     };
 
     template<class T>
@@ -79,6 +89,15 @@ namespace elysian {
     inline T Rect<T, LuaProxy>::getRight(void) const { return right; }
 
     template<typename T, bool LuaProxy>
+    inline T Rect<T, LuaProxy>::getWidth(void) const { return right - left; }
+
+    template<typename T, bool LuaProxy>
+    T Rect<T, LuaProxy>::getHeight(void) const { return bottom - top; }
+
+    template<typename T, bool LuaProxy>
+    void Rect<T, LuaProxy>::getMidPoint(T& x, T& y) const { x = (left + right)/(T)2; y = (top + bottom)/(T)2; }
+
+    template<typename T, bool LuaProxy>
     inline void Rect<T, LuaProxy>::setTop(T top) { this->top = top; }
 
     template<typename T, bool LuaProxy>
@@ -91,8 +110,30 @@ namespace elysian {
     inline void Rect<T, LuaProxy>::setRight(T right) { this->right = right; }
 
     template<typename T, bool LuaProxy>
+    inline void Rect<T, LuaProxy>::translate(T x, T y) { left += x; right += x; top += y; bottom += y; }
+
+    template<typename T, bool LuaProxy>
+    inline void Rect<T, LuaProxy>::scale(T sx, T sy) { left *= sx; right *= sx; top *= sy; bottom *= sy; }
+
+    template<typename T, bool LuaProxy>
     inline void Rect<T, LuaProxy>::setBoundaries(T top, T bottom, T left, T right) {
         setTop(top); setBottom(bottom); setLeft(left); setRight(right);
+    }
+
+    template<typename T, bool LuaProxy>
+    inline auto Rect<T, LuaProxy>::operator=(const Rect& rhs) -> Rect& {
+        left = rhs.left; right = rhs.right; top = rhs.top; bottom = rhs.bottom;
+        return *this;
+    }
+
+    template<typename T, bool LuaProxy>
+    inline Rect<T, LuaProxy> Rect<T, LuaProxy>::fromPosSize(T centerX, T centerY, T sizeX, T sizeY) {
+        return Rect<T, LuaProxy>(
+            centerY - sizeY/(T)2,
+            centerY + sizeY/(T)2,
+            centerX - sizeX/(T)2,
+            centerX + sizeX/(T)2
+        );
     }
 
     template<typename T>

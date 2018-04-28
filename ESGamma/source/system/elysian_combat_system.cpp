@@ -33,7 +33,7 @@ void CombatSystem::onCollisionEnter(Collidable* const bodyA,
   mask = (combatB->getAttrib()->getTypeFlags().getValue() &
           combatA->getAttrib()->getTypeAgainstFlags().getValue());
   if (!combatB ||
-      !(mask))
+      !(mask) || !combatB->getDmgActive())
     return;
 
   if (!(combatA->getDmgType() == Combat::DMG_SOURCE ||
@@ -261,6 +261,7 @@ void CombatSystem::sendStatusModifier(Combat* const target,
   getBehavSys()->onCombatReceiveStatusModifier(target->getEntity(), modifier);
 
   target->applyModifier(*modifier);
+  target->startDmgRecoveryTimer();
 
   _curActionRes.initialVel = GYVector2{0.0f, -3.0f};
   if (_curActionRes.contact) {
@@ -303,10 +304,15 @@ void CombatSystem::_dealCollisionDamage(Combat* const src, Combat* const target,
                                               &modifier);
   // resolveCombatAction(src->getActionTable(), src, target);]
   sendStatusModifier(target, &modifier);
+  target->startDmgRecoveryTimer();
 }
 
 void CombatSystem::update(void) {
     const unsigned partySize = getPartySys()->getPartySize();
+
+    for(auto& it : getCurrentArea()->combats) {
+        (*it).update();
+    }
 
     if(_combatMgmtType != COMBAT_MGMT_MANUAL && _combatState != COMBAT_STATE_DISABLED) {
         //dirty-ass hack to poll for Entities that have been removed from area

@@ -30,6 +30,11 @@ void ParticleSystemBase::emitFromPoint(const unsigned index, const GYVector3& po
     _emitters[index].emitFromPoint(pos, angle, intensity);
 }
 
+void ParticleSystemBase::emitFromPointInDir(const unsigned index, const GYVector3 &pos, const GYVector3 &dir, const unsigned intensity, float angle) {
+    GY_ASSERT(index < _emitterCount);
+    _emitters[index].emitFromPointInDir(pos, dir, intensity, angle);
+}
+
 
 void ParticleSystemBase::resizePool(const unsigned index, const unsigned size) {
     GY_ASSERT(index < _emitterCount);

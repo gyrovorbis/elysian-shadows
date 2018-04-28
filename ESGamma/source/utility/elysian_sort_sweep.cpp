@@ -79,35 +79,24 @@ cl_uint*            _deviceCount			= nullptr;
      _devices[i] = (cl_device_id*)malloc(_deviceCount[i]*sizeof(cl_device_id));
      status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, _deviceCount[i], _devices[i], nullptr);
      _checkClError(status, "Could not populate device array!");
- #ifdef __APPLE__
-     CGLContextObj kCGLContext = CGLGetCurrentContext(); // GL Context
-     CGLShareGroupObj kCGLShareGroup =
-     CGLGetShareGroup(kCGLContext); // Share Group
-     cl_context_properties props[] =
-     {
-     CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
-     (cl_context_properties) kCGLShareGroup, 0
-         /*
-         ,
 
-         CL_CONTEXT_PLATFORM,
-     (cl_context_properties) cpPlatform, 0*/
-     };
- #elif defined(__WIN32)
-
- #else
-     cl_context_properties props[] = {
-         CL_CONTEXT_PLATFORM,
-         (cl_context_properties)_platforms[i],
-         CL_GLX_DISPLAY_KHR,
-         (intptr_t)glXGetCurrentDisplay(),
-         CL_GL_CONTEXT_KHR,
-         (intptr_t)glXGetCurrentContext(),
-         0
-     };
-
- #endif
    }
+
+#ifdef __APPLE__
+    CGLContextObj kCGLContext = CGLGetCurrentContext(); // GL Context
+    CGLShareGroupObj kCGLShareGroup =
+    CGLGetShareGroup(kCGLContext); // Share Group
+    cl_context_properties props[] =
+    {
+    CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+    (cl_context_properties) kCGLShareGroup, 0
+        /*
+        ,
+
+        CL_CONTEXT_PLATFORM,
+    (cl_context_properties) cpPlatform, 0*/
+    };
+#elif defined(__WIN32)
    cl_context_properties props[] =
    {
    CL_GL_CONTEXT_KHR,
@@ -117,6 +106,21 @@ cl_uint*            _deviceCount			= nullptr;
    CL_CONTEXT_PLATFORM,
    (cl_context_properties)_platforms[0], 0
    };
+#else
+    cl_context_properties props[] = {
+        CL_CONTEXT_PLATFORM,
+        (cl_context_properties)_platforms[i],
+        CL_GLX_DISPLAY_KHR,
+        (intptr_t)glXGetCurrentDisplay(),
+        CL_GL_CONTEXT_KHR,
+        (intptr_t)glXGetCurrentContext(),
+        0
+    };
+
+#endif
+
+
+
 
    _clPrintPlatformInfo();
    //Create context

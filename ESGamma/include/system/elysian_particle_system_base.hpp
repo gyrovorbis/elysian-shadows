@@ -29,6 +29,7 @@ namespace elysian {
 
         //Internal particle emitters
         void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
+        void emitFromPointInDir(const unsigned index, const GYVector3& pos, const GYVector3& dir, const unsigned intensity, float angle);
         std::shared_ptr<ParticleEmitterAttrib> getAttrib(const unsigned index) const;
         void setAttrib(const unsigned index, std::shared_ptr<ParticleEmitterAttrib> attrib);
 		void resizePool(const unsigned index, const unsigned size);

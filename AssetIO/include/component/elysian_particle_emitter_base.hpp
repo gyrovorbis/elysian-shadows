@@ -31,7 +31,7 @@ namespace elysian {
         int         _animGrid[ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT][ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH] = { {-1} };
         unsigned    _animGridWidth      = 0;
         unsigned    _animGridHeight     = 0;
-        unsigned    _animFrameDuration  = 0;
+        float       _animFrameDuration  = 0.0f;
 
         unsigned    _startSize          = 3;
         unsigned    _endSize            = 3;
@@ -40,7 +40,7 @@ namespace elysian {
 
         GYVector3	_acceleration		= { 0.0f, 0.0f, 0.0f };
         float		_intensityFactor	= 1.0f;
-        unsigned	_maxLife			= 100;
+        float       _maxLifeTime        = 1.5f;
         BitMask32	_forceMask			= ~0x0;
         bool		_stick				= true;
         bool        _randomStartFrame   = false;
@@ -49,7 +49,7 @@ namespace elysian {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(maxLife,            getMaxLife,             setMaxLife)
+            ELYSIAN_LUA_PROXY_FIELD(maxLifeTime,        getMaxLifeTime,         setMaxLifeTime)
             ELYSIAN_LUA_PROXY_FIELD(startSize,          getStartSize,           setStartSize)
             ELYSIAN_LUA_PROXY_FIELD(endSize,            getEndSize,             setEndSize)
             ELYSIAN_LUA_PROXY_FIELD(endColor,           getEndColor,            setEndColor)
@@ -69,13 +69,13 @@ namespace elysian {
         virtual     ~ParticleEmitterAttribBase(void) override;
 
         void        setAcceleration(const GYVector3& accel);
-        void        setMaxLife(const unsigned life); //number of frames since birth that it lives
+        void        setMaxLifeTime(const float secs); //number of frames since birth that it lives
         void        setStartSize(const unsigned size); // 1 = 1x1 square
         void        setEndSize(const unsigned size);
         void        setEndColor(const Color4& color);
         void        setAnimGridSize(const unsigned w, const unsigned h);
         void        setAnimGridIndex(const unsigned row, const unsigned col, int index);
-        void        setAnimFrameDuration(const unsigned frame);
+        void        setAnimFrameDuration(const float secs);
         BitMask32&  getForceMask(void);
         void        setForceMask(const BitMask32 mask);
         void        setStick(const bool val);
@@ -83,13 +83,13 @@ namespace elysian {
         void        setRandomStartFrame(const bool val);
         void        setShadowVolume(const bool val);
 
-        unsigned    getMaxLife(void) const;
+        float       getMaxLifeTime(void) const;
         unsigned    getStartSize(void) const;
         unsigned    getEndSize(void) const;
         Color4      getEndColor(void);
         float       getIntensityFactor(void) const;
         bool        getRandomStartFrame(void) const;
-        unsigned    getAnimFrameDuration(void) const;
+        float       getAnimFrameDuration(void) const;
         bool        getShadowVolume(void) const;
         bool        getStick(void) const;
     };
@@ -100,7 +100,7 @@ namespace elysian {
         GYVector3				position;
         float					orientation;
         float					rotation;
-        int						life;
+        float                   lifeTime;
         unsigned				size;
         unsigned				frame;
         GYColor4				color;
@@ -195,7 +195,7 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;
     }
-    inline void ParticleEmitterAttribBase::setAnimFrameDuration(const unsigned duration) { _animFrameDuration = duration; }
+    inline void ParticleEmitterAttribBase::setAnimFrameDuration(const float secs) { _animFrameDuration = secs; }
 
     inline void ParticleEmitterAttribBase::setAcceleration(const GYVector3& accel) {
         _acceleration = accel;
@@ -203,18 +203,18 @@ namespace elysian {
 
     inline void ParticleEmitterAttribBase::setIntensityFactor(const float factor) { _intensityFactor = factor; }
 
-    inline void ParticleEmitterAttribBase::setMaxLife(const unsigned life) {
-        _maxLife = life;
+    inline void ParticleEmitterAttribBase::setMaxLifeTime(const float secs) {
+        _maxLifeTime = secs;
     }
     inline void ParticleEmitterAttribBase::setStick(const bool val) { _stick = val; }
     inline void ParticleEmitterAttribBase::setRandomStartFrame(const bool val) { _randomStartFrame = val; }
-    inline unsigned ParticleEmitterAttribBase::getMaxLife(void) const { return _maxLife; }
+    inline float ParticleEmitterAttribBase::getMaxLifeTime(void) const { return _maxLifeTime; }
     inline unsigned ParticleEmitterAttribBase::getStartSize(void) const { return _startSize; }
     inline unsigned ParticleEmitterAttribBase::getEndSize(void) const { return _endSize; }
     inline Color4 ParticleEmitterAttribBase::getEndColor(void) { return Color4(&_endColor); }
     inline float ParticleEmitterAttribBase::getIntensityFactor(void) const { return _intensityFactor; }
     inline bool ParticleEmitterAttribBase::getRandomStartFrame(void) const { return _randomStartFrame; }
-    inline unsigned ParticleEmitterAttribBase::getAnimFrameDuration(void) const { return _animFrameDuration; }
+    inline float ParticleEmitterAttribBase::getAnimFrameDuration(void) const { return _animFrameDuration; }
     inline bool ParticleEmitterAttribBase::getShadowVolume(void) const { return _shadowVolume; }
     inline bool ParticleEmitterAttribBase::getStick(void) const { return _stick; }
 

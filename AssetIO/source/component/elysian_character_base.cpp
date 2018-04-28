@@ -130,7 +130,8 @@ void CharacterBase::animateWalk(const GYVector2 &moveVec) {
     Direction::DIR4 dir = Direction::fromVector2(moveVec);
 
   //  if(_animate) {
-    setFaceDir(dir);
+    if(!hasState(STATE_STRAFE)) setFaceDir(dir);
+    else setFaceDir(_faceDir);
 
     //_faceDir = dir;
     //gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));
@@ -314,7 +315,7 @@ void CharacterBase::jump(void) {
     RigidBody*const rb = _entity->getRigidBody();
 
     if(_heldEntity) {
-        gyVec3ScaleAccum(&force, getEntityForceDampFactor());
+       // gyVec3ScaleAccum(&force, getEntityForceDampFactor());
     }
 
     gyVec3ScaleAccum(&force, 1.0f/_deltaTime);

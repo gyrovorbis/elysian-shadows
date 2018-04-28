@@ -5,6 +5,7 @@
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
 #include <gyro_system_api.h>
+#include <glal/gyro_gl_utils.h>
 
 #ifdef GL_ES_VERSION_3_0
 #   define GY_GL_VERSION_STR "#version 300 es"
@@ -12,10 +13,9 @@
 #ifdef _WIN32
 #   define GY_GL_VERSION_STR "#version 330\n\r"
 #else
-#   define GY_GL_VERSION_STR "#version 330\n"
+#   define GY_GL_VERSION_STR "#version 410\n"
 #endif
 #endif
-
 
 GLenum glalTextureMapTexUnits[GLAL_TEXTURE_MAP_MAX] = {
     GL_TEXTURE0,
@@ -101,6 +101,12 @@ _LightingShaderProgram		glalShadowMapShader;
 _LightingShaderProgram*		glalCurLightShader                              = &glalLightingShader;
 LightingUBOData             glalLightingUBOData;
 GLuint                      glalLightingUBO                                 = 0;
+GLuint                      glalDirectionalShadowMapTextureArray            = 0;
+GLuint                      glalSpotShadowMapTextureArray                   = 0;
+GLuint                      glalPointShadowCubeMapTextureArray              = 0;
+int                         glalDirectionalShadowMapArrayCount              = 0;
+int                         glalPointShadowCubeMapArrayCount                = 0;
+int                         glalSpotShadowMapArrayCount                     = 0;
 
 // ====== PUBLIC LIGHTING API =======
 
@@ -217,6 +223,120 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 
 void glalLightingInit(void) {
 
+    static int once = 0;
+
+    if(!once) {
+        _gyLog(GY_DEBUG_VERBOSE, "Allocating Shadow Map Texture Arrays.");
+        _gyPush();
+
+        //Directional Shadow Maps
+        glGenTextures(1, &glalDirectionalShadowMapTextureArray);
+        GY_GL_CHECK_ERROR();
+        glBindTexture(GL_TEXTURE_2D_ARRAY, glalDirectionalShadowMapTextureArray);
+        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_ARRAY_SIZE);
+            GY_GL_CHECK_ERROR();
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+#ifndef GL_ES_VERSION_2_0
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+        GY_GL_CHECK_ERROR();
+#endif
+#ifdef GYRO_GLAL_GL_Desktop
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        GLfloat border[] = {1.0f, 0.0f,0.0f,0.0f };
+        glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, border);
+        GY_GL_CHECK_ERROR();
+#endif
+
+        GY_GL_CHECK_ERROR();
+#if 1
+        for(unsigned i = 0; i < GLAL_SHADOW_MAP_ARRAY_SIZE; ++i) {
+        //    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+            GY_GL_CHECK_ERROR();
+        }
+#endif
+        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+
+
+
+
+         glGenTextures(1, &glalSpotShadowMapTextureArray);
+         glBindTexture(GL_TEXTURE_2D_ARRAY, glalSpotShadowMapTextureArray);
+         glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_ARRAY_SIZE);
+                    GY_GL_CHECK_ERROR();
+         //glEnable(GL_TEXTURE_2D);
+         //glDisable(GL_TEXTURE_CUBE_MAP);
+         //glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+ #ifndef GL_ES_VERSION_2_0
+         glTexParameteri( GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+ #endif
+         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
+         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+       //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+ #ifndef GL_ES_VERSION_2_0
+                 glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+ #endif
+ #ifdef GYRO_GLAL_GL_Desktop
+        GY_GL_CHECK_ERROR();
+        glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, 1.0f);
+ #elif defined(GL_ES_VERSION_3_0)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+
+ #endif
+
+        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        GY_GL_CHECK_ERROR();
+
+        glGenTextures(1, &glalPointShadowCubeMapTextureArray);
+        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, glalPointShadowCubeMapTextureArray);
+                GY_GL_CHECK_ERROR();
+        glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 1, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_ARRAY_SIZE*6);
+                GY_GL_CHECK_ERROR();
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                GY_GL_CHECK_ERROR();
+//#ifndef GL_ES_VERSION_2_0
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_SEVERITY, 0);
+//		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_SEVERITY, 0);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+       // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+                GY_GL_CHECK_ERROR();
+//#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+        glTexParameterf(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_BORDER_COLOR, 1.0f);
+        //Does this REALLY have to have 6 faces!?
+        //glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, 0, 0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_ARRAY_SIZE*6, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+        GY_GL_CHECK_ERROR();
+#if 0
+        for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
+            //shadowDepth? lolz
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+        }#endif
+#else
+#endif
+
+
+        _gyPop(1);
+        once = 1;
+    }
+
     //Cache cube shadow map lookat matrices
     gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_RIGHT], 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
     gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_LEFT], 0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
@@ -318,14 +438,6 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
     if(!shader->program) return;
 
-    //UNIFORM BUFFER OBJECTS
-    shader->lightingUBOIndex                                = glGetUniformBlockIndex(shader->program->program, "LightingUBO");
-
-    if(shader->lightingUBOIndex == GL_INVALID_INDEX) {
-
-        _gyLog(GY_DEBUG_WARNING, "FUCKING CHRIST");
-    }
-
     //SHARED SHADER ATTRIBS/UNIFORMS
     shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition", 0);
     shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat", 0);
@@ -358,6 +470,22 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     shader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.diffuseColor", !light);
     shader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.specularColor", !light);
     shader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.emissiveColor", !light);
+
+    //poll for shadow map texture arrays
+    shader->uniformLoc[GLAL_SHADER_DIRECTIONAL_SHADOW_MAPS]       = _protectedUniformQuery(shader->program, "uDirectionalShadowMaps", !light);
+    shader->uniformLoc[GLAL_SHADER_SPOT_SHADOW_MAPS]              = _protectedUniformQuery(shader->program, "uSpotShadowMaps", !light);
+    shader->uniformLoc[GLAL_SHADER_POINT_SHADOW_CUBE_MAPS]        = _protectedUniformQuery(shader->program, "uPointShadowCubeMaps", !light);
+
+    if(light) {
+        //UNIFORM BUFFER OBJECTS
+        shader->lightingUBOIndex                                = glGetUniformBlockIndex(shader->program->program, "LightingUBO");
+
+        if(shader->lightingUBOIndex == GL_INVALID_INDEX) {
+            _gyLog(GY_DEBUG_ERROR, "Query failed for 'LightingUBO' uniform block index!");
+        }
+    }
+
+#if 1
 
     //poll for GYLightSource uniform locations
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
@@ -399,6 +527,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff, !light);
 
     }
+#endif
 }
 
 
@@ -435,6 +564,9 @@ int gyShadersReloadAll(void) {
 }
 
 void glalDefaultShadersLoadUniforms(void) {
+    //Initialize internal data for shadow shader
+    glalLightingInit();
+
     GYLightSource* sources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
     int count = glalLightSourceCount;
     const GYMaterial* material = _currentMaterial;
@@ -463,10 +595,28 @@ void glalDefaultShadersLoadUniforms(void) {
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP], glalTextureMapUniforms[GLAL_SPECULAR_MAP]);
 
     //next texture banks are used for shadow maps for each light
+#if 0
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+i);
         glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+i);
     }
+#else
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_DIRECTIONAL_SHADOW_MAPS], glalTextureMapUniforms[GLAL_DIRECTIONAL_SHADOW_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_DIRECTIONAL_SHADOW_MAP]);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, glalDirectionalShadowMapTextureArray);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
+
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPOT_SHADOW_MAPS], glalTextureMapUniforms[GLAL_SPOT_SHADOW_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_SPOT_SHADOW_MAP]);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, glalSpotShadowMapTextureArray);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
+
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_POINT_SHADOW_CUBE_MAPS], glalTextureMapUniforms[GLAL_POINT_SHADOW_CUBE_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_POINT_SHADOW_CUBE_MAP]);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, glalPointShadowCubeMapTextureArray);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
+
+#endif
 
     //Do these not need to be physically resubmitted?
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
@@ -480,9 +630,6 @@ void glalDefaultShadersLoadUniforms(void) {
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD LOG_OFFSET? WHAT THE FUCK!?
 
     glalUniformChangeCount += 14;
-
-    //Initialize internal data for shadow shader
-    glalLightingInit();
 
 }
 

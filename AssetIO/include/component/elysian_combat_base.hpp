@@ -124,17 +124,24 @@ namespace elysian {
 
         CombatStatus                    _status;
         std::shared_ptr<CombatAttrib>	_attrib;
-        DMG_TYPE                        _dmgType		= DMG_NONE;
-        BitMask32                       _collisionFlags	= ON_COLLISION_ENTER;
-        float                           _aggroDist      = ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT;
-        float                           _deaggroDist    = ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT;
-        TARGET_TYPE                     _targetType     = TARGET_NONE;
-        bool                            _dmgActive		= true;
-        bool                            _inCombat       = false;
+        DMG_TYPE                        _dmgType            = DMG_NONE;
+        BitMask32                       _collisionFlags     = ON_COLLISION_ENTER;
+        float                           _aggroDist          = ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT;
+        float                           _deaggroDist        = ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT;
+        TARGET_TYPE                     _targetType         = TARGET_NONE;
+        bool                            _dmgActive          = true;
+       // bool                            _dmgEnabled         = true;
+        bool                            _inCombat           = false;
+        bool                            _dmgRecovering      = false;
+        float                           _dmgRecoveryTime    = 0.5f;
+        float                           _dmgRecoveryElapsed = 0.0f;
+
     public:
                                 CombatBase(void) = default;
                                 CombatBase(Entity& entity, CombatBase*const prefab=nullptr);
                                 ~CombatBase(void) = default;
+
+        void                    update(void);
 
         CombatBase&             operator=(CombatBase& rhs);
 
@@ -152,14 +159,15 @@ namespace elysian {
         void					setAttrib(std::shared_ptr<CombatAttrib> attrib);
         void					setCollisionFlags(const BitMask32 flags);
         BitMask32&				getCollisionFlags(void);
-		bool					getDmgActive(void) const;
-		void					setDmgActive(const bool active);
+        void					setDmgActive(const bool enabled);
+        bool                    getDmgActive(void) const;
+      //  bool                    getDmgActive(void) const;
         TARGET_TYPE             getTargetType(void) const;
         void                    setTargetType(const TARGET_TYPE type);
         CombatStatus&    		getStatus(void);
         void                    setStatus(const CombatStatus& status);
         void					applyModifier(const CombatStatusModifier& rvalue);
-
+        void                    startDmgRecoveryTimer(void);
         void                    setInCombat(const bool val);
         bool                    isInCombat(void) const;
         void                    setAggroDist(const float dist);
@@ -236,6 +244,9 @@ namespace elysian {
         _deaggroDist        = rhs._deaggroDist;
         _targetType         = rhs._targetType;
         _dmgActive          = rhs._dmgActive;
+        _dmgRecovering      = rhs._dmgRecovering;
+        _dmgRecoveryTime    = rhs._dmgRecoveryTime;
+        _dmgRecoveryElapsed = rhs._dmgRecoveryElapsed;
         return *this;
     }
     inline auto	CombatBase::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
@@ -245,8 +256,8 @@ namespace elysian {
     inline void CombatBase::setAttrib(std::shared_ptr<CombatAttrib> attrib) { _attrib = attrib; }
     inline void CombatBase::setCollisionFlags(const BitMask32 flags) { _collisionFlags = flags; }
     inline BitMask32& CombatBase::getCollisionFlags(void) { return _collisionFlags; }
-    inline bool CombatBase::getDmgActive(void) const { return _dmgActive; }
     inline void CombatBase::setDmgActive(const bool active) { _dmgActive = active; }
+    inline bool CombatBase::getDmgActive(void) const { return _dmgActive && !_dmgRecovering; }
     inline CombatStatus& CombatBase::getStatus(void) { return _status; }
     inline void CombatBase::setStatus(const CombatStatus& status) {_status = status; }
     inline void	CombatBase::applyModifier(const CombatStatusModifier& rvalue) { _status.applyModifier(rvalue); }
@@ -256,6 +267,10 @@ namespace elysian {
     inline float CombatBase::getAggroDist(void) const { return _aggroDist; }
     inline void CombatBase::setDeaggroDist(const float dist) { _deaggroDist = dist; }
     inline float CombatBase::getDeaggroDist(void) const { return _deaggroDist; }
+    inline void CombatBase::startDmgRecoveryTimer(void) {
+        _dmgRecovering = true;
+        _dmgRecoveryElapsed = 0.0f;
+    }
 
 }
 
