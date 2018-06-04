@@ -234,7 +234,7 @@ void ParticleEmitterInternals::render(void) {
 
         gyVidMaterialBind(_attrib->_material);
         gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
+        gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 

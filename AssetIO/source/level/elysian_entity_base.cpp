@@ -162,7 +162,7 @@ void EntityBase::popViewTransform(void) {
 }
 
 void EntityBase::render(void) {
-    if(_particleEmitter) _particleEmitter->render();
+    //if(_particleEmitter) _particleEmitter->render();
 
 //    auto oldPlaneType = _planeType;
   //  if(_skeleton) _planeType = GY_RECT_PLANE_BOTTOM;

@@ -248,7 +248,7 @@ namespace elysian {
         void                        populateVbo(void);
         void                        freeVbo(void);
         unsigned                    mapLocationToVBOIndex(unsigned x, unsigned y, unsigned l);
-        void                        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
+        void                        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y, const unsigned layer) const;
         void                        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
 

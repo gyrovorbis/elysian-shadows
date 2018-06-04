@@ -1,11 +1,49 @@
 #include "elysian_map_system_base.hpp"
 #include <glal/gyro_gl.h>
+#include <glal/gyro_video_glal.h>
+#include <glal/gyro_shaders_glal.h>
 
 
 
 namespace elysian {
 
 int _mapCount = 0;
+
+
+void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
+    if(value == DEPTH_Z_PREPASS) {
+        gyVidDepthTest(1);
+        glDepthMask(1);
+        glColorMask(0, 0, 0, 0);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+        gyVidVertexBatchEnd();
+        gyVidVertexBatchFlush();
+        gyVidSetCurrentShaderProgram(glalShadowMapShader.program);
+        glalCurLightShader = &glalShadowMapShader;
+
+        gyVidAlphaLevel(GY_ALPHA_NONE);
+    } else if(value == LIGHTING_PASS){
+        gyVidVertexBatchEnd();
+        gyVidVertexBatchFlush();
+        gyVidSetDefaultShaderProgram();
+        //glalDefaultShadersLoadUniforms();
+        glalCurLightShader = &glalLightingShader;
+        gyVidDepthTest(0);
+        glDepthMask(0);
+        glColorMask(1, 1, 1, 1);
+        glDepthFunc(GL_EQUAL);
+    } else if(value == POST_PASSES) {
+        gyVidDepthTest(1);
+        gyVidVertexBatchEnd();
+        gyVidVertexBatchFlush();
+        glDepthMask(1);
+        glDepthFunc(GL_LEQUAL);
+    }
+    _depthPassState = value;
+
+}
 
 void GLMapSystemCrtp::_bindArrayVbo(int buffer) {
 #ifdef GYRO_GLAL
@@ -71,6 +109,8 @@ void MapSystemBase::update(void) {
         }
 
     }
+
+
 
 
 

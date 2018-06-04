@@ -134,6 +134,10 @@ namespace elysian {
             return static_cast<const T*>(this)->isShadowPass();
         }
 
+        bool _isDepthPrePass(void) const {
+            return static_cast<const T*>(this)->isDepthPrePass();
+        }
+
     protected:
 
         //Culling functions
@@ -173,7 +177,7 @@ namespace elysian {
         void _renderDepthBuffEntityRow(const unsigned i);
 
         bool _tileEntryLightPass(O& tileEntry) {
-            if((tileEntry.lights | _lightsRendered) == _lightsRendered || _isShadowPass()) { //it's done!
+            if((tileEntry.lights | _lightsRendered) == _lightsRendered || _isShadowPass() || _isDepthPrePass()) { //it's done!
                 ++tileEntry.renderPass;
                 _renderObjectEntry(tileEntry, ZCoordConstants::mapBase+(tileEntry.mapEntry.getElev())*32.0f /*zCoordBufferedBase+i+1.0f*/); //WILL THIS WORK FOR NO ELEVATION!?
                 return true;
@@ -210,6 +214,8 @@ namespace elysian {
         From _getBaseZCoord() to (_getBaseZCoord() + ELYSIAN_DEPTH_BUFFER_HEIGHT),
         depending on how large of a region is returned from _getOnscreenTileRegion().
      */
+
+#if 1
     template<typename T, typename O, typename E>
     inline void MapDepthBuffer<T, O, E>::render(void) {
 
@@ -297,11 +303,11 @@ namespace elysian {
 
         //Iterate through depth buffers and render from lowest to highest z coord
         for(int l = _depthBuffMaxHeight; l >= 0; --l) {
-            unsigned i = (_isShadowPass())? _depthBuffMaxHeight-l-1 : l;
+            unsigned i = (_isShadowPass() || _isDepthPrePass())? _depthBuffMaxHeight-l-1 : l;
             i = l;
 _enableDepthTest();
 
-            if(_isShadowPass()) {
+            if(_isShadowPass() || _isDepthPrePass()) {
 
                 _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
@@ -344,7 +350,7 @@ _enableDepthTest();
                     j = endIndex;
                 }
 
-            if(_isShadowPass()) {
+            if(_isShadowPass() || _isDepthPrePass()) {
                 _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
               //  _renderCustomPassAtElev(i, NORMAL_FLAT);
@@ -356,6 +362,40 @@ _enableDepthTest();
         }
 
     }
+#else
+    template<typename T, typename O, typename E>
+    inline void MapDepthBuffer<T, O, E>::render(void) {
+
+        _getOnscreenTileRegion(_scrStartX, _scrStartY, _scrEndX, _scrEndY);
+        O objEntry;
+
+        for(int i = ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX; i >= 0; --i) {
+            for(unsigned y = _scrStartY; y <= _scrEndY; ++y) {
+                for(unsigned x = _scrStartX; x <= _scrEndX; ++x) {
+                    _getObjectlayerEntry(x, y, objEntry);
+                    if(objEntry.mapEntry)
+
+                }
+
+            }
+        }
+
+
+        //assert(_scrStartX <= _scrEndX);
+        //assert(_scrStartY <= _scrEndY);
+
+        //Maximum number of rows depth buffer could need based on visible region
+        _depthBuffMaxVisible = _scrEndY - _scrStartY + 1 + ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX;
+        //Cap max at depth buffer height
+        _depthBuffMaxHeight = (_depthBuffMaxVisible > ELYSIAN_DEPTH_BUFFER_HEIGHT)? ELYSIAN_DEPTH_BUFFER_HEIGHT: _depthBuffMaxVisible;
+
+        //Clear depth buffer counters
+        memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
+        memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
+        _enableDepthTest();
+        _processTiles();
+    }
+#endif
 
     // ==== QUEUE AND IMMEDIATE RENDER TILES ====
     template<typename T, typename O, typename E>

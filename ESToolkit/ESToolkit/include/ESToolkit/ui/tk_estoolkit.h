@@ -136,7 +136,7 @@ private:
     HistoryDockWidget*      _historyDockWidget;
     CameraDockWidget*       _cameraDockWidget;
     QDockWidget*            _bottomDockWidget;
-    QDockWidget*            _vmuDockWidget;
+    QDockWidget*            _vmuDockWidget = nullptr;
     QTabWidget*             _bottomTabWidget;
 
     VMUMainWindow*          _evmuWindow = nullptr;

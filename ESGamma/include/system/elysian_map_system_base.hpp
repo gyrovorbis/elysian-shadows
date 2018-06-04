@@ -22,6 +22,9 @@
 #include <glal/gyro_video_glal.h>
 #include <stdint.h>
 
+//#define NEW_RENDERER
+//#define DEPTH_PREPASS
+
 #define ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE	1000
 
 /*
@@ -43,6 +46,12 @@ namespace elysian {
 
     class GLMapSystemCrtp {
     protected:
+        enum DEPTH_PASS_STATE {
+            DEPTH_Z_PREPASS,
+            LIGHTING_PASS,
+            POST_PASSES
+        } _depthPassState = DEPTH_Z_PREPASS;
+
         uint32_t* _elements = nullptr;
         int _size = 0;
         int _lastSize = 0;
@@ -51,6 +60,7 @@ namespace elysian {
         void _drawElements(void);
         void _orphanVbo(void);
         void _bindArrayVbo(int buffer);
+        void _setDepthPrepassState(DEPTH_PASS_STATE state);
 
     public:
         void deactivateArea(void);
@@ -91,8 +101,22 @@ namespace elysian {
 
         void        update(void);
         void        render(void) {
+#ifdef DEPTH_PREPASS
+            if(!isShadowPass()) {
+            _mapCount = 0;
+            _setDepthPrepassState(DEPTH_Z_PREPASS);
+                MapDepthBuffer<P, T, E>::render();
+                _setDepthPrepassState(LIGHTING_PASS);
+                MapDepthBuffer<P, T, E>::render();
+                _setDepthPrepassState(POST_PASSES);
+            } else {
+                _mapCount = 0;
+                MapDepthBuffer<P, T, E>::render();
+            }
+#else
             _mapCount = 0;
                 MapDepthBuffer<P, T, E>::render();
+#endif
         }
 
         void        renderOverlay(void);
@@ -117,6 +141,7 @@ namespace elysian {
         uint32_t    startLightPass(uint32_t& lightsLeft);
         uint32_t    getLightCount(void) const;
         bool        isShadowPass(void) const;
+        bool        isDepthPrePass(void) const;
 
         void        flushTileBuffer(void);
         void        bindTileBuffer(void);
@@ -135,10 +160,14 @@ namespace elysian {
 
     };
 
+
     class MapSystemBase: public MapSystemCrtp<MapSystem, MapDepthBuffEntryImpl, EntityDepthBuffEntryImpl> {
     public:
         void update(void);
 
+#ifdef NEW_RENDERER
+        void render(void);
+#endif
     };
 
 
@@ -201,7 +230,7 @@ namespace elysian {
             }
 
            gyVidDepthTest(true);
-            gyVidBlendMode(newBlend);
+          //  gyVidBlendMode(newBlend);
             gyVidAlphaLevel(newAlpha);
             gyVidRectPlaneType(newPlane);
             gyVidRectTexOrient(newOrient);
@@ -572,7 +601,81 @@ break;
     template<typename P, typename T, typename E>
     inline bool MapSystemCrtp<P, T, E>::isShadowPass(void) const { return gyVidShadowPass(); }
 
+    template<typename P, typename T, typename E>
+    inline bool MapSystemCrtp<P, T, E>::isDepthPrePass(void) const { return _depthPassState == DEPTH_Z_PREPASS; }
 
+#ifdef NEW_RENDERER
+    inline void MapSystemBase::render(void) {
+
+
+
+                    _mapCount = 0;
+        getOnscreenTileRegion(_scrStartX, _scrStartY, _scrEndX, _scrEndY);
+        MapDepthBuffEntryImpl tileEntry;
+
+        //Maximum number of rows depth buffer could need based on visible region
+        _depthBuffMaxVisible = _scrEndY - _scrStartY + 1 + ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX;
+        //Cap max at depth buffer height
+        _depthBuffMaxHeight = (_depthBuffMaxVisible > ELYSIAN_DEPTH_BUFFER_HEIGHT)? ELYSIAN_DEPTH_BUFFER_HEIGHT: _depthBuffMaxVisible;
+
+        //Clear depth buffer counters
+        memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
+        memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
+        //_processTiles();
+
+        enableDepthTest();
+
+        //beginObjectList();
+        bindTileBuffer();
+        for(int e = ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX; e >= 0; --e) {
+            for(int y = _scrStartY; y <= _scrEndY; ++y) {
+                for(int x = _scrStartX; x <= _scrEndX; ++x) {
+                    for(int l = 0; l < ELYSIAN_AREA_MAP_LAYERS; ++l) {
+                        if(x < 0 || y < 0) {
+                            assert(0);
+                            continue;
+                        }
+                        tileEntry.x = x;
+                        tileEntry.y = y;
+                        tileEntry.layer = l;
+                        getObjectLayerEntry(x, y, tileEntry);
+                        tileEntry.renderPass = 1;
+                        if(!tileEntry.mapEntry.getIndex()) continue;
+                        if(tileEntry.mapEntry.getElev() == e) {
+                            if(tileEntry.mapEntry.getPlane() == GY_RECT_PLANE_BOTTOM && e == 0 && isShadowPass()) continue;
+                            renderObjectEntry(tileEntry, 0.0f);
+                        }
+                    }
+                }
+            }
+        }
+        gyVidVertexBatchFlush();
+        endObjectList();
+        gyVidVertexBatchFlush();
+        EntityDepthBuffEntryImpl entityEntry;
+        NORMAL_TYPE normalType;
+        float lowestY;
+        float zCoord;
+#if 0
+        for(unsigned i = 0; i < getEntityCount(); ++i) {
+            if(!getOnscreenEntity(i, entityEntry, normalType, lowestY, zCoord)) continue;
+            entityEntry.renderPass = 1;
+            renderEntityEntry(entityEntry);
+                    gyVidVertexBatchFlush();
+        }
+
+
+         for(int e = ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX; e >= 0; --e) {
+            if(!isShadowPass()) renderCustomPassAtElev(e, NORMAL_FLAT);
+                                 gyVidVertexBatchFlush();
+            renderCustomPassAtElev(e, NORMAL_FRONT);
+                     gyVidVertexBatchFlush();
+         }
+
+#endif
+    }
+
+    #endif
 }
 
 #endif

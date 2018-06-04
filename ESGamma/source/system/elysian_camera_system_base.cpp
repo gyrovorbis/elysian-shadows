@@ -289,7 +289,7 @@ void CameraSystemBase::initializeProjMatrix(void) {
     //Initialize default camera
     gyVidResolution(&w, &h);
     //w = 640; h = 480;
-    gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
+    gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -1500.0f, 1500.0f);
     gyVidCamOrthoLookAt(_curState, &_curState->_pos, 1.0f, 0.0f, &_curState->_orient);
 
     memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
@@ -507,7 +507,7 @@ void CameraSystemBase::update(void) {
             _curState->_pos = GYVector3 {
                 _curState->focalEntity->_transform._pos.x,
                 _curState->focalEntity->_transform._pos.y - _curState->focalEntity->_transform._pos.z,
-                1.0f/*_curState->focalEntity->transform.getPosZ()*///ZCoordConstants::mapBase,
+                1.0f//-_curState->focalEntity->_transform.getPosZ()//*///ZCoordConstants::mapBase,
                 //0.0f
             };
         } else {

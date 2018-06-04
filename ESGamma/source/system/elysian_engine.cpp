@@ -32,6 +32,8 @@
 #include <utility/elysian_sort_sweep.hpp>
 #include <glal/gyro_radial_blur_glal.h>
 #include <glal/gyro_chromatic_aberration_glal.h>
+#include <system/elysian_compute_system.hpp>
+#include <system/elysian_render_system.hpp>
 
 namespace elysian {
 
@@ -48,7 +50,6 @@ Engine::Engine(void):
     //gyAudInit();
     System::setProcessInput();
     LuaManager::initialize();
-    initializeOpenCL();
 
     //allocate systems
     _eventSystem        = new EventSystem;
@@ -73,9 +74,12 @@ Engine::Engine(void):
     _combatSystem		= new CombatSystem;
     _skeletonSystem     = new SkeletonSystem;
     _pathfindingSystem  = new PathfindingSystem;
+    _computeSystem      = new ComputeSystem;
+    _renderSystem       = new RenderSystem;
 
     InputSystem::initialize();
-
+    _computeSystem->initialize();
+    _renderSystem->initialize();
     _behaviorSystem->initialize();
     _warpSystem->initialize();
     _combatSystem->initialize();
@@ -141,6 +145,11 @@ void Engine::update(void) {
         case System::ENGINE_WARPING:
         case System::ENGINE_MODAL_CONVERSATION:
         case System::ENGINE_CONVERSATION:
+        updateParticleMonitor.start();
+        _particleSystem->update();
+        updateParticleMonitor.stop();
+
+
             //LuaManager::updateFrameStats();
             updatePartyMonitor.start();
             _partySystem->update();
@@ -202,10 +211,6 @@ void Engine::update(void) {
             _warpSystem->update();
             updateWarpMonitor.stop();
 
-            updateParticleMonitor.start();
-            _particleSystem->update();
-            updateParticleMonitor.stop();
-
             updateDayMonitor.start();
             _daySystem->update();
             updateDayMonitor.stop();
@@ -246,7 +251,7 @@ void Engine::update(void) {
 }
 
 void Engine::processInput(void) {
-
+        _renderSystem->populateParticleVbos();
   _timerSystem->pushTaskMonitor(&_inputMonitor);
   processInputMonitor.start();
 
@@ -330,15 +335,18 @@ void Engine::render(void) {
             //glDepthRange(0, 1);
             gyVidProjectionCustomMatrix(projectionMatrix);
             //gyVidProjectionDefaultMatrix(); */
+
             _guiSystem->renderBackground();
             _cameraSystem->pushViewProjMatrix();
             shadowPassMonitor.start();
+            _lightSystem->addLightSourcesToScene();
             _lightSystem->shadowRenderPasses();
             shadowPassMonitor.stop();
-            _lightSystem->addLightSourcesToScene();
+
 
             lightPassMonitor.start();
             _mapSystem->render();
+            _renderSystem->renderParticles();
             lightPassMonitor.stop();
 
             //_lightSystem->render();
@@ -374,6 +382,9 @@ void Engine::render(void) {
 }
 
 Engine::~Engine(void) {
+    dbgprintf("Engine: Destroying Engine");
+    dbgpush();
+
     //SHIT ALL NEEDS SOME WORK
     MapSystem::staticUninitialize();
     InputSystem::uninitialize();
@@ -385,13 +396,15 @@ Engine::~Engine(void) {
     delete _partySystem;
     delete _characterSystem;
     delete _guiSystem;
+    delete _daySystem;
     LuaManager::uninitialize();
+    _renderSystem->uninitialize();
+    _computeSystem->uninitialize();
 
     delete _inputSystem;
     delete _combatSystem;
     delete _dialogSystem;
     delete _examinableSystem;
-    delete _daySystem;
     delete _particleSystem;
     delete _levelSystem;
     delete _mapSystem;
@@ -405,6 +418,9 @@ Engine::~Engine(void) {
     delete _behaviorSystem;
     delete _pathfindingSystem;
     delete _eventSystem;
+    delete _computeSystem;
+
+    dbgpop();
 
 }
 

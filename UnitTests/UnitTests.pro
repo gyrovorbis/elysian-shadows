@@ -95,5 +95,6 @@ HEADERS += \
     test_lua_field_ref.h \
     test_functional.h \
     test_cpp_lua_callback.h \
-    test_associative_aggregate_array.h
+    test_associative_aggregate_array.h \
+    test_libgyro_compute_api.h
 

@@ -230,6 +230,8 @@ SOURCES += \
     ../../game/source/pause_menu/es_playable_pane.cpp \
     ../../game/source/pause_menu/es_party_menu.cpp \
     ../../game/source/pause_menu/es_inventory_menu.cpp \
+    ../../ESGamma/source/system/elysian_compute_system.cpp \
+    ../../ESGamma/source/system/elysian_render_system.cpp
 
 
 !ios: !dreamcast: !android {
@@ -514,7 +516,9 @@ HEADERS += \
     ../../game/include/pause_menu/es_pause_menu.hpp \
     ../../game/include/pause_menu/es_playable_pane.hpp \
     ../../game/include/pause_menu/es_party_menu.hpp \
-    ../../game/include/pause_menu/es_inventory_menu.hpp
+    ../../game/include/pause_menu/es_inventory_menu.hpp \
+    ../../ESGamma/include/system/elysian_compute_system.hpp \
+    ../../ESGamma/include/system/elysian_render_system.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

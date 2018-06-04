@@ -32,6 +32,7 @@ public:
     uint32_t    startLightPass(uint32_t& lightsLeft);
     uint32_t    getLightCount(void) const;
     bool        isShadowPass(void) const;
+    bool        isDepthPrePass(void) const { return false; }
 
     void        flushTileBuffer(void);
     void        bindTileBuffer(void);

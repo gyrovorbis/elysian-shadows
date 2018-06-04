@@ -178,7 +178,7 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 
 }
 
-void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
+void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y, const unsigned l) const {
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
 //const float zDelta = 1.1f;
     const GY_RECT_PLANE_TYPE planeType = tileEntry->getPlane();
@@ -196,7 +196,7 @@ void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry 
 
     gyMatPush();
     gyMatLoadIdentity();
-    gyMatTranslateScale(x*32.0f, y*32.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 32.0f, 32.0f, 32.0f);
+    gyMatTranslateScale(x*32.0f, y*32.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f/*+0.001f*(float)l*/, 32.0f, 32.0f, 32.0f);
     gyMatMultVec(localVerts, worldVerts, 4);
     gyMatPop();
 
@@ -378,7 +378,7 @@ void AreaBase::populateVbo(void) {
                 for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
                 TileEntry tileEntry = getTileEntry(z, x, y);
 
-                vboEntryFromTileEntry(curPtr, &tileEntry, x, y);
+                vboEntryFromTileEntry(curPtr, &tileEntry, x, y, z);
 
                 curPtr += 4;
                 }
@@ -463,7 +463,7 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
 #ifdef GYRO_GLAL
     GYVertex entry[4];
     if(e.getValue() == 0) return;
-    vboEntryFromTileEntry(entry, &e, x, y);
+    vboEntryFromTileEntry(entry, &e, x, y, l);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferSubData(GL_ARRAY_BUFFER, mapLocationToVBOIndex(x, y, l)*sizeof(GYVertex), sizeof(GYVertex)*4, &entry);

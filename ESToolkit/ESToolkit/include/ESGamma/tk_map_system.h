@@ -90,7 +90,7 @@ inline void TkMapSystem::renderCustomPassAtElev(const int elev, const elysian::N
 
 
 inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const {
-    if(getLightSys()->isShadowPass()) return;
+    if(getLightSys()->isShadowPass() || !count) return;
     //DRAW_NORMAL, DRAW_SELECTING, DRAW_SELECTION, DRAW_FILLING, DRAW_MAX
 
     static const GYColor4 selectionDecorColors[DRAW_MAX] = {
@@ -116,6 +116,9 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
     static const char* planeDecorStrs[GY_RECT_PLANE_MAX] = {
         "B", "F", "L", "R", "F45", "L45", "R45"
     };
+
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
 
     uint16_t            tileIndex;
     GY_RECT_PLANE_TYPE  tilePlane;
@@ -183,7 +186,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         //gyVidDepthTest(1);
-        gyVidMaterialBind(&_selMat[drawStyle]);
+      gyVidMaterialBind(&_selMat[drawStyle]);
 
         const GYColor4& color = selectionDecorColors[drawStyle];
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
@@ -201,13 +204,18 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             gyMatLoadIdentity();
             if(normalType == elysian::NORMAL_FLAT)
                 //Had to add the offset of +3.0f to get the decoration above tiles. Could be potentially reested.
-                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+3.0f, entry.mapEntry.getElev()*32.0f+3.0f, 32.0f, 32.0f, 32.0f);
+                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f, 32.0f, 32.0f, 32.0f);
             else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f, 32.0f, 32.0f, 32.0f);
-            gyVidRect(0);
+            gyVidRect(-1);
             gyMatPop();
+
         }
         gyVidQuadListEnd();
-        gyVidDepthTest(false);
+        gyVidVertexBatchFlush();
+        gyVidVertexBatchEnd();
+
+        gyVidMaterialBind(nullptr);
+       //     gyVidDepthTest(false);
     }
 }
 

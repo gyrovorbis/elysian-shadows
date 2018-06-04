@@ -71,7 +71,7 @@ const GYVector3 glalPlaneNormals[GY_RECT_PLANE_MAX] = {
 const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
     //FLAT
     {
-        {-0.5f, -0.5f, 0.0f, 1.0f},
+        {-0.5f, -0.5f, 0.0f, 1.0f}, // X, Y = 1 length
         {0.5f, -0.5f, 0.0f, 1.0f},
         {-0.5f, 0.5f, 0.0f, 1.0f},
         {0.5f, 0.5f, 0.0f, 1.0f}
@@ -87,7 +87,7 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
 #else
     //FRONT
     {
-        {-0.5f, 0.5f, 1.0f, 1.0f},
+        {-0.5f, 0.5f, 1.0f, 1.0f}, //X, Z len = 1
         {0.5f, 0.5f, 1.0f, 1.0f},
         {-0.5f, 0.5f, 0.0f, 1.0f},
         {0.5f, 0.5f, 0.0f, 1.0f}
@@ -95,7 +95,7 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
    #endif
     //LEFT
     {
-        {-0.5f, -0.5f, 1.0f, 1.0f},
+        {-0.5f, -0.5f, 1.0f, 1.0f}, //Y, Z len = 1
         {-0.5f, 0.5f, 1.0f, 1.0f},
         {-0.5f, -0.5f, 0.0f, 1.0f},
         {-0.5f, 0.5f, 0.0f, 1.0f}
@@ -216,9 +216,10 @@ void gyVidSceneBegin(void) {
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #if 1
-
+    GY_GL_CHECK_ERROR();
     glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
     glViewport(0, 0, (float)_projWidth, (float)_projHeight);
+    GY_GL_CHECK_ERROR();
 #if 0
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _glalColorTex, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _glalGlowTex, 0);
@@ -234,7 +235,8 @@ void gyVidSceneBegin(void) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }*/
 #endif
-
+   glClearDepth(1.0f);
+    glDepthRange(0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gyMatLoadIdentity();
@@ -245,10 +247,13 @@ void gyVidSceneBegin(void) {
     glalVertexRenderCount       = 0;
     glalUniformChangeCount      = 0;
     glalTextureChangeCount      = 0;
+    GY_GL_CHECK_ERROR();
 }
 
 void gyVidSceneEnd(void) {
+    GY_GL_CHECK_ERROR();
     gyVidVertexBatchFlush();
+    GY_GL_CHECK_ERROR();
 }
 
 
@@ -275,14 +280,17 @@ void gyVidVertexBatchEnd(void) {
 }
 
 void gyVidVertexBatchFlush(void) {
+    GY_GL_CHECK_ERROR();
     static int recursing = 0;
     if(recursing) return;
     recursing = 1;
     if(glalFlushCallback) glalFlushCallback(glalFlushObject);
     recursing = 0;
+    GY_GL_CHECK_ERROR();
 }
 
 void gyVidVertexArrayBind(int id) {
+    GY_GL_CHECK_ERROR();
     if(id != glalVertexArray) {
         gyVidVertexBatchFlush();
 #ifndef GL_ES_VERSION_2_0
@@ -290,6 +298,7 @@ void gyVidVertexArrayBind(int id) {
 #endif
         glalVertexArray = id;
     }
+    GY_GL_CHECK_ERROR();
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -332,10 +341,8 @@ int glalVidGlewInit(void) {
 
 
 int glalVidViewportResize(const int initialization, const int viewWidth, const int viewHeight) {
-
+    GY_GL_CHECK_ERROR();
     if(!initialization) {
-
-
         //delete depth buffer render target
         GLuint renderBuffers[] = {
             _glalDepthBuffer
@@ -355,11 +362,15 @@ int glalVidViewportResize(const int initialization, const int viewWidth, const i
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
+    GY_GL_CHECK_ERROR();
 
     //create and attach depth buffer render target to FBO
     glGenRenderbuffers(1, &_glalDepthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, viewWidth, viewHeight);
+    glBindRenderbuffer(GL_RENDERBUFFER, _glalDepthBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, viewWidth, viewHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _glalDepthBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    GY_GL_CHECK_ERROR();
 
     //set color texture attachment size
     glBindTexture(GL_TEXTURE_2D, _glalColorTex);
@@ -373,8 +384,8 @@ int glalVidViewportResize(const int initialization, const int viewWidth, const i
     //set glow texture attachment size
     glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, viewWidth, viewHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _glalGlowTex, 0);
@@ -382,6 +393,8 @@ int glalVidViewportResize(const int initialization, const int viewWidth, const i
     //Set both color attachments as draw buffers for the FBO
     uint32_t buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
     glDrawBuffers(2, buffers);
+
+
 
     //check the status of the FBO now that shit's hopefully good to go
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -392,6 +405,8 @@ int glalVidViewportResize(const int initialization, const int viewWidth, const i
         _gyLog(GY_DEBUG_ERROR, "FBO %s failed: %d", initialization? "initialization" : "reinitialization", status);
         return 0;
     }
+
+    GY_GL_CHECK_ERROR();
 
     return 1;
 }
@@ -474,7 +489,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glBindBuffer(GL_UNIFORM_BUFFER, glalLightingUBO);
         GY_GL_CHECK_ERROR();
         glalLightingUBOData.count = 0;
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(LightingUBOData), &glalLightingUBOData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(LightingUBOData), &glalLightingUBOData, GL_DYNAMIC_READ);
         GY_GL_CHECK_ERROR();
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, glalLightingUBO);
         GY_GL_CHECK_ERROR();
@@ -561,6 +576,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 // ==== LOW-LEVEL API =====
 
 void gyVidCamUpdate(const GYCamera *const cam) {
+    GY_GL_CHECK_ERROR();
     if(cam) {
         glalCurCamera = cam;
     } else {
@@ -569,11 +585,13 @@ void gyVidCamUpdate(const GYCamera *const cam) {
     gyVidVertexBatchFlush();
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)glalCurCamera->projViewMat);
     ++glalUniformChangeCount;
+    GY_GL_CHECK_ERROR();
 }
 
 static int _glPrimitiveType = GL_TRIANGLE_STRIP;
 
 static inline void _flushStreamVertices(void* data) {
+    GY_GL_CHECK_ERROR();
     (void)data;
 #ifndef GL_ES_VERSION_2_0
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
@@ -593,6 +611,7 @@ static inline void _flushStreamVertices(void* data) {
     _vertexQueueLastSize    = _vertexQueueSize;
     _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
 #endif
+    GY_GL_CHECK_ERROR();
 }
 
 
@@ -701,17 +720,23 @@ void gyVidBlendMode(const GY_BLEND_MODE mode) {
 
 void gyVidDepthTest(const int enable) {
 #if 1
+    GY_GL_CHECK_ERROR();
     if(gyVidShadowPass()) return;
     static int wasShadow = 0;
     int passChange = wasShadow != gyVidShadowPass();
     if(enable != glalDepthTest || passChange) {
         gyVidVertexBatchFlush();
-        if(!enable) glDisable(GL_DEPTH_TEST);
-        else glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+       if(!enable) glDisable(GL_DEPTH_TEST);
+        else
+           glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
         glalDepthTest = enable;
         wasShadow = gyVidShadowPass();
     }
+GY_GL_CHECK_ERROR();
+#else
+    glEnable(GL_DEPTH_TEST);
+     glDepthFunc(GL_LEQUAL);
 #endif
 }
 
@@ -771,6 +796,37 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
     glalRectTexOrient = orient;
 }
 
+void gyVidTriangleStripVertices(const GYVertex* vertex, unsigned count) {
+    if(!count) return;
+    assert(count < GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE);
+    if((_vertexQueueSize + count) > GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE) {
+        gyVidVertexBatchFlush();
+
+        _vertexQueueSize = 0;
+        _vertexQueueLastSize = 0;
+        _vertexQueueLastOffset = 0;
+        gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
+    }
+
+    for(unsigned v = 1; v < count-1; ++v) {
+        _vertexQueue[_vertexQueueSize+v-1] = vertex[v];
+    }
+
+    _vertexQueueSize += count-2;
+
+    if((_vertexQueueSize + 6) > GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE) {
+        gyVidVertexBatchFlush();
+
+        _vertexQueueSize = 0;
+        _vertexQueueLastSize = 0;
+        _vertexQueueLastOffset = 0;
+        gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
+    }
+
+
+}
 
 void gyVidQuad(const GYVector4 *const verts, const int frame) {
     GYVector4           worldVerts[4];
@@ -873,7 +929,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    gyVidDepthTest(0);
+    //gyVidDepthTest(0);
 
     gyVidVertexBatchFlush();
     gyVidVertexBatchBegin(&_flushStreamVertices, NULL);

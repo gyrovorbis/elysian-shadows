@@ -131,7 +131,10 @@ namespace elysian {
 
     //=========INLINEZ=======
     inline void DebugBase::push(void) { ++_stackDepth; }
-    inline void DebugBase::pop(const unsigned count) { _stackDepth -= count; }
+    inline void DebugBase::pop(const unsigned count) {
+        GY_ASSERT((int)_stackDepth - (int)count >= 0);
+        _stackDepth -= count;
+    }
     inline unsigned DebugBase::getStackDepth(void) { return _stackDepth; }
     inline void DebugBase::setEngine(Engine &eng) { _engine = &eng; }
     inline void DebugBase::setLevel(const SEVERITY level) { _level = level; }

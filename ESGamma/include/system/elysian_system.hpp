@@ -30,6 +30,8 @@ namespace elysian {
   class SkeletonSystem;
   class EventSystem;
   class PathfindingSystem;
+  class ComputeSystem;
+  class RenderSystem;
 
   class System: public LevelManager {
   public:
@@ -38,31 +40,33 @@ namespace elysian {
     friend class DebugBase;
 
     private:
-    static ENGINE_STATE _engineState;
-    static bool         _processInput;
+    static ENGINE_STATE         _engineState;
+    static bool                 _processInput;
 
-    static InputSystem      *_inputSystem;
-    static LevelSystem		*_levelSystem;
-    static MapSystem		*_mapSystem;
-    static CameraSystem		*_cameraSystem;
-    static CharacterSystem	*_characterSystem;
-    static PartySystem      *_partySystem;
-    static TimerSystem		*_timerSystem;
-    static WarpSystem		*_warpSystem;
-    static CollisionSystem	*_collisionSystem;
-    static RigidBodySystem	*_rigidBodySystem;
-    static GuiSystem		*_guiSystem;
-    static ExaminableSystem	*_examinableSystem;
-    static AudioSystem		*_audioSystem;
-    static LightSystem		*_lightSystem;
-    static ParticleSystem	*_particleSystem;
-    static DaySystem		*_daySystem;
-    static DialogSystem		*_dialogSystem;
-    static CombatSystem		*_combatSystem;
-    static SkeletonSystem   *_skeletonSystem;
-    static EventSystem      *_eventSystem;
-    static BehaviorSystem	*_behaviorSystem;
-    static PathfindingSystem *_pathfindingSystem;
+    static InputSystem*         _inputSystem;
+    static LevelSystem*         _levelSystem;
+    static MapSystem*           _mapSystem;
+    static CameraSystem*        _cameraSystem;
+    static CharacterSystem*     _characterSystem;
+    static PartySystem*         _partySystem;
+    static TimerSystem*         _timerSystem;
+    static WarpSystem*          _warpSystem;
+    static CollisionSystem*     _collisionSystem;
+    static RigidBodySystem*     _rigidBodySystem;
+    static GuiSystem*           _guiSystem;
+    static ExaminableSystem*    _examinableSystem;
+    static AudioSystem*         _audioSystem;
+    static LightSystem*         _lightSystem;
+    static ParticleSystem*      _particleSystem;
+    static DaySystem*           _daySystem;
+    static DialogSystem*        _dialogSystem;
+    static CombatSystem*        _combatSystem;
+    static SkeletonSystem*      _skeletonSystem;
+    static EventSystem*         _eventSystem;
+    static BehaviorSystem*      _behaviorSystem;
+    static PathfindingSystem*   _pathfindingSystem;
+    static ComputeSystem*       _computeSystem;
+    static RenderSystem*        _renderSystem;
 
   public:
     static InputSystem*         getInputSys(void) { return _inputSystem; }
@@ -86,12 +90,14 @@ namespace elysian {
     static SkeletonSystem*      getSkeletonSys(void) { return _skeletonSystem; }
     static EventSystem*         getEventSys(void) { return _eventSystem; }
     static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
-    static PathfindingSystem* getPathfindingSys(void) { return _pathfindingSystem; }
+    static PathfindingSystem*   getPathfindingSys(void) { return _pathfindingSystem; }
+    static ComputeSystem*       getComputeSystem(void) { return _computeSystem; }
+    static RenderSystem*        getRenderSystem(void) { return _renderSystem; }
 
-    static bool         getProcessInput(void) { return _processInput; }
-    static void         setProcessInput(const bool in=true) { _processInput = in; }
-    static ENGINE_STATE getEngineState(void) { return _engineState; }
-    static void         setEngineState(const ENGINE_STATE state) { _engineState = state; }
+    static bool                 getProcessInput(void) { return _processInput; }
+    static void                 setProcessInput(const bool in=true) { _processInput = in; }
+    static ENGINE_STATE         getEngineState(void) { return _engineState; }
+    static void                 setEngineState(const ENGINE_STATE state) { _engineState = state; }
 
     //virtual void DebugDump()=0;
   };

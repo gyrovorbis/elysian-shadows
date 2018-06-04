@@ -234,6 +234,7 @@ void _updateLightingUBO(void) {
     glUnmapBuffer(GL_UNIFORM_BUFFER);
             GY_GL_CHECK_ERROR();
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    GY_GL_CHECK_ERROR();
 }
 
 void gyVidLightingSetEnable(const int enabled) {
@@ -564,6 +565,7 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
     }
 
     _lightSourceToLightingUBOLightsource(light, &glalLightingUBOData.sources[glalLightingUBOData.count++]);
+    return;
 //#if 0
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i] == 0) {
@@ -686,13 +688,13 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         //glBindTexture(GL_TEXTURE_2D, 0);
 
         //Only do this shit once, on the first pass
-        if(face == GY_CUBE_MAP_RIGHT) {
+       // if(face == GY_CUBE_MAP_RIGHT) {
 #ifndef GL_ES_VERSION_2_0
             glBindFramebuffer(GL_FRAMEBUFFER, internals->fbo);
                      GY_GL_CHECK_ERROR();
 #endif
             glalGetPointLightCamMatrix(cam->projViewMat, light);
-        } //else if(face == GY_CUBE_MAP_FRONT) return;
+       // } //else if(face == GY_CUBE_MAP_FRONT) return;
 
         //glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
         //glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, glalPointShadowCubeMapTextureArray);

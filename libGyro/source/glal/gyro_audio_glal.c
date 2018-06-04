@@ -22,6 +22,7 @@ ALboolean           _alExtFloat32   = 0;
 int gyAudInit(void) {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     GY_AL_CLEAR_ERROR();
+    alGetError(); //defaults to fucking error on Windows for whatever-the-fuck reason!
     _alDevice = alcOpenDevice(NULL);                                               //Open the device
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_AUDIO_API: Initializing OpenAL Subsystem");
     _gyPush();
