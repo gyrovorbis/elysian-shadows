@@ -92,68 +92,6 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
 }
 
 
-static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float angle, const GYVector3* dir) {
-
-    unsigned scrWidth, scrHeight;
-    GYViewVolume*const volume = &cam->viewVolume;
-
-
-    float rectWidth = volume->nw/scale;
-    float rectHeight = volume->nh/scale;
-
-    //Have to calculate the geometry differently when rotated about the X axis...
-    //fuck it for now...
-
-    if(angle != 0.0f) {
-        rectWidth = 9999.0f;
-        rectHeight = 99999.0f;
-    }
-#if 0
-    GYVector2 botRight;
-    float diagonalDist;
-    if(rotZ != 0.0f) {
-        botRight.x = rectWidth;
-        botRight.y = rectHeight;
-        diagonalDist = gyVec2Magnitude(&botRight);
-        rectWidth = rectHeight = diagonalDist;
-    }
-#endif
-
-    const float halfW = (rectWidth)*0.5f;
-    const float halfH = (rectHeight)*0.5f;
-
-    volume->ntl.x = pos->x - halfW; volume->ntl.y = pos->y - halfH;
-    volume->ntr.x = pos->x + halfW; volume->ntr.y = pos->y - halfH;
-    volume->nbl.x = pos->x - halfW; volume->nbl.y = pos->y + halfH;
-    volume->nbr.x = pos->x + halfW; volume->nbr.y = pos->y + halfH;
-
-    volume->ftl = volume->ntl;
-    volume->ftr = volume->ntr;
-    volume->fbl = volume->nbl;
-    volume->fbr = volume->nbr;
-
-    //Calculate view matrix
-    gyMatPush();
-    gyMatLoadIdentity();
-    gyVidResolution(&scrWidth, &scrHeight);
-    gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
-    gyMatScale(scale, scale, 1.0f);
-#if 0
-    gyMatRotate(rotX, 1.0f, 0.0f, 0.0f);
-    gyMatRotateZ(rotZ);
-#else
-    gyMatRotate(angle, dir->x, dir->y, dir->z);
-#endif
-    gyMatTranslate(floor(-pos->x*scale)/scale, floor(-pos->y*scale)/scale, /*(rotX == 0)? 0.0f : -pos->z*/ 0.0f);
-
-
-    gyMatStore(&cam->viewMat);
-    gyMatPop();
-
-    gyMatMultMat(cam->projViewMat, (const float(*)[4])cam->projMat, (const float(*)[4])cam->viewMat);
-
-}
-
 static inline void glalTranspose(GYMatrix4 mat) {
     GYMatrix4 temp;
     memcpy(temp, mat, sizeof(GYMatrix4));
@@ -253,6 +191,79 @@ static inline void gyVidLookAtMat(GYMatrix4 mat, float eyeX, float eyeY, float e
 #endif
 
 }
+
+
+static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float angle, const GYVector3* dir) {
+
+    unsigned scrWidth, scrHeight;
+    GYViewVolume*const volume = &cam->viewVolume;
+
+
+    float rectWidth = volume->nw/scale;
+    float rectHeight = volume->nh/scale;
+
+    //Have to calculate the geometry differently when rotated about the X axis...
+    //fuck it for now...
+
+    if(angle != 0.0f) {
+        rectWidth = 9999.0f;
+        rectHeight = 99999.0f;
+    }
+#if 0
+    GYVector2 botRight;
+    float diagonalDist;
+    if(rotZ != 0.0f) {
+        botRight.x = rectWidth;
+        botRight.y = rectHeight;
+        diagonalDist = gyVec2Magnitude(&botRight);
+        rectWidth = rectHeight = diagonalDist;
+    }
+#endif
+
+    const float halfW = (rectWidth)*0.5f;
+    const float halfH = (rectHeight)*0.5f;
+
+    volume->ntl.x = pos->x - halfW; volume->ntl.y = pos->y - halfH;
+    volume->ntr.x = pos->x + halfW; volume->ntr.y = pos->y - halfH;
+    volume->nbl.x = pos->x - halfW; volume->nbl.y = pos->y + halfH;
+    volume->nbr.x = pos->x + halfW; volume->nbr.y = pos->y + halfH;
+
+    volume->ftl = volume->ntl;
+    volume->ftr = volume->ntr;
+    volume->fbl = volume->nbl;
+    volume->fbr = volume->nbr;
+
+    //Calculate view matrix
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyVidResolution(&scrWidth, &scrHeight);
+    gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
+    gyMatScale(scale, scale, 1.0f);
+#if 0
+    gyMatRotate(rotX, 1.0f, 0.0f, 0.0f);
+    gyMatRotateZ(rotZ);
+#else
+    gyMatRotate(angle, dir->x, dir->y, dir->z);
+#endif
+#if 0
+    GYMatrix4 temp;
+
+    gyVidLookAtMat(temp,
+                   0, 0, 1.0f,
+                   0.0f, 0.0f, 0.0f,
+                   0.0f, -1.0f, 0.0f);
+    gyMatApply(temp);
+
+#endif
+    gyMatTranslate(floor(-pos->x*scale)/scale, floor(-pos->y*scale)/scale,  0.0f);
+
+    gyMatStore(&cam->viewMat);
+    gyMatPop();
+
+    gyMatMultMat(cam->projViewMat, (const float(*)[4])cam->projMat, (const float(*)[4])cam->viewMat);
+
+}
+
 
 
 static inline void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
