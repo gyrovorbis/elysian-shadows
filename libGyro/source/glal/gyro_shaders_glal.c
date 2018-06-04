@@ -11,7 +11,7 @@
 #   define GY_GL_VERSION_STR "#version 300 es"
 #else
 #ifdef _WIN32
-#   define GY_GL_VERSION_STR "#version 330\n\r"
+#   define GY_GL_VERSION_STR "#version 430\n\r"
 #else
 #   define GY_GL_VERSION_STR "#version 410\n"
 #endif
@@ -240,7 +240,7 @@ void glalLightingInit(void) {
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
 #ifndef GL_ES_VERSION_2_0
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 
         GY_GL_CHECK_ERROR();
@@ -484,50 +484,6 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
             _gyLog(GY_DEBUG_ERROR, "Query failed for 'LightingUBO' uniform block index!");
         }
     }
-
-#if 1
-
-    //poll for GYLightSource uniform locations
-    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-
-        sprintf(buff, "uLights[%d].position", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff, !light);
-
-        //sprintf(buff, "uLights[%d].ambientColor", i);
-        //shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLights[%d].diffuseColor", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLights[%d].specularColor", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPECULAR_COLOR]				= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLights[%d].direction", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIRECTION]						= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLights[%d].attenuationFactors", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS]			= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLights[%d].spotExponent", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLights[%d].spotCutoffAngle", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTLOG_OFF_ANGLE]				= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLightsEnabled[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uShadowMaps[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uShadowCubeMaps[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff, !light);
-
-        sprintf(buff, "uLightProjViewMats[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff, !light);
-
-    }
-#endif
 }
 
 
@@ -583,9 +539,10 @@ void glalDefaultShadersLoadUniforms(void) {
     for(int i = 0; i < count; ++i) {
         gyVidLightSourceAdd(sources[i]);
     }
+    gyVidLightSourceAdd(NULL);
 
     gyVidSetGlobalAmbience(&_globalAmbience);
-    gyVidLightingSetEnable(glalLightingEnabled);
+    //gyVidLightingSetEnable(glalLightingEnabled);
 
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
 
@@ -595,12 +552,6 @@ void glalDefaultShadersLoadUniforms(void) {
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP], glalTextureMapUniforms[GLAL_SPECULAR_MAP]);
 
     //next texture banks are used for shadow maps for each light
-#if 0
-    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-        glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+i);
-        glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+i);
-    }
-#else
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_DIRECTIONAL_SHADOW_MAPS], glalTextureMapUniforms[GLAL_DIRECTIONAL_SHADOW_MAP]);
     glActiveTexture(glalTextureMapTexUnits[GLAL_DIRECTIONAL_SHADOW_MAP]);
     glBindTexture(GL_TEXTURE_2D_ARRAY, glalDirectionalShadowMapTextureArray);
@@ -615,8 +566,6 @@ void glalDefaultShadersLoadUniforms(void) {
     glActiveTexture(glalTextureMapTexUnits[GLAL_POINT_SHADOW_CUBE_MAP]);
     glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, glalPointShadowCubeMapTextureArray);
     glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
-
-#endif
 
     //Do these not need to be physically resubmitted?
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);

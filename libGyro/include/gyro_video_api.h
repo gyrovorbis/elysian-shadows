@@ -18,11 +18,11 @@ typedef struct GYColor4 {
 typedef struct GYVertex {
     GYVector4   pos;        //16 bytes
     GYTexCoord2 texCoord;   //8 bytes
-    GYColor4    color;      //4 bytea
+    GYColor4    color;      //16 bytes
     GYVector3   normal;     //12 bytes
     GYVector3   tangent;    //12 bytes
-    float       normalZ;
-} GYVertex;                 //36 + 16 = 52
+    float       normalZ;    //4 bytes
+} GYVertex;                 //68 bytes
 
 typedef enum _GY_ALPHA_LEVEL { GY_ALPHA_NONE, GY_ALPHA_PUNCHTHRU, GY_ALPHA_FULL } GY_ALPHA_LEVEL;
 
@@ -75,6 +75,7 @@ void gyVidTexCoordArray(const struct GYTexCoord2 *const ptr);
 //void gyVidNormalArray(const struct _GYVector3 *const ptr);
 //void gyVidTangentArray(const struct _GYVector3 *const ptr);
 void gyVidTriangleStrip(const struct GYVector4 *const vertexArray, const unsigned startIndex, const unsigned amount);
+void gyVidTriangleStripVertices(const GYVertex* vertex, unsigned count);
 
 //Spine interop
 struct spSkeleton;

@@ -140,9 +140,15 @@
 # define GYRO_MATH_NOASM
 #endif
 
+
+#ifdef __cplusplus
 #   define GY_ASSERT(a)                     Q_ASSERT(a)
+#else
+#   define GY_ASSERT(a)                     assert(a)
+#endif
 #   define                                  GYRO_GLAL
 #   define                                  GYRO_GLAL_GL_Desktop
+#   define                                  GY_CL_OPENGL_INTEROP
 #ifndef GYRO_MATH_NOASM
 #	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))

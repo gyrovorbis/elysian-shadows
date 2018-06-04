@@ -107,6 +107,7 @@ HEADERS += \
     ../../include/gyro_file_api.h \
     ../../include/gyro_defines.h \
     ../../include/gyro_audio_api.h \
+    ../../include/gyro_compute_api.h \
     ../../include/common/gyro_wav_common.h \
     ../../include/common/gyro_texture_common.h \
     ../../include/common/gyro_system_common.h \
@@ -143,7 +144,11 @@ HEADERS += \
     ../../include/x86/gyro_sdl_input.h \
     ../../include/gyro_visual_memory_api.h \
     ../../include/glal/gyro_radial_blur_glal.h \
-    ../..//include/glal/gyro_chromatic_aberration_glal.h
+    ../..//include/glal/gyro_chromatic_aberration_glal.h \
+    ../../include/cl/gyro_cl.h \
+    ../../include/gyro_compute_api.h \
+    ../../include/gyro_performance_api.h \
+    ../../gyro_thread_api.h
 
 vulkan {
     HEADERS += \
@@ -208,7 +213,8 @@ SOURCES += \
     ../../source/x86/gyro_rumble_sdl_x86.c \
     ../../source/common/gyro_visual_memory_common.c \
     ../../source/glal/gyro_radial_blur_glal.c \
-    ../../source/glal/gyro_chromatic_aberration_glal.c
+    ../../source/glal/gyro_chromatic_aberration_glal.c \
+    ../../source/cl/gyro_compute_cl.c
 
 vulkan {
     SOURCES += \
