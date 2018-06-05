@@ -115,7 +115,7 @@ static inline int _clCheckError(const cl_int statusCode, const char* file, int l
 #   define GY_CL_GL_PLATFORM_SHARED_CONTEXT_EXTENSION   "cl_APPLE_gl_sharing"
 #else
 #   define GY_CL_GL_DEVICE_SHARED_CONTEXT_EXTENSION     "cl_khr_gl_sharing"
-#   define GY_CL_GL_DEVICE_SHARED_CONTEXT_EXTENSION     "cl_khr_gl_sharing"
+#   define GY_CL_GL_PLATFORM_SHARED_CONTEXT_EXTENSION     "cl_khr_gl_sharing"
 #endif
 
 #ifdef __cplusplus
