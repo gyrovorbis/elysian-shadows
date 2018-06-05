@@ -102,24 +102,15 @@ void MenuWidget::onCancel(void) {
 }
 
 void MenuWidget::_onCurrentChange(Widget* prevSel, Widget* nextSel) {
-   // if(_currentChangeCb) _currentChangeCb(prevSel, nextSel);
-    //else
     System::getEventSys()->sendEvent(MenuCurrentItemChangedEvent(prevSel, nextSel), this);
-    //onCurrentChange(prevSel, nextSel);
 }
 
 void MenuWidget::_onSelectionChange(MenuSelection*) {
-     //if(_selectionChangeCb) _selectionChangeCb(sel);
-    //else
     System::getEventSys()->sendEvent(Event(EVENT_WIDGET_MENU_SELECTION), this);
-    //onSelectionChange(sel);
 }
 
 void MenuWidget::_onCancel(void) {
-    //if(_cancelCb) _cancelCb();
-    //else
     System::getEventSys()->sendEvent(Event(EVENT_WIDGET_MENU_CANCEL), this);
-    //onCancel();
 }
 
 void MenuWidget::onReceiveEvent(Event* event) {
