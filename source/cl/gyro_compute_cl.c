@@ -84,81 +84,45 @@ typedef struct _CLGLInteropInfo {
     CGLContextObj       cglContextObj;
     CGLShareGroupObj    cglShareGroupObj;
 #   elif defined(__WIN32)
+    HGLRC               wglContext;
+    HDC                 wglDeviceContext;
 #   else
+    GLXContext          glXContext;
+    Display*            glXDisplay;
 #   endif
 } _CLGLInteropInfo;
 
 static _CLGLInteropInfo         _clGlInteropInfo;
-
-//===================== INTERNAL OPENCL UTILITY FUNCTIONS ============================
-
-static int _clGLQueryInteropInfo(void) {
-    memset(&_clGlInteropInfo, 0, sizeof(_CLGLInteropInfo));
-    if(!_initParams.rendererInterop) return 0;
-
-    int success = 1;
-    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API] Querying to determine OpenCL device currently associated with OpenGL rendering.");
-    _gyPush();
-
-#ifdef GY_COMPUTE_DEBUG
-    memset(&_debugInfo, 0, sizeof(GYComputeDebugInfo));
-#endif
-
-
-#   ifdef __APPLE__
-    //Retrieve sharegroup CL/GL interop bullshit from Apple.
-    _clGlInteropInfo.cglContextObj = CGLGetCurrentContext();
-    _clGlInteropInfo.cglShareGroupObj = CGLGetShareGroup(_clGlInteropInfo.cglContextObj);
-    if(!_clGlInteropInfo.cglContextObj || !_clGlInteropInfo.cglShareGroupObj) {
-        _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] Failed to retrieve information about current OpenGL context for interop!");
-        success = 0;
-        goto done;
-    }
-
-    cl_context_properties properties[] = {
-        CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
-        (intptr_t)_clGlInteropInfo.cglShareGroupObj,
-        0
-    };
-
-    cl_int errorCode;
-    cl_context context = clCreateContext(properties, 0, NULL, 0, 0, &errorCode);
-    if(GY_CL_CHECK_ERROR(errorCode)) {
-        _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API] Failed to create a CL context from GL sharegroup when querying for renderer info!");
-        success = 0;
-        goto done;
-    }
-
-    //Poll for the OpenCL Device associated with the GL/CL context used by the renderer
-    if(GY_CL_CHECK_ERROR(clGetGLContextInfoAPPLE(context, _clGlInteropInfo.cglContextObj, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, sizeof(cl_device_id), &_clGlInteropInfo.rendererDevice, NULL))) {
-        _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API] Failed to retrieve OpenCL Device associated with OpenCL context created from OpenGL context!");
-        success = 0;
-        goto done;
-    }
-
-#   elif defined(__WIN32)
-
-#   else
-
-#   endif
-
-    if(GY_CL_CHECK_ERROR(clGetDeviceInfo(_clGlInteropInfo.rendererDevice, CL_DEVICE_PLATFORM, sizeof(cl_platform_id), &_clGlInteropInfo.rendererPlatform, NULL))) {
-        _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API] Failed to query OpenCL platform corresponding to active OpenGL device!");
-        success = 0;
-    }
-
-done:
-    _clGlInteropInfo.glQueryDataValid = success;
-    _gyPop(1);
-    return success;
-}
-
 #endif
 
 //========== INTERNAL OPENCL <=> LIBGYRO TYPE CONVERSTION UTILITY FUNCTIONS ===========
 
+static inline GYComputeDevice _gyComputeDeviceFromClDeviceId(cl_device_id clDevice) {
+    GYComputeDevice dev = { -1, -1 };
+    for(unsigned p = 0; p < _clPlatformCount; ++p) {
+        for(unsigned d = 0; d < _clDeviceCount[p]; ++d) {
+            if(_clDevices[p][d] == clDevice) {
+                dev.platformIdx = p;
+                dev.deviceIdx = d;
+                goto done;
+            }
+        }
+    }
+done:
+    return dev;
+}
+
+static inline int _gyComputePlatformIndexFromClPlatformId(cl_platform_id clPlatform) {
+    for(unsigned p = 0; p < _clPlatformCount; ++p) {
+        if(_clPlatforms[p] == clPlatform) {
+            return p;
+        }
+    }
+    return -1;
+}
+
 static inline _ComputeDevice* _clDeviceFromGyComputeDevice(const GYComputeDevice* dev) {
-    assert(dev && dev->platformIdx >= 0 && dev->platformIdx < (int)_clPlatformCount && dev->deviceIdx >= 0 && dev->deviceIdx < (int)_clDeviceCount[dev->platformIdx]);
+    GY_ASSERT(dev && dev->platformIdx >= 0 && dev->platformIdx < (int)_clPlatformCount && dev->deviceIdx >= 0 && dev->deviceIdx < (int)_clDeviceCount[dev->platformIdx]);
     return &_devices[dev->platformIdx][dev->deviceIdx];
 }
 
@@ -261,7 +225,9 @@ inline static const char* _clDeviceTypeStr(cl_device_type type) {
     case CL_DEVICE_TYPE_DEFAULT:     return "CL_DEVICE_TYPE_DEFAULT";
     case CL_DEVICE_TYPE_CUSTOM:      return "CL_DEVICE_TYPE_CUSTOM";
     case CL_DEVICE_TYPE_ALL:         return "CL_DEVICE_TYPE_ALL";
-    case CL_DEVICE_TYPE_USE_ID:      return "CL_DEVICE_TYPE_USE_ID";
+#ifdef __APPLE__
+    case CL_DEVICE_TYPE_USE_ID:      return "CL_DEVICE_TYPE_USE_ID"; //Nonstandardized Apple BULLSHIT
+#endif
     default:                         return "UNKOWN";
     }
 }
@@ -706,6 +672,153 @@ static int _clQueryKernelWorkgroupInfo(const cl_kernel kernel, const cl_device_i
     return success;
 }
 
+
+//===================== INTERNAL OPENCL UTILITY FUNCTIONS ============================
+#ifdef GY_CL_OPENGL_INTEROP
+static int _clGLQueryInteropInfo(void) {
+    memset(&_clGlInteropInfo, 0, sizeof(_CLGLInteropInfo));
+    if(!_initParams.rendererInterop) return 0;
+
+    int success = 1;
+    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API] Querying for OpenGL/OpenCL Interop Support.");
+    _gyPush();
+
+#ifdef GY_COMPUTE_DEBUG
+    memset(&_debugInfo, 0, sizeof(GYComputeDebugInfo));
+#endif
+
+
+#   ifdef __APPLE__
+    //Retrieve sharegroup CL/GL interop bullshit from Apple.
+    _clGlInteropInfo.cglContextObj = CGLGetCurrentContext();
+    _clGlInteropInfo.cglShareGroupObj = CGLGetShareGroup(_clGlInteropInfo.cglContextObj);
+    if(!_clGlInteropInfo.cglContextObj) {
+        _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (MacOS, CGL): Failed to retrive current CGL Context object!");
+        success = 0;
+        goto done;
+    }
+
+    if(!_clGlInteropInfo.cglShareGroupObj) {
+        _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (MacOS, CGL): Failed to retrieve CGL Share Group object!");
+        success = 0;
+        goto done;
+    }
+
+    cl_context_properties properties[] = {
+        CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+        (intptr_t)_clGlInteropInfo.cglShareGroupObj,
+        0
+    };
+
+    cl_int errorCode;
+    cl_context context = clCreateContext(properties, 0, NULL, 0, 0, &errorCode);
+    if(GY_CL_CHECK_ERROR(errorCode)) {
+        _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (MacOS, CGL): Failed to create a CL context from GL sharegroup when querying for renderer info!");
+        success = 0;
+        goto done;
+    }
+
+    //Poll for the OpenCL Device associated with the GL/CL context used by the renderer
+    if(GY_CL_CHECK_ERROR(clGetGLContextInfoAPPLE(context, _clGlInteropInfo.cglContextObj, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, sizeof(cl_device_id), &_clGlInteropInfo.rendererDevice, NULL))) {
+        _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (MacOS, CGL): Failed to retrieve OpenCL Device associated with OpenCL context created from OpenGL context!");
+        success = 0;
+        goto done;
+    }
+
+    if(GY_CL_CHECK_ERROR(clGetDeviceInfo(_clGlInteropInfo.rendererDevice, CL_DEVICE_PLATFORM, sizeof(cl_platform_id), &_clGlInteropInfo.rendererPlatform, NULL))) {
+        _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (MacOS, CGL) Failed to query OpenCL platform corresponding to active OpenGL device!");
+        success = 0;
+    }
+
+#   else
+    for(unsigned p = 0; p < _clPlatformCount; ++p) {
+
+        cl_context_properties properties[7] = {
+            CL_GL_CONTEXT_KHR
+            0,
+            0,
+            0,
+            CL_CONTEXT_PLATFORM
+            (cl_context_properties)p,
+            0
+        };
+
+#       ifdef __WIN32
+        _clGlInteropInfo.wglContext         = wglGetCurrentContext();
+        _clGlInteropInfo.wglDeviceContext   = wglGetCurrentDC();
+
+        if(!_clGlInteropInfo.wglContext) {
+            _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (Windows, WGL): Failed to retrieve handle to current OpenGL rendering context!");
+            success = 0;
+            goto done;
+        }
+
+        if(!_clGlInteropInfo.wglDeviceContext) {
+            _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (Windows, WGL): Failed to retrieve handle to device context associated with current OpenGL rendering context!");
+            success = 0;
+            goto done;
+        }
+
+        properties[1] = (cl_context_properties)_clGlInteropInfo.wglContext;
+        properties[2] = CL_WGL_HDC_KHR;
+        properties[3] = (cl_context_properties)_clGlInteropInfo.wglDeviceContext;
+
+#       else
+        _clGlInteropInfo.glXContext = glXGetCurrentContext();
+        _clGlInteropInfo.glXDisplay = glXGetCurrentDisplay();
+
+        if(!_clGlInteropInfo.glXContext) {
+            _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (Linux, GLX): Failed to retrieve current OpenGL context associated with X Window session.");
+            success = 0;
+            goto done;
+        }
+
+        if(!_clGlInteropInfo.glXDisplay) {
+            _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (Linux, GLX): Failed to retrieve current display associated with current OpenGL context!");
+        }
+
+        properties[1] = (cl_context_properties)_clGlInteropInfo.glXContext;
+        properties[2] = CL_GLX_DISPLAY_KHR;
+        properties[3] = (cl_context_properties)_clGlInteropInfo.glXDisplay;
+
+#       endif
+
+        cl_device_id devices[CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT];
+        size_t size;
+
+        clGetGLContextInfoKHR(properties, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id)*CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT, devices, &size);
+        if(!size) {
+            _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (KHR): Platform %u has no associated GL devices!", p);
+            continue;
+        }
+
+        int count = size / sizeof(cl_device_id);
+        if(count > 1) {
+            _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (KHR): Returned multiple devices associated with CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR! WTF! Choosing first!");
+        }
+
+        _clGlInteropInfo.rendererPlatform = (cl_platform_id)p;
+        _clGlInteropInfo.rendererDevice = devices[0];
+        _clGlInteropInfo.glQueryDataValid = 1;
+        break;
+    }
+    success = _clGlInteropInfo.glQueryDataValid;
+
+#   endif
+
+done:
+    _clGlInteropInfo.glQueryDataValid = success;
+    if(_clGlInteropInfo.glQueryDataValid) {
+        GYComputeDevice dev = _gyComputeDeviceFromClDeviceId(_clGlInteropInfo.rendererDevice);
+        GY_ASSERT(dev.platformIdx != -1 && dev.deviceIdx != -1);
+        _gyLog(GY_DEBUG_VERBOSE, "OpenCL Device associated with current OpenGL Context/Screen: [Platform: %u, Device: %u]", dev.platformIdx, dev.deviceIdx);
+    }
+    _gyPop(1);
+    return success;
+}
+
+#endif
+
 #if 0
 void initializeOpenCL(void) {
 
@@ -869,7 +982,7 @@ void initializeOpenCL(void) {
 //===================== GYRO COMPUTE SUBSYSTEM API ========================
 int gyComputeInit(const GYComputeInitParams* params) {
     int success = 1;
-    assert(params && !_initialized);
+    GY_ASSERT(params && !_initialized);
 
     _gyLog(GY_DEBUG_VERBOSE, "[GYRO_COMPUTE] Initializing OpenCL");
     _gyPush();
@@ -1055,7 +1168,7 @@ int gyComputePlatformCount(void) {
 }
 
 const GYComputePlatformInfo* gyComputePlatformQueryInfo(unsigned platformIdx) {
-    assert(_initialized && platformIdx >= 0 && platformIdx < _clPlatformCount);
+    GY_ASSERT(_initialized && platformIdx >= 0 && platformIdx < _clPlatformCount);
     return &_platformInfo->gyInfo;
 }
 
@@ -1068,7 +1181,7 @@ GYComputeDevice gyComputeDeviceHandle(unsigned platformIdx, unsigned deviceIdx) 
 
 
 const GYComputeDeviceInfo* gyComputeDeviceQueryInfo(const GYComputeDevice* device) {
-    assert(_initialized);
+    GY_ASSERT(_initialized);
     _ComputeDevice* dev = _clDeviceFromGyComputeDevice(device);
     return &dev->info.gyInfo;
 }
@@ -1076,28 +1189,53 @@ const GYComputeDeviceInfo* gyComputeDeviceQueryInfo(const GYComputeDevice* devic
 
 //================= GYRO COMPUTE CONTEXT API ======================
 GYComputeContext* gyComputeContextCreate(unsigned platformIdx, const GYComputeContextInitParams* params) {
-    assert(_initialized && params);
-    assert(platformIdx >= 0 && platformIdx < _clPlatformCount);
-    assert(params->deviceCount > 0 && params->deviceCount < CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT);
+    GY_ASSERT(_initialized && params);
+    GY_ASSERT(platformIdx >= 0 && platformIdx < _clPlatformCount);
+    GY_ASSERT(params->deviceCount > 0 && params->deviceCount < CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT);
 
     cl_device_id devices[CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT];
     cl_context_properties properties[7] = {
-        (intptr_t)CL_CONTEXT_PLATFORM,
-        (intptr_t)_clPlatforms[platformIdx],
-        (intptr_t)0,
-        (intptr_t)0,
-        (intptr_t)0,
-        (intptr_t)0,
-        (intptr_t)0
+        (cl_context_properties)CL_CONTEXT_PLATFORM,
+        (cl_context_properties)_clPlatforms[platformIdx],
+        (cl_context_properties)0,
+        (cl_context_properties)0,
+        (cl_context_properties)0,
+        (cl_context_properties)0,
+        (cl_context_properties)0
     };
 
 #ifdef GY_CL_OPENGL_INTEROP
     if(params->flags & GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED) {
+        if(!_clGlInteropInfo.glQueryDataValid) {
+            _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API]: Attempting to create an OpenGL/OpenCL shared context, when interop query failed!");
+            return NULL;
+        }
+        int rendererPlatformIdx = _gyComputePlatformIndexFromClPlatformId(_clGlInteropInfo.rendererPlatform);
+        GY_ASSERT(rendererPlatformIdx != -1);
+        if((int)platformIdx != rendererPlatformIdx) {
+            _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API]: Attempting to create an OpenGL/OpenCL shared context with platform [%u], when GL context is associated with platform [%d]!", platformIdx, rendererPlatformIdx);
+            return NULL;
+        }
+
 #   ifdef __APPLE__
-        properties[2] = (intptr_t)CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE;
-        properties[3] = (intptr_t)_clGlInteropInfo.cglShareGroupObj;
-#   elif defined(__WIN32)
+        properties[2] = (cl_context_properties)CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE;
+        properties[3] = (cl_context_properties)_clGlInteropInfo.cglShareGroupObj;
 #   else
+        properties[2] = CL_GL_CONTEXT_KHR;
+
+#       ifdef __WIN32
+
+        properties[3] = (cl_context_properties)_ClGlInteropInfo.wglCurrentContext;
+        properties[4] = CL_WGL_HDC_KHR;
+        properties[5] = (cl_context_properties)_ClGlInteropInfo.wglCurrentDC;
+
+#       else
+
+        properties[1] = (cl_context_properties)_clGlInteropInfo.glXContext;
+        properties[2] = CL_GLX_DISPLAY_KHR;
+        properties[3] = (cl_context_properties)_clGlInteropInfo.glXDisplay;
+
+#       endif
 #   endif
     }
 #endif
@@ -1149,7 +1287,7 @@ GYComputeContext* gyComputeContextCreate(unsigned platformIdx, const GYComputeCo
 
 int gyComputeContextDestroy(GYComputeContext* context) {
     int success = 1;
-    assert(_initialized);
+    GY_ASSERT(_initialized);
     if(context) {
         _Context* clCtx = (_Context*)context;
         if(GY_CL_CHECK_ERROR(clReleaseContext(clCtx->ctx))) {
@@ -1167,7 +1305,7 @@ int gyComputeContextDestroy(GYComputeContext* context) {
 
 //================= GYRO COMPUTE COMMAND QUEUE API ======================
 GYComputeCommandQueue* gyComputeCommandQueueCreate(const GYComputeContext* context, const GYComputeDevice* device, int flags) {
-    assert(_initialized && context && device);
+    GY_ASSERT(_initialized && context && device);
     cl_int retCode;
 
     cl_command_queue_properties properties = 0;
@@ -1192,7 +1330,7 @@ GYComputeCommandQueue* gyComputeCommandQueueCreate(const GYComputeContext* conte
 }
 
 int gyComputeCommandQueueDestroy(GYComputeCommandQueue* queue) {
-   assert(_initialized);
+   GY_ASSERT(_initialized);
 
     int success = 1;
     if(queue) {
