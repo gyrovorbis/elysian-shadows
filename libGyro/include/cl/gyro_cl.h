@@ -23,6 +23,9 @@ extern "C" {
 #   ifdef GY_CL_OPENGL_INTEROP
 #       include <CL/cl_gl.h>
 #       include <CL/cl_gl_ext.h>
+#       ifndef __WIN32
+#           include <GL/glx.h>
+#       endif
 #   endif
 #endif
 
