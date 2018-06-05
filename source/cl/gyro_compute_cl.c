@@ -796,9 +796,14 @@ static int _clGLQueryInteropInfo(void) {
 #       endif
 
         cl_device_id devices[CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT];
-        size_t size;
+        size_t size = 0;
 
-        clGetGLContextInfo(properties, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id)*CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT, devices, &size);
+        if(GY_CL_CHECK_ERROR(clGetGLContextInfo(properties, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id)*CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT, devices, &size)) {
+            _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API] (KHR): clGetGLContextInfo KHR extension failed! OpenGL interop not available!");
+            success = 0;
+            goto done;
+        }
+
         if(!size) {
             _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (KHR): Platform %u has no associated GL devices!", p);
             continue;
@@ -809,7 +814,7 @@ static int _clGLQueryInteropInfo(void) {
             _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (KHR): Returned multiple devices associated with CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR! WTF! Choosing first!");
         }
 
-        _clGlInteropInfo.rendererPlatform = (cl_platform_id)p;
+        _clGlInteropInfo.rendererPlatform = (cl_platform_id)_clPlatforms[p];
         _clGlInteropInfo.rendererDevice = devices[0];
         _clGlInteropInfo.glQueryDataValid = 1;
         break;
