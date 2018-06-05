@@ -92,6 +92,11 @@ typedef struct _CLGLInteropInfo {
 #   endif
 } _CLGLInteropInfo;
 
+#ifndef __APPLE__
+static clGetGLContextInfoKHR_fn clGetGLContextInfo = NULL;
+#endif
+
+
 static _CLGLInteropInfo         _clGlInteropInfo;
 #endif
 
@@ -731,6 +736,13 @@ static int _clGLQueryInteropInfo(void) {
     }
 
 #   else
+    clGetGLContextInfo = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
+    if(!clGetGLContextInfo) {
+        _gyLog(GY_DEBUG_ERROR, "Failed to load extension function address for 'clGetGLContextInfoKHR'!");
+        success = 0;
+        goto done;
+    }
+
     for(unsigned p = 0; p < _clPlatformCount; ++p) {
 
         cl_context_properties properties[7] = {
@@ -786,7 +798,7 @@ static int _clGLQueryInteropInfo(void) {
         cl_device_id devices[CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT];
         size_t size;
 
-        clGetGLContextInfoKHR(properties, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id)*CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT, devices, &size);
+        clGetGLContextInfo(properties, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id)*CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT, devices, &size);
         if(!size) {
             _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (KHR): Platform %u has no associated GL devices!", p);
             continue;
