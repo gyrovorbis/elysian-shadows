@@ -935,3 +935,8 @@ void ESToolkit::on_actionConnectEVMUTcp_toggled(bool arg1)
     }
 }
 
+void ESToolkit::on_actionTexture_Dump_triggered()
+{
+    gyVidTexWalkthrough();
+}
+

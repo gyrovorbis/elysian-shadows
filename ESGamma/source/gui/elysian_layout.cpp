@@ -8,6 +8,9 @@
 
 namespace elysian {
 
+    const constexpr int TableLayout::InvalidIndex;
+    const constexpr int TableLayout::DynamicSize;
+
     TableLayout::~TableLayout(void) {
         for(auto&& it: _widgets)
             delete it.second;

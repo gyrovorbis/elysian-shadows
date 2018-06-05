@@ -32,7 +32,6 @@ namespace elysian {
 
     protected:
         const static constexpr int      InvalidIndex            = -1;
-        //
         const static constexpr int      DynamicSize             = -1;
 
         std::map<RowColPair, Widget*>   _widgets;

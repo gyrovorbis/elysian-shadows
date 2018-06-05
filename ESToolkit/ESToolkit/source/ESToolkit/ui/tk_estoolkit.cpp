@@ -1271,12 +1271,6 @@ void ESToolkit::openDoc(QString page, QString section) {
 }
 
 
-void ESToolkit::on_actionTexture_Dump_triggered()
-{
-    gyVidTexWalkthrough();
-}
-
-
 void ESToolkit::showStatusBarMessage(QString message, QColor color) {
     if(!_instance || !_instance->_statusLabel) return;
     auto pal = _instance->_statusLabel->palette();
