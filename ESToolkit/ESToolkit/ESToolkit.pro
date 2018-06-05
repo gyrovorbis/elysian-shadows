@@ -231,7 +231,8 @@ SOURCES += \
     ../../game/source/pause_menu/es_party_menu.cpp \
     ../../game/source/pause_menu/es_inventory_menu.cpp \
     ../../ESGamma/source/system/elysian_compute_system.cpp \
-    ../../ESGamma/source/system/elysian_render_system.cpp
+    source/ESGamma/tk_render_system.cpp \
+    ../../ESGamma/source/system/elysian_render_system_base.cpp
 
 
 !ios: !dreamcast: !android {
@@ -518,7 +519,9 @@ HEADERS += \
     ../../game/include/pause_menu/es_party_menu.hpp \
     ../../game/include/pause_menu/es_inventory_menu.hpp \
     ../../ESGamma/include/system/elysian_compute_system.hpp \
-    ../../ESGamma/include/system/elysian_render_system.hpp
+    ../../ESGamma/include/crtp/elysian_render_system.hpp \
+    include/ESGamma/tk_render_system.h \
+    ../../ESGamma/include/system/elysian_render_system_base.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

@@ -1,4 +1,4 @@
-#include <system/elysian_render_system.hpp>
+#include <crtp/elysian_render_system.hpp>
 #include <system/elysian_compute_system.hpp>
 #include <crtp/elysian_debug.hpp>
 #include <gyro_video_api.h>
@@ -20,7 +20,7 @@ GLuint _glParticleIndirectBuff  = 0;
 
 
 
-bool RenderSystem::initialize(void) {
+bool RenderSystemBase::initialize(void) {
     bool success = true;
 
     dbgprintf("RenderSystem::initialize()");
@@ -75,37 +75,44 @@ bool RenderSystem::initialize(void) {
                             success &= _particleVboKernel->setArg(3, _particleDrawIndirectOutBuffer);
                             success &= _particleVboKernel->setArg(4, _particleVboOutBuffer);
 
-                            if(success) _computeAccelerated = true;
+                            if(success) _setParticleAccelerationAvailable(true);
                         }
                     }
                 }
             }
         }
     }
+
+    if(_useParticleAcceleration) {
+        dbgprintf("RendererSystem: Compute accelerated particles enabled.");
+        setUseParticleAcceleration(true);
+    } else {
+        warnprintf("RenderSystem: No compute acceleration available for particles!");
+    }
+
     dbgpop();
     return success;
 }
 
-bool RenderSystem::uninitialize(void) {
+bool RenderSystemBase::uninitialize(void) {
     delete _particleVboOutBuffer;
     delete _renderCmdQueue;
     return true;
 }
 
-#define PARTICLE_CL
-
-bool RenderSystem::populateParticleVbos(void) {
+bool RenderSystemBase::populateParticleVbos(void) {
     static KernelParticle kernParts[ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX/6];
-    static GYVertex verts[ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX];
-    unsigned partCount = 0;
+    bool success = true;
 
     if(gyVidShadowPass()) return true;
-    //glFlush();
+    if(!_useParticleAcceleration) return false;
+
+    _activeParticles = 0;
     for(unsigned i = 0; i < getCurrentArea()->particleEmitters.size(); ++i) {
         auto* emitter = getCurrentArea()->particleEmitters[i];
 
         for(auto it = emitter->_pool.begin(); it < emitter->_pool.end(); ++it) {
-            KernelParticle* part = &kernParts[partCount++];
+            KernelParticle* part = &kernParts[_activeParticles++];
             memset(part, 0, sizeof(KernelParticle));
             auto& p = (*it);
 
@@ -118,21 +125,13 @@ bool RenderSystem::populateParticleVbos(void) {
             part->size[1] = p.size;
             part->color = p.color;
         }
-#ifndef PARTICLE_CL
-        emitter->render();
-#endif
     }
 
-#ifndef PARTICLE_CL
-    partCount = 0;
-#endif
-    if(partCount) {
+    if(_activeParticles) {
 
         auto* wgInfo = _particleDevice->getKernelWorkGroupInfo(_particleVboKernel);
-
-        bool success = true;
         size_t offset = 0;
-        size_t globalWorkSize = partCount;
+        size_t globalWorkSize = _activeParticles;
 
         //if(globalWorkSize%wgInfo->preferredWorkGroupSizeMultiple) globalWorkSize += (wgInfo->preferredWorkGroupSizeMultiple-globalWorkSize%wgInfo->preferredWorkGroupSizeMultiple);
 
@@ -156,100 +155,58 @@ bool RenderSystem::populateParticleVbos(void) {
         glFinish();
         success &= _renderCmdQueue->enqueueAcquireRendererSharedObject(2, sharedBuffs);
         success &= _renderCmdQueue->enqueueBufferWrite(_particleViewProjInBuffer, 0, sizeof(GYMatrix4), getCameraSys()->getCurrentState()->projViewMat, false);
-        success &= _renderCmdQueue->enqueueBufferWrite(_particleInBuffer, 0, sizeof(KernelParticle)*partCount, kernParts, false);
-        //success &= _particleVboKernel->setArg(1, _particleInBuffer);
-        //success &= _particleVboKernel->setArg(2, _particleViewProjInBuffer);
-        //success &= _particleVboKernel->setArg(3, _particleDrawIndirectOutBuffer);
-        //success &= _particleVboKernel->setArg(4, _particleVboOutBuffer);
-        success &= _particleVboKernel->setArg(0, sizeof(uint32_t), &partCount);
+        success &= _renderCmdQueue->enqueueBufferWrite(_particleInBuffer, 0, sizeof(KernelParticle)*_activeParticles, kernParts, false);
+        success &= _particleVboKernel->setArg(0, sizeof(uint32_t), &_activeParticles);
         success &= _particleVboKernel->setArg(5, sizeof(int32_t)*2, viewportSize);
-        //success &= _renderCmdQueue->enqueue
         success &= _renderCmdQueue->enqueueKernel(_particleVboKernel, 1, &offset, &globalWorkSize, &localWorkSize);
-        //DrawIndirectBuffer indirectBuff;
-        //success &= _renderCmdQueue->enqueueBufferRead(_particleDrawIndirectOutBuffer, 0, sizeof(DrawIndirectBuffer), &indirectBuff, true);
         success &= _renderCmdQueue->enqueueReleaseRendererSharedObject(2, sharedBuffs);
 
-
-        //if(success) renderParticles();
-        //dbgprintf("global - %u, local - %u", globalWorkSize, localWorkSize);
-
-
-
-      //  glDrawArraysIndirect(GL_TRIANGLE_STRIP, 0);
-     //   if(success) {
-      //      dbgprintf("WHOOO!");
-       // } else errprintf("REEEEST!!!");
+        if(!success) {
+            errprintf("RenderSystem: GPGPU Particle VBO population failed! Falling back to software from now on!");
+            setUseParticleAcceleration(false);
+        }
     }
 
-
+    return success;
 }
 
-//#define RENDER_CL_CPU
-
-bool RenderSystem::renderParticles(void) {
-    DrawIndirectBuffer indirectBuff;
-    static GYVertex verts[ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX];
-    ComputeBuffer* sharedBuffs[] = {
-        _particleVboOutBuffer,
-        _particleDrawIndirectOutBuffer
-    };
+bool RenderSystemBase::renderParticles(void) {
     bool success = true;
-                    success &= _renderCmdQueue->finish();
-#ifdef RENDER_CL_CPU
-                            success &= _renderCmdQueue->enqueueBufferRead(_particleDrawIndirectOutBuffer, 0, sizeof(DrawIndirectBuffer), &indirectBuff, true);
-                success &= _renderCmdQueue->enqueueBufferRead(_particleVboOutBuffer, 0, sizeof(GYVertex)*indirectBuff.count, verts, true);
-#endif
+    if(gyVidShadowPass()) return true;
 
+    if(!_useParticleAcceleration) {
+        for(unsigned i = 0; i < getCurrentArea()->particleEmitters.size(); ++i) {
+            auto* emitter = getCurrentArea()->particleEmitters[i];
+            emitter->render();
+        }
+    } else if(_activeParticles) {
 
+        success &= _renderCmdQueue->finish();
 
-#ifndef PARTICLE_CL
-    for(unsigned i = 0; i < getCurrentArea()->particleEmitters.size(); ++i) {
-        auto* emitter = getCurrentArea()->particleEmitters[i];
-        emitter->render();
-    }
-#else
-
-
-
-    if(success) {
-        //errprintf("%u verts, %u parts", indirectBuff.count, partCount);
-        if(/*indirectBuff.count &&*/ !gyVidShadowPass()) {
-            //gyVidVertexBatchFlush();
-
-            //for(unsigned i = 0; i < indirectBuff.count; ++i) {
-            //   GYVertex* cur = &verts[i];
-             //   dbgprintf("vert[%u]: %f, pos <%f, %f, %f> color <%u, %u, %u, %u>", i, cur->normalZ, cur->pos.x, cur->pos.y, cur->pos.z, cur->color.r, cur->color.g, cur->color.b, cur->color.a);
-           // }
-
+        if(success) {
             gyVidTexBind(nullptr);
 
             gyVidNormalMapBind(nullptr);
             gyVidSpecularMapBind(nullptr);
-
             gyVidMaterialBind(nullptr);
-            gyVidAlphaLevel(GY_ALPHA_FULL);
 
+            gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-            //gyVidDepthTest(false);
-#ifndef RENDER_CL_CPU
+
             glBindVertexArray(_glParticleVao);
-             //       glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, _glParticleIndirectBuff);
+
             glDrawArraysIndirect(GL_TRIANGLE_STRIP, 0);
+
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
             glBindVertexArray(_streamVao[0]);
-
-#else
-            gyVidTriangleStripVertices(verts, indirectBuff.count);
-#endif
-            //glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-            //gyVidDepthTest(true);
-
-
+        } else {
+            errprintf("RenderSystem: Failed to render GPGPU accelerated particles! Falling back to software from now on!");
+            setUseParticleAcceleration(false);
         }
+    }
 
-    } //else errprintf("REEST");
-#endif
+    return success;
 }
 
 

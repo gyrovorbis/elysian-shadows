@@ -186,6 +186,8 @@ private Q_SLOTS:
     void on_actionFileSaveCurrentProject_triggered();
     void on_actionFileOpenProject_triggered();
     void on_actionFileQuit_triggered();
+    void onUseParticleAccelerationChanged(bool val);
+    void onParticleAccelerationAvailableChanged(bool val);
 
     //----CONNECTED MANUALLY----
     void onAltTabShortcutTriggered(void);
@@ -291,6 +293,7 @@ private Q_SLOTS:
     void on_actionVMU_View_triggered(bool checked);
     void on_actionGenerate_VMU_Icons_triggered();
     void on_actionConnectEVMUTcp_toggled(bool arg1);
+    void on_actionParticles_triggered(bool checked);
 };
 
 

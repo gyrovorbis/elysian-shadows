@@ -33,7 +33,7 @@
 #include <glal/gyro_radial_blur_glal.h>
 #include <glal/gyro_chromatic_aberration_glal.h>
 #include <system/elysian_compute_system.hpp>
-#include <system/elysian_render_system.hpp>
+#include <crtp/elysian_render_system.hpp>
 
 namespace elysian {
 

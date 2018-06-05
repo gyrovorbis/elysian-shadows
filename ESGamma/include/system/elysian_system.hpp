@@ -10,6 +10,7 @@ ELYSIAN_ASSET_TYPEDEF(CameraSystem)
 ELYSIAN_ASSET_TYPEDEF(InputSystem)
 ELYSIAN_ASSET_TYPEDEF(LevelSystem)
 ELYSIAN_ASSET_TYPEDEF(ParticleSystem)
+ELYSIAN_ASSET_TYPEDEF(RenderSystem)
 
 namespace elysian {
   class CharacterSystem;
@@ -31,7 +32,6 @@ namespace elysian {
   class EventSystem;
   class PathfindingSystem;
   class ComputeSystem;
-  class RenderSystem;
 
   class System: public LevelManager {
   public:

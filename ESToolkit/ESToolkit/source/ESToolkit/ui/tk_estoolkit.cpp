@@ -35,6 +35,7 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
+#include <ESGamma/tk_render_system.h>
 #ifdef GYRO_VMU_APP
 #include <gyro_vmu_main_window.hpp>
 #include <ui_gyro_vmu_main_window.h>
@@ -829,6 +830,8 @@ bool ESToolkit::openProjectDir(const QString dir) {
         auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
 
         connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
+        connect(_assets.getEngine()->getRenderSystem(), SIGNAL(useParticleAccelerationChanged(bool)), this, SLOT(onUseParticleAccelerationChanged(bool)));
+        connect(_assets.getEngine()->getRenderSystem(), SIGNAL(particleAccelerationAvailableChanged(bool)), this, SLOT(onParticleAccelerationAvailableChanged(bool)));
         viewport->setMouseTracking(true);
         _engineGLView->setMapView(_ui->mapView);
         _engineGLView->makeCurrent();
@@ -1286,6 +1289,16 @@ void ESToolkit::showStatusBarMessage(QString message, QColor color) {
 void ESToolkit::showStatusBarMessage(QString message) {
     ESToolkit::showStatusBarMessage(message, Qt::black);
 }
+
+void ESToolkit::onUseParticleAccelerationChanged(bool val) {
+    _ui->actionParticles->setChecked(val);
+}
+
+void ESToolkit::onParticleAccelerationAvailableChanged(bool val) {
+    _ui->actionParticles->setEnabled(val);
+}
+
+
 
 
 

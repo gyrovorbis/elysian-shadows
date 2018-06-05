@@ -36,6 +36,7 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <ESToolkit/core/tk_file_utilities.h>
 #include <QStatusBar>
+#include <ESGamma/tk_render_system.h>
 
 #ifdef VMU_CHILD_APP
 #include <gyro_vmu_main_window.hpp>
@@ -940,3 +941,9 @@ void ESToolkit::on_actionTexture_Dump_triggered()
     gyVidTexWalkthrough();
 }
 
+
+
+void ESToolkit::on_actionParticles_triggered(bool checked)
+{
+    getAssets().getEngine()->getRenderSystem()->setUseParticleAcceleration(checked);
+}

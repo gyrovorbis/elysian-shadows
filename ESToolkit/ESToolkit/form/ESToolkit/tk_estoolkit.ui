@@ -279,9 +279,20 @@
      <addaction name="actionIOS_Simulator"/>
      <addaction name="actionAndroid_Device"/>
     </widget>
+    <widget class="QMenu" name="menuGPGPU_Acceleration">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>GPGPU Acceleration</string>
+     </property>
+     <addaction name="actionParticles"/>
+    </widget>
     <addaction name="actionInvoke"/>
     <addaction name="menuSelect_Platform"/>
     <addaction name="actionReload_Shaders"/>
+    <addaction name="separator"/>
+    <addaction name="menuGPGPU_Acceleration"/>
     <addaction name="separator"/>
     <addaction name="actionEngine_Settings"/>
     <addaction name="actionInput_Device_Dump"/>
@@ -1687,6 +1698,17 @@
   <action name="actionGenerate_VMU_Icons">
    <property name="text">
     <string>Generate VMU Icons</string>
+   </property>
+  </action>
+  <action name="actionParticles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Particles</string>
    </property>
   </action>
  </widget>
