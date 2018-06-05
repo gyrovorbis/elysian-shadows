@@ -33,7 +33,7 @@ void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
         gyVidDepthTest(0);
         glDepthMask(0);
         glColorMask(1, 1, 1, 1);
-        glDepthFunc(GL_EQUAL);
+        glDepthFunc(GL_LEQUAL);
     } else if(value == POST_PASSES) {
         gyVidDepthTest(1);
         gyVidVertexBatchEnd();
