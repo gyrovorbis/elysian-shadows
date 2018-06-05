@@ -738,7 +738,7 @@ static int _clGLQueryInteropInfo(void) {
             0,
             0,
             0,
-            CL_CONTEXT_PLATFORM
+            CL_CONTEXT_PLATFORM,
             (cl_context_properties)p,
             0
         };
@@ -1225,9 +1225,9 @@ GYComputeContext* gyComputeContextCreate(unsigned platformIdx, const GYComputeCo
 
 #       ifdef __WIN32
 
-        properties[3] = (cl_context_properties)_ClGlInteropInfo.wglCurrentContext;
+        properties[3] = (cl_context_properties)_clGlInteropInfo.wglCurrentContext;
         properties[4] = CL_WGL_HDC_KHR;
-        properties[5] = (cl_context_properties)_ClGlInteropInfo.wglCurrentDC;
+        properties[5] = (cl_context_properties)_clGlInteropInfo.wglCurrentDC;
 
 #       else
 
