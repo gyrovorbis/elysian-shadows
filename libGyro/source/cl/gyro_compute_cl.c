@@ -734,7 +734,7 @@ static int _clGLQueryInteropInfo(void) {
     for(unsigned p = 0; p < _clPlatformCount; ++p) {
 
         cl_context_properties properties[7] = {
-            CL_GL_CONTEXT_KHR
+            CL_GL_CONTEXT_KHR,
             0,
             0,
             0,
