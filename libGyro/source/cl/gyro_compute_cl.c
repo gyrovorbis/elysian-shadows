@@ -1225,9 +1225,9 @@ GYComputeContext* gyComputeContextCreate(unsigned platformIdx, const GYComputeCo
 
 #       ifdef __WIN32
 
-        properties[3] = (cl_context_properties)_clGlInteropInfo.wglCurrentContext;
+        properties[3] = (cl_context_properties)_clGlInteropInfo.wglContext;
         properties[4] = CL_WGL_HDC_KHR;
-        properties[5] = (cl_context_properties)_clGlInteropInfo.wglCurrentDC;
+        properties[5] = (cl_context_properties)_clGlInteropInfo.wglDeviceContext;
 
 #       else
 
