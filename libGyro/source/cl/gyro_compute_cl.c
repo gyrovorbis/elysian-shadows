@@ -751,7 +751,7 @@ static int _clGLQueryInteropInfo(void) {
             0,
             0,
             CL_CONTEXT_PLATFORM,
-            (cl_context_properties)p,
+            (cl_context_properties)_clPlatforms[p],
             0
         };
 
