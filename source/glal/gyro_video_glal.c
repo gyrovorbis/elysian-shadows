@@ -416,26 +416,37 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     _projWidth = projWidth;
     _projHeight = projHeight;
 
-    glalVidGlewInit();
-
     static int once = 0;
     if(!once) {
+        int success = 1;
+
         GLint glint[2];
         _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing OpenGL.");
         _gyPush();
 
-        glGetIntegerv(GL_MAJOR_VERSION, &glint[0]);
-        glGetIntegerv(GL_MINOR_VERSION, &glint[1]);
-        if(!GY_GL_CHECK_ERROR()) {
-            glalVersionMajor = glint[0];
-            glalVersionMinor = glint[1];
-        }
-        glalGLDriverQuery();
+        success &= glalVidGlewInit();
 
-        glalLoadDefaultShaders();
-        glalVidInitializeBloom();
-        glalVidInitializeRadialBlur();
-        glalVidInitializeChromaticAberration();
+        if(success) {
+            glGetIntegerv(GL_MAJOR_VERSION, &glint[0]);
+            glGetIntegerv(GL_MINOR_VERSION, &glint[1]);
+            if(!GY_GL_CHECK_ERROR()) {
+                glalVersionMajor = glint[0];
+                glalVersionMinor = glint[1];
+            }
+            glalGLDriverQuery();
+
+            success &= glalLoadDefaultShaders();
+            success &= glalVidInitializeBloom();
+            success &= glalVidInitializeRadialBlur();
+            success &= glalVidInitializeChromaticAberration();
+        }
+
+        //Fail the fuck out before we fuck something up with GL in a shitty state.
+        if(!success) {
+            _gyLog(GY_DEBUG_ERROR, "[GY_VIDEO_API]: GL Shader initialization failed!");
+            return 0;
+        }
+
         gyVidSetDefaultShaderProgram();
 #if 0
         _gyLog(GY_DEBUG_VERBOSE, "Creating FBO(s)");

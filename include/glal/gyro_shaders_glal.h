@@ -148,7 +148,7 @@ extern int                          glalNormalMapActive;
 extern int                          glalSpecularMapActive;
 extern GLuint                       glalLightingUBO;
 
-void glalLoadDefaultShaders(void);
+int glalLoadDefaultShaders(void);
 void glalDefaultShadersLoadUniforms(void);
 void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc);
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc);

@@ -29,7 +29,10 @@ static GLuint                       _radialBlurVao;
 static GLuint                       _radialBlurVbo;
 extern GLuint                       _glalColorTex;
 
+static int                          _radialBlurInitialized = 0;
+
 int glalVidInitializeRadialBlur(void) {
+    int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "Initializing Radial Blur Postprocessing Effect.");
     _gyPush();
 
@@ -39,7 +42,9 @@ int glalVidInitializeRadialBlur(void) {
     //Compile and link shaders
     GYShader* vertShader    = gyShaderCreate(GYRO_GLAL_RADIAL_BLUR_VERTEX_SHADER);
     GYShader* fragShader    = gyShaderCreate(GYRO_GLAL_RADIAL_BLUR_FRAGMENT_SHADER);
+    success &= (vertShader && fragShader);
     _radialBlurShader.program     = gyShaderProgramCreate(vertShader, fragShader);
+    success &= (_radialBlurShader.program != NULL);
     GY_GL_CHECK_ERROR();
 
     //Query for shader attrib and uniform locations
@@ -100,7 +105,9 @@ int glalVidInitializeRadialBlur(void) {
     gyVidVertexArrayBind(0);
     _gyPop(2);
 
-    return _radialBlurShader.program != NULL;
+    _radialBlurInitialized = success;
+
+    return success;
 }
 
 int glalVidUnitializeRadialBlur(void) {
@@ -118,7 +125,7 @@ int glalVidUnitializeRadialBlur(void) {
 
 
 void glalVidApplyRadialBlur(void) {
-
+    if(!_radialBlurInitialized) return;
     gyVidVertexBatchFlush();
 
     gyVidSetCurrentShaderProgram(_radialBlurShader.program);

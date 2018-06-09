@@ -40,8 +40,11 @@ static GLuint               _finalConvTex;
 static GLuint               _bloomVao;
 static GLuint               _bloomVbo;
 
+static int                  _bloomInitialized = 0;
+
 
 int glalVidInitializeBloom(void) {
+    int success = 1;
     //Vertex data for a full-screen quad.
     const GYVertex vertices[4] = {
         {
@@ -115,7 +118,10 @@ int glalVidInitializeBloom(void) {
     //Compile and link shaders
     GYShader* vertShader    = gyShaderCreate(GYRO_GLAL_BLOOM_VERTEX_SHADER);
     GYShader* fragShader    = gyShaderCreate(GYRO_GLAL_BLOOM_FRAGMENT_SHADER);
+    success &= (vertShader && fragShader);
+
     _bloomShader.program     = gyShaderProgramCreate(vertShader, fragShader);
+    success &= (_bloomShader.program != NULL);
 
     //Query for shader attrib and uniform locations
     if(_bloomShader.program) {
@@ -153,11 +159,12 @@ int glalVidInitializeBloom(void) {
 
     _gyPop(2);
 
-    return _bloomShader.program != NULL;
+    _bloomInitialized = success;
+    return success;
 }
 
 
-int glalVidUninitializeBLOOM(void) {
+int glalVidUninitializeBloom(void) {
     _gyLog(GY_DEBUG_VERBOSE, "Uninitializing Bloom postprocessing effect.");
     _gyPush();
 
@@ -176,6 +183,7 @@ int glalVidUninitializeBLOOM(void) {
 
 
 void gyVidApplyBloom(void) {
+    if(!_bloomInitialized) return;
 
     GYTexCoord2 texCoords[4] = {
         { 0.0f, 1.0f },
