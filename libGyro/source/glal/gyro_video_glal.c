@@ -425,6 +425,9 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         _gyPush();
 
         success &= glalVidGlewInit();
+        if(!success) {
+            return 0;
+        }
 
         if(success) {
             glGetIntegerv(GL_MAJOR_VERSION, &glint[0]);
