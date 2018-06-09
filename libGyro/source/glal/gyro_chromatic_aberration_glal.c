@@ -29,7 +29,10 @@ static GLuint                               _chromaticAberrationVao;
 static GLuint                               _chromaticAberrationVbo;
 extern GLuint                               _glalColorTex;
 
+static int                                  _chromaticAberrationInitialized = 0;
+
 int glalVidInitializeChromaticAberration(void) {
+    int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "Initializing 'Chromatic Abhoration' Postprocessing Effect.");
     _gyPush();
 
@@ -39,7 +42,9 @@ int glalVidInitializeChromaticAberration(void) {
     //Compile and link shaders
     GYShader* vertShader    = gyShaderCreate(GYRO_GLAL_CHROMATIC_ABERRATION_VERTEX_SHADER);
     GYShader* fragShader    = gyShaderCreate(GYRO_GLAL_CHROMATIC_ABERRATION_FRAGMENT_SHADER);
+    success &= (vertShader && fragShader);
     _chromaticAberrationShader.program     = gyShaderProgramCreate(vertShader, fragShader);
+    success &= (_chromaticAberrationShader.program != NULL);
     GY_GL_CHECK_ERROR();
 
     //Query for shader attrib and uniform locations
@@ -100,7 +105,9 @@ int glalVidInitializeChromaticAberration(void) {
     gyVidVertexArrayBind(0);
     _gyPop(2);
 
-    return _chromaticAberrationShader.program != NULL;
+    _chromaticAberrationInitialized = success;
+
+    return success;
 }
 
 int glalVidUnitializeChromaticAberration(void) {
@@ -118,7 +125,7 @@ int glalVidUnitializeChromaticAberration(void) {
 
 
 void glalVidApplyChromaticAberration(void) {
-
+    if(!_chromaticAberrationInitialized) return;
     gyVidVertexBatchFlush();
 
     gyVidSetCurrentShaderProgram(_chromaticAberrationShader.program);
