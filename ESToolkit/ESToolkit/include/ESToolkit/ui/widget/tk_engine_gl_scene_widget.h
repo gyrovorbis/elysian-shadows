@@ -40,6 +40,8 @@ public:
         void        setCameraManualOnPlay(const bool val);
         void        setMapView(MapView* view);
         void        dumpPerfMonitor(void);
+        bool        isEngineValid(void) const;
+        void        setEngineValid(bool val);
 
         explicit    EngineGLSceneWidget(QWidget* parent = nullptr);
         virtual     ~EngineGLSceneWidget(void);
@@ -59,6 +61,7 @@ protected:
     bool                    _initialized        = false;
     QOpenGLDebugLogger*     _glLogger           = nullptr;
     bool                    _wasGLError         = false;
+    bool                    _engineValid        = true;
     QString                 _prevGLError;
     TaskMonitor             _engineTask;
     elysian::PerformanceMonitor _monitor = elysian::PerformanceMonitor("Engine Frame");
@@ -108,6 +111,14 @@ inline void EngineGLSceneWidget::setCameraManual(const bool val) { _cameraManual
 inline bool EngineGLSceneWidget::isCameraManualOnPlay(void) const { return _cameraManualOnPlay; }
 
 inline void EngineGLSceneWidget::setMapView(MapView *view) { _mapView = view; }
+
+inline bool EngineGLSceneWidget::isEngineValid(void) const { return _engineValid; }
+inline void EngineGLSceneWidget::setEngineValid(bool val) {
+    if(_engineValid != val) {
+        setEnabled(val);
+        _engineValid = val;
+    }
+}
 
 
 #endif // TK_MAP_SYSTEM_H

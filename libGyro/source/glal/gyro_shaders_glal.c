@@ -488,21 +488,27 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
 
 // =========== PUBLIC INTERNAL FUNCTIONS ==========
-void glalLoadDefaultShaders(void) {
+int glalLoadDefaultShaders(void) {
+    int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "Loading default shaders.");
     _gyPush();
 
     GYShader* vertShader = gyShaderCreate("/assets/shaders/pixelLighting.vsh");
     GYShader* fragShader = gyShaderCreate("/assets/shaders/pixelLighting.fsh");
+    success &= (vertShader && fragShader);
     glalLightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    _queryLightingShader(&glalLightingShader, 1);
+    if(vertShader && fragShader) _queryLightingShader(&glalLightingShader, 1);
 
     vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
     fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
+    success &= (vertShader && fragShader);
     glalShadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    _queryLightingShader(&glalShadowMapShader, 0);
+    if(vertShader && fragShader) _queryLightingShader(&glalShadowMapShader, 0);
+
+    success &= (glalLightingShader.program && glalLightingShader.program);
 
     _gyPop(1);
+    return success;
 }
 
 int gyShadersReloadAll(void) {

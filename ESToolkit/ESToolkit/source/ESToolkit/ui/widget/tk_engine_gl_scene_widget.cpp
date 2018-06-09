@@ -5,6 +5,7 @@
 #include "elysian_engine.hpp"
 #include <elysian_timer_system.hpp>
 #include <system/elysian_light_system.hpp>
+#include <QMessageBox>
 
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
@@ -158,20 +159,25 @@ void EngineGLSceneWidget::_updateEngine(void)
 }
 
 void EngineGLSceneWidget::resizeGL(int w, int h) {
-makeCurrent();
-   glalVidOglInit(w, h, w, h);
+    if(!_engineValid) return;
+    makeCurrent();
+    _engineValid = glalVidOglInit(w, h, w, h);
      _width = w;
      _height = h;
 
+     if(!_engineValid) {
+        QMessageBox::critical(nullptr, "Error!", "The libGyro Video API back-end (OpenGL) failed to initialize properly! Please refer to the console output and debug log(s) for more information.");
+     }
+
     // _mapView->setSceneRect(0, 0, w, h);
 
- if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
+    if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 // doneCurrent();
 
 }
 
 void EngineGLSceneWidget::paintGL(void) {
-    if(!getCurrentArea() || !_initialized) return;
+    if(!getCurrentArea() || !_initialized || !_engineValid) return;
     makeCurrent();
 
    // auto delta = gyTimerTicks();
