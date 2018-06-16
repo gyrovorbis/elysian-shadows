@@ -137,7 +137,14 @@ void ComputeSystem::_setBuiltinComputeDevice(COMPUTE_DEVICE_BUILTIN_TYPE type, C
     GY_ASSERT(dev && dev->getGyDevice());
     GY_ASSERT(type >= 0 && type < COMPUTE_DEVICE_BUILTIN_COUNT);
     if(_builtinDevices[type]) {
-        warnprintf("%s already exists as <%u, %u>, reassigning to <%u, %u>.", _computeDeviceTypeStrings[type], _builtinDevices[type]->getGyDevice()->platformIdx, _builtinDevices[type]->getGyDevice()->deviceIdx, dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
+        if(dev->getPlatformIdx() == _rendererPlatform) {
+            warnprintf("Reassigning %s from <%u, %u> to <%u, %u>, to share a context with the renderer platform: %u.",
+                       _computeDeviceTypeStrings[type], _builtinDevices[type]->getGyDevice()->platformIdx,
+                       _builtinDevices[type]->getGyDevice()->deviceIdx, dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
+        } else {
+
+           // warnprintf("%s already exists as <%u, %u>, reassigning to <%u, %u>.", _computeDeviceTypeStrings[type], _builtinDevices[type]->getGyDevice()->platformIdx, _builtinDevices[type]->getGyDevice()->deviceIdx, dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
+        }
     } else {
         dbgprintf("%s assigned to device at <%u, %u>.", _computeDeviceTypeStrings[type], dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
     }

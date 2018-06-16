@@ -92,7 +92,6 @@ typedef struct GYComputeDevice {
     int platformIdx;
     int deviceIdx;
 } GYComputeDevice;
-
 typedef struct GYComputeContext {
 
 } GYComputeContext;

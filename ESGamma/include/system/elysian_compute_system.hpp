@@ -73,7 +73,7 @@ namespace elysian {
             CompiledKernel(ComputeKernel* kernel);
         };
 
-        std::vector<CompiledKernel>        _compiledKernels;
+        std::vector<CompiledKernel>         _compiledKernels;
         GYComputeDevice                     _gyDevice;
         ComputeContext*                     _context;
         bool                                _isValid    = false;
@@ -85,6 +85,8 @@ namespace elysian {
         const GYComputeDevice* getGyDevice(void) const { return (_isValid)? &_gyDevice : nullptr; }
         ComputeContext* getContext(void) const;
         const GYComputeKernelWorkgroupInfo* getKernelWorkGroupInfo(const ComputeKernel* kernel) const;
+        const GYComputeDeviceInfo* getInfo(void) const;
+        int getPlatformIdx(void) const;
     };
 
     class ComputeCommandQueue {
@@ -222,6 +224,14 @@ namespace elysian {
 
     inline GYComputeKernel* ComputeKernel::getGyKernel(void) const {
         return _gyKernel;
+    }
+
+    inline const GYComputeDeviceInfo* ComputeDevice::getInfo(void) const {
+        return gyComputeDeviceQueryInfo(&_gyDevice);
+    }
+
+    inline int ComputeDevice::getPlatformIdx(void) const {
+        return _gyDevice.platformIdx;
     }
 }
 

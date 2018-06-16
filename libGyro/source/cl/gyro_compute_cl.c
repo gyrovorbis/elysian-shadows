@@ -80,6 +80,7 @@ typedef struct _CLGLInteropInfo {
     int                 glQueryDataValid;
     cl_device_id        rendererDevice;
     cl_platform_id      rendererPlatform;
+    GYComputeDevice     rendererGyroDevice;
 #   ifdef __APPLE__
     CGLContextObj       cglContextObj;
     CGLShareGroupObj    cglShareGroupObj;
@@ -509,7 +510,7 @@ static int _clQueryPlatformInfo(const cl_platform_id platform, _PlatformInfo* in
     if(info && _clPlatformExtensionSupported(&info->gyInfo, GY_CL_GL_PLATFORM_SHARED_CONTEXT_EXTENSION))  info->gyInfo.rendererContextSharing = 1;
 
 #ifdef GY_CL_OPENGL_INTEROP
-    if(info && _clGlInteropInfo.glQueryDataValid && platform == _clGlInteropInfo.rendererPlatform) info->gyInfo.isRenderPlatform = 1;
+    if(info && _clGlInteropInfo.glQueryDataValid && _gyComputePlatformIndexFromClPlatformId(platform) == _clGlInteropInfo.rendererGyroDevice.platformIdx) info->gyInfo.isRenderPlatform = 1;
 #endif
 
     return success;
@@ -809,7 +810,7 @@ static int _clGLQueryInteropInfo(void) {
             _gyLog(GY_DEBUG_WARNING, "[GY_COMPUTE_API] (KHR): Returned multiple devices associated with CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR! WTF! Choosing first!");
         }
 
-        _clGlInteropInfo.rendererPlatform = (cl_platform_id)_clPlatforms[p];
+        _clGlInteropInfo.rendererPlatform = _clPlatforms[p];
         _clGlInteropInfo.rendererDevice = devices[0];
         _clGlInteropInfo.glQueryDataValid = 1;
         break;
@@ -823,6 +824,7 @@ done:
     if(_clGlInteropInfo.glQueryDataValid) {
         GYComputeDevice dev = _gyComputeDeviceFromClDeviceId(_clGlInteropInfo.rendererDevice);
         GY_ASSERT(dev.platformIdx != -1 && dev.deviceIdx != -1);
+        _clGlInteropInfo.rendererGyroDevice = dev;
         _gyLog(GY_DEBUG_VERBOSE, "OpenCL Device associated with current OpenGL Context/Screen: [Platform: %u, Device: %u]", dev.platformIdx, dev.deviceIdx);
     } else {
         _gyLog(GY_DEBUG_WARNING, "Failed to find any OpenCL Device associated with an OpenGL context! OpenCL/OpenGL interop not supported!");
@@ -1196,7 +1198,8 @@ GYComputeDevice gyComputeDeviceHandle(unsigned platformIdx, unsigned deviceIdx) 
 
 
 const GYComputeDeviceInfo* gyComputeDeviceQueryInfo(const GYComputeDevice* device) {
-    GY_ASSERT(_initialized && device && device->platformIdx >= 0 && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clPlatforms[device->platformIdx]);
+    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API]: gyCopmuteDeviceQueryInfo");
+    GY_ASSERT(_initialized && device && device->platformIdx >= 0 && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clDeviceCount[device->platformIdx]);
     _ComputeDevice* dev = _clDeviceFromGyComputeDevice(device);
     return &dev->info.gyInfo;
 }
@@ -1225,7 +1228,7 @@ GYComputeContext* gyComputeContextCreate(unsigned platformIdx, const GYComputeCo
             _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API]: Attempting to create an OpenGL/OpenCL shared context, when interop query failed!");
             return NULL;
         }
-        int rendererPlatformIdx = _gyComputePlatformIndexFromClPlatformId(_clGlInteropInfo.rendererPlatform);
+        int rendererPlatformIdx = _clGlInteropInfo.rendererGyroDevice.platformIdx;
         GY_ASSERT(rendererPlatformIdx != -1);
         if((int)platformIdx != rendererPlatformIdx) {
             _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API]: Attempting to create an OpenGL/OpenCL shared context with platform [%u], when GL context is associated with platform [%d]!", platformIdx, rendererPlatformIdx);
@@ -1320,7 +1323,8 @@ int gyComputeContextDestroy(GYComputeContext* context) {
 
 //================= GYRO COMPUTE COMMAND QUEUE API ======================
 GYComputeCommandQueue* gyComputeCommandQueueCreate(const GYComputeContext* context, const GYComputeDevice* device, int flags) {
-    GY_ASSERT(_initialized && context && device && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clPlatforms[device->platformIdx]);
+    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API]: gyComputeCommandQueueCreate()");
+    GY_ASSERT(_initialized && context && device && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clDeviceCount[device->platformIdx]);
     cl_int retCode;
 
     cl_command_queue_properties properties = 0;
@@ -1562,7 +1566,7 @@ int gyComputeProgramCompile(GYComputeProgram *program, const GYComputeDevice *de
     }
 
     for(unsigned d = 0; d < deviceCount; ++d) {
-     GY_ASSERT(devices[d].platformIdx && devices[d].platformIdx < _clPlatformCount && devices[d].deviceIdx >= 0 && devices[d].deviceIdx < _clPlatforms[devices[d].platformIdx]);
+     GY_ASSERT(devices[d].platformIdx < _clPlatformCount && devices[d].deviceIdx >= 0 && devices[d].deviceIdx < _clDeviceCount[devices[d].platformIdx]);
         devIds[d] = _clDeviceFromGyComputeDevice(&devices[d])->deviceId;
     }
 
@@ -1652,6 +1656,7 @@ const GYComputeKernelInfo* gyComputeKernelQueryInfo(const GYComputeKernel* kerne
 }
 
 int gyComputeKernelQueryWorkgroupInfo(const GYComputeKernel* kernel, const GYComputeDevice* device, GYComputeKernelWorkgroupInfo* info) {
+    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API]: gyComputeKernelQueryWorkgroupInfo()");
     GY_ASSERT(kernel && device && info);
     return _clQueryKernelWorkgroupInfo(((_Kernel*)kernel)->kernel, _clDeviceFromGyComputeDevice(device)->deviceId, info);
 }
