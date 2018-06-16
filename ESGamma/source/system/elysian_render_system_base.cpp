@@ -26,7 +26,7 @@ bool RenderSystemBase::initialize(void) {
     dbgprintf("RenderSystem::initialize()");
     dbgpush();
 
-    if(getComputeSystem()->isInitialized()) {
+    if(getComputeSystem()->isComputeSupported() && getComputeSystem()->isRendererInteropSupported()) {
 
         glGenBuffers(1, &_glParticleVbo);
         glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
@@ -56,9 +56,9 @@ bool RenderSystemBase::initialize(void) {
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
 
-        _particleDevice = getComputeSystem()->getBuiltinComputeDevice(ComputeSystem::COMPUTE_DEVICE_GPU_RENDERER_ACTIVE);
+        _particleDevice = getComputeSystem()->getDeviceByType(ComputeSystem::DEVICE_GPU_RENDERER_ONLINE);
         if(_particleDevice) {
-            ComputeContext* ctx = _particleDevice->getContext();
+            ComputeContext* ctx = getComputeSystem()->getRendererContext();
             _renderCmdQueue = ctx->createCommandQueue(_particleDevice, 0);
             if(_renderCmdQueue) {
                 _particleVboOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleVbo, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY);

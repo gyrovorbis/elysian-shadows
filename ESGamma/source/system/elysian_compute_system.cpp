@@ -4,16 +4,302 @@
 
 namespace elysian {
 
-const char* ComputeSystem::_computeDeviceTypeStrings[ComputeSystem::COMPUTE_DEVICE_BUILTIN_COUNT] = {
-   "COMPUTE_DEVICE_GPU_RENDERER_ACTIVE",
-   "COMPUTE_DEVICE_GPU_RENDERER_INACTIVE",
-   "COMPUTE_DEVICE_GPU_AUXILIARY",
-   "COMPUTE_DEVICE_CPU"
+const char* ComputeSystem::_deviceTypeStrings[ComputeSystem::DEVICE_TYPE_COUNT] = {
+    "DEVICE_GPU_RENDERER_ONLINE",
+    "DEVICE_GPU_RENDERER_OFFLINE",
+    "DEVICE_GPU_AUXILIARY",
+    "DEVICE_CPU_RENDERER",
+    "DEVICE_CPU_AUXILIARY",
+    "DEVICE_ACCELERATOR"
 };
+
+const char* ComputeSystem::getDeviceTypeString(DEVICE_TYPE type) {
+    assert(type >= 0 && type < DEVICE_TYPE_COUNT);
+    return _deviceTypeStrings[type];
+}
+
+bool ComputeSystem::_assignRendererPlatform(void) {
+    bool success = false;
+    dbgprintf("ComputeSystem: Assigning Renderer Platform");
+    dbgpush();
+
+    for(unsigned p = 0; p < _platformCount; ++p) {
+        const GYComputePlatformInfo* platInfo = gyComputePlatformQueryInfo(p);
+        if(platInfo->isRenderPlatform) {
+            dbgprintf("RENDERER_PLATFORM [%u]: %s", p, platInfo->platformName);
+            _rendererPlatformIdx = p;
+            success = true;
+            break;
+        }
+    }
+
+    dbgpop();
+    return success;
+
+}
+
+bool ComputeSystem::_sortDeviceTypesByPerformance(void) {
+    bool success = true;
+    //Implement me later!
+    return success;
+}
+
+
+bool ComputeSystem::_assignDeviceTypes(void) {
+    bool success = true;
+    dbgprintf("ComputeSystem: Assigning Device Types");
+    dbgpush();
+
+    /*1 - Find GPU_RENDERER_ONLINE type(s):
+     *  a. main GPU associated with rendering the scene
+     *  b. must support interop between graphics and compute APIs.
+     */
+    if(_rendererPlatformIdx != InvalidPlatform) {
+        for(unsigned d = 0; d < getPlatformDeviceCount(_rendererPlatformIdx); ++d) {
+            ComputeDevice* dev = getDevice(_rendererPlatformIdx, d);
+            const GYComputeDeviceInfo* devInfo = dev->getInfo();
+
+            if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
+                if(devInfo->isRenderDevice) {
+                    if(devInfo->rendererSharedContext) {
+                        _deviceTypes[DEVICE_GPU_RENDERER_ONLINE].push_back(dev);
+                        dev->setDeviceType(DEVICE_GPU_RENDERER_ONLINE);
+                        size_t size = _deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size();
+                        Debug::Logf((size == 1)? Debug::LOG_VERBOSE : Debug::LOG_WARNING,
+                                    "GPU_RENDERER_ONLINE[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
+                    }
+                }
+            }
+        }
+    }
+
+    /* 2 - Find GPU_RENDERER_OFFLINE type(s)
+     *  a. requires an online renderer to have been assigned previously
+     *  b. located within the same driver platform4
+     *  c. supports graphics/compute API interop
+     */
+    if(!_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
+        dbgprintf("GPU_RENDERER_ONLINE Device(s): NONE");
+    } else {
+
+        for(unsigned d = 0; d < getPlatformDeviceCount(_rendererPlatformIdx); ++d) {
+            ComputeDevice* dev = getDevice(_rendererPlatformIdx, d);
+            const GYComputeDeviceInfo* devInfo = dev->getInfo();
+
+            if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
+                if(devInfo->rendererSharedContext) {
+                    if(!devInfo->isRenderDevice) {
+                        _deviceTypes[DEVICE_GPU_RENDERER_OFFLINE].push_back(dev);
+                        dev->setDeviceType(DEVICE_GPU_RENDERER_OFFLINE);
+                        size_t size = _deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size();
+                        Debug::Logf(Debug::LOG_VERBOSE, "GPU_RENDERER_OFFLINE[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
+                    }
+                }
+            }
+        }
+    }
+
+    if(!_deviceTypes[DEVICE_GPU_RENDERER_OFFLINE].size()) {
+        dbgprintf("GPU_RENDERER_OFFLINE Devices: NONE");
+    }
+
+    /*3 - Find GPU_AUXILIARY type(s) (any remaining GPUs)
+     *  a. GPUs which are not located within the same platform as the GPU_RENDERER_ONLINE/OFFLINE devices
+        b. GPUs which are not capable of context sharing between graphics and compute APIs.
+    */
+    for(unsigned p = 0; p < getPlatformCount(); ++p) {
+        for(unsigned d = 0; d < getPlatformDeviceCount(p); ++d) {
+            ComputeDevice* dev = getDevice(p, d);
+            const GYComputeDeviceInfo* devInfo = dev->getInfo();
+             if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
+                 if(((int)p != _rendererPlatformIdx && !devInfo->rendererSharedContext) || !_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
+                    _deviceTypes[DEVICE_GPU_AUXILIARY].push_back(dev);
+                    dev->setDeviceType(DEVICE_GPU_AUXILIARY);
+                    size_t size = _deviceTypes[DEVICE_GPU_AUXILIARY].size();
+                    Debug::Logf(Debug::LOG_VERBOSE, "GPU_AUXILIARY[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
+                 }
+             }
+        }
+    }
+
+    if(!_deviceTypes[DEVICE_GPU_AUXILIARY].size()) {
+        dbgprintf("GPU_AUXILIARY Devices: NONE");
+    }
+
+    /*4 - Find CPU_RENDERER type(s)
+     *  a. CPU device located within the same platform as the GPU_RENDERER_ONLINE/OFFLINE devices
+     *  b. supports graphics/compute API interop with the GPUs
+    */
+    if(_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
+        for(unsigned d = 0; d < getPlatformDeviceCount(_rendererPlatformIdx); ++d) {
+            ComputeDevice* dev = getDevice(_rendererPlatformIdx, d);
+            const GYComputeDeviceInfo* devInfo = dev->getInfo();
+
+            if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
+                if(devInfo->rendererSharedContext) {
+                    _deviceTypes[DEVICE_CPU_RENDERER].push_back(dev);
+                    dev->setDeviceType(DEVICE_CPU_RENDERER);
+                    size_t size = _deviceTypes[DEVICE_CPU_RENDERER].size();
+                    Debug::Logf(Debug::LOG_VERBOSE, "CPU_RENDERER[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
+                }
+            }
+        }
+    }
+
+    if(!_deviceTypes[DEVICE_CPU_RENDERER].size()) {
+        dbgprintf("CPU_RENDERER Device(s): NONE");
+    }
+
+    /*5 - Find CPU_AUXILIARY type(s) (any remaining CPUs)
+     *  a. CPU(s) which are not located within the same platform as the GPU_RENDERER_ONLINE/OFFLINE devices
+     *  b. CPU(s) which are not capable of context sharing between graphics and compute APIs.
+    */
+    for(unsigned p = 0; p < getPlatformCount(); ++p) {
+        for(unsigned d = 0; d < getPlatformDeviceCount(p); ++d) {
+            ComputeDevice* dev = getDevice(p, d);
+            const GYComputeDeviceInfo* devInfo = dev->getInfo();
+
+             if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
+
+                 if(((int)p != _rendererPlatformIdx && !devInfo->rendererSharedContext) || !_deviceTypes[DEVICE_CPU_RENDERER].size()) {
+                     _deviceTypes[DEVICE_CPU_AUXILIARY].push_back(dev);
+                     size_t size = _deviceTypes[DEVICE_CPU_AUXILIARY].size();
+                     dev->setDeviceType(DEVICE_CPU_AUXILIARY);
+                     Debug::Logf(Debug::LOG_VERBOSE, "CPU_AUXILIARY[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
+                 }
+             }
+        }
+    }
+
+    if(!_deviceTypes[DEVICE_CPU_AUXILIARY].size()) {
+        dbgprintf("CPU_AUXILIARY Device(s): NONE");
+    }
+
+    /*6 - Find ACCELERATOR type(s) (any remaining devices)
+     *  a. Devices which are neither a GPU or CPU (DSPs, FGPAs, etc.)
+     *  b. Devices are assumed to not support context sharing between graphics and compute APIs.
+    */
+
+    for(unsigned p = 0; p < getPlatformCount(); ++p) {
+        for(unsigned d = 0; d < getPlatformDeviceCount(p); ++d) {
+            ComputeDevice* dev = getDevice(p, d);
+            const GYComputeDeviceInfo* devInfo = dev->getInfo();
+
+             if(devInfo->devType != GY_COMPUTE_DEVICE_GPU && devInfo->devType != GY_COMPUTE_DEVICE_CPU) {
+                 _deviceTypes[DEVICE_ACCELERATOR].push_back(dev);
+                 dev->setDeviceType(DEVICE_ACCELERATOR);
+                 size_t size = _deviceTypes[DEVICE_ACCELERATOR].size();
+                 Debug::Logf(Debug::LOG_VERBOSE, "ACCELERATOR[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
+             }
+        }
+    }
+
+    if(!_deviceTypes[DEVICE_ACCELERATOR].size()) {
+        dbgprintf("ACCELERATOR Device(s): NONE");
+    }
+
+    //Now check whether we even have a single fucking compute device/accelerator and don't bother even trying otherwise.
+    unsigned computeDevCount = 0;
+    for(unsigned t = 0; t < DEVICE_TYPE_COUNT; ++t)
+        computeDevCount += _deviceTypes[t].size();
+
+    if(!computeDevCount) {
+        warnprintf("No compute devices found. Disabling compute acceleration!");
+        _enabled = false;
+        success = false;
+    } else {
+
+        unsigned totalDevCount = 0;
+        for(unsigned p = 0; p < getPlatformCount(); ++p) {
+            totalDevCount += getPlatformDeviceCount(p);
+        }
+
+        dbgprintf("Successfully categorized (%u/%u) Compute Devices.", computeDevCount, totalDevCount);
+    }
+
+    dbgpop();
+    return success;
+}
+
+bool ComputeSystem::_createContexts(void) {
+    bool success = true;
+
+    dbgprintf("ComputeSystem: Creating Contexts");
+    dbgpush();
+
+
+    ComputeDevice* rendererDevice = getDeviceByType(DEVICE_GPU_RENDERER_ONLINE);
+    if(rendererDevice) {
+        dbgprintf("Creating Renderer Context.");
+        dbgpush();
+        std::vector<ComputeDevice*> devices;
+
+        devices.push_back(rendererDevice);
+
+        for(unsigned d = 0; d < getDeviceCountForType(DEVICE_GPU_RENDERER_OFFLINE); ++d) {
+            devices.push_back(getDeviceByType(DEVICE_GPU_RENDERER_OFFLINE, d));
+        }
+
+        for(unsigned d = 0; d < getDeviceCountForType(DEVICE_CPU_RENDERER); ++d) {
+            devices.push_back(getDeviceByType(DEVICE_CPU_RENDERER, d));
+        }
+
+        _rendererContext = createContext(_rendererPlatformIdx, true, devices.size(), devices.data());
+
+        if(!_rendererContext) {
+            errprintf("Could not create a compute/shared renderer context! Disabling renderer interop!");
+            success = false;
+        }
+
+        dbgpop();
+    } else {
+        dbgprintf("Skipping Renderer Context.");
+    }
+
+
+    _platformContexts = new ComputeContext*[getPlatformCount()];
+    memset(_platformContexts, 0, sizeof(ComputeContext*)*getPlatformCount());
+
+    for(unsigned p = 0; p < getPlatformCount(); ++p) {
+        dbgprintf("Creating Compute Context for Platform: [%u]", p);
+        dbgpush();
+
+        std::vector<ComputeDevice*> devices;
+        for(unsigned d = 0; d < getPlatformDeviceCount(p); ++d) {
+            devices.push_back(getDevice(p, d));
+        }
+
+        _platformContexts[p] = createContext(p, false, devices.size(), devices.data());
+
+        if(!_platformContexts[p]) {
+            errprintf("Failed to create Compute Context!");
+            success = false;
+        }
+
+        dbgpop();
+    }
+
+    //Check whether there are any valid contexts
+    if(!_rendererContext) {
+        unsigned platContextCount = 0;
+        for(unsigned p = 0; p < getPlatformCount(); ++p) {
+            if(getPlatformContext(p)) ++platContextCount;
+        }
+
+        if(!platContextCount) {
+            errprintf("No valid Compute Contexts were created! Disabling Compute Acceleration!");
+            _enabled = false;
+            success = false;
+        }
+    }
+
+
+    dbgpop();
+    return success;
+}
 
 bool ComputeSystem::initialize(void) {
     bool success = true;
-    unsigned deviceCount = 0;
     GYComputeInitParams params = {
         4
     };
@@ -37,76 +323,44 @@ bool ComputeSystem::initialize(void) {
     }
     _devices = new ComputeDevice*[_platformCount];
     _deviceCount = new unsigned[_platformCount];
-    _contexts = new ComputeContext*[_platformCount];
     memset(_deviceCount, 0, sizeof(unsigned)*_platformCount);
-    memset(_contexts, 0, sizeof(ComputeContext*)*_platformCount);
 
     for(unsigned p = 0; p < _platformCount; ++p) {
-        dbgprintf("Examining platform %u", p);
-        dbgpush();
-
         const GYComputePlatformInfo* info = gyComputePlatformQueryInfo(p);
         GY_ASSERT(info);
-        if(info->isRenderPlatform) {
-            _rendererPlatform = p;
-            dbgprintf("Assigned %u as renderer platform!", p);
-        }
 
         _devices[p] = new ComputeDevice[info->deviceCount];
         _deviceCount[p] = info->deviceCount;
 
         for(unsigned d = 0; d < info->deviceCount; ++d) {
-            dbgprintf("Examining Device %u", d);
-            dbgpush();
             GYComputeDevice dev = gyComputeDeviceHandle(p, d);
             _devices[p][d].setGyDevice(dev);
-            const GYComputeDeviceInfo* devInfo = _devices[p][d].getInfo();
-
-            if(_rendererPlatform == (int)p) {
-                if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
-                    if(devInfo->isRenderDevice) _setBuiltinComputeDevice(COMPUTE_DEVICE_GPU_RENDERER_ACTIVE, &_devices[p][d]);
-                    else _setBuiltinComputeDevice(COMPUTE_DEVICE_GPU_RENDERER_INACTIVE, &_devices[p][d]);
-                } else if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
-                    _setBuiltinComputeDevice(COMPUTE_DEVICE_CPU, &_devices[p][d]);
-                } else {
-                    dbgprintf("Unknown device type found at Platform[%u], Device[%u]: Type [%u]", p, d, devInfo->devType);
-                }
-            } else {
-                if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
-                    _setBuiltinComputeDevice(COMPUTE_DEVICE_GPU_AUXILIARY, &_devices[p][d]);
-                } else if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
-                    _setBuiltinComputeDevice(COMPUTE_DEVICE_CPU, &_devices[p][d]);
-                } else {
-                    dbgprintf("Unknown device type found at Platform[%u], Device[%u]: Type [%u]", p, d, devInfo->devType);
-                }
-            }
-            dbgpop();
         }
-        dbgpop();
     }
 
-    dbgpop();
+    success &= _assignRendererPlatform();
+    success &= _assignDeviceTypes();
+    if(success) {
+        success &= _sortDeviceTypesByPerformance();
 
-    if(!_builtinDevices[COMPUTE_DEVICE_GPU_RENDERER_ACTIVE]) {
-        errprintf("ComputeSystem::initialization failed: could not find Compute Device: COMPUTE_GPU_RENDERER_ACTIVE");
-        goto done;
+        if(success) success &= _createContexts();
     }
 
-    if(!_builtinDevices[COMPUTE_DEVICE_CPU]) {
-        errprintf("ComputeSystem::initialization failed: could not find Compute Device: COMPUTE_DEVICE_CPU");
-        goto done;
-    }
 
+#if 0
     //Create contexts
     dbgprintf("Creating contexts.");
+
+        _platformContexts = new ComputeContext*[_platformCount];
     dbgpush();
 
     GYComputeDevice gyDevices[ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES];
     for(unsigned p = 0; p < _platformCount; ++p) {
+        renderPlatform = (p == _rendererPlatform && gyComputePlatformQueryInfo(_rendererPlatform)->rendererContextSharing);
         deviceCount = 0;
         for(unsigned d = 0; d < _deviceCount[p]; ++d) {
 
-            if((int)p == _rendererPlatform) {
+            if(renderPlatform) {
                 if(!_devices[p][d].getInfo()->rendererSharedContext) continue;
             }
 
@@ -119,22 +373,24 @@ bool ComputeSystem::initialize(void) {
             deviceCount
         };
 
-        if((int)p == _rendererPlatform) initParams.flags |= GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED;
+        if(renderPlatform) initParams.flags |= GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED;
 
         GYComputeContext* context = gyComputeContextCreate(p, &initParams);
         if(context) {
-            ComputeContext* ctx = new ComputeContext(context, p, (int)p == _rendererPlatform, _deviceCount[p], _devices[p]);
+            ComputeContext* ctx = new ComputeContext(context, p, renderPlatform, deviceCount, gyDevices);
             _contexts[p] = ctx;
             for(unsigned d = 0; d < _deviceCount[p]; ++d) {
                 _devices[p][d].setContext(ctx);
             }
-        } else _initialized = false;
+        } else goto done;
     }
     dbgpop();
 
     _initialized = true;
+#endif
 
 done:
+    _initialized = success;
     dbgpop();
     return success;
 
@@ -147,13 +403,18 @@ bool ComputeSystem::uninitialize(void) {
     dbgprintf("ComputeSystem::uninitialize()");
     dbgpush();
 
-    for(unsigned p = 0; p < _platformCount; ++p) {
-        delete[] _devices[p];
-        success &= gyComputeContextDestroy(_contexts[p]->_gyContext);
+    if(_rendererContext) {
+        gyComputeContextDestroy(_rendererContext->getGyContext());
+        delete _rendererContext;
     }
-    delete[] _contexts;
+
+    for(unsigned p = 0; p < _platformCount; ++p) {
+        gyComputeContextDestroy(_platformContexts[p]->getGyContext());
+        delete[] _devices[p];
+    }
     delete[] _devices;
     delete[] _deviceCount;
+    delete[] _platformContexts;
 
     success &= gyComputeUninit();
 
@@ -162,24 +423,40 @@ bool ComputeSystem::uninitialize(void) {
     return success;
 }
 
-void ComputeSystem::_setBuiltinComputeDevice(COMPUTE_DEVICE_BUILTIN_TYPE type, ComputeDevice* dev) {
-    dbgprintf("_setBuiltinComputeDevice(%s, <%u, %u>)", _computeDeviceTypeStrings[type], dev->getGyDevice()->platformIdx, dev->getPlatformIdx());
-    GY_ASSERT(dev && dev->getGyDevice());
-    GY_ASSERT(type >= 0 && type < COMPUTE_DEVICE_BUILTIN_COUNT);
-    if(_builtinDevices[type]) {
-        if(dev->getPlatformIdx() == _rendererPlatform) {
-            warnprintf("Reassigning %s from <%u, %u> to <%u, %u>, to share a context with the renderer platform: %u.",
-                       _computeDeviceTypeStrings[type], _builtinDevices[type]->getGyDevice()->platformIdx,
-                       _builtinDevices[type]->getGyDevice()->deviceIdx, dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
-        } else {
+ComputeContext* ComputeSystem::createContext(int gyPlatformIdx, bool isRendererContext, unsigned deviceCount, ComputeDevice **devices) {
+    ComputeContext* ctx = nullptr;
+    assert(gyPlatformIdx <= 0 && gyPlatformIdx < (int)_platformCount && deviceCount && devices);
 
-           // warnprintf("%s already exists as <%u, %u>, reassigning to <%u, %u>.", _computeDeviceTypeStrings[type], _builtinDevices[type]->getGyDevice()->platformIdx, _builtinDevices[type]->getGyDevice()->deviceIdx, dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
-        }
-    } else {
-        dbgprintf("%s assigned to device at <%u, %u>.", _computeDeviceTypeStrings[type], dev->getGyDevice()->platformIdx, dev->getGyDevice()->deviceIdx);
+    dbgprintf("ComputeSystem::createContext(platformIdx = %d, rendererContext = %d, deviceCount = %u)", gyPlatformIdx, isRendererContext, deviceCount);
+    dbgpush();
+
+    std::vector<GYComputeDevice> _gyDevices;
+    for(unsigned d = 0; d < deviceCount; ++d) {
+        assert(devices[d]);
+        _gyDevices.push_back(*devices[d]->getGyDevice());
+        dbgprintf("device[%u]: <%u, %u> [%s] (%s)", d, devices[d]->getPlatformIdx(), devices[d]->getDeviceIdx(),
+                  getDeviceTypeString(devices[d]->getDeviceType()), devices[d]->getInfo()->deviceName);
     }
 
-    _builtinDevices[type] = dev;
+    GYComputeContextInitParams params = {
+        isRendererContext? GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED : 0,
+        _gyDevices.data(),
+        (unsigned)_gyDevices.size()
+    };
+
+    GYComputeContext* gyCtx = gyComputeContextCreate(gyPlatformIdx, &params);
+
+
+    if(!gyCtx) {
+        errprintf("Failed to create ComputeContext!");
+    } else {
+        ctx = new ComputeContext(gyCtx, gyPlatformIdx, isRendererContext, deviceCount, devices);
+
+        for(unsigned d = 0; d < deviceCount; ++d) devices[d]->setContext(ctx);
+    }
+
+    dbgpop();
+    return ctx;
 }
 
 ComputeCommandQueue* ComputeContext::createCommandQueue(ComputeDevice* device, int flags) {
