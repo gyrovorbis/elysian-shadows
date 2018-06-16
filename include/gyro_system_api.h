@@ -35,6 +35,31 @@ extern "C" {
 #   define GYRO_BUILD_COMMIT   UNKNOWN
 #endif
 
+
+#define GYRO_SYSTEM_PLATFORM_NAME_SIZE  100
+
+
+typedef
+
+typedef struct GYSystemInfo {
+    char platformName[GYRO_SYSTEM_PLATFORM_NAME_SIZE];
+    int cpuCount;
+    int cacheLineSize;  //bytes, multi-threaded padding and SSE
+    int systemRam;      //Megabytes
+    int has3DNow;
+    int hasAvx;
+    int hasAvx2;
+    int hasAltiVec;
+    int hasMMX;
+    int hasRdtsc;
+    int hasSSE;
+    int hasSSE2;
+    int hasSSE3;
+    int hasSSE41;
+    int hasSSE42;
+    int byteOrder; //0 - little, 1 - big
+} GYSystemInfo;
+
 typedef struct GYSysInitParams {
     void*   context;
     void    (*segFaultHandler)(void*);
@@ -73,6 +98,9 @@ unsigned int gySysStatsVram(void);
 unsigned int gySysStatsRam(void);
 
 const char* gyVersion(void);
+
+const GYSystemInfo* gySystemQueryInfo(void);
+
 
 
 #include "common/gyro_system_common.h"
