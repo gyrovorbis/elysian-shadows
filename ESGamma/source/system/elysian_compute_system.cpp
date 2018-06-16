@@ -49,7 +49,7 @@ bool ComputeSystem::initialize(void) {
         GY_ASSERT(info);
         if(info->isRenderPlatform) {
             _rendererPlatform = p;
-            dbgprint("Assigned %u as renderer platform!", p);
+            dbgprintf("Assigned %u as renderer platform!", p);
         }
 
         _devices[p] = new ComputeDevice[info->deviceCount];
