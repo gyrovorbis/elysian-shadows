@@ -338,6 +338,7 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
     if(info) memset(info, 0, sizeof(GYComputeDeviceInfo));
 
     QUERY_DEV_INFO_STR(CL_DEVICE_NAME)
+    if(info) strcpy(info->gyInfo.deviceName, buffer);
 
     // Query CL_DEVICE_TYPE
     if(!GY_CL_CHECK_ERROR(clGetDeviceInfo(device, CL_DEVICE_TYPE, sizeof(cl_device_type), &dev_type, NULL))) {
@@ -461,7 +462,9 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
 
     //Check OpenGL interop-related info (if enabled)
 #ifdef GY_CL_OPENGL_INTEROP
-    if(info && _clGlInteropInfo.glQueryDataValid && info->gyDevice->platformIdx == _clGlInteropInfo.rendererGyroDevice.platformIdx && info->gyDevice->deviceIdx == _clGlInteropInfo.rendererGyroDevice.deviceIdx);
+    if(info && _clGlInteropInfo.glQueryDataValid &&
+            info->gyDevice->platformIdx == _clGlInteropInfo.rendererGyroDevice.platformIdx &&
+            info->gyDevice->deviceIdx == _clGlInteropInfo.rendererGyroDevice.deviceIdx)
         info->gyInfo.isRenderDevice = 1;
 #endif
 
@@ -479,6 +482,7 @@ static inline int _clPlatformExtensionSupported(const GYComputePlatformInfo* inf
 
 static int _clQueryPlatformInfo(const cl_platform_id platform, _PlatformInfo* info) {
     int success = 1;
+    size_t extensionStrLen;
     char stringBuff[CL_QUERY_INFO_STRING_BUFF_SIZE];
 
     if(GY_CL_CHECK_ERROR(clGetPlatformInfo(platform, CL_PLATFORM_NAME, CL_QUERY_INFO_STRING_BUFF_SIZE, stringBuff, NULL))) {
@@ -486,6 +490,7 @@ static int _clQueryPlatformInfo(const cl_platform_id platform, _PlatformInfo* in
         _gyLog(GY_DEBUG_WARNING, "CL_PLATFORM_NAME platform query failed!");
     } else {
         _gyLog(GY_DEBUG_VERBOSE, "%25s : %20s", "CL_PLATFORM_NAME", stringBuff);
+        if(info) strcpy(info->gyInfo.platformName, stringBuff);
     }
 
     if(GY_CL_CHECK_ERROR(clGetPlatformInfo(platform, CL_PLATFORM_VERSION, CL_QUERY_INFO_STRING_BUFF_SIZE, stringBuff, NULL))) {
@@ -502,17 +507,20 @@ static int _clQueryPlatformInfo(const cl_platform_id platform, _PlatformInfo* in
         _gyLog(GY_DEBUG_VERBOSE, "%25s : %20s", "CL_PLATFORM_PROFILE", stringBuff);
     }
 
-    if(GY_CL_CHECK_ERROR(clGetPlatformInfo(platform, CL_PLATFORM_EXTENSIONS, CL_QUERY_INFO_STRING_BUFF_SIZE, stringBuff, NULL))) {
+    if(GY_CL_CHECK_ERROR(clGetPlatformInfo(platform, CL_PLATFORM_EXTENSIONS, CL_QUERY_INFO_STRING_BUFF_SIZE, stringBuff, &extensionStrLen))) {
         success = 0;
         _gyLog(GY_DEBUG_WARNING, "CL_PLATFORM_EXTENSIONS platform query failed!");
     } else {
+        GY_ASSERT(extensionStrLen < sizeof(stringBuff)-1);
+        int end = CL_QUERY_INFO_STRING_BUFF_SIZE > extensionStrLen? extensionStrLen : CL_QUERY_INFO_STRING_BUFF_SIZE-1;
+        stringBuff[extensionStrLen] = '\0';
         _gyLog(GY_DEBUG_VERBOSE, "%25s : %20s", "CL_PLATFORM_EXTENSIONS", stringBuff);
     }
 
     if(info && _clPlatformExtensionSupported(&info->gyInfo, GY_CL_GL_PLATFORM_SHARED_CONTEXT_EXTENSION))  info->gyInfo.rendererContextSharing = 1;
 
 #ifdef GY_CL_OPENGL_INTEROP
-    if(info && _clGlInteropInfo.glQueryDataValid && _gyComputePlatformIndexFromClPlatformId(platform) == _clGlInteropInfo.rendererGyroDevice.platformIdx) info->gyInfo.isRenderPlatform = 1;
+    if(info && _clGlInteropInfo.glQueryDataValid && info->platIdx == _clGlInteropInfo.rendererGyroDevice.platformIdx) info->gyInfo.isRenderPlatform = 1;
 #endif
 
     return success;
@@ -1200,7 +1208,6 @@ GYComputeDevice gyComputeDeviceHandle(unsigned platformIdx, unsigned deviceIdx) 
 
 
 const GYComputeDeviceInfo* gyComputeDeviceQueryInfo(const GYComputeDevice* device) {
-    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API]: gyCopmuteDeviceQueryInfo");
     GY_ASSERT(_initialized && device && device->platformIdx >= 0 && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clDeviceCount[device->platformIdx]);
     _ComputeDevice* dev = _clDeviceFromGyComputeDevice(device);
     return &dev->info.gyInfo;
@@ -1264,9 +1271,10 @@ GYComputeContext* gyComputeContextCreate(unsigned platformIdx, const GYComputeCo
 #   ifdef GY_CL_OPENGL_INTEROP
     if(params->flags & GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED) {
         for(unsigned i = 0; i < params->deviceCount; ++i) {
-            _ComputeDevice* dev = (_ComputeDevice*)&params->devices[i];
+            _ComputeDevice* dev = _clDeviceFromGyComputeDevice(&params->devices[i]);
             if(!dev->info.gyInfo.rendererSharedContext) {
-                _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API] Failed to create renderer-shared context: device [%u] does not support it!", i);
+                _gyLog(GY_DEBUG_ERROR, "[GY_COMPUTE_API] Failed to create renderer-shared context: device [%u] (<%u, %u>) does not support it!",
+                       i, dev->gyDevice.platformIdx, dev->gyDevice.deviceIdx);
                 return NULL;
             }
         }
@@ -1325,7 +1333,6 @@ int gyComputeContextDestroy(GYComputeContext* context) {
 
 //================= GYRO COMPUTE COMMAND QUEUE API ======================
 GYComputeCommandQueue* gyComputeCommandQueueCreate(const GYComputeContext* context, const GYComputeDevice* device, int flags) {
-    _gyLog(GY_DEBUG_VERBOSE, "[GY_COMPUTE_API]: gyComputeCommandQueueCreate()");
     GY_ASSERT(_initialized && context && device && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clDeviceCount[device->platformIdx]);
     cl_int retCode;
 

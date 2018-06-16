@@ -15,6 +15,8 @@ extern "C" {
 #define GY_COMPUTE_KERNEL_NAME_SIZE                     100
 #define GY_COMPUTE_KERNEL_ARG_NAME_SIZE                 50
 #define GY_COMPUTE_KERNEL_ARG_TYPE_NAME_SIZE            100
+#define GY_COMPUTE_DEVICE_NAME_SIZE                     100
+#define GY_COMPUTE_PLATFORM_NAME_SIZE                   100
 
 struct GYComputeDevice;
 
@@ -52,6 +54,7 @@ typedef enum GYComputeCommandQueueInitFlags {
 } GYComputeCommandQueueInitFlags;
 
 typedef struct GYComputePlatformInfo {
+    char        platformName[GY_COMPUTE_PLATFORM_NAME_SIZE];
     char        extensions[GY_COMPUTE_PLATFORM_INFO_EXTENSIONS_SIZE];
     int         rendererContextSharing;
     int         isRenderPlatform;
@@ -60,6 +63,7 @@ typedef struct GYComputePlatformInfo {
 
 typedef struct GYComputeDeviceInfo {
     char                    extensions[GY_COMPUTE_DEVICE_INFO_EXTENSIONS_SIZE];
+    char                    deviceName[GY_COMPUTE_DEVICE_NAME_SIZE];
     unsigned long           maxMemAllocSize;
     unsigned long           globalMemSize;
     unsigned long           maxConstantMemSize;
