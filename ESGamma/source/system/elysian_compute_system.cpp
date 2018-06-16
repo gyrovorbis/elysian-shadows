@@ -42,6 +42,9 @@ bool ComputeSystem::initialize(void) {
     memset(_contexts, 0, sizeof(ComputeContext*)*_platformCount);
 
     for(unsigned p = 0; p < _platformCount; ++p) {
+        dbgprintf("Examining platform %u", p);
+        dbgpush();
+
         const GYComputePlatformInfo* info = gyComputePlatformQueryInfo(p);
         GY_ASSERT(info);
         if(info->isRenderPlatform) _rendererPlatform = p;
@@ -50,9 +53,11 @@ bool ComputeSystem::initialize(void) {
         _deviceCount[p] = info->deviceCount;
 
         for(unsigned d = 0; d < info->deviceCount; ++d) {
+            dbgpush("Examining Device %u", d);
+            dbgpush();
             GYComputeDevice dev = gyComputeDeviceHandle(p, d);
             _devices[p][d].setGyDevice(dev);
-            const GYComputeDeviceInfo* devInfo = gyComputeDeviceQueryInfo(&dev);
+            const GYComputeDeviceInfo* devInfo = _devices[p][d].getInfo();
 
             if(_rendererPlatform == (int)p) {
                 if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
@@ -72,7 +77,9 @@ bool ComputeSystem::initialize(void) {
                     dbgprintf("Unknown device type found at Platform[%u], Device[%u]: Type [%u]", p, d, devInfo->devType);
                 }
             }
+            dbgpop();
         }
+        dbgpop();
     }
 
     dbgpop();
@@ -141,6 +148,7 @@ bool ComputeSystem::uninitialize(void) {
 }
 
 void ComputeSystem::_setBuiltinComputeDevice(COMPUTE_DEVICE_BUILTIN_TYPE type, ComputeDevice* dev) {
+    dbgprintf("_setBuiltinComputeDevice(%s, <%u, %u>)", _computeDeviceTypeStrings[type], dev->getGyDevice()->platformIdx, dev->getPlatformIdx());
     GY_ASSERT(dev && dev->getGyDevice());
     GY_ASSERT(type >= 0 && type < COMPUTE_DEVICE_BUILTIN_COUNT);
     if(_builtinDevices[type]) {
