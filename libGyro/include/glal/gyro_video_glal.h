@@ -17,6 +17,84 @@ extern "C" {
 struct GYTexture;
 struct GYCamera;
 
+typedef enum GY_GL_VERION_TYPE {
+    GY_GL_VERSION_DESKTOP,
+    GY_GL_VERSION_ES
+} GY_GL_VERSION_TYPE;
+
+typedef enum GY_GL_VENDOR_TYPE {
+    GY_GL_VENDOR_NVIDIA,
+    GY_GL_VENDOR_AMD,
+    GY_GL_VENDOR_INTEL,
+    GY_GL_VENDOR_IMAGINATION,
+    GY_GL_VENDOR_APPLE,
+    GY_GL_VENDOR_UNKNOWN
+} GY_GL_VENDOR_TYPE;
+
+typedef enum GY_GL_API_VERSION {
+    GY_GL_API_VERSION_NONE,
+    GY_GL_API_VERSION_COMPATABILITY,
+    GY_GL_API_VERSION_CORE_3_2,
+    GY_GL_API_VERSION_CORE_3_3,
+    GY_GL_API_VERSION_CORE_4_0,
+    GY_GL_API_VERSION_CORE_4_1,
+    GY_GL_API_VERSION_CORE_4_2,
+    GY_GL_API_VERSION_CORE_4_3,
+    GY_GL_API_VERSION_CORE_4_4,
+    GY_GL_API_VERSION_CORE_4_5,
+    GY_GL_API_VERSION_CORE_4_6,
+    GY_GL_API_VERSION_CORE_4_6_PLUS,
+    GY_GL_API_VERSION_ES_1_0,
+    GY_GL_API_VERSION_ES_1_1,
+    GY_GL_API_VERSION_ES_2_0,
+    GY_GL_API_VERSION_ES_3_0,
+    GY_GL_API_VERSION_ES_3_1,
+    GY_GL_API_VERSION_ES_3_2,
+    GY_GL_API_VERSION_ES_3_2_PLUS,
+    GY_GL_API_VERSION_UNKNOWN
+} GY_GL_API_VERSION;
+
+typedef enum GY_GL_SHADER_VERSION {
+    GY_GL_SHADER_VERSION_110,
+    GY_GL_SHADER_VERSION_120,
+    GY_GL_SHADER_VERSION_130,
+    GY_GL_SHADER_VERSION_140,
+    GY_GL_SHADER_VERSION_150,
+    GY_GL_SHADER_VERSION_330,
+    GY_GL_SHADER_VERSION_400,
+    GY_GL_SHADER_VERSION_410,
+    GY_GL_SHADER_VERSION_420,
+    GY_GL_SHADER_VERSION_430,
+    GY_GL_SHADER_VERSION_440,
+    GY_GL_SHADER_VERSION_450,
+    GY_GL_SHADER_VERSION_460,
+    GY_GL_SHADER_VERSION_UNKNOWN
+} GY_GL_SHADER_VERSION;
+
+typedef struct GYGLInfo {
+    GY_GL_VERSION_TYPE  versionType;
+    GY_GL_API_VERSION   apiVersion;
+    GY_GL_VENDOR_TYPE   vendorType;
+
+    //GL Limits
+    int                 depthMax;
+    int                 textureMaxSize;
+    int                 texture2DMaxSize[2];
+    int                 texture3DMaxSize[3];
+
+
+    //Basic feature support
+    int                 hasCompute;
+    int                 hasTessellation;
+    int                 hasDrawIndirect;
+    int                 hasPinnedMemory;
+    int                 hasShaderBufferObjects;
+    int                 hasTextureCubeMapArrays;
+    int                 hasFloatTextures;
+    char**              extensions;
+} GYGLInfo;
+
+
 extern const struct GYCamera*       glalCurCamera;
 extern GYMatrix4                    glalViewMatrix;
 extern float                        glalViewZOrient;
@@ -41,6 +119,7 @@ extern GY_BLEND_MODE                glalBlendMode;
 extern int                          glalDepthTest;
 extern int                          glalVersionMajor;
 extern int                          glalVersionMinor;
+extern GYGLInfo                     glalGlInfo;
 
 extern const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4];
 extern const GYVector3 glalPlaneNormals[GY_RECT_PLANE_MAX];
