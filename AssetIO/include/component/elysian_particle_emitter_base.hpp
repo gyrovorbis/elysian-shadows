@@ -9,7 +9,7 @@
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <crtp/elysian_rigid_body.hpp>
 
-#define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	50000
+#define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	500
 #define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH            10
 #define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT           10
 

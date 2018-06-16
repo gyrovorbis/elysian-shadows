@@ -156,6 +156,11 @@ bool VisualMemoryUnit::disconnectFromEVMU(void) {
     return success;
 }
 
+
+bool PowerSupply::pollDevice(void) {
+    return gySystemPowerQueryInfo(&_gyPowerInfo);
+}
+
 bool InputSystemBase::_initialized          = false;
 bool InputSystemBase::_managedExternally    = false;
 const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
@@ -261,6 +266,10 @@ void InputSystemBase::_onRumbleDeviceRemoved(unsigned slot) {
     dbgprintf("InputSystem: RumbleDevice Removed! [Port: %d]", slot);
 }
 
+void InputSystemBase::_onPowerStateChanged(void) {
+    dbgprintf("InputSystem: PowerSupply State Changed! [%s]", gySystemPowerStateString(_powerSupply.getPowerState()));
+}
+
 void InputSystemBase::_mapKeyboardToController(const int port) {
     GYVector2 lanalog = _controllers[port].getAnalogStick(GY_CONTROLLER_ANALOG_LEFT);
 
@@ -315,21 +324,21 @@ void InputSystemBase::dumpStats(void) {
 }
 
 void InputSystemBase::update(void) {
-    //update keyboard
+    //Update Keyboard
     bool wasAttached   = _keyboard.isAttached();
     bool isAttached    = _keyboard.pollInput();
 
     if(isAttached && !wasAttached)      static_cast<InputSystem*>(this)->_onKeyboardAttached();
     else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onKeyboardRemoved();
 
-    //update mouse
+    //Update Mouse
     wasAttached = _mouse.isAttached();
     isAttached = _mouse.pollInput();
 
     if(isAttached && !wasAttached)      _onMouseAttached();
     else if(!isAttached && wasAttached) _onMouseRemoved();
 
-    //update controllers
+    //Update Controllers
     for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) {
         const auto wasAttached  = _controllers[i].isAttached();
         const auto isAttached   = _controllers[i].pollInput();
@@ -341,7 +350,7 @@ void InputSystemBase::update(void) {
         else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onControllerRemoved(i);
     }
 
-    //update rumble devices
+    //update Rumble Devices
     for(unsigned i = 0; i < ELYSIAN_INPUT_RUMBLE_DEVICES_MAX; ++i) {
         const auto wasAttached  = _rumbleDevices[i].isAttached();
         const auto isAttached   = _rumbleDevices[i].pollDevice();
@@ -367,6 +376,15 @@ void InputSystemBase::update(void) {
         } else if(!isAttached && wasAttached) {
             static_cast<InputSystem*>(this)->_onVMURemoved(i);
             getEventSys()->broadcastEvent(VisualMemoryUnitEvent(EVENT_VMU_REMOVED, &_vmus[i]));
+        }
+    }
+
+    //update Power Supply
+    GY_SYSTEM_POWER_STATE prevPowerState = _powerSupply.getPowerState();
+    if(_powerSupply.pollDevice()) {
+        GY_SYSTEM_POWER_STATE newPowerState = _powerSupply.getPowerState();
+        if(newPowerState != newPowerState && newPowerState != GY_SYSTEM_POWER_STATE_UNKNOWN) {
+            _onPowerStateChanged();
         }
     }
 

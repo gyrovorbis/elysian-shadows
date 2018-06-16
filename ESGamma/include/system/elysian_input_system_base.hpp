@@ -175,6 +175,30 @@ namespace elysian {
         bool                        disconnectFromEVMU(void);
     };
 
+    class PowerSupplyStateChangedEvent: public Event {
+    private:
+        GY_SYSTEM_POWER_STATE   _state = GY_SYSTEM_POWER_STATE_UNKNOWN;
+    public:
+                                PowerSupplyStateChangedEvent(GY_SYSTEM_POWER_STATE state);
+        GY_SYSTEM_POWER_STATE   getState(void) const;
+    };
+
+    class PowerSupply {
+    private:
+        GYSystemPowerInfo _gyPowerInfo = {
+            GY_SYSTEM_POWER_STATE_UNKNOWN,
+            0,
+            0
+        };
+    public:
+
+        bool                    pollDevice(void);
+
+        float                   getBatteryLevel(void) const; //normalized
+        unsigned                getBatterySecondsRemaining(void) const;
+        GY_SYSTEM_POWER_STATE   getPowerState(void) const;
+        bool                    isBattery(void) const;
+    };
 
     class InputSystemBase: public System {
     protected:
@@ -199,6 +223,7 @@ namespace elysian {
         RumbleDevice        _rumbleDevices[ELYSIAN_INPUT_RUMBLE_DEVICES_MAX];
         Keyboard            _keyboard;
         Mouse               _mouse;
+        PowerSupply         _powerSupply;
         char                _vmuDefaultIcon[GYRO_PATH_MAX_SIZE]         = { '\0' };
 
         int                 _keyboardAsControllerPort = ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT;
@@ -214,6 +239,7 @@ namespace elysian {
         void                _onVMURemoved(unsigned slot);
         void                _onRumbleDeviceAttached(unsigned slot);
         void                _onRumbleDeviceRemoved(unsigned slot);
+        void                _onPowerStateChanged(void);
 
         void                _mapKeyboardToController(const int port);
 
@@ -236,6 +262,7 @@ namespace elysian {
         Mouse*              getMouse(void);
         VisualMemoryUnit*   getVMU(const unsigned port);
         RumbleDevice*       getRumbleDevice(const unsigned port);
+        PowerSupply*        getPowerSupply(void);
 
         void                setKeyboardAsControllerPort(const int port);
 
@@ -324,6 +351,37 @@ namespace elysian {
     {}
 
 
+    //======= POWER SUPPLY INLINEZ ======
+    inline PowerSupplyStateChangedEvent::PowerSupplyStateChangedEvent(GY_SYSTEM_POWER_STATE state):
+        Event(EVENT_POWER_SUPPLY_STATE_CHANGED), _state(state) {}
+
+    inline GY_SYSTEM_POWER_STATE PowerSupplyStateChangedEvent::getState(void) const {
+        return _state;
+    }
+
+    inline float PowerSupply::getBatteryLevel(void) const {
+        return (float)_gyPowerInfo.batteryPercentageRemaining/100.0f;
+    }
+
+    inline unsigned PowerSupply::getBatterySecondsRemaining(void) const {
+        return _gyPowerInfo.batterySecondsRemaining;
+    }
+
+    inline GY_SYSTEM_POWER_STATE PowerSupply::getPowerState(void) const {
+        return _gyPowerInfo.state;
+    }
+
+    inline bool PowerSupply::isBattery(void) const {
+        switch(_gyPowerInfo.state) {
+        case GY_SYSTEM_POWER_STATE_AC:
+        case GY_SYSTEM_POWER_STATE_UNKNOWN:
+            return false;
+        default:
+            return true;
+        }
+    }
+
+
 
     //======== INPUTSYSTEM INLINEZ =======
     inline Controller* InputSystemBase::getController(const unsigned port) { return &_controllers[port]; }
@@ -332,6 +390,7 @@ namespace elysian {
     inline Mouse* InputSystemBase::getMouse(void) { return &_mouse; }
     inline VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) { return &_vmus[port]; }
     inline RumbleDevice* InputSystemBase::getRumbleDevice(const unsigned port) { return &_rumbleDevices[port]; }
+    inline PowerSupply* InputSystemBase::getPowerSupply(void) { return &_powerSupply; }
     inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
     inline void InputSystemBase::setDefaultVMUIcon(const char* path) { strcpy(_vmuDefaultIcon, path); }
 
