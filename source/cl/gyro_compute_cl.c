@@ -324,7 +324,7 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
 
 #define QUERY_DEV_INFO_SIZET(dev_info)  \
     buf_sizet = 0;                      \
-    QUERY_DEV_INFO(dev_info, #dev_info, sizeof(size_t), buf_sizet, "zu")
+    QUERY_DEV_INFO(dev_info, #dev_info, sizeof(size_t), buf_sizet, "lu")
 
 #define QUERY_DEV_INFO_BOOL(dev_info)  \
     buf_sizet = 0;                      \
@@ -364,7 +364,7 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
             info->gyInfo.maxWorkItemSizes[0] = vec3[0]; info->gyInfo.maxWorkItemSizes[1] = vec3[1]; info->gyInfo.maxWorkItemSizes[2] = vec3[2];
         }
         char vecBuff[50];
-        sprintf(vecBuff, "<%zu, %zu, %zu>", vec3[0], vec3[1], vec3[2]);
+        sprintf(vecBuff, "<%lu, %lu, %lu>", vec3[0], vec3[1], vec3[2]);
         _gyLog(GY_DEBUG_VERBOSE, "%40s : %20s", "CL_DEVICE_MAX_WORK_ITEM_SIZES", vecBuff);
     } else {
         _gyLog(GY_DEBUG_ERROR, "%40s : %20s", "CL_DEVICE_MAX_WORK_ITEM_SIZES", "QUERY FAILED");
@@ -458,12 +458,7 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
 
     //Check OpenGL interop-related info (if enabled)
 #ifdef GY_CL_OPENGL_INTEROP
-    if(info && _clGlInteropInfo.glQueryDataValid &&
-            _clDevices[info->gyDevice->platformIdx][info->gyDevice->deviceIdx] == _clGlInteropInfo.rendererDevice)
-        info->gyInfo.isRenderDevice = 1;
-
-    if(info && _clGlInteropInfo.glQueryDataValid &&
-            _clDevices[info->gyDevice->platformIdx][info->gyDevice->deviceIdx] == _clGlInteropInfo.rendererDevice)
+    if(info && device == _clGlInteropInfo.rendererDevice)
         info->gyInfo.isRenderDevice = 1;
 #endif
 
@@ -514,7 +509,7 @@ static int _clQueryPlatformInfo(const cl_platform_id platform, _PlatformInfo* in
     if(info && _clPlatformExtensionSupported(&info->gyInfo, GY_CL_GL_PLATFORM_SHARED_CONTEXT_EXTENSION))  info->gyInfo.rendererContextSharing = 1;
 
 #ifdef GY_CL_OPENGL_INTEROP
-    if(info && _clGlInteropInfo.glQueryDataValid && _clPlatforms[info->platIdx] == _clGlInteropInfo.rendererPlatform) info->gyInfo.isRenderPlatform = 1;
+    if(info && _clGlInteropInfo.glQueryDataValid && platform == _clGlInteropInfo.rendererPlatform) info->gyInfo.isRenderPlatform = 1;
 #endif
 
     return success;
@@ -645,7 +640,7 @@ static int _clQueryKernelWorkgroupInfo(const cl_kernel kernel, const cl_device_i
 
 #define QUERY_WG_INFO_SIZET(info)  \
     buf_sizet = 0;                      \
-    QUERY_WG_INFO(info, #info, sizeof(size_t), buf_sizet, "zu")
+    QUERY_WG_INFO(info, #info, sizeof(size_t), buf_sizet, "lu")
 
     QUERY_WG_INFO_SIZET(CL_KERNEL_WORK_GROUP_SIZE)
     if(info) info->workGroupSize = buf_sizet;
@@ -663,7 +658,7 @@ static int _clQueryKernelWorkgroupInfo(const cl_kernel kernel, const cl_device_i
         char strbuff[GY_COMPUTE_DEVICE_INFO_EXTENSIONS_SIZE];
         GY_ASSERT(sizeof(compileWgSize) == retSize);
         if(info) memcpy(info->compileWorkGroupSize, compileWgSize, sizeof(compileWgSize));
-        sprintf(strbuff, "<%zu, %zu, %zu>", compileWgSize[0], compileWgSize[1], compileWgSize[2]);
+        sprintf(strbuff, "<%lu, %lu, %lu>", compileWgSize[0], compileWgSize[1], compileWgSize[2]);
         _gyLog(GY_DEBUG_VERBOSE, "%25s : %20s", "CL_KERNEL_COMPILE_WORK_GROUP_SIZE", strbuff);
     } else {
         _gyLog(GY_DEBUG_ERROR, "CL_KERNEL_COMPILE_WORK_GROUP_SIZE query failed!");
@@ -829,6 +824,9 @@ done:
         GYComputeDevice dev = _gyComputeDeviceFromClDeviceId(_clGlInteropInfo.rendererDevice);
         GY_ASSERT(dev.platformIdx != -1 && dev.deviceIdx != -1);
         _gyLog(GY_DEBUG_VERBOSE, "OpenCL Device associated with current OpenGL Context/Screen: [Platform: %u, Device: %u]", dev.platformIdx, dev.deviceIdx);
+    } else {
+        _gyLog(GY_DEBUG_WARNING, "Failed to find any OpenCL Device associated with an OpenGL context! OpenCL/OpenGL interop not supported!");
+
     }
     _gyPop(1);
     return success;
@@ -1198,7 +1196,7 @@ GYComputeDevice gyComputeDeviceHandle(unsigned platformIdx, unsigned deviceIdx) 
 
 
 const GYComputeDeviceInfo* gyComputeDeviceQueryInfo(const GYComputeDevice* device) {
-    GY_ASSERT(_initialized);
+    GY_ASSERT(_initialized && device && device->platformIdx >= 0 && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clPlatforms[device->platformIdx]);
     _ComputeDevice* dev = _clDeviceFromGyComputeDevice(device);
     return &dev->info.gyInfo;
 }
@@ -1322,7 +1320,7 @@ int gyComputeContextDestroy(GYComputeContext* context) {
 
 //================= GYRO COMPUTE COMMAND QUEUE API ======================
 GYComputeCommandQueue* gyComputeCommandQueueCreate(const GYComputeContext* context, const GYComputeDevice* device, int flags) {
-    GY_ASSERT(_initialized && context && device);
+    GY_ASSERT(_initialized && context && device && device->platformIdx < _clPlatformCount && device->deviceIdx >= 0 && device->deviceIdx < _clPlatforms[device->platformIdx]);
     cl_int retCode;
 
     cl_command_queue_properties properties = 0;
@@ -1546,6 +1544,7 @@ int gyComputeProgramUnload(GYComputeProgram* program) {
 }
 
 int gyComputeProgramCompile(GYComputeProgram *program, const GYComputeDevice *devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options) {
+    _gyLog(GY_DEBUG_VERBOSE, "GY_COMPUTE_PROGRAM_COMPILE");
     (void)options;
 
     GY_ASSERT(program && devices && deviceCount);
@@ -1562,7 +1561,10 @@ int gyComputeProgramCompile(GYComputeProgram *program, const GYComputeDevice *de
         goto end;
     }
 
-    for(unsigned d = 0; d < deviceCount; ++d) devIds[d] = _clDeviceFromGyComputeDevice(&devices[d])->deviceId;
+    for(unsigned d = 0; d < deviceCount; ++d) {
+     GY_ASSERT(devices[d].platformIdx && devices[d].platformIdx < _clPlatformCount && devices[d].deviceIdx >= 0 && devices[d].deviceIdx < _clPlatforms[devices[d].platformIdx]);
+        devIds[d] = _clDeviceFromGyComputeDevice(&devices[d])->deviceId;
+    }
 
     if(GY_CL_CHECK_ERROR(clBuildProgram(pgm->program, deviceCount, devIds, GY_CL_BUILD_FLAGS, NULL, NULL))) {
         success = 0;
