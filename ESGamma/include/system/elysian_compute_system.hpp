@@ -163,18 +163,12 @@ namespace elysian {
         ComputeDevice*          getDeviceByType(DEVICE_TYPE type, unsigned idx = 0);
         unsigned                getDeviceCountForType(DEVICE_TYPE type) const;
         ComputeContext*         getPlatformContextFromDeviceType(DEVICE_TYPE type, unsigned idx = 0) const;
-
         ComputeContext*         getRendererContext(void) const;
         int                     getRendererPlatform(void) const;
         ComputeContext*         getPlatformContext(int platformIdx) const;
-
-
         unsigned                getPlatformDeviceCount(int platformIdx) const;
-
         unsigned                getPlatformCount(void) const;
-
         bool                    isRendererInteropSupported(void) const;
-
         bool                    queryEnvironmentInfo(void) const;
 
     private:

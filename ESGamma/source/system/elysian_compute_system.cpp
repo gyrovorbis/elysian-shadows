@@ -255,7 +255,7 @@ bool ComputeSystem::_createContexts(void) {
     } else {
         dbgprintf("Skipping Renderer Context.");
     }
-
+w
 
     _platformContexts = new ComputeContext*[getPlatformCount()];
     memset(_platformContexts, 0, sizeof(ComputeContext*)*getPlatformCount());
@@ -269,11 +269,13 @@ bool ComputeSystem::_createContexts(void) {
             devices.push_back(getDevice(p, d));
         }
 
-        _platformContexts[p] = createContext(p, false, devices.size(), devices.data());
+        if(devices.size()) {
+            _platformContexts[p] = createContext(p, false, devices.size(), devices.data());
 
-        if(!_platformContexts[p]) {
-            errprintf("Failed to create Compute Context!");
-            success = false;
+            if(!_platformContexts[p]) {
+                errprintf("Failed to create Compute Context!");
+                success = false;
+            }
         }
 
         dbgpop();
