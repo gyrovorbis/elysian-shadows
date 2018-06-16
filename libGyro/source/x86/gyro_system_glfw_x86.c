@@ -197,7 +197,7 @@ int gySysInit(const GYSysInitParams*const params) {
   "MacOS";
 #elif defined(_WIN32)
   "Windows";
-#elses
+#else
   "Linux";
 #endif
 
