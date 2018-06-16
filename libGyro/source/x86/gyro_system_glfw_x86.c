@@ -5,6 +5,18 @@
 #include <glal/gyro_gl.h>
 #include <stdio.h>
 #include <stdarg.h>
+#if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+#include <SDL2/SDL.h>
+
+#elif defined(__WIN32)
+#include <sdl/SDL.h>
+
+#elif defined(__linux__)
+#include <SDL2/SDL.h>
+
+#else
+#include <SDL.h>
+#endif
 
 #include "../common/gyro_system_callbacks.h"
 
@@ -104,6 +116,27 @@ static GYSysInitParams _sysParams;
 
 void gyDebugSigInit(void);
 void _gySysPrintBuildInfo(const char*const platString);
+
+
+static GYSystemInfo _systemInfo;
+
+const GYSystemInfo* gySystemQueryInfo(void) {
+    return &_systemInfo;
+}
+
+int _sdlQuerySystemInfo(GYSysInitParams* params) {
+    int success = 1;
+    memset(&_systemInfo, 0, sizeof(GYSystemInfo));
+
+    _gyLog(GY_DEBUG_VERBOSE, "[GY_SYSTEM_API]: Querying System Information");
+    _gyPush();
+
+    strncpy(_systemInfo.platformName, SDL_GetPlatform(), GYRO_SYSTEM_PLATFORM_NAME_SIZE);
+
+
+    _gyPop(1);
+    return success;
+}
 
 int gySysInit(const GYSysInitParams*const params) {
     //char strBuff[40];

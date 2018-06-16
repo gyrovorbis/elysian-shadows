@@ -426,10 +426,10 @@ bool ComputeSystem::uninitialize(void) {
 
 ComputeContext* ComputeSystem::createContext(int gyPlatformIdx, bool isRendererContext, unsigned deviceCount, ComputeDevice **devices) {
     ComputeContext* ctx = nullptr;
-    assert(gyPlatformIdx <= 0 && gyPlatformIdx < (int)_platformCount && deviceCount && devices);
 
     dbgprintf("ComputeSystem::createContext(platformIdx = %d, rendererContext = %d, deviceCount = %u)", gyPlatformIdx, isRendererContext, deviceCount);
     dbgpush();
+    assert(gyPlatformIdx >= 0 && gyPlatformIdx < (int)_platformCount && deviceCount && devices);
 
     std::vector<GYComputeDevice> _gyDevices;
     for(unsigned d = 0; d < deviceCount; ++d) {
