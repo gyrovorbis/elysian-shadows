@@ -459,7 +459,8 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
 
     //Check OpenGL interop-related info (if enabled)
 #ifdef GY_CL_OPENGL_INTEROP
-    if(info && device == _clGlInteropInfo.rendererDevice)
+    GYComputeDevice gyDevice = _gyComputeDeviceFromClDeviceId(device);
+    if(info && _clGlInteropInfo.glQueryDataValid && gyDevice.platformIdx == _clGlInteropInfo.rendererGyroDevice.platformIdx && gyDevice.deviceIdx == _clGlInteropInfo.rendererGyroDevice.deviceIdx);
         info->gyInfo.isRenderDevice = 1;
 #endif
 
