@@ -47,13 +47,16 @@ bool ComputeSystem::initialize(void) {
 
         const GYComputePlatformInfo* info = gyComputePlatformQueryInfo(p);
         GY_ASSERT(info);
-        if(info->isRenderPlatform) _rendererPlatform = p;
+        if(info->isRenderPlatform) {
+            _rendererPlatform = p;
+            dbgprint("Assigned %u as renderer platform!", p);
+        }
 
         _devices[p] = new ComputeDevice[info->deviceCount];
         _deviceCount[p] = info->deviceCount;
 
         for(unsigned d = 0; d < info->deviceCount; ++d) {
-            dbgpush("Examining Device %u", d);
+            dbgprintf("Examining Device %u", d);
             dbgpush();
             GYComputeDevice dev = gyComputeDeviceHandle(p, d);
             _devices[p][d].setGyDevice(dev);
