@@ -1188,7 +1188,7 @@ int gyComputePlatformCount(void) {
 
 const GYComputePlatformInfo* gyComputePlatformQueryInfo(unsigned platformIdx) {
     GY_ASSERT(_initialized && platformIdx >= 0 && platformIdx < _clPlatformCount);
-    return &_platformInfo->gyInfo;
+    return &_platformInfo[platformIdx].gyInfo;
 }
 
 
