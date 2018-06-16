@@ -120,20 +120,68 @@ void _gySysPrintBuildInfo(const char*const platString);
 
 static GYSystemInfo _systemInfo;
 
+const char* gySystemPowerStateString(GY_SYSTEM_POWER_STATE state) {
+    static const char* _stateStrings[] = {
+        "POWER_STATE_UNKNOWN",
+        "POWER_STATE_BATTERY",
+        "POWER_STATE_AC",
+        "POWER_STATE_CHARGING",
+        "POWER_STATE_CHARGED"
+    };
+    return _stateStrings[state];
+}
+
+int gySystemPowerQueryInfo(GYSystemPowerInfo* info) {
+    GY_ASSERT(info);
+    SDL_PowerState state = SDL_GetPowerInfo(&info->batterySecondsRemaining, &info->batteryPercentageRemaining);
+    switch(state) {
+    case SDL_POWERSTATE_ON_BATTERY:
+        info->state = GY_SYSTEM_POWER_STATE_BATTERY;
+        break;
+    case SDL_POWERSTATE_NO_BATTERY:
+        info->state = GY_SYSTEM_POWER_STATE_AC;
+        break;
+    case SDL_POWERSTATE_CHARGING:
+        info->state = GY_SYSTEM_POWER_STATE_CHARGING;
+        break;
+    case SDL_POWERSTATE_CHARGED:
+        info->state = GY_SYSTEM_POWER_STATE_CHARGED;
+        break;
+    default:
+    case SDL_POWERSTATE_UNKNOWN:
+        info->state = GY_SYSTEM_POWER_STATE_UNKNOWN;
+    }
+    return 1;
+}
+
 const GYSystemInfo* gySystemQueryInfo(void) {
     return &_systemInfo;
 }
 
-int _sdlQuerySystemInfo(GYSysInitParams* params) {
+static int _sdlQuerySystemInfo(GYSystemInfo* info) {
     int success = 1;
+    int intBuff = 0;
+    char strBuff[GYRO_SYSTEM_PLATFORM_NAME_SIZE];
     memset(&_systemInfo, 0, sizeof(GYSystemInfo));
 
     _gyLog(GY_DEBUG_VERBOSE, "[GY_SYSTEM_API]: Querying System Information");
     _gyPush();
 
-    strncpy(_systemInfo.platformName, SDL_GetPlatform(), GYRO_SYSTEM_PLATFORM_NAME_SIZE);
+    strncpy(strBuff, SDL_GetPlatform(), GYRO_SYSTEM_PLATFORM_NAME_SIZE);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Platform Name",    strBuff);
+    if(info) strcpy(info->platformName, strBuff);
 
+    intBuff = SDL_GetCPUCount();
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "CPU Cores",    intBuff);
+    if(info) info->cpuCount = intBuff;
 
+    intBuff = SDL_GetSystemRAM();
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d MB", "System RAM",    intBuff);
+    if(info) info->systemRam = intBuff;
+
+    intBuff = SDL_GetCPUCacheLineSize();
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Cache Line Size",    intBuff);
+    if(info) info->cacheLineSize = intBuff;
     _gyPop(1);
     return success;
 }
@@ -149,7 +197,7 @@ int gySysInit(const GYSysInitParams*const params) {
   "MacOS";
 #elif defined(_WIN32)
   "Windows";
-#else
+#elses
   "Linux";
 #endif
 
@@ -157,6 +205,8 @@ int gySysInit(const GYSysInitParams*const params) {
 #if defined(__linux__) && defined(__x86_64__)
     _checkCPUCapabilities();
 #endif
+
+    _sdlQuerySystemInfo(&_systemInfo);
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();
