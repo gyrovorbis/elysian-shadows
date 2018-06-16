@@ -1,10 +1,16 @@
 #include <glal/gyro_gl_utils.h>
+#include <glal/gyro_video_glal.h>
+#include <string.h>
+
+GYGLInfo glalGlInfo;
 
 void glalGLDriverQuery(void) {
     GLint       glint[20];
     GLubyte*    glchar[100];
     GLfloat     glfloat[20];
     //GLboolean   glbool[20];
+
+    memset(&glalGlInfo, 0, sizeof(GYGLInfo));
 
 #define GL_QUERY(enumVal, strName, suffix, var, format) do {                \
         glGet##suffix(enumVal, &var);                                       \
@@ -59,9 +65,6 @@ void glalGLDriverQuery(void) {
             _gyLog(GY_DEBUG_VERBOSE, "Flags");
             _gyPush();
             if(flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) _gyLog(GY_DEBUG_VERBOSE, "FORWARD_COMPATIBLE_BIT");
-            if(flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) _gyLog(GY_DEBUG_VERBOSE, "DEBUG_BIT");
-            if(flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) _gyLog(GY_DEBUG_VERBOSE, "ROBUST_ACCESS_BIT");
-            if(flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) _gyLog(GY_DEBUG_VERBOSE, "NO_ERROR_BIT");
             _gyPop(1);
         }
 
