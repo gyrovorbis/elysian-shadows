@@ -103,9 +103,11 @@ static _CLGLInteropInfo         _clGlInteropInfo;
 
 //========== INTERNAL OPENCL <=> LIBGYRO TYPE CONVERSTION UTILITY FUNCTIONS ===========
 
-static inline GYComputeDevice _gyComputeDeviceFromClDeviceId(cl_device_id clDevice) {
+static inline GYComputeDevice _gyComputeDeviceFromClDeviceId(cl_device_id clDevice, cl_platform_id clPlatform) {
     GYComputeDevice dev = { -1, -1 };
     for(unsigned p = 0; p < _clPlatformCount; ++p) {
+        if(_clPlatforms[p] != clPlatform) continue;
+
         for(unsigned d = 0; d < _clDeviceCount[p]; ++d) {
             if(_clDevices[p][d] == clDevice) {
                 dev.platformIdx = p;
@@ -459,8 +461,7 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
 
     //Check OpenGL interop-related info (if enabled)
 #ifdef GY_CL_OPENGL_INTEROP
-    GYComputeDevice gyDevice = _gyComputeDeviceFromClDeviceId(device);
-    if(info && _clGlInteropInfo.glQueryDataValid && gyDevice.platformIdx == _clGlInteropInfo.rendererGyroDevice.platformIdx && gyDevice.deviceIdx == _clGlInteropInfo.rendererGyroDevice.deviceIdx);
+    if(info && _clGlInteropInfo.glQueryDataValid && info->gyDevice->platformIdx == _clGlInteropInfo.rendererGyroDevice.platformIdx && info->gyDevice->deviceIdx == _clGlInteropInfo.rendererGyroDevice.deviceIdx);
         info->gyInfo.isRenderDevice = 1;
 #endif
 
@@ -823,10 +824,10 @@ static int _clGLQueryInteropInfo(void) {
 done:
     _clGlInteropInfo.glQueryDataValid = success;
     if(_clGlInteropInfo.glQueryDataValid) {
-        GYComputeDevice dev = _gyComputeDeviceFromClDeviceId(_clGlInteropInfo.rendererDevice);
-        GY_ASSERT(dev.platformIdx != -1 && dev.deviceIdx != -1);
-        _clGlInteropInfo.rendererGyroDevice = dev;
-        _gyLog(GY_DEBUG_VERBOSE, "OpenCL Device associated with current OpenGL Context/Screen: [Platform: %u, Device: %u]", dev.platformIdx, dev.deviceIdx);
+        _clGlInteropInfo.rendererGyroDevice = _gyComputeDeviceFromClDeviceId(_clGlInteropInfo.rendererDevice, _clGlInteropInfo.rendererPlatform);
+        GY_ASSERT(_clGlInteropInfo.rendererGyroDevice.platformIdx != -1 && _clGlInteropInfo.rendererGyroDevice.deviceIdx != -1);
+        _gyLog(GY_DEBUG_VERBOSE, "OpenCL Device associated with current OpenGL Context/Screen: [Platform: %u, Device: %u]",
+               _clGlInteropInfo.rendererGyroDevice.platformIdx, _clGlInteropInfo.rendererGyroDevice.deviceIdx);
     } else {
         _gyLog(GY_DEBUG_WARNING, "Failed to find any OpenCL Device associated with an OpenGL context! OpenCL/OpenGL interop not supported!");
 
