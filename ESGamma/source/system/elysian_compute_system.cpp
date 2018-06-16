@@ -112,7 +112,7 @@ bool ComputeSystem::_assignDeviceTypes(void) {
             ComputeDevice* dev = getDevice(p, d);
             const GYComputeDeviceInfo* devInfo = dev->getInfo();
              if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
-                 if(((int)p != _rendererPlatformIdx && !devInfo->rendererSharedContext) || !_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
+                 if((int)p != _rendererPlatformIdx || !devInfo->rendererSharedContext || !_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
                     _deviceTypes[DEVICE_GPU_AUXILIARY].push_back(dev);
                     dev->setDeviceType(DEVICE_GPU_AUXILIARY);
                     size_t size = _deviceTypes[DEVICE_GPU_AUXILIARY].size();
@@ -255,7 +255,6 @@ bool ComputeSystem::_createContexts(void) {
     } else {
         dbgprintf("Skipping Renderer Context.");
     }
-w
 
     _platformContexts = new ComputeContext*[getPlatformCount()];
     memset(_platformContexts, 0, sizeof(ComputeContext*)*getPlatformCount());
