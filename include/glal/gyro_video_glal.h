@@ -91,6 +91,8 @@ typedef struct GYGLInfo {
     int                 hasShaderBufferObjects;
     int                 hasTextureCubeMapArrays;
     int                 hasFloatTextures;
+    int                 hasOcclusionQueries;
+    int                 hasTransformFeedback;
     char**              extensions;
 } GYGLInfo;
 
