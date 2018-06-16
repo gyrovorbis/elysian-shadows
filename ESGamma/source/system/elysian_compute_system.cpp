@@ -13,6 +13,7 @@ const char* ComputeSystem::_computeDeviceTypeStrings[ComputeSystem::COMPUTE_DEVI
 
 bool ComputeSystem::initialize(void) {
     bool success = true;
+    unsigned deviceCount = 0;
     GYComputeInitParams params = {
         4
     };
@@ -82,14 +83,20 @@ bool ComputeSystem::initialize(void) {
 
     GYComputeDevice gyDevices[ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES];
     for(unsigned p = 0; p < _platformCount; ++p) {
+        deviceCount = 0;
         for(unsigned d = 0; d < _deviceCount[p]; ++d) {
-            gyDevices[d] = *_devices[p][d].getGyDevice();
+
+            if((int)p == _rendererPlatform) {
+                if(!_devices[p][d].getInfo()->rendererSharedContext) continue;
+            }
+
+            gyDevices[deviceCount++] = *_devices[p][d].getGyDevice();
         }
 
         GYComputeContextInitParams initParams = {
             0,
             gyDevices,
-            _deviceCount[p]
+            deviceCount
         };
 
         if((int)p == _rendererPlatform) initParams.flags |= GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED;
