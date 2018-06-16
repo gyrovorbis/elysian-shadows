@@ -38,26 +38,38 @@ extern "C" {
 
 #define GYRO_SYSTEM_PLATFORM_NAME_SIZE  100
 
+typedef enum GY_SYSTEM_POWER_STATE {
+    GY_SYSTEM_POWER_STATE_UNKNOWN,
+    GY_SYSTEM_POWER_STATE_BATTERY,
+    GY_SYSTEM_POWER_STATE_AC,
+    GY_SYSTEM_POWER_STATE_CHARGING,
+    GY_SYSTEM_POWER_STATE_CHARGED,
+} GY_SYSTEM_POWER_STATE;
 
-typedef
+
+typedef struct GYSystemPowerInfo {
+    GY_SYSTEM_POWER_STATE     state;
+    int                       batterySecondsRemaining;
+    int                       batteryPercentageRemaining;
+} GYSystemPowerInfo;
 
 typedef struct GYSystemInfo {
-    char platformName[GYRO_SYSTEM_PLATFORM_NAME_SIZE];
-    int cpuCount;
-    int cacheLineSize;  //bytes, multi-threaded padding and SSE
-    int systemRam;      //Megabytes
-    int has3DNow;
-    int hasAvx;
-    int hasAvx2;
-    int hasAltiVec;
-    int hasMMX;
-    int hasRdtsc;
-    int hasSSE;
-    int hasSSE2;
-    int hasSSE3;
-    int hasSSE41;
-    int hasSSE42;
-    int byteOrder; //0 - little, 1 - big
+    char                        platformName[GYRO_SYSTEM_PLATFORM_NAME_SIZE];
+    int                         cpuCount;
+    int                         cacheLineSize;  //bytes, multi-threaded padding and SSE
+    int                         systemRam;      //Megabytes
+    int                         has3DNow;
+    int                         hasAvx;
+    int                         hasAvx2;
+    int                         hasAltiVec;
+    int                         hasMMX;
+    int                         hasRdtsc;
+    int                         hasSSE;
+    int                         hasSSE2;
+    int                         hasSSE3;
+    int                         hasSSE41;
+    int                         hasSSE42;
+    int                         byteOrder; //0 - little, 1 - big
 } GYSystemInfo;
 
 typedef struct GYSysInitParams {
@@ -100,7 +112,8 @@ unsigned int gySysStatsRam(void);
 const char* gyVersion(void);
 
 const GYSystemInfo* gySystemQueryInfo(void);
-
+int gySystemPowerQueryInfo(GYSystemPowerInfo* info);
+const char* gySystemPowerStateString(GY_SYSTEM_POWER_STATE state);
 
 
 #include "common/gyro_system_common.h"
