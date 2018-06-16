@@ -166,7 +166,7 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
      _height = h;
 
      if(!_engineValid) {
-        QMessageBox::critical(nullptr, "Error!", "The libGyro Video API back-end (OpenGL) failed to initialize properly! Please refer to the console output and debug log(s) for more information.");
+        QMessageBox::critical(nullptr, "Error!", "The libGyro Video API back-end (OpenGL) failed to initialize properly! Something is FUNDAMENTALLY fucked. Don't blame me, blame OpenGL.");
      }
 
     // _mapView->setSceneRect(0, 0, w, h);

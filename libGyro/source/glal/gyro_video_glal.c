@@ -329,6 +329,7 @@ int glalVidGlewInit(void) {
             _gyLog(GY_DEBUG_VERBOSE, "OpenGL 4.1 Extensions detected");
         } else {
             _gyLog(GY_DEBUG_ERROR, "OpenGL 4.1 Extensions NOT detected! Prepare for crash!");
+            return 0;
         }
         _gyPop(1);
         once = 1;
