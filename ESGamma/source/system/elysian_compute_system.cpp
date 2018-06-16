@@ -87,6 +87,16 @@ bool ComputeSystem::initialize(void) {
 
     dbgpop();
 
+    if(!_builtinDevices[COMPUTE_DEVICE_GPU_RENDERER_ACTIVE]) {
+        errprintf("ComputeSystem::initialization failed: could not find Compute Device: COMPUTE_GPU_RENDERER_ACTIVE");
+        goto done;
+    }
+
+    if(!_builtinDevices[COMPUTE_DEVICE_CPU]) {
+        errprintf("ComputeSystem::initialization failed: could not find Compute Device: COMPUTE_DEVICE_CPU");
+        goto done;
+    }
+
     //Create contexts
     dbgprintf("Creating contexts.");
     dbgpush();
@@ -118,9 +128,11 @@ bool ComputeSystem::initialize(void) {
             for(unsigned d = 0; d < _deviceCount[p]; ++d) {
                 _devices[p][d].setContext(ctx);
             }
-        }
+        } else _initialized = false;
     }
     dbgpop();
+
+    _initialized = true;
 
 done:
     dbgpop();

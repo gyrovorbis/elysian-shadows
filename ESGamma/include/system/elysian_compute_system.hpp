@@ -163,6 +163,7 @@ namespace elysian {
 
         bool                    initialize(void);
         bool                    uninitialize(void);
+        bool                    isInitialized(void) const;
 
         ComputeDevice*          getBuiltinComputeDevice(COMPUTE_DEVICE_BUILTIN_TYPE type);
     private:
@@ -172,6 +173,7 @@ namespace elysian {
 
         //GYThread*				_cpuThreads;
 
+        bool                    _initialized        = false;
         unsigned                _platformCount      = 0;
         unsigned*               _deviceCount        = nullptr;
         int                     _rendererPlatform   = -1;
@@ -232,6 +234,11 @@ namespace elysian {
 
     inline int ComputeDevice::getPlatformIdx(void) const {
         return _gyDevice.platformIdx;
+    }
+
+    inline bool ComputeSystem::isInitialized(void) const {
+        return _initialized;
+
     }
 }
 

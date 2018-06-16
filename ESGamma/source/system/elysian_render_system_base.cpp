@@ -26,56 +26,59 @@ bool RenderSystemBase::initialize(void) {
     dbgprintf("RenderSystem::initialize()");
     dbgpush();
 
-    glGenBuffers(1, &_glParticleVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if(getComputeSystem()->isInitialized()) {
 
-    glGenBuffers(1, &_glParticleIndirectBuff);
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, _glParticleIndirectBuff);
-    glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(DrawIndirectBuffer), nullptr, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+        glGenBuffers(1, &_glParticleVbo);
+        glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glGenVertexArrays(1, &_glParticleVao);
-    glBindVertexArray(_glParticleVao);
-    glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
+        glGenBuffers(1, &_glParticleIndirectBuff);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, _glParticleIndirectBuff);
+        glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(DrawIndirectBuffer), nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
-    glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_POS]);
-    glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_TEX_COORD]);
-    glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_COLOR]);
-    glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL]);
-    glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT]);
-    glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z]);
+        glGenVertexArrays(1, &_glParticleVao);
+        glBindVertexArray(_glParticleVao);
+        glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
 
-    glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)0);
-    glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
-    glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
-    glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
-    glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
-    glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
+        glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_POS]);
+        glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_TEX_COORD]);
+        glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_COLOR]);
+        glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL]);
+        glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT]);
+        glEnableVertexAttribArray(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z]);
 
-    _particleDevice = getComputeSystem()->getBuiltinComputeDevice(ComputeSystem::COMPUTE_DEVICE_GPU_RENDERER_ACTIVE);
-    if(_particleDevice) {
-        ComputeContext* ctx = _particleDevice->getContext();
-        _renderCmdQueue = ctx->createCommandQueue(_particleDevice, 0);
-        if(_renderCmdQueue) {
-            _particleVboOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleVbo, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY);
-            _particleInBuffer = ctx->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr);
-            _particleDrawIndirectOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleIndirectBuff, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
-            _particleViewProjInBuffer = ctx->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYMatrix4), nullptr);
-            if(_particleVboOutBuffer && _particleInBuffer && _particleDrawIndirectOutBuffer && _particleViewProjInBuffer) {
-                _particleVboProgram = ctx->loadProgram(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH);
-                if(_particleVboProgram) {
-                    if(_particleVboProgram->compile(_particleDevice, 1, nullptr)) {
-                        _particleVboKernel = _particleVboProgram->createKernel(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME);
-                        if(_particleVboKernel) {
-                            bool success = true;
-                            success &= _particleVboKernel->setArg(1, _particleInBuffer);
-                            success &= _particleVboKernel->setArg(2, _particleViewProjInBuffer);
-                            success &= _particleVboKernel->setArg(3, _particleDrawIndirectOutBuffer);
-                            success &= _particleVboKernel->setArg(4, _particleVboOutBuffer);
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)0);
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
 
-                            if(success) _setParticleAccelerationAvailable(true);
+        _particleDevice = getComputeSystem()->getBuiltinComputeDevice(ComputeSystem::COMPUTE_DEVICE_GPU_RENDERER_ACTIVE);
+        if(_particleDevice) {
+            ComputeContext* ctx = _particleDevice->getContext();
+            _renderCmdQueue = ctx->createCommandQueue(_particleDevice, 0);
+            if(_renderCmdQueue) {
+                _particleVboOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleVbo, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY);
+                _particleInBuffer = ctx->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr);
+                _particleDrawIndirectOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleIndirectBuff, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
+                _particleViewProjInBuffer = ctx->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYMatrix4), nullptr);
+                if(_particleVboOutBuffer && _particleInBuffer && _particleDrawIndirectOutBuffer && _particleViewProjInBuffer) {
+                    _particleVboProgram = ctx->loadProgram(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH);
+                    if(_particleVboProgram) {
+                        if(_particleVboProgram->compile(_particleDevice, 1, nullptr)) {
+                            _particleVboKernel = _particleVboProgram->createKernel(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME);
+                            if(_particleVboKernel) {
+                                bool success = true;
+                                success &= _particleVboKernel->setArg(1, _particleInBuffer);
+                                success &= _particleVboKernel->setArg(2, _particleViewProjInBuffer);
+                                success &= _particleVboKernel->setArg(3, _particleDrawIndirectOutBuffer);
+                                success &= _particleVboKernel->setArg(4, _particleVboOutBuffer);
+
+                                if(success) _setParticleAccelerationAvailable(true);
+                            }
                         }
                     }
                 }
