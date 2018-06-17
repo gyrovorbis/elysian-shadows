@@ -458,6 +458,8 @@ void ESToolkit::WriteSettings()
         settings.setValue("gitLabHostName", _gitlabDialog->getHostName());
         settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
         settings.setValue("gitLabProjectId", _gitlabDialog->getProjectId());
+        settings.setValue("gitLabDefaultProject", _gitlabDialog->getProjectName());
+
     }
 
     for(unsigned i = 0; i < TkDebug::SOURCE_MAX; ++i) {
@@ -558,6 +560,7 @@ void ESToolkit::ReadSettings()
     if(!settings.value("gitLabPrivateToken").isNull()) {
         _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
         _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
+        _gitlabDialog->setDefaultProject(settings.value("gitLabDefaultProject").toString());
         //_gitlabDialog->authenticate(true);
         _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
     }

@@ -78,6 +78,7 @@ bool RenderSystemBase::initialize(void) {
                                 success &= _particleVboKernel->setArg(4, _particleVboOutBuffer);
 
                                 if(success) _setParticleAccelerationAvailable(true);
+                                //_useParticleAcceleration = true;
                             }
                         }
                     }

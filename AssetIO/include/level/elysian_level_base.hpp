@@ -12,8 +12,8 @@
 #define ELYSIAN_LEVEL_PATH_SIZE				200
 #define ELYSIAN_TILESET_PATH				"/tile/tileset.txt"
 #define ELYSIAN_TILESHEET_PATH				"/tile/tilesheet.png"
-#define ELYSIAN_NORMALSHEET_PATH			"/tile/normalsheet.png"
-#define ELYSIAN_SPECULARSHEET_PATH			"/tile/specularsheet.png"
+#define ELYSIAN_NORMALSHEET_PATH			"/tile/tilesheet_n.png"
+#define ELYSIAN_SPECULARSHEET_PATH			"/tile/tilesheet_e.png"
 #define ELYSIAN_BACKGROUND_TEXTURE_WIDTH	512
 #define ELYSIAN_BACKGROUND_TEXTURE_HEIGHT	512
 #define ELYSIAN_LEVEL_INIT_LUA_PATH			"/level_init.lua"

@@ -161,7 +161,7 @@ bool ComputeSystem::_assignDeviceTypes(void) {
 
              if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
 
-                 if(((int)p != _rendererPlatformIdx && !devInfo->rendererSharedContext) || !_deviceTypes[DEVICE_CPU_RENDERER].size()) {
+                 if((int)p != _rendererPlatformIdx || !devInfo->rendererSharedContext || !_deviceTypes[DEVICE_CPU_RENDERER].size()) {
                      _deviceTypes[DEVICE_CPU_AUXILIARY].push_back(dev);
                      size_t size = _deviceTypes[DEVICE_CPU_AUXILIARY].size();
                      dev->setDeviceType(DEVICE_CPU_AUXILIARY);
@@ -347,55 +347,10 @@ bool ComputeSystem::initialize(void) {
         if(success) success &= _createContexts();
     }
 
-
-#if 0
-    //Create contexts
-    dbgprintf("Creating contexts.");
-
-        _platformContexts = new ComputeContext*[_platformCount];
-    dbgpush();
-
-    GYComputeDevice gyDevices[ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES];
-    for(unsigned p = 0; p < _platformCount; ++p) {
-        renderPlatform = (p == _rendererPlatform && gyComputePlatformQueryInfo(_rendererPlatform)->rendererContextSharing);
-        deviceCount = 0;
-        for(unsigned d = 0; d < _deviceCount[p]; ++d) {
-
-            if(renderPlatform) {
-                if(!_devices[p][d].getInfo()->rendererSharedContext) continue;
-            }
-
-            gyDevices[deviceCount++] = *_devices[p][d].getGyDevice();
-        }
-
-        GYComputeContextInitParams initParams = {
-            0,
-            gyDevices,
-            deviceCount
-        };
-
-        if(renderPlatform) initParams.flags |= GY_COMPUTE_CONTEXT_FLAG_RENDERER_SHARED;
-
-        GYComputeContext* context = gyComputeContextCreate(p, &initParams);
-        if(context) {
-            ComputeContext* ctx = new ComputeContext(context, p, renderPlatform, deviceCount, gyDevices);
-            _contexts[p] = ctx;
-            for(unsigned d = 0; d < _deviceCount[p]; ++d) {
-                _devices[p][d].setContext(ctx);
-            }
-        } else goto done;
-    }
-    dbgpop();
-
-    _initialized = true;
-#endif
-
 done:
     _initialized = success;
     dbgpop();
     return success;
-
-    //Create Command Queues
 
 }
 

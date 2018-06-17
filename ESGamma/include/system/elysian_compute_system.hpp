@@ -19,6 +19,8 @@
 #define ELYSIAN_COMPUTE_PLATFORM_INVALID        -1
 #define ELYSIAN_COMPUTE_DEVICE_INVALID          -1
 
+#define ELYSIAN_COMPUTE_HEADER_FILES_MAX        3
+
 struct GYComputeDevice;
 
 namespace elysian {
@@ -101,15 +103,24 @@ namespace elysian {
     class ComputeProgram {
     friend class ComputeContext;
     private:
-        GYComputeProgram*           _gyProgram      = nullptr;
-        ComputeContext*             _context        = nullptr;
-        bool                        _compiled       = false;
-        std::vector<ComputeDevice*> _compiledDevices;
-        ComputeProgram(GYComputeProgram* program, ComputeContext* context);
+        GYComputeProgram*               _gyProgram      = nullptr;
+        ComputeContext*                 _context        = nullptr;
+        bool                            _compiled       = false;
+        std::vector<ComputeDevice*>     _compiledDevices;
+
+                                        ComputeProgram(GYComputeProgram* program, ComputeContext* context);
     public:
-       ~ComputeProgram(void);
-        bool compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options);
-        ComputeKernel* createKernel(const char* name) const;
+                                        ~ComputeProgram(void);
+
+        bool                            addHeaderFile(const char* filePath);
+        bool                            addBuildFlag(const char* flag);
+
+        bool                            compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options);
+        ComputeKernel*                  createKernel(const char* name) const;
+
+        bool                            isValid(void) const; //valid for at least one device
+        bool                            isValidForDevice(const ComputeDevice* device) const;
+        bool                            isValidForDevice(unsigned int deviceIdx) const;
     };
 
 
@@ -128,6 +139,13 @@ namespace elysian {
         GYComputeKernel* getGyKernel(void) const;
         const GYComputeKernelInfo* getInfo(void) const;
     };
+#if 0
+    class ComputeTask {
+    private:
+        int     _platformIndex =
+
+    }
+#endif
 
 
     class ComputeSystem: public System {

@@ -176,7 +176,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
     if(!relaunching) {
-#ifdef QT_NO_DEBUG
+#ifndef QT_NO_DEBUG
         splash.show();
         QTimer::singleShot(2500, &splash, SLOT(close()));
         QTimer::singleShot(2500, &w, SLOT(showMaximized()));
