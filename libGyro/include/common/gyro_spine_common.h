@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #define GYRO_SPINE_ATLAS_TEXTURE_NORMAL_SUFFIX      "_n.png"
-#define GYRO_SPINE_ATLAS_TEXTURE_SPECULAR_SUFFIX    "_r.png"
+#define GYRO_SPINE_ATLAS_TEXTURE_SPECULAR_SUFFIX    "_e.png"
 
 struct GYTexture;
 
