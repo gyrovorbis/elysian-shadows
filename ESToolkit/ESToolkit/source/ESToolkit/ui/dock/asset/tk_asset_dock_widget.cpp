@@ -131,9 +131,17 @@ void AssetDockWidget::_onSelectionChanged(const Selectable::TYPE type, Selectabl
 }
 
 void AssetDockWidget::_onCustomContextMenuRequested(const QPoint& pos) {
-    QMenu* menu = _fsModel->customContextMenuRequested(_ui->treeView->indexAt(pos));
-    if(menu) menu->exec(_ui->treeView->mapToGlobal(pos));
-    delete menu;
+    QModelIndex index(_ui->treeView->indexAt(pos));
+    if(!index.isValid()) return;
+
+    MenuStack stack(_fsModel->customContextMenuRequested(index), "Asset");
+
+    stack.insertAction("Open",
+        [=](bool) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(_fsModel->filePath(index)));
+        });
+
+    stack.execDeleteLater(_ui->treeView->mapToGlobal(pos));
 }
 
 
@@ -158,8 +166,6 @@ Qt::DropActions AssetFileSystemModel::supportedDropActions(void) const {
 
 QVariant AssetFileSystemModel::data(const QModelIndex &index, int role) const {
     QString path = filePath(index);
-
-    //qDebug() << "ASSET LOOKUP" << path;
 
     if(!path.isNull()) {
         auto data = _customData.find(path);

@@ -13,6 +13,7 @@
 #include <crtp/elysian_gui_system.hpp>
 #include <crtp/elysian_sprite_attrib.hpp>
 #include <gyro_input_api.h>
+#include <gui/elysian_item_delegate.hpp>
 
 namespace ElysianShadows {
 
@@ -84,6 +85,48 @@ PauseMenu::PauseMenu(void):
     e->getRenderable()->setSpriteAttrib(attr);
     testWidget->setEntity(e);
 
+    //MenuWidget synchronicity
+    //1) virualize item count (return from total count)
+    //2) virtualize current item change  (sync curItemIndex=>_topLeftIndex)
+
+    LuaArrayModel* luaModel = new LuaArrayModel(LuaVariant::fromArray({
+                "Test1",
+                "Bitch",
+                "Wench",
+                "Franz Ferdinand",
+                  "Test2",
+                  "Bitch",
+                  "Wench",
+                  "Franz Ferdinand",
+                  "Test3",
+                  "Bitch",
+                  "Wench",
+                  "Franz Ferdinand",
+                  "Test4",
+                  "Bitch",
+                  "Wench",
+                  "Franz Ferdinand",
+                  "Test5",
+                  "Bitch",
+                  "Wench",
+                  "Franz Ferdinand",
+                  "Franz Ferdinand",
+                  "Test4",
+                  "Bitch",
+                  "Wench",
+                  "Franz Ferdinand",
+                  "Test5",
+                  "Bitch",
+                  "Wench",
+                  "Franz Ferdinand"
+        }));
+
+    MenuItemView* menu = new MenuItemView(luaModel, new DefaultItemDelegate(luaModel));
+    menu->setLayout(new VerticalLayout);
+    _mainFrameWidgets[1] = menu;
+    //_optionsGroupWidget->getLayout<VerticalLayout>()->insertWidget(0, menu);
+
+    //===== END TEMP FUCKERY =====
 }
 
 PauseMenu::~PauseMenu(void) {

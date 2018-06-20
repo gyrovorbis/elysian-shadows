@@ -254,7 +254,7 @@ namespace elysian {
         const LuaVariantBase&       getVariant(void) const;
         const LuaVariantBase&       getCachedVariant(void) const;
         void                        setCachedVariant(const LuaVariantBase& variant);
-        void                        setVariant(const LuaVariantBase& variant);
+        bool                        setVariant(const LuaVariantBase& variant);
         const LuaVariantBase&       getKey(void) const;
         void                        setKey(const LuaVariantBase& key);
         const LuaVariantBase&       getTableRef(void) const;
@@ -433,7 +433,7 @@ public:
         return _cachedValue;
     }
 
-    inline void LuaFieldRef::setVariant(const LuaVariantBase& variant) {
+    inline bool LuaFieldRef::setVariant(const LuaVariantBase& variant) {
         bool success = true;
         success &= _tableRef.push();
         success &= _key.push();
@@ -441,6 +441,7 @@ public:
         GY_ASSERT(success);
         lua_settable(*_mainState, -3);
         lua_pop(*_mainState, 1);
+        return success;
     }
 
 

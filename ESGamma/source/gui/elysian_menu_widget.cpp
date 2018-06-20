@@ -5,6 +5,7 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_layout_proxy.hpp>
 #include <proxy/elysian_widget_proxy.hpp>
+#include <gui/elysian_item_delegate.hpp>
 
 namespace elysian {
 
@@ -197,6 +198,35 @@ int MenuWidget::getCurrentIndex(void) const {
     const auto axis = _layout->getGroupingAxis();
     return _currentIndex[axis];
 }
+
+
+//=========== MENUITEMVIEW =============
+void MenuItemView::update(void) {
+    MenuWidget::update();
+
+    _layout->clearWidgets();
+
+    _bottomRightItem = _topLeftItem;
+    for(int a = X; a < AXIS_COUNT; ++a) {
+        float requiredSize = 0;
+
+        if(getModel()->getAxisCount((AXIS)a)) do {
+            requiredSize += getDelegate()->getDisplayWidget(_bottomRightItem)->getSize((AXIS)a);
+
+            if(requiredSize > getSize((AXIS)a) + getMaximizeDelta((AXIS)a)) break;
+            ++_bottomRightItem.indices[a];
+        } while(_bottomRightItem.getAxisIndex((AXIS)a) < getModel()->getAxisCount((AXIS)a));
+
+        --_bottomRightItem.indices[a];
+    }
+
+    for(unsigned r = _topLeftItem.getRow(); r <= _bottomRightItem.getRow(); ++r) {
+        for(unsigned c = _topLeftItem.getCol(); c <= _bottomRightItem.getCol(); ++c) {
+            _layout->insertWidget(r - _topLeftItem.getRow(), c - _topLeftItem.getCol(), _delegate->getDisplayWidget(ItemModelIndex(r, c)));
+        }
+    }
+}
+
 
 
 }

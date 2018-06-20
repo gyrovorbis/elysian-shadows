@@ -19,6 +19,7 @@ private:
 public:
                 MenuStack(void) = default;
                 MenuStack(const QString name);
+                MenuStack(QMenu* topLevelMenu, QString name="");
                 ~MenuStack(void);
 
     QAction*    insertAction(const QString text, const std::function<void(bool)>& callback, const bool enabled=true);

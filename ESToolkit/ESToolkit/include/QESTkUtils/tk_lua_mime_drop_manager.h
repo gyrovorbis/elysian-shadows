@@ -5,7 +5,7 @@
 #include <crtp/elysian_lua_variant.hpp>
 #include <QMap>
 
-
+//Pretty sure this whole fucking thing is pointless and should've been implemented the same way LocalFileSubHandlers were as part of the main MimeDropManager... goddamnit.
 class LuaMimeDropManager: public MimeDropManager {
 public:
     using   LuaDropCbType            = std::function<bool(LuaVariant, Qt::DropAction, QDropEvent*, int, int, const QModelIndex&)>;

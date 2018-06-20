@@ -3,6 +3,10 @@
 
 MenuStack::MenuStack(const QString name) { _stack.push_back(new QMenu(name)); }
 
+MenuStack::MenuStack(QMenu *topLevelMenu, QString name) {
+    _stack.push_back(topLevelMenu? topLevelMenu : new QMenu(name));
+}
+
 MenuStack::~MenuStack(void) {
     if(_ownsStack) {
         delete first();

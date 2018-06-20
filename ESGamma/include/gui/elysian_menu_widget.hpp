@@ -5,6 +5,7 @@
 #include <utility/elysian_associative_aggregate_array.hpp>
 #include <utility/elysian_cpp_lua_callback.hpp>
 #include <system/elysian_event_system.hpp>
+#include <gui/elysian_item_model.hpp>
 
 #define ELYSIAN_MENU_WIDGET_INPUT_INDEX 0 //holy fuck, fix me!!!
 #define ELYSIAN_MENU_WIDGET_SCROLL_BUTTON_HELD_START_TIME 1.0f//scroll fast after holding dpad for one sec?
@@ -21,6 +22,8 @@
 #define ELYSIAN_MENU_WIDGET_FLAGS_DEFAULT (ELYSIAN_MENU_WIDGET_FLAGS_SELECTABLE/* | ELYSIAN_MENU_WIDGET_FLAGS_SCROLL_WRAP*/)
 
 namespace elysian {
+
+    class ItemDelegate;
 
     class MenuWidgetOptionDelegate {
         virtual void renderOptionWidget(Widget* option, bool selected, bool current) = 0;
@@ -121,6 +124,33 @@ namespace elysian {
 
     };
 
+    class MenuItemView: public MenuWidget {
+    private:
+        ItemModel*      _model              = nullptr;
+        ItemDelegate*   _delegate           = nullptr; //use builtin delegate as default instead of nullptr later
+        ItemModelIndex  _topLeftItem        = ItemModelIndex(0, 0);
+        ItemModelIndex  _bottomRightItem    = ItemModelIndex(0, 0);
+
+    public:
+                        MenuItemView(ItemModel* model=nullptr, ItemDelegate* delegate=nullptr);
+    virtual             ~MenuItemView(void) override;
+
+    ItemModel*          getModel(void) const;
+    void                setModel(ItemModel* model);
+    ItemDelegate*       getDelegate(void) const;
+    void                setDelegate(ItemDelegate* delegate);
+    ItemModelIndex      getCurrentItemIndex(void) const;
+    void                setCurrentItemIndex(const ItemModelIndex& index);
+    unsigned            getVisibleRowCount(void) const;
+    unsigned            getVisibleColCount(void) const;
+    ItemModelIndex      getTopLeftModelIndex(void) const;
+    ItemModelIndex      getBottomRightModelIndex(void) const;
+
+    //Widget overrides
+    virtual void        update(void) override;
+
+
+    };
 
 
 
@@ -178,6 +208,23 @@ inline void MenuWidget::setCancelCb(CancelCb) {
     //_cancelCb = cb;
 }
 
+//===== MenuItemView ======
+inline MenuItemView::MenuItemView(ItemModel* model, ItemDelegate* delegate):
+    _model(model),
+    _delegate(delegate) {}
+
+inline MenuItemView::~MenuItemView(void) {
+    delete _model;
+    delete _delegate;
+}
+
+inline ItemDelegate* MenuItemView::getDelegate(void) const {
+    return _delegate;
+}
+
+inline ItemModel* MenuItemView::getModel(void) const {
+    return _model;
+}
 
 }
 

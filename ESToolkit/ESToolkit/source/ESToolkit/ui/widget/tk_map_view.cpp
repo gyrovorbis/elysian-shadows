@@ -763,134 +763,117 @@ void MapView::_registerDropEventCallbacks(void) {
         return entity;
     };
 
-    _mimeDropManager = new MimeDropManager(QVector<MimeDropManager::Handler> {
-       {
-            TkMimeData::TYPE_LUA_VARIANT,
-            [=](const QMimeData* data, Qt::DropAction, QDropEvent* event, int, int, const QModelIndex&) {
-                DbgEvent dbg("[MapView] Drop Event: Instantiating from Entity Prefab.");
-                auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
-                Entity* prefabEntity = tkMimeData->getVariant().getValue<Entity*>();
+    _mimeDropManager = new MimeDropManager({
+    {
+        TkMimeData::TYPE_LUA_VARIANT,
+        [=](const QMimeData* data, Qt::DropAction, QDropEvent* event, int, int, const QModelIndex&) {
+            DbgEvent dbg("[MapView] Drop Event: Instantiating from Entity Prefab.");
+            auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
+            Entity* prefabEntity = tkMimeData->getVariant().getValue<Entity*>();
 
-                if(!prefabEntity) {
-                    errprintf("[MapView]: Could not instantiate [%s] type prefab!", tkMimeData->getVariant().getTypeString());
-                    return false;
-                }
-
-                Entity* entity = new Entity(prefabEntity);
-                QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
-
-                elysian::TileEntry tileEntries[ELYSIAN_AREA_MAP_LAYERS];
-               int index = -1;
-               int highestElev = 0;
-               for(unsigned i = 0; i < ELYSIAN_AREA_MAP_LAYERS; ++i) {
-                   tileEntries[i] = getAssets()->getCurrentArea()->getTileEntry(QPoint(scenePos.x()/32, scenePos.y()/32), (Assets::LAYER_TYPE)i);
-                   if(tileEntries[i].getElev() > 0 && getAssets()->getCurrentLevel()->getTile(tileEntries[i].getIndex())->getStandOn()) {
-                        index = i;
-                        highestElev = tileEntries[i].getElev();
-                   }
-               }
-
-                if(!entity) {
-                   errprintf("Failed: Prefab constructor returned NULL!");
-                   return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
-               }
-                entity->getTransform().setPosX(scenePos.x());
-                entity->getTransform().setPosY(scenePos.y()+highestElev*32);
-                entity->setElev(highestElev);
-                entity->setSaveFlag(true);
-
-                getAssets()->getCurrentArea()->addEntity(entity);
-                dbgprintf("Success: Adding Entity [%s] to area.", entity->getName());
-
-                return true;
-            },
-           [=](const QMimeData* data, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&) {
-               auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
-                return (tkMimeData->isPrefab() && QString(tkMimeData->getVariant().getTypeString()) == QString("Entity"));
-           }
-
-       }, {
-            MimeDropManager::TYPE_URLS,
-            [=](const QMimeData* data, Qt::DropAction /*action*/, QDropEvent* event, int, int, const QModelIndex&) {
-                for(auto&& url : data->urls()) {
-                    if(url.isLocalFile()) {
-                        QString path = url.toLocalFile();
-                        QFileInfo info(path);
-                        if(info.suffix().toLower() == "png") {
-                            DbgEvent dbg("Drop Event: Instantiating Entity from image file [%s].", Q_CSTR(path));
-                            auto* entity = createBasicEntity(info.fileName(), event);
-                            Renderable* render = entity->addRenderable();
-                            auto attrib = std::make_shared<SpriteAttrib>();
-                            attrib->setTexPath(Q_CSTR(FileUtilities::getAssetRelativePath(path)));
-                            GYTexture* tex = attrib->getTexture();
-                            render->setSpriteAttrib(attrib);
-
-                            if(tex) {
-                                dbgprintf("SUCCESS: Adding Entity [%s] to area.", entity->getName());
-                                entity->getTransform().setSize(tex->width, tex->height, tex->height);
-                            } else {
-                                errprintf("FAILURE! SpriteAttrib.texture is NULL!");
-                            }
-
-                            getAssets()->getCurrentArea()->addEntity(entity);
-
-                        } else if(info.suffix().toLower() == "json" || info.suffix().toLower() == "atlas") {
-                            DbgEvent dbg("Drop Event: Instantiating Entity from JSON/Atlas file [%s].", Q_CSTR(path));
-                            QString jsonPath    = path.split(".")[0] + QString(".json");
-                            QString atlasPath   = path.split(".")[0] + QString(".atlas");
-                            bool    jsonLoaded  = false;
-                            bool    atlasLoaded = false;
-
-                            auto* entity = createBasicEntity(info.fileName(), event);
-                            Skeleton* skeleton = entity->addSkeleton();
-                            auto attrib = std::make_shared<SkeletonAttrib>();
-
-                            if(QFile::exists(jsonPath)) {
-                               dbgprintf("Loading .json file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
-                               attrib->setJsonPath(Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
-                               jsonLoaded = true;
-                            } else {
-                               warnprintf("No .json file found! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
-                            }
-
-                            if(QFile::exists(atlasPath)) {
-                                dbgprintf("Loading .atlas file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
-                                attrib->setAtlasPath(Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
-                                atlasLoaded = true;
-                            } else {
-                                warnprintf("No .atlas file found! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
-                            }
-
-                            skeleton->setAttrib(attrib);
-                            getAssets()->getCurrentArea()->addEntity(entity);
-
-                            if(jsonLoaded && !attrib->isJsonValid()) {
-                                errprintf("JSON file was invalid!");
-                            }
-                            if(atlasLoaded && !attrib->isAtlasValid()) {
-                               errprintf("Atlas file was invalid!");
-                            }
-
-                        }
-                    }
-                }
-                return true;
-            },
-            [=](const QMimeData* data, Qt::DropAction /*action*/, QDragEnterEvent*, int, int, const QModelIndex&) {
-                if(data->hasUrls()) {
-                    for(auto&& url : data->urls()) {
-                       if(url.isLocalFile()) {
-                           QFileInfo info(url.toLocalFile());
-                           QString ext = info.suffix().toLower();
-                           if(ext == "png" || ext == "json" || ext == "atlas") {
-                               return true;
-                           }
-                       }
-                    }
-                }
+            if(!prefabEntity) {
+                errprintf("[MapView]: Could not instantiate [%s] type prefab!", tkMimeData->getVariant().getTypeString());
                 return false;
             }
+
+            Entity* entity = new Entity(prefabEntity);
+            QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
+
+            elysian::TileEntry tileEntries[ELYSIAN_AREA_MAP_LAYERS];
+           int index = -1;
+           int highestElev = 0;
+           for(unsigned i = 0; i < ELYSIAN_AREA_MAP_LAYERS; ++i) {
+               tileEntries[i] = getAssets()->getCurrentArea()->getTileEntry(QPoint(scenePos.x()/32, scenePos.y()/32), (Assets::LAYER_TYPE)i);
+               if(tileEntries[i].getElev() > 0 && getAssets()->getCurrentLevel()->getTile(tileEntries[i].getIndex())->getStandOn()) {
+                    index = i;
+                    highestElev = tileEntries[i].getElev();
+               }
+           }
+
+            if(!entity) {
+               errprintf("Failed: Prefab constructor returned NULL!");
+               return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
+           }
+            entity->getTransform().setPosX(scenePos.x());
+            entity->getTransform().setPosY(scenePos.y()+highestElev*32);
+            entity->setElev(highestElev);
+            entity->setSaveFlag(true);
+
+            getAssets()->getCurrentArea()->addEntity(entity);
+            dbgprintf("Success: Adding Entity [%s] to area.", entity->getName());
+
+            return true;
+        },
+       [=](const QMimeData* data, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&) {
+           auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
+            return (tkMimeData->isPrefab() && QString(tkMimeData->getVariant().getTypeString()) == QString("Entity"));
        }
+
+   },
+       MimeDropManager::createLocalFileHandler({
+        {
+            { "png" },
+            [=](QString path, Qt::DropAction /*action*/, QDropEvent* event, int, int, const QModelIndex&) {
+                DbgEvent dbg("Drop Event: Instantiating Entity from image file [%s].", Q_CSTR(path));
+                auto* entity = createBasicEntity(path, event);
+                Renderable* render = entity->addRenderable();
+                auto attrib = std::make_shared<SpriteAttrib>();
+                attrib->setTexPath(Q_CSTR(FileUtilities::getAssetRelativePath(path)));
+                GYTexture* tex = attrib->getTexture();
+                render->setSpriteAttrib(attrib);
+
+                if(tex) {
+                    dbgprintf("SUCCESS: Adding Entity [%s] to area.", entity->getName());
+                    entity->getTransform().setSize(tex->width, tex->height, tex->height);
+                } else {
+                    errprintf("FAILURE! SpriteAttrib.texture is NULL!");
+                }
+
+                getAssets()->getCurrentArea()->addEntity(entity);
+                return true;
+            }
+        },{
+            { "json", "atlas" },
+            [=](QString path, Qt::DropAction /*action*/, QDropEvent* event, int, int, const QModelIndex&) {
+               DbgEvent dbg("Drop Event: Instantiating Entity from JSON/Atlas file [%s].", Q_CSTR(path));
+               QString jsonPath    = path.split(".")[0] + QString(".json");
+               QString atlasPath   = path.split(".")[0] + QString(".atlas");
+               bool    jsonLoaded  = false;
+               bool    atlasLoaded = false;
+
+               QFileInfo info(path);
+               auto* entity = createBasicEntity(info.fileName(), event);
+               Skeleton* skeleton = entity->addSkeleton();
+               auto attrib = std::make_shared<SkeletonAttrib>();
+
+               if(QFile::exists(jsonPath)) {
+                  dbgprintf("Loading .json file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
+                  attrib->setJsonPath(Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
+                  jsonLoaded = true;
+               } else {
+                  warnprintf("No .json file found! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(jsonPath)));
+               }
+
+               if(QFile::exists(atlasPath)) {
+                   dbgprintf("Loading .atlas file! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
+                   attrib->setAtlasPath(Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
+                   atlasLoaded = true;
+               } else {
+                   warnprintf("No .atlas file found! [%s]", Q_CSTR(FileUtilities::getAssetRelativePath(atlasPath)));
+               }
+
+               skeleton->setAttrib(attrib);
+               getAssets()->getCurrentArea()->addEntity(entity);
+
+               if(jsonLoaded && !attrib->isJsonValid()) {
+                   errprintf("JSON file was invalid!");
+               }
+               if(atlasLoaded && !attrib->isAtlasValid()) {
+                  errprintf("Atlas file was invalid!");
+               }
+               return true;
+            }
+        }})
    });
 
 }

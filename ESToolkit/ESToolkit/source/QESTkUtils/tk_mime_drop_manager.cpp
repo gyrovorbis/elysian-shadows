@@ -2,6 +2,50 @@
 #include <QESTkUtils/tk_mime_data.h>
 #include <QDropEvent>
 #include <QDragEnterEvent>
+#include <QFileInfo>
+
+MimeDropManager::Handler MimeDropManager::createLocalFileHandler(const QVector<LocalFileSubHandler>& subHandlers) {
+    return Handler({
+        MimeDropManager::TYPE_URLS,
+        [=](const QMimeData* data, Qt::DropAction action, QDropEvent* event, int row, int col, const QModelIndex& index) {
+            bool retVal = true;
+
+            for(auto&& url : data->urls()) {
+                if(url.isLocalFile()) {
+                    QString path = url.toLocalFile();
+                    QFileInfo info(path);
+
+                    for(auto&& fileHandler : subHandlers) {
+                        if(fileHandler.extensions.contains(info.suffix(), Qt::CaseInsensitive)) {
+                            if(fileHandler.dropActions & action) {
+                                retVal &= fileHandler.dropCallback(path, action, event, row, col, index);
+                            }
+                        }
+                    }
+                }
+            }
+            return retVal;
+        },
+       [=](const QMimeData* data, Qt::DropAction action, QDragEnterEvent* event, int row, int col, const QModelIndex& index) {
+           for(auto&& url : data->urls()) {
+               if(url.isLocalFile()) {
+                   QString path = url.toLocalFile();
+                   QFileInfo info(path);
+
+                   for(auto&& fileHandler : subHandlers) {
+                       if(fileHandler.extensions.contains(info.suffix(), Qt::CaseInsensitive)) {
+                            bool canDrop = true;
+                            if(fileHandler.canDropCallback) canDrop = fileHandler.canDropCallback(path, action, event, row, col, index);
+                            else return true;
+                            if(canDrop) return true;
+                       }
+                   }
+               }
+           }
+           return false;
+       }
+    });
+}
 
 MimeDropManager::MimeDropManager(QVector<Handler>&& handlers): _handlers(handlers) {}
 
@@ -42,7 +86,7 @@ template<typename F>
 bool MimeDropManager::_iterateHandlersForMimeData(const QMimeData* data, Qt::DropAction action, F&& f) {
     const auto& handleSingleMimeData = [&](const QMimeData* singleData) {
         for(auto&& handler: _handlers) {
-            if((handler.dropActions | action) && mimeDataHasType(handler.mimeType, singleData)) {
+            if((handler.dropActions & action) && mimeDataHasType(handler.mimeType, singleData)) {
                 if(f(handler, singleData))
                     return true;
             }

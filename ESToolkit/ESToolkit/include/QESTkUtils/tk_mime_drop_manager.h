@@ -35,6 +35,20 @@ public:
         Qt::DropActions dropActions     = Qt::ActionMask;
     };
 
+    struct LocalFileSubHandler {
+        using DropCbType       = std::function<bool(QString, Qt::DropAction, QDropEvent*, int, int, const QModelIndex&)>;
+        using CanDropCbType    = std::function<bool(QString, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&)>;
+
+                        LocalFileSubHandler(void) = default;
+                        LocalFileSubHandler(QStringList extList, DropCbType dropCb, CanDropCbType canDropCb=CanDropCbType(), Qt::DropActions=Qt::ActionMask);
+
+        QStringList     extensions;
+        DropCbType      dropCallback;
+        CanDropCbType   canDropCallback = CanDropCbType();
+        Qt::DropActions dropActions     = Qt::ActionMask;
+    };
+
+
                         MimeDropManager(void) = default;
                         MimeDropManager(QVector<Handler>&& handlers);
                         MimeDropManager(QVector<Handler>& handlers);
@@ -52,6 +66,7 @@ public:
     bool                drop(QDropEvent* event);
 
     static bool         mimeDataHasType(int type, const QMimeData* data);
+    static Handler      createLocalFileHandler(const QVector<LocalFileSubHandler>& subHandlers);
 
 private:
 
@@ -74,6 +89,13 @@ inline void MimeDropManager::setMimeArraySupported(bool v) { _supportMimeArray =
 inline MimeDropManager::Handler::Handler(int type, DropCbType dropCb, CanDropCbType canDropCb, Qt::DropActions actions):
     mimeType(type), dropCallback(dropCb), canDropCallback(canDropCb), dropActions(actions)
 {}
+
+
+inline MimeDropManager::LocalFileSubHandler::LocalFileSubHandler(QStringList extList, DropCbType dropCb, CanDropCbType canDropCb, Qt::DropActions actions):
+    extensions(extList), dropCallback(dropCb), canDropCallback(canDropCb), dropActions(actions)
+{}
+
+
 
 
 
