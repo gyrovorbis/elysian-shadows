@@ -217,7 +217,7 @@ void MenuItemView::update(void) {
             ++_bottomRightItem.indices[a];
         } while(_bottomRightItem.getAxisIndex((AXIS)a) < getModel()->getAxisCount((AXIS)a));
 
-        --_bottomRightItem.indices[a];
+        if(_bottomRightItem.indices[a]) --_bottomRightItem.indices[a];
     }
 
     for(unsigned r = _topLeftItem.getRow(); r <= _bottomRightItem.getRow(); ++r) {
@@ -228,5 +228,20 @@ void MenuItemView::update(void) {
 }
 
 
+void MenuItemView::onCurrentChange(Widget* prev, Widget* next) {
+    if(_delegate) _delegate->onCurrentChanged(prev, next);
+}
+
+void MenuItemView::setCurrentIndex(int index) {
+    if(index < 0) {
+        if(_topLeftItem.getRow() > 0) _topLeftItem.indices[Y]--;
+         MenuWidget::setCurrentIndex(0);
+    } else if(index >= _layout->getWidgetCount()) {
+        if(_bottomRightItem.getRow() < _model->getRowCount() - 1) _topLeftItem.indices[Y]++;
+        MenuWidget::setCurrentIndex(_layout->getWidgetCount()-1);
+    } else {
+        MenuWidget::setCurrentIndex(index);
+    }
+}
 
 }

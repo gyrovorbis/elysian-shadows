@@ -17,7 +17,7 @@ struct LuaTableTableFieldData;
 
 //QStandardItem representing a Lua k,v pair
 class LuaTableFieldItem:
-    public PropertyStandardItem<QVariant, LuaTableFieldItem, true>,
+    public PropertyStandardItem<QVariant, LuaTableFieldItem, false>, //temporarily removing undo/redo until ownership reest is fixed.
     public elysian::LuaManager,
     public AssetManager
 {

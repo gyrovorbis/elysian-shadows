@@ -6,6 +6,7 @@
 #include <QIcon>
 #include <QDebug>
 #include <ESToolkit/core/tk_undo_item.h>
+#include <QESTkUtils/tk_lua_qt_utils.h>
 
 class QStyledItemDelegate;
 

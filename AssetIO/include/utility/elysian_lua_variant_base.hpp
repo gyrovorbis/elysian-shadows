@@ -6,6 +6,10 @@
 #include <cstdlib>
 #include <crtp/elysian_lua_manager.hpp>
 #include <utility/elysian_functional.hpp>
+#ifndef ELYSIAN_ENGINE
+#include <QVariant>
+#include <QESTkUtils/tk_lua_qt_utils.h>
+#endif
 
 #define ELYSIAN_LUA_VARIANT_DEBUG               ELYSIAN_LUA_DEBUG
 
@@ -255,6 +259,10 @@ namespace elysian {
         const LuaVariantBase&       getCachedVariant(void) const;
         void                        setCachedVariant(const LuaVariantBase& variant);
         bool                        setVariant(const LuaVariantBase& variant);
+#ifndef ELYSIAN_ENGINE
+        QVariant                    getQVariant(void) const;
+        void                        setQVariant(QVariant variant);
+#endif
         const LuaVariantBase&       getKey(void) const;
         void                        setKey(const LuaVariantBase& key);
         const LuaVariantBase&       getTableRef(void) const;
@@ -444,6 +452,20 @@ public:
         return success;
     }
 
+#ifndef ELYSIAN_ENGINE
+    inline QVariant LuaFieldRef::getQVariant(void) const {
+        QVariant v;
+        push(getVariant());
+        OOLUA::pull(*_mainState, v);
+        return v;
+    }
+    inline void LuaFieldRef::setQVariant(QVariant variant) {
+        if(OOLUA::push(*_mainState, variant)) {
+            setVariant(LuaVariant::fromStack());
+        }
+    }
+
+#endif
 
     inline LuaFieldRef LuaFieldRef::operator[](const LuaVariantBase& key) const {
         //forward through the variant's index operator

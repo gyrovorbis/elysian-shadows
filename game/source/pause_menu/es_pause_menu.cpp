@@ -48,8 +48,9 @@ PauseMenu::PauseMenu(void):
     _mainFrameWidgets[MAIN_MENU_OPTION_PARTY] = _partyMenu;
 
     Entity* entity = new Entity;
-    entity->getTransform().setSize(600, 440, 0);
-    setSizePolicy(Widget::PREFERRED, Widget::PREFERRED);
+    entity->getTransform().setSize(600, 500, 0);
+    setSizeHint(Vector2(600, 500));
+    setSizePolicy(Widget::MAXIMUM, Widget::MAXIMUM);
     //entity->getTransform().setPos(400, 400);
     Renderable* renderable = entity->addRenderable();
     auto attrib = std::make_shared<SpriteAttrib>();
@@ -123,6 +124,8 @@ PauseMenu::PauseMenu(void):
 
     MenuItemView* menu = new MenuItemView(luaModel, new DefaultItemDelegate(luaModel));
     menu->setLayout(new VerticalLayout);
+    //menu->setMaxSize(Vector2(600, 440));
+   // menu->setMaxSize(Vector2(750, 600));
     _mainFrameWidgets[1] = menu;
     //_optionsGroupWidget->getLayout<VerticalLayout>()->insertWidget(0, menu);
 

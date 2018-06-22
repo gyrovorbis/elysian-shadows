@@ -131,11 +131,11 @@ namespace elysian {
         float maxDelta = 0.0f;
         uint16_t policy = getSizePolicy(axis);
 
-        if(policy & (growFlag | expandFlag)) {
+        if((policy & (growFlag | expandFlag)) || policy == MAXIMUM) {
             maxDelta = getMaxSize(axis) - getSize(axis);
             if(maxDelta > 0.0f) {
                 if(_parentLayout) {
-                    const float parentDelta = _parentLayout->getParent()->getMaximizeDelta(axis);
+                    const float parentDelta = _parentLayout->getMaximizeDelta((TableLayout::AXIS)axis);
                     if(parentDelta < maxDelta) maxDelta = parentDelta;
                 }
             }

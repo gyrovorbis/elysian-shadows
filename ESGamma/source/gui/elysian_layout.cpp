@@ -244,6 +244,36 @@ namespace elysian {
 
     }
 
+    float TableLayout::getWidgetsSize(AXIS axis) const {
+        auto toRow = [&](unsigned i, unsigned j) {
+            return (axis == X)? j : i;
+        };
+        auto toCol = [&](unsigned i, unsigned j) {
+            return (axis == X)? i : j;
+        };
+        int primarySize = getDimensionSize(axis);
+        int secondarySize = getDimensionSize(getSecondaryAxis(axis));
+        float largestSize = 0.0f;
+
+        //Find sizing properties for each row/column and accumulate total sizes
+        for(unsigned i = 0; i < primarySize; ++i) {
+            for(unsigned j = 0; j < secondarySize; ++j) {
+                Widget* w = getWidget(toRow(i, j), toCol(i, j));
+                if(!w) continue;
+                float size =  w->getSize((Widget::AXIS)axis);
+                if(size > largestSize) largestSize = size;
+            }
+        }
+        return largestSize;
+    }
+
+    float TableLayout::getMaximizeDelta(AXIS axis) const {
+        float widgetsSize = getWidgetsSize(axis);
+        float delta = _parent->getSize((Widget::AXIS)axis) - widgetsSize;
+        return delta + _parent->getMaximizeDelta((Widget::AXIS)axis);
+    }
+
+
 
     SingleAxisLayout::SingleAxisLayout(AXIS groupingAxis, const std::vector<Widget*>& widgets, Widget* parent):
         TableLayout(groupingAxis, parent)

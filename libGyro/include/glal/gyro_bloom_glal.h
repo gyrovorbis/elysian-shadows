@@ -18,6 +18,7 @@ extern "C" {
 
 int glalVidInitializeBloom(void);
 int glalVidUninitializeBloom(void);
+int gyVidBloomResizeFramebuffer(unsigned width, unsigned height);
 
 
 #ifdef __cplusplus

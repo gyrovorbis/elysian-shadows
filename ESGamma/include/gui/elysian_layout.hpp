@@ -98,6 +98,9 @@ namespace elysian {
         void        touchEvent(const TouchDevice& touch);
         void        virtualDPadEvent(const VirtualDPad& dpad);
 
+        float       getMaximizeDelta(AXIS axis) const;
+        float       getWidgetsSize(AXIS axis) const;
+
         static AXIS getSecondaryAxis(AXIS primary);
     };
 

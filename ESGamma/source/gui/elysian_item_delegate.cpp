@@ -32,5 +32,10 @@ namespace elysian {
         return _model->isValidIndex(index)? _findOrCreateWidget(index)->getSize((Widget::AXIS)axis) : 0;
     }
 
+    void DefaultItemDelegate::onCurrentChanged(Widget* prev, Widget* next) const {
+        if(prev) static_cast<LabelWidget*>(prev)->setColor(Color4::white);
+        if(next) static_cast<LabelWidget*>(next)->setColor(Color4::aqua);
+    }
+
 
 }

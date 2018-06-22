@@ -19,6 +19,7 @@ namespace elysian {
         virtual void        deactivate(void) = 0;
         virtual Widget*     getDisplayWidget(const ItemModelIndex& index) const = 0;
         virtual unsigned    sizeHint(const ItemModelIndex& index, int axis) const = 0;
+        virtual void        onCurrentChanged(Widget* prev, Widget* next) const = 0;
 
     };
 
@@ -40,6 +41,7 @@ namespace elysian {
         virtual Widget*     getDisplayWidget(const ItemModelIndex &index) const override;
         virtual unsigned    sizeHint(const ItemModelIndex&, int axis) const override;
         virtual void        deactivate(void) override;
+        virtual void        onCurrentChanged(Widget* prev, Widget* next) const override;
 
     };
 

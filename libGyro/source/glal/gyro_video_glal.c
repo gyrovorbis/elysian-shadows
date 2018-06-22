@@ -390,6 +390,7 @@ int glalVidViewportResize(const int initialization, const int viewWidth, const i
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _glalGlowTex, 0);
+    gyVidBloomResizeFramebuffer(viewWidth, viewHeight);
 
     //Set both color attachments as draw buffers for the FBO
     uint32_t buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };

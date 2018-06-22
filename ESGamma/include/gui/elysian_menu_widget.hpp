@@ -101,7 +101,7 @@ namespace elysian {
 
         Widget*         getCurrentWidget(void) const;
         void            setCurrentWidget(Widget* selection);
-        void            setCurrentIndex(int index);
+        virtual void    setCurrentIndex(int index);
         int             getCurrentIndex(void) const;
 
         auto            getSelection(void) -> const MenuSelection*;
@@ -148,6 +148,8 @@ namespace elysian {
 
     //Widget overrides
     virtual void        update(void) override;
+    virtual void        onCurrentChange(Widget* prev, Widget* next) override;
+    virtual void        setCurrentIndex(int index) override;
 
 
     };
