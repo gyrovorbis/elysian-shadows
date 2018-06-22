@@ -43,6 +43,25 @@ static GLuint               _bloomVbo;
 static int                  _bloomInitialized = 0;
 
 
+int gyVidBloomResizeFramebuffer(unsigned width, unsigned height) {
+    GLuint textures[3] = {
+        _bloomBuffTex,
+        _horizontalConvTex,
+        _finalConvTex
+    };
+
+    for(unsigned i = 0; i < 3; ++i) {
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GYRO_GLAL_BLOOM_TEXTURE_WRAP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GYRO_GLAL_BLOOM_TEXTURE_WRAP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width/2, height/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    }
+
+    return 1;
+}
+
 int glalVidInitializeBloom(void) {
     int success = 1;
     //Vertex data for a full-screen quad.
@@ -95,21 +114,6 @@ int glalVidInitializeBloom(void) {
         _gyLog(GY_DEBUG_ERROR, "Error creating FBOs and texture targets.");
         _gyPop(1);
         return 0;
-    }
-
-    GLuint textures[3] = {
-        _bloomBuffTex,
-        _horizontalConvTex,
-        _finalConvTex
-    };
-
-    for(unsigned i = 0; i < 3; ++i) {
-        glBindTexture(GL_TEXTURE_2D, textures[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GYRO_GLAL_BLOOM_TEXTURE_WRAP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GYRO_GLAL_BLOOM_TEXTURE_WRAP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, GYRO_GLAL_BLOOM_TEXTURE_WIDTH, GYRO_GLAL_BLOOM_TEXTURE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     }
 
     _gyLog(GY_DEBUG_VERBOSE, "Loading Bloom shaders.");
@@ -225,7 +229,7 @@ void gyVidApplyBloom(void) {
                            GL_TEXTURE_2D,
                            _horizontalConvTex,
                            0);
-    glViewport(0, 0, (float)GYRO_GLAL_BLOOM_TEXTURE_WIDTH, (float)GYRO_GLAL_BLOOM_TEXTURE_HEIGHT);
+    glViewport(0, 0, scrWidth/2, scrHeight/2);
     glClear(GL_COLOR_BUFFER_BIT);
     //GLenum attachments[1] = { GL_COLOR_ATTACHMENT0 };
     //glDrawBuffers(1, attachments);
