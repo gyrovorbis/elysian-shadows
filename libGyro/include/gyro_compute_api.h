@@ -190,6 +190,11 @@ typedef struct GYComputeDebugInfo {
 
 #endif
 
+typedef struct GYComputeEvent {
+
+} GYComputeEvent;
+
+
 int                             gyComputeInit(const GYComputeInitParams* params);
 int                             gyComputeUninit(void);
 int                             gyComputeQueryInfo(void);
