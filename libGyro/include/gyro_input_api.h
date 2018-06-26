@@ -108,6 +108,7 @@ typedef struct GYController {
 
 int         gyInputInit(const struct GYInputInitParams*const params);
 int         gyInputUninit(void);
+int         gyInputPollEvents(void);
 
 int         gyControllerPoll(const unsigned slot, struct GYController** const input);
 int         gyKeyboardPoll(struct GYKeyboard** const keybd);

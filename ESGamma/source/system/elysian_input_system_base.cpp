@@ -5,13 +5,15 @@
 
 namespace elysian {
 
-KeyboardEventObserver::KeyboardEventObserver(void) {
+KeyboardEventObserver::KeyboardEventObserver(unsigned playerIndex):
+    _playerIndex(playerIndex)
+{
     System::getEventSys()->addEventObserver(this, EVENT_KEYBOARD_KEY);
 }
 
 void KeyboardEventObserver::onObserveEvent(Event* event, EventTarget* target) {
     if(!target && event->getEventType() == EVENT_KEYBOARD_KEY) {
-        onKeyboardEvent(*System::getInputSys()->getKeyboard());
+        onKeyboardEvent(*System::getInputSys()->getKeyboard(_playerIndex));
     }
 }
 
@@ -233,18 +235,22 @@ void InputSystemBase::_onControllerRemoved(const unsigned slot) {
 
 void InputSystemBase::_onMouseAttached(void) {
     dbgprintf("InputSystem: Mouse Attached!");
+    getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_MOUSE_ATTACHED, 0, InputDeviceEvent::ATTACHED));
 }
 
 void InputSystemBase::_onMouseRemoved(void) {
     dbgprintf("InputSystem: Mouse Removed!");
+    getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_MOUSE_REMOVED, 0, InputDeviceEvent::REMOVED));
 }
 
 void InputSystemBase::_onKeyboardAttached(void) {
     dbgprintf("InputSystem: Keyboard Attached!");
+    getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_KEYBOARD_ATTACHED, 0, InputDeviceEvent::ATTACHED));
 }
 
 void InputSystemBase::_onKeyboardRemoved(void) {
     dbgprintf("InputSystem: Keyboard Removed!");
+    getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_KEYBOARD_REMOVED, 0, InputDeviceEvent::REMOVED));
 }
 
 void InputSystemBase::_onVMUAttached(unsigned slot) {
@@ -324,6 +330,9 @@ void InputSystemBase::dumpStats(void) {
 }
 
 void InputSystemBase::update(void) {
+    //Update all events
+    gyInputPollEvents();
+
     //Update Keyboard
     bool wasAttached   = _keyboard.isAttached();
     bool isAttached    = _keyboard.pollInput();

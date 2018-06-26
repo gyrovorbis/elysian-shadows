@@ -13,6 +13,10 @@
 #define ELYSIAN_PARTY_SLOTS_MAX                         5
 #define ELYSIAN_PARTY_GUEST_SLOTS_MAX                   10
 
+#define ELYSIAN_PARTY_SYSTEM_PLAYER_JOIN_SFX          "/assets/audio/XXX"
+#define ELYSIAN_PARTY_SYSTEM_PLAYER_QUIT_SFX          "/assets/audio/XXX"
+#define ELYSIAN_PARTY_SYSTEM_PLAYER_SLOT_SWAP_SFX     "/assets/audio/XXX"
+
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 /* Needs the concept of active vs inactive party members
@@ -27,6 +31,10 @@ namespace elysian {
 
     class Controller;
     class PartySystem;
+
+    namespace game {
+        class PlayableBehavior;
+    }
 
     class Player {
     private:
@@ -68,19 +76,43 @@ namespace elysian {
 
 
     class PartySystem: public System, public EventObserver {
+    public:
+        static const int UnassignedPlayerIndex  = -1;
+        static const int InvalidPlayerIndex     = -2;
     private:
 
         struct PartyMember {
-            Entity* entity;
+            Entity* entity          = nullptr;
             bool    active          = true;
             bool    followLogic      = true;
-            PartyMember(Entity* e): entity(e), active(true), followLogic(true) {}
+            int     playerIndex     = UnassignedPlayerIndex;
+            game::PlayableBehavior* playable  = nullptr;
+            PartyMember(Entity* e);
              operator Entity*() const { return entity; }
             bool operator ==(const Entity* e) const { return e == entity; }
             Entity* operator->() const { return entity; }
+            void setPlayerIndex(int index);
         };
 
-        Player _players[ELYSIAN_PARTY_SLOTS_MAX];
+        Player  _players[ELYSIAN_PARTY_SLOTS_MAX];
+
+        int     _unassignedPlayerIndices[ELYSIAN_PARTY_SLOTS_MAX]   = { UnassignedPlayerIndex };
+        int     _partySlotFromPlayerIndex[ELYSIAN_PARTY_SLOTS_MAX]  = { UnassignedPlayerIndex };
+
+        bool    addUnassignedPlayerIndex(int index);
+        bool    removeUnassignedPlayerIndex(int index);
+        bool    removePlayerIndex(int index); //controller disconnected, player totally gone
+        bool    assignPlayerIndex(int index);
+        bool    unassignPlayerIndex(int index); //remove player from party member, put back in unassigned state
+        int     getSlotFromPlayerIndex(int index) const;
+        bool    setPlayerIndexBySlot(int slot, int playerIndex);
+        void    swapPlayerIndexSlots(int playerIndex, int oldSlot, int newSlot);
+
+
+        void    pollUnassignedPlayers(void);
+        void    _processInputDeviceEvent(Event* event);
+        void    _checkDpadPartyMemberSwap(void);
+
 
 		unsigned int _activePlayablePartySize	= 3;
 //		unsigned int _characterPartySize		= 3;
@@ -164,6 +196,10 @@ namespace elysian {
         void setFollowLogicEnabled(bool val=true);
         void setSlotFollowLogicEnabled(const unsigned int slot, bool enabled=true);
         bool isSlotFollowLogicEnabled(const unsigned int slot) const;
+        void processInput(void);
+
+        int     getPlayerIndexFromSlot(int slot) const;
+        int     getPlayerIndexFromPartyMember(const Entity* entity) const;
 
 		
 		//bool SwapPlayablePartyMembersBySlot();
@@ -182,6 +218,9 @@ namespace elysian {
     inline bool PartySystem::isPartyMemberActive(unsigned slot) const { return (slot < getPartySize())? _characterParty[slot].active : false; }
     inline bool PartySystem::isSlotFollowLogicEnabled(const unsigned int slot) const { return (slot < getPartySize())? _characterParty[slot].followLogic : false; }
 
+    inline int PartySystem::getPlayerIndexFromPartyMember(const Entity* entity) const {
+        return getPlayerIndexFromSlot(getPartySlot(entity));
+    }
 
 
 

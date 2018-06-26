@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <utility/elysian_cpp_lua_callback.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 
@@ -52,6 +53,7 @@ namespace elysian {
         EVENT_WIDGET_MENU_CANCEL,
         EVENT_WIDGET_MENU_CURRENT,
         EVENT_WIDGET_MENU_SELECTION,
+        EVENT_PLAYER_INDEX_CHANGED,
         EVENT_LUA,
         EVENT_TYPE_COUNT,
         EVENT_TYPE_INVALID=EVENT_TYPE_COUNT
@@ -75,7 +77,7 @@ namespace elysian {
     using EventType = uint32_t;
 
 
-    class Event {
+    class Event: public LuaTableProxy<Event> {
     public:
                         Event(EventType type);
 
@@ -88,7 +90,7 @@ namespace elysian {
 
     };
 
-    class LuaEvent: public Event {
+    class LuaEvent: public Event, public LuaTableProxy<LuaEvent, LuaEvent, Event> {
         LuaVariant  _luaVariant;
     public:
                     LuaEvent(void);

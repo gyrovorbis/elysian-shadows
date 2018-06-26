@@ -5,13 +5,51 @@
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <utility/elysian_bit_mask.hpp>
+#include <queue>
 
 #define ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT      200.0f
 #define ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT    400.0f
 
 ELYSIAN_ASSET_TYPEDEF(ParticleEmitterAttrib)
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
+#if 0
+    class AggroManager: public LuaTableProxy<AggroManager> {
+    private:
+        struct EmnityTableEntry {
+            Entity*     entity;
+            unsigned    emnity;
+
+            bool operator<(const EmnityTableEntry& rhs) const;
+        };
+
+        std::priority_queue<EmnityTableEntry>   _emnityTable;
+        std::vector<Entity*>                    _aggroList;
+    public:
+
+        void        clear(void);
+
+        //Emnity Management
+        Entity*     getEntityAtEmnityPriority(unsigned index) const;
+        unsigned    getEntityEmnity(Entity* entity) const;              //0 if not in table, saves hasEntity() lua wrapper
+        void        addEntityEmnity(Entity* entity, int emnityDelta);
+        void        setEntityEmnity(Entity* entity, unsigned emnityVal); //0 removes it from the list, save helper Lua wrapper
+
+        unsigned    getEmnityTableSize(void) const;
+        void        getEmnityTableEntry(unsigned index, Entity*& entity, unsigned& emnity) const;
+
+        void        clearEmnityTable(void);
+
+        //Aggroed Entity Management
+        unsigned    getAggroedCount(void) const;
+        Entity*     getAggroedEntity(unsigned index) const;
+        void        addAggroedEntity(Entity* entity);
+        void        removeAggroedEntity(Entity* entity);
+        void        clearAggroedList(void);
+
+    };
+#endif
 
     class CombatStatusModifier;
 
@@ -271,6 +309,94 @@ namespace elysian {
         _dmgRecovering = true;
         _dmgRecoveryElapsed = 0.0f;
     }
+
+    //===== AGGROMANAGER INLINEZ ======
+#if 0
+    inline bool AggroManager::EmnityTableEntry::operator <(const EmnityTableEntry& rhs) const {
+        return emnity < rhs.emnity;
+    }
+
+    inline void AggroManager::clear(void) {
+        clearEmnityTable();
+        clearAggroedList();
+    }
+
+    //Aggro
+    inline unsigned AggroManager::getAggroedCount(void) const {
+        return _aggroList.size();
+    }
+
+    inline Entity* AggroManager::getAggroedEntity(unsigned index) const {
+        assert(index < _aggroList.size());
+        return _aggroList[index];
+    }
+
+    inline void AggroManager::addAggroedEntity(Entity *entity) {
+        _aggroList.push_back(entity);
+    }
+
+    inline void AggroManager::removeAggroedEntity(Entity *entity) {
+        for(auto it = _aggroList.begin(); it != _aggroList.end(); ++it) {
+            if((*it) == entity) {
+                _aggroList.erase(it);
+                return;
+            }
+        }
+    }
+
+    inline void AggroManager::clearAggroedList(void) {
+        _aggroList.clear();
+    }
+
+
+
+    inline Entity* AggroManager::getEntityAtEmnityPriority(unsigned index) const {
+        assert(index < _emnityTable.size());
+        return _emnityTable[index];
+    }
+
+    inline unsigned AggroManager::getEntityEmnity(Entity *entity) const {
+        assert(index < _emnityTable.size());
+        for(auto&& it : _emnityTable) {
+            if(it.entity == entity) return it.emnity;
+        }
+        return 0;
+    }
+
+    inline void AggroManager::addEntityEmnity(Entity *entity, int emnityDelta) {
+        for(auto& it : _emnityTable) {
+            if(it.entity == entity) {
+                it.emnity += emnityDelta;
+                return;
+            }
+        }
+        _emnityTable.emplace(entity, emnity);
+    }
+
+    inline void AggroManager::setEntityEmnity(Entity *entity, unsigned emnityVal) {
+        for(auto& it : _emnityTable) {
+            if(it.entity == entity) {
+                it.emnity = emnityDelta;
+                return;
+            }
+        }
+        _emnityTable.emplace(entity, emnity);
+    }
+
+    inline unsigned AggroManager::getEmnityTableSize(void) const {
+        return _emnityTable.size();
+    }
+
+    inline unsigned AggroManager::getEmnityTableSize(void) const {
+        return _emnityTable.size();
+    }
+
+    inline void AggroManager::getEmnityTableEntry(unsigned index, Entity *&entity, unsigned &emnity) const {
+        assert(index < _emnityTable.size());
+        entity = _emnityTable[index].entity;
+        emnity = _emnityTable[index].emnity;
+    }
+#endif
 
 }
 

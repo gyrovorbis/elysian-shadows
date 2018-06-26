@@ -20,6 +20,10 @@ typedef struct SDLController {
     SDL_JoystickID          sdlJoystickInstanceId;
     int                     deviceIndex;
     int                     port;
+    unsigned                al[GY_CONTROLLER_ANALOG_COUNT];
+    unsigned                ar[GY_CONTROLLER_ANALOG_COUNT];
+    unsigned                ad[GY_CONTROLLER_ANALOG_COUNT];
+    unsigned                au[GY_CONTROLLER_ANALOG_COUNT];
 } SDLController;
 
 extern GYInputInitParams   _initParams;
@@ -333,53 +337,59 @@ static void _sdlPollEvents(void) {
 
 }
 
-int gyControllerPoll(const unsigned slot, struct GYController** const input) {
-    GYVector2 analog = { 0.0f, 0.0f };
-    unsigned al[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
-    unsigned ar[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
-    unsigned ad[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
-    unsigned au[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
+int gyInputPollEvents(void) {
+    for(unsigned slot = 0; slot < _initParams.controllerCount; ++slot) {
+        GYVector2 analog = { 0.0f, 0.0f };
+        memset(_devices[slot].al, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
+        memset(_devices[slot].ar, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
+        memset(_devices[slot].ad, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
+        memset(_devices[slot].au, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
 
-    if(!_devices[slot].sdlJoystick) {
-        _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT]     = analog;
-        _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT]    = analog;
-    } else {
+        if(!_devices[slot].sdlJoystick) {
+            _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT]     = analog;
+            _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT]    = analog;
+        } else {
 
-        for(unsigned a = 0; a < GY_CONTROLLER_ANALOG_COUNT; ++a) {
-            if(_devices[slot].cont.analogSticks[a].x < -GYRO_INPUT_CONTROLLER_ANALOG_MIN)     al[a] = 1;
-            else if(_devices[slot].cont.analogSticks[a].x > GYRO_INPUT_CONTROLLER_ANALOG_MIN) ar[a] = 1;
-            if(_devices[slot].cont.analogSticks[a].y < -GYRO_INPUT_CONTROLLER_ANALOG_MIN)     au[a] = 1;
-            else if(_devices[slot].cont.analogSticks[a].y > GYRO_INPUT_CONTROLLER_ANALOG_MIN) ad[a] = 1;
+            for(unsigned a = 0; a < GY_CONTROLLER_ANALOG_COUNT; ++a) {
+                if(_devices[slot].cont.analogSticks[a].x < -GYRO_INPUT_CONTROLLER_ANALOG_MIN)     _devices[slot].al[a] = 1;
+                else if(_devices[slot].cont.analogSticks[a].x > GYRO_INPUT_CONTROLLER_ANALOG_MIN) _devices[slot].ar[a] = 1;
+                if(_devices[slot].cont.analogSticks[a].y < -GYRO_INPUT_CONTROLLER_ANALOG_MIN)     _devices[slot].au[a] = 1;
+                else if(_devices[slot].cont.analogSticks[a].y > GYRO_INPUT_CONTROLLER_ANALOG_MIN) _devices[slot].ad[a] = 1;
 
+            }
+        }
+
+        for(unsigned i = 0; i < GY_CONTROLLER_BUT_COUNT; ++i) {
+            int wasDown = (_devices[slot].cont.buttons[i] & GY_BUT_FLAGS_IS_PRESSED);
+            _devices[slot].cont.buttons[i] <<= 1;
+            _devices[slot].cont.buttons[i] |= wasDown;
+            _devices[slot].cont.buttons[i] &= 0x03;
         }
     }
 
-    for(unsigned i = 0; i < GY_CONTROLLER_BUT_COUNT; ++i) {
-        int wasDown = (_devices[slot].cont.buttons[i] & GY_BUT_FLAGS_IS_PRESSED);
-        _devices[slot].cont.buttons[i] <<= 1;
-        _devices[slot].cont.buttons[i] |= wasDown;
-        _devices[slot].cont.buttons[i] &= 0x03;
-    }
-
     _sdlPollEvents();
+    return 1;
+}
+
+int gyControllerPoll(const unsigned slot, struct GYController** const input) {
 
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_LEFT]     &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_LEFT]     |= al[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_LEFT]     |= _devices[slot].al[GY_CONTROLLER_ANALOG_LEFT];
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT]    &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT]    |= ar[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT]    |= _devices[slot].ar[GY_CONTROLLER_ANALOG_LEFT];
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_UP]       &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_UP]       |= au[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_UP]       |= _devices[slot].au[GY_CONTROLLER_ANALOG_LEFT];
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_DOWN]     &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_DOWN]     |= ad[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_DOWN]     |= _devices[slot].ad[GY_CONTROLLER_ANALOG_LEFT];
 
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_LEFT]     &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_LEFT]     |= al[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_LEFT]     |= _devices[slot].al[GY_CONTROLLER_ANALOG_RIGHT];
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_RIGHT]    &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_RIGHT]    |= ar[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_RIGHT]    |= _devices[slot].ar[GY_CONTROLLER_ANALOG_RIGHT];
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_UP]       &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_UP]       |= au[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_UP]       |= _devices[slot].au[GY_CONTROLLER_ANALOG_RIGHT];
     _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_DOWN]     &= ~GY_BUT_FLAGS_IS_PRESSED;
-    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_DOWN]     |= ad[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_DOWN]     |= _devices[slot].ad[GY_CONTROLLER_ANALOG_RIGHT];
 
     *input = &_devices[slot].cont;
 

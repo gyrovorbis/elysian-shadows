@@ -407,7 +407,7 @@ void GuiSystem::processInput(void) {
         _menuWidget->virtualDPadEvent(getInputSys()->getController(0)->getVirtualDPad(GY_CONTROLLER_ANALOG_LEFT));
     }
 
-    auto* keybd = getInputSys()->getKeyboard();
+    auto* keybd = getInputSys()->getKeyboard(0);
     //if(keybd && keybd->isPressed(GY_KEY_LALT)) {
         if(keybd && keybd->isTapped(GY_KEY_6)) {
             nextDebugOverlayPage();

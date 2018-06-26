@@ -159,7 +159,7 @@ OOLUA_PROXY(InputSystem)
         No_public_destructor
     )
     OOLUA_MEM_FUNC(Controller*, getController, const unsigned)
-    OOLUA_MEM_FUNC(Keyboard*, getKeyboard)
+    OOLUA_MEM_FUNC(Keyboard*, getKeyboard, const unsigned)
     OOLUA_MFUNC(getMouse)
     OOLUA_MFUNC(getVMU)
     OOLUA_MFUNC(getRumbleDevice)

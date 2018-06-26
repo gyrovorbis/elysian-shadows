@@ -70,6 +70,19 @@
  * \qmlmethod unsigned PartySystem::getPartySize()
  * Returns the number of party members currently within the party.
  */
+/*!
+ * \qmlmethod int PartySystem::getPlayerIndexFromSlot(int slot)
+ * If \a{slot} is valid and is controlled by a human player, returns the player's index.
+ * If \a{slot} is valid and is not controlled by a human player, returns \a{UnassignedIndex}.
+ * If \a{slot} is not a valid party slot, returns \a{InvalidIndex}.
+ */
+
+/*!
+ * \qmlmethod int PartySystem::getPlayerIndexFromPartyMember(Entity* entity)
+ * If \a{entity} is a valid party member and is controlled by a human player, returns the player's index.
+ * If \a{entity} is valid party member and is not controlled by a human player, returns \a{UnassignedIndex}.
+ * If \a{entity} a party member, returns \a{InvalidIndex}.
+ */
 OOLUA_EXPORT_FUNCTIONS(PartySystem,
                         addCharacterToParty,
                         removeCharacterFromParty,
@@ -81,4 +94,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
                                 getCharacterPartyMember,
                                 getPartySize,
                                 getPartySlot,
-                                getPlayable)
+                                getPlayable,
+                                getPlayerIndexFromSlot,
+                                getPlayerIndexFromPartyMember)

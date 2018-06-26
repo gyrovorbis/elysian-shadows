@@ -9,12 +9,15 @@
 #include <gyro_input_api.h>
 #include <system/elysian_engine.hpp>
 #include <crtp/elysian_combat.hpp>
+#include <device/elysian_rumble_device.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
 
 namespace elysian {
 
 namespace game {
 
 void PlayableBehavior::onUpdate(void) {
+    if(_playerIndex == -1) return;
     auto* partyMember       = getEntity();
     auto* partySys          = Singletons::getPartySys();
     auto* cont              = Singletons::getInputSys()->getController(_playerIndex);
@@ -22,14 +25,14 @@ void PlayableBehavior::onUpdate(void) {
 
         if(System::getEngineState() == Engine::ENGINE_WARPING) return;
         if(!System::getProcessInput()) return;
-        if(partySys->getPartyLeader() != partyMember) return;
+       // if(partySys->getPartyLeader() != partyMember) return;
 
-    if(System::getEngineState() != Engine::ENGINE_WARPING && System::getProcessInput()) {
+    if(System::getEngineState() != Engine::ENGINE_WARPING) {
         _processMovement(deltaTime, cont, partyMember, partySys);
         _processJump(deltaTime, cont, partyMember);
         _processExamine(deltaTime, cont, partyMember, partySys);
         _processPickup(deltaTime, cont, partyMember, partySys);
-        _processSwapPartyMember(deltaTime, cont, partyMember, partySys);
+      //  _processSwapPartyMember(deltaTime, cont, partyMember, partySys);
     }
 }
 
@@ -116,6 +119,15 @@ void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Control
                       //      dbgprintf("DASH_ACTIVE");
                     _lastAngle = angle;
                     ++_dashState;
+
+
+                    RampRumbleEffect effect(_dashDuration, ELYSIAN_PLAYABLE_BEHAVIOR_RUMBLE_MAG_DASH, 0.0);
+                    GYVector2 analogDir = cont->getAnalogDir(GY_CONTROLLER_ANALOG_LEFT);
+                    Vector3 rumbleDir = { analogDir.x, analogDir.y, 0.0f };
+                    effect.setDirection(rumbleDir);
+                    System::getInputSys()->getRumbleDevice(_playerIndex)->playEffect(effect, 1);
+
+
                     entity->getCharacter()->setDashing(true);
                     emitDashParticles();
                     _tapTimer = 0.0f;
@@ -167,6 +179,12 @@ void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Control
 void PlayableBehavior::_processJump(const float /*deltaTime*/, const Controller*const cont, Entity*const entity) {
     if(cont->isTapped(GY_CONTROLLER_BUT_X)) {
         entity->getCharacter()->jump();
+        RampRumbleEffect effect(0.2f, ELYSIAN_PLAYABLE_BEHAVIOR_RUMBLE_MAG_JUMP, 0.0f);
+        GYVector2 analogDir = cont->getAnalogDir(GY_CONTROLLER_ANALOG_LEFT);
+        Vector3 dir = { analogDir.x, analogDir.y, -1.0f };
+        dir.normalize();
+        effect.setDirection(dir);
+        //System::getInputSys()->getRumbleDevice(_playerIndex)->playEffect(effect, 1);
     }
 }
 
@@ -204,47 +222,18 @@ bool PlayableBehavior::isAlive(void) const {
     return (getEntity()->getCombat()->getStatus().getHp() > 0);
 }
 
+void PlayableBehavior::_playerIndexChanged(int oldIndex, int newIndex) {
 
-void PlayableBehavior::_processSwapPartyMember(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
-    unsigned activeCount = partySys->getActivePartyMemberCount();
-    unsigned slot = partySys->getPartySlot(entity);
-    unsigned newSlot = slot;
-
-
-
-  //  Singletons::getPartySys()->getPartyMember(i)->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME);
-
-    auto swapToAvailableSlot = [&](int i) {
-        Entity* entity = Singletons::getPartySys()->getPartyMember(i);
-        if(entity) {
-            PlayableBehavior* playable = static_cast<PlayableBehavior*>(entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME));
-            if(playable) {
-                if(playable->isAlive() && playable->getPlayerIndex() == -1) {
-
-
-                }
-            }
-        }
-        return false;
-    };
-
-
-    if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_DOWN)) {
-
-        for(int i = slot-1; i <= 0; --i) {
-            if(swapToAvailableSlot(i)) {
-
-            }
-        }
-
-
-
-
-    } else if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_UP)) {
-
+    LuaBehavior* behav = getEntity()->getLuaBehavior("/assets/scripts/combat/_player_combat_behav.lua");
+    if(behav) {
+        LuaEvent event({
+            { "luaType", "EVENT_PLAYER_INDEX_CHANGED" },
+            { "entity",   getEntity() },
+            { "oldIndex", oldIndex },
+            { "newIndex", newIndex }
+        });
+        System::getEventSys()->sendEvent(&event, behav);
     }
-
-
 }
 
 }

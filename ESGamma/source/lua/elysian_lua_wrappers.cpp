@@ -315,6 +315,10 @@ namespace elysian {
         s->register_class_static<TableLayout>("ALIGN_CENTER",        TableLayout::ALIGN_CENTER);
         s->register_class_static<TableLayout>("ALIGN_POSITIVE",      TableLayout::ALIGN_POSITIVE);
 
+        typedef elysian::PartySystem PartySystem;
+        s->register_class_static<PartySystem>("UnassignedIndex",     PartySystem::UnassignedPlayerIndex);
+        s->register_class_static<PartySystem>("InvalidIndex",        PartySystem::InvalidPlayerIndex);
+
         typedef elysian::EventTarget EventTarget;
         s->register_class_static<EventTarget>("INVALID",            EVENT_TARGET_INVALID);
         s->register_class_static<EventTarget>("ENTITY",             EVENT_TARGET_ENTITY);
@@ -431,7 +435,12 @@ namespace elysian {
 		_mainState->register_class<ParticleEmitterAttrib>();
         ParticleEmitterAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ParticleEmitter>();
-        OOLUA::register_class<LuaEvent>(*_mainState);
+
+        _mainState->register_class<Event>();
+       // Event::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<LuaEvent>();
+       // LuaEvent::registerProxyMetaTable(*_mainState);
+
         _mainState->register_class<EventTarget>();
         _mainState->register_class<EventObserver>();
         _mainState->register_class<EventSystem>();

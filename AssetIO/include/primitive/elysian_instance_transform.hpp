@@ -19,7 +19,8 @@ namespace elysian {
                     Vector2(void);
                     Vector2(const float x, const float y);
                     Vector2(const float val);
-                    Vector2(GYVector2*const vec2);
+                    Vector2(GYVector2*const gyvec2);
+                    Vector2(const GYVector2& gyvec2);
                     Vector2(const Vector2& other);
                     ~Vector2(void) = default;
 
@@ -320,7 +321,8 @@ namespace elysian {
     inline Vector2::Vector2(void): Vector2(0.0f, 0.0f) {}
     inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}), _ptr(this) {}
     inline Vector2::Vector2(const float val): Vector2(val, val) {}
-    inline Vector2::Vector2(GYVector2 * const vec2): _ptr(vec2) {}
+    inline Vector2::Vector2(GYVector2 * const gyvec2): _ptr(gyvec2) {}
+    inline Vector2::Vector2(const GYVector2 &gyvec2): GYVector2(gyvec2), _ptr(this) {}
     inline Vector2::Vector2(const Vector2 &other) : LuaTableProxy<Vector2>() {
         if(other._ptr != &other) {
             _ptr = other._ptr;
@@ -524,7 +526,7 @@ namespace elysian {
     inline void Vector3::setX(const float val) const { _ptr->x = val; }
     inline void Vector3::setY(const float val) const { _ptr->y = val; }
     inline void Vector3::setZ(const float val) const { _ptr->z = val; }
-    inline void Vector3::normalize(void) { gyVec3Normalize(this); }
+    inline void Vector3::normalize(void) { gyVec3Normalize(_ptr); }
     inline float Vector3::getValueByIndex(int index) const {
         GY_ASSERT(index >= 0 || index <= 2);
         switch(index) {

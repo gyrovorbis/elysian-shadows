@@ -5,7 +5,7 @@ namespace elysian {
 
     class PlayerIODevice    {
     protected:
-        bool        _attached;
+        bool        _attached       = false;
         unsigned    _playerIndex;
 
     public:

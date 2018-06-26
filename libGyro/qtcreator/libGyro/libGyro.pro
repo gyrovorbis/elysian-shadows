@@ -148,7 +148,8 @@ HEADERS += \
     ../../include/cl/gyro_cl.h \
     ../../include/gyro_compute_api.h \
     ../../include/gyro_performance_api.h \
-    ../../gyro_thread_api.h
+    ../../include/gyro_thread_api.h \
+    ../../include/gyro_motion_api.h
 
 vulkan {
     HEADERS += \

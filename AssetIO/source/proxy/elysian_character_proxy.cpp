@@ -120,7 +120,7 @@ The animation states are:
  * \qmlproperty DIR4_TYPE Character::faceDir
  *
  * The basic 2D direction the Character is facing.
- * \sa Direction::DIR4_TYPE, getFaceDir(), setFaceDir()
+ * \sa Direction::DIR4_TYPE, getFaceDir(), setFaceDir(), getFaceDirVec()
  */
 /*!
  * \qmlproperty float Character::walkForce
@@ -157,7 +157,7 @@ The animation states are:
  * \qmlmethod void Character::setFaceDir(DIR4_TYPE dir)
  *
  * Makes the current Entity face the direction given by \a{dir}.
- * \sa Direction::DIR4_TYPE, getFaceDir()
+ * \sa Direction::DIR4_TYPE, getFaceDir(), getFaceDirVec()
  */
 /*!
  * \qmlmethod void Character::moveByForce(Vector2 force)
@@ -180,8 +180,15 @@ The animation states are:
  * \qmlmethod DIR4_TYPE Character::getFaceDir()
  *
  * Returns the enumerated type representing the basic 2D direction the Character is facing.
- * \sa Direction::DIR4_TYPE
+ * \sa Direction::DIR4_TYPE, getFaceDirVec()
  */
+/*!
+ * \qmlmethod Vector2 Character::getFaceDir()
+ *
+ * Returns a normalized 2D vector in the direction the Entity is facing.
+ * \sa getFaceDir(), setFaceDir()
+ */
+
 /*!
  * \qmlmethod void Character::setWalkForce(float mag)
  *
@@ -293,6 +300,7 @@ OOLUA_EXPORT_FUNCTIONS(Character,
                         addTempState)
 OOLUA_EXPORT_FUNCTIONS_CONST(Character,
                             getFaceDir,
+                            getFaceDirVec,
                             isFacing,
                             getHeldEntity,
                             getLastMoveDir,

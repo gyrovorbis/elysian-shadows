@@ -5,6 +5,7 @@
 #include <level/elysian_direction.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <crtp/elysian_lua_variant.hpp>
+#include <primitive/elysian_instance_transform.hpp>
 
 #define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         28000000.0f
 #define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    10.0f
@@ -101,6 +102,7 @@ namespace elysian {
         static constexpr const Component::TYPE componentType = Component::CHARACTER;
 
         Direction::DIR4     getFaceDir(void) const;
+        Vector2             getFaceDirVec(void) const;
         void                setFaceDir(const Direction::DIR4 dir);
         const GYVector3&    getLastMoveDir(void) const;
         bool                isFacing(const Entity& entity) const;
@@ -171,6 +173,7 @@ namespace elysian {
     inline Entity* CharacterBase::getPullEntity(void) const { return _pullEntity; }
     inline void CharacterBase::setPullEntity(Entity * const entity) { _pullEntity = entity; }
     inline bool CharacterBase::hasState(const ANIM_STATE state) const { return _animStates[state]; }
+    inline Vector2 CharacterBase::getFaceDirVec(void) const { return Direction::toVector2(getFaceDir()); }
 
 
 

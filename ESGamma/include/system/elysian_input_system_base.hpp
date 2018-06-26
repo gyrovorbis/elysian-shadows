@@ -20,16 +20,41 @@ namespace elysian {
     class Mouse;
     class Controller;
 
+    class InputDeviceEvent: public Event {
+    public:
+        enum DEVICE_EVENT_TYPE {
+            ATTACHED,
+            REMOVED,
+            STATE_CHANGED,
+            UNKNOWN
+        };
+    private:
+        int                  _playerIndex       = -1;
+        DEVICE_EVENT_TYPE    _deviceEventType   = UNKNOWN;
+    public:
+                            InputDeviceEvent(EventType eventType, int playerIndex, DEVICE_EVENT_TYPE devType);
+        int                 getPlayerIndex(void) const;
+        DEVICE_EVENT_TYPE   getDeviceEventType(void) const;
+    };
+
 
     class TouchDevice: public PlayerIODevice {
 
     };
 
     class KeyboardEventObserver: public EventObserver {
+    private:
+        unsigned        _playerIndex = 0;
     public:
-                        KeyboardEventObserver(void);
+                        KeyboardEventObserver(unsigned playerIndex=0);
         virtual void    onObserveEvent(Event* event, EventTarget* target) override;
         virtual void    onKeyboardEvent(const Keyboard& keybd);
+    };
+
+    class KeyboardEvent: public InputDeviceEvent {
+    private:
+
+
     };
 
 
@@ -88,10 +113,9 @@ namespace elysian {
         void                updateState(const GYVector2& analog);
     };
 
-    class ControllerEvent: public Event {
+    class ControllerEvent: public InputDeviceEvent {
     private:
         Controller*         _controller     = nullptr;
-        int                  _slot          = 1;
     public:
                              ControllerEvent(EventType type, const Controller* controller);
                              ControllerEvent(EventType type, int slot);
@@ -258,8 +282,8 @@ namespace elysian {
 
         Controller*         getController(const unsigned port);
         auto                getController(const unsigned port) const -> const Controller*;
-        Keyboard*           getKeyboard(void);
-        Mouse*              getMouse(void);
+        Keyboard*           getKeyboard(const unsigned port);
+        Mouse*              getMouse(const unsigned port);
         VisualMemoryUnit*   getVMU(const unsigned port);
         RumbleDevice*       getRumbleDevice(const unsigned port);
         PowerSupply*        getPowerSupply(void);
@@ -272,6 +296,11 @@ namespace elysian {
 
     };
 
+    //===== EVENT INLINEZ =======
+    inline InputDeviceEvent::InputDeviceEvent(EventType eventType, int playerIndex, DEVICE_EVENT_TYPE devType):
+        Event(eventType), _playerIndex(playerIndex), _deviceEventType(devType) {}
+    inline int InputDeviceEvent::getPlayerIndex(void) const { return _playerIndex; }
+    inline auto InputDeviceEvent::getDeviceEventType(void) const -> DEVICE_EVENT_TYPE { return _deviceEventType; }
 
     //====== KEYBOARD INLINEZ ===========
     inline GY_BUTTON_STATE Keyboard::getButtonState(const GY_KEY key) const { return (GY_BUTTON_STATE)_gyHandle->keys[key]; }
@@ -316,8 +345,8 @@ namespace elysian {
 
     //====== CONTROLLER INLINEZ ===========
     inline ControllerEvent::ControllerEvent(EventType type, const Controller* controller):
-        Event(type),
-        _slot(controller->getPort())
+        InputDeviceEvent(type, controller->getPlayerIndex(),
+                         (type == EVENT_CONTROLLER_ATTACHED? InputDeviceEvent::ATTACHED : (type == EVENT_CONTROLLER_REMOVED)? InputDeviceEvent::REMOVED : InputDeviceEvent::STATE_CHANGED ))
     {}
 
 
@@ -384,14 +413,14 @@ namespace elysian {
 
 
     //======== INPUTSYSTEM INLINEZ =======
-    inline Controller* InputSystemBase::getController(const unsigned port) { return &_controllers[port]; }
-    inline const Controller* InputSystemBase::getController(const unsigned port) const { return &_controllers[port]; }
-    inline Keyboard* InputSystemBase::getKeyboard(void) { return &_keyboard; }
-    inline Mouse* InputSystemBase::getMouse(void) { return &_mouse; }
-    inline VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) { return &_vmus[port]; }
-    inline RumbleDevice* InputSystemBase::getRumbleDevice(const unsigned port) { return &_rumbleDevices[port]; }
+    inline Controller* InputSystemBase::getController(const unsigned port) { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); return &_controllers[port]; }
+    inline const Controller* InputSystemBase::getController(const unsigned port) const { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); return &_controllers[port]; }
+    inline Keyboard* InputSystemBase::getKeyboard(const unsigned port) { return (port == _keyboard.getPlayerIndex())? &_keyboard : nullptr; }
+    inline Mouse* InputSystemBase::getMouse(const unsigned port) { return (port == _mouse.getPlayerIndex())? &_mouse : nullptr; }
+    inline VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) { assert(port < ELYSIAN_INPUT_VMUS_MAX); return &_vmus[port]; }
+    inline RumbleDevice* InputSystemBase::getRumbleDevice(const unsigned port) { assert(port < ELYSIAN_INPUT_RUMBLE_DEVICES_MAX); return &_rumbleDevices[port]; }
     inline PowerSupply* InputSystemBase::getPowerSupply(void) { return &_powerSupply; }
-    inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
+    inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); _keyboardAsControllerPort = port; }
     inline void InputSystemBase::setDefaultVMUIcon(const char* path) { strcpy(_vmuDefaultIcon, path); }
 
 }

@@ -20,11 +20,21 @@ namespace elysian {
 
 //----NONSTATIC----
 
+const int PartySystem::UnassignedPlayerIndex;
+const int PartySystem::InvalidPlayerIndex;
+
 PartySystem::PartySystem(void) {
+    memset(_unassignedPlayerIndices, -1, sizeof(int)*ELYSIAN_PARTY_SLOTS_MAX);
+    memset(_partySlotFromPlayerIndex, -1, sizeof(int)*ELYSIAN_PARTY_SLOTS_MAX);
+
     for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _players[i].setPlayerNum(i);
 
     getEventSys()->addEventObserver(this, EVENT_AREA_ENTER);
     getEventSys()->addEventObserver(this, EVENT_AREA_EXIT);
+    getEventSys()->addEventObserver(this, EVENT_CONTROLLER_ATTACHED);
+    getEventSys()->addEventObserver(this, EVENT_CONTROLLER_REMOVED);
+    getEventSys()->addEventObserver(this, EVENT_KEYBOARD_ATTACHED);
+    getEventSys()->addEventObserver(this, EVENT_KEYBOARD_REMOVED);
 }
 
 PartySystem::~PartySystem(void) {
@@ -51,7 +61,13 @@ void PartySystem::onObserveEvent(Event *event, EventTarget*) {
     case EVENT_AREA_EXIT:
         getPartySys()->removePartyFromArea();
         break;
-
+    case EVENT_KEYBOARD_ATTACHED:
+    case EVENT_KEYBOARD_REMOVED:
+    case EVENT_CONTROLLER_ATTACHED:
+    case EVENT_CONTROLLER_REMOVED:
+        _processInputDeviceEvent(event);
+    default:
+        break;
     }
 
 }
@@ -174,11 +190,11 @@ Entity *PartySystem::getPartyMember(const unsigned int slot) const {
 
 Entity *PartySystem::getPartyLeader(void) const {
     for(auto&& it : _playableParty) {
-        if(it.active) return it;
+        if(it.active && it.playerIndex >= 0) return it;
     }
 
     for(auto&& it : _characterParty) {
-        if(it.active) return it;
+        if(it.active && it.playerIndex >= 0) return it;
     }
 
     return nullptr;
@@ -194,7 +210,7 @@ void PartySystem::addCharacterToParty(Entity* entity) {
     if(!entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME)) {
         auto* behav = new game::PlayableBehavior(*entity);
         entity->addBehavior(behav);
-        behav->setPlayerIndex(0);
+        behav->setPlayerIndex(-1);
     }
 
     Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity->getName());
@@ -269,7 +285,7 @@ Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
 void PartySystem::_resetPartyPathPoints(void) {
     auto* leader = getPartyLeader();
     if(leader) {
-        for(int i = 0; i < _partyPathPoint.size(); ++i) {
+        for(int i = 0; i < (int)_partyPathPoint.size(); ++i) {
             _partyPathPoint[i] = GYVector2 { leader->getTransform().getPosX(), leader->getTransform().getPosY() };
         }
     }
@@ -352,7 +368,7 @@ void PartySystem::updatePartyPaths(void) {
   i = 0;//(_playableParty.size())? 0 : 1;
   for(; i < _characterParty.size(); ++i) {
       Entity* partyMember = _characterParty[i];
-      if(!isPartyMemberActive(i) || partyMember == leader) continue;
+      if(!isPartyMemberActive(i) || _characterParty[i].playerIndex != UnassignedPlayerIndex) continue;
     GYVector2 dist;
     currentIndex += _pointsPerCharacter-1;
     //Debug::Print(Debug::NORMAL, "%d\n", currentIndex);
@@ -591,6 +607,8 @@ void Player::processInput(const Controller* const cont, PartySystem*const partyS
 void PartySystem::swapPartyMemberSlots(unsigned int slot1, unsigned int slot2) {
     auto* slot1Entity = getPartyMember(slot1);
     auto* slot2Entity = getPartyMember(slot2);
+    int slot1PlayerIndex = slot1Entity? _characterParty[slot1].playerIndex : UnassignedPlayerIndex;
+    int slot2PlayerIndex = slot2Entity? _characterParty[slot2].playerIndex : UnassignedPlayerIndex;
     bool slot1WasActive = isPartyMemberActive(slot1);
     bool slot2WasActive = isPartyMemberActive(slot2);
 
@@ -603,6 +621,8 @@ void PartySystem::swapPartyMemberSlots(unsigned int slot1, unsigned int slot2) {
 
     _characterParty[slot1] = slot2Entity;
     _characterParty[slot2] = slot1Entity;
+    setPlayerIndexBySlot(slot1, slot2PlayerIndex);
+    setPlayerIndexBySlot(slot2, slot1PlayerIndex);
     setPartyMemberActive(slot1, slot2WasActive);
     setPartyMemberActive(slot2, slot1WasActive);
 
@@ -646,6 +666,223 @@ void PartySystem::setSlotFollowLogicEnabled(const unsigned int slot, bool enable
 
     } else errprintf("Tried to set invalid slot [%d] follow logic enabled to [%d]", slot, enabled);
 }
+
+bool PartySystem::addUnassignedPlayerIndex(int index) {
+    int freeIndex = UnassignedPlayerIndex;
+    for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) {
+        if(_unassignedPlayerIndices[i] == index) {
+            return false;
+        } else if(_unassignedPlayerIndices[i] == UnassignedPlayerIndex) {
+            freeIndex = i;
+          //  break;
+        }
+    }
+    if(freeIndex != UnassignedPlayerIndex) {
+        _unassignedPlayerIndices[freeIndex] = index;
+        return true;
+    }
+    return false;
+}
+
+
+bool PartySystem::removeUnassignedPlayerIndex(int index) {
+    for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) {
+        if(_unassignedPlayerIndices[i] == index) {
+            _unassignedPlayerIndices[i] = UnassignedPlayerIndex;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool PartySystem::assignPlayerIndex(int index) {
+    for(unsigned s = 0; s < getActivePartyMemberCount(); ++s) {
+        if(getPlayerIndexFromSlot(s) == UnassignedPlayerIndex) {
+            setPlayerIndexBySlot(s, index);
+            _partySlotFromPlayerIndex[index] = s;
+            return true;
+        }
+    }
+    return false;
+}
+
+
+PartySystem::PartyMember::PartyMember(Entity* e):
+    entity(e), active(true), followLogic(true)
+{
+    playable = static_cast<game::PlayableBehavior*>(e->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME));
+
+}
+
+//remove player from party member, put back in unassigned state
+
+int PartySystem::getPlayerIndexFromSlot(int slot) const {
+    if(slot >= 0 && slot < _characterParty.size()) {
+        return _characterParty[slot].playerIndex;
+    }
+    return InvalidPlayerIndex;
+}
+
+int PartySystem::getSlotFromPlayerIndex(int index) const {
+    if(index >= 0 && index < _characterParty.size()) {
+        return _partySlotFromPlayerIndex[index];
+    }
+    return InvalidPlayerIndex;
+}
+
+bool PartySystem::setPlayerIndexBySlot(int slot, int playerIndex) {
+    if(slot >= 0 && slot < _characterParty.size()) {
+        _characterParty[slot].playerIndex = playerIndex;
+        _characterParty[slot].playable->setPlayerIndex(playerIndex);
+        return true;
+    }
+    return false;
+}
+
+bool PartySystem::unassignPlayerIndex(int index) {
+    assert(index >= 0 && index < ELYSIAN_PARTY_SLOTS_MAX);
+
+    const int slot = _partySlotFromPlayerIndex[index];
+    if(_partySlotFromPlayerIndex[index] > 0) {
+        _characterParty[slot].playerIndex = UnassignedPlayerIndex;
+        _characterParty[slot].playable->setPlayerIndex(UnassignedPlayerIndex);
+        _partySlotFromPlayerIndex[index] = UnassignedPlayerIndex;
+        return addUnassignedPlayerIndex(index);
+    }
+    return false;
+}
+
+bool PartySystem::removePlayerIndex(int index) {
+    bool unassigned = unassignPlayerIndex(index);
+    bool removed = removeUnassignedPlayerIndex(index);
+    return ((!unassigned && removed) || (unassigned && removed));
+}
+
+void PartySystem::pollUnassignedPlayers(void) {
+    for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) {
+        const int playerIndex = _unassignedPlayerIndices[i];
+
+        if(playerIndex == UnassignedPlayerIndex) {
+            continue; //no pending player at this index
+
+        } else if(playerIndex == 0) { //Add first player automatically
+            assignPlayerIndex(0);
+            removeUnassignedPlayerIndex(0);
+
+        } else { //Check if pending player has attempted to join
+
+            Controller* cont = getInputSys()->getController(playerIndex);
+            if(cont->isTapped(GY_CONTROLLER_BUT_START)) {
+                if(assignPlayerIndex(playerIndex)) {
+                    dbgprintf("Player[%d] assuming control of party member [%d]", playerIndex, getSlotFromPlayerIndex(playerIndex));
+                    removeUnassignedPlayerIndex(playerIndex);
+                } else {
+                    dbgprintf("Player[%d] could not join the party!", playerIndex);
+                }
+            }
+        }
+    }
+}
+
+void PartySystem::_processInputDeviceEvent(Event *event) {
+    assert(event);
+
+    InputDeviceEvent* inputEvent = static_cast<InputDeviceEvent*>(event);
+    int playerIndex = inputEvent->getPlayerIndex();
+    if(inputEvent->getDeviceEventType() == InputDeviceEvent::ATTACHED) {
+        if(getSlotFromPlayerIndex(playerIndex) < 0) {
+            if(addUnassignedPlayerIndex(playerIndex)) {
+                dbgprintf("Player[%d] has connected! Press start to join game.", playerIndex);
+            }
+        }
+    } else if(inputEvent->getDeviceEventType() == InputDeviceEvent::REMOVED) {
+        Keyboard* keybd = getInputSys()->getKeyboard(playerIndex);
+        bool deviceStillExists = (keybd && keybd->isAttached() && (int)keybd->getPlayerIndex() == playerIndex);
+        deviceStillExists |= getInputSys()->getController(playerIndex)->isAttached();
+        if(!deviceStillExists) {
+            removePlayerIndex(playerIndex);
+            dbgprintf("Player[%d] has disconnected!", playerIndex);
+        }
+    }
+}
+
+void PartySystem::_checkDpadPartyMemberSwap(void) {
+    auto findNextAvailableSlot = [=](int slot, bool forward) {
+        int start = slot + (forward? 1 : -1);
+        if(start >= (int)getActivePartyMemberCount()) start = getActivePartyMemberCount()-1;
+        else if(start < 0) start = 0;
+        int step = forward? 1 : -1;
+        int stop = forward? getActivePartyMemberCount() : -1;
+
+        int foundSlot = UnassignedPlayerIndex;
+
+        //Traverse in the preferred direction
+        for(int i = start; i != stop; i += step) {
+            if(getPlayerIndexFromSlot(i) == UnassignedPlayerIndex) {
+                foundSlot = i;
+                break;
+            }
+        }
+
+        //Traverse in the opposite direction
+        if(foundSlot == UnassignedPlayerIndex) {
+            start = forward? 0 : getActivePartyMemberCount()-1;
+            stop = slot;
+            for(int i = start; i != stop; i += step) {
+                if(getPlayerIndexFromSlot(i) == UnassignedPlayerIndex) {
+                    foundSlot = i;
+                    break;
+                }
+            }
+        }
+        return foundSlot;
+    };
+
+
+    for(unsigned s = 0; s < ELYSIAN_PARTY_SLOTS_MAX; ++s) {
+        const int playerIndex = getPlayerIndexFromSlot(s);
+        if(playerIndex >= 0) { //Slot has a human player
+            Controller* cont = getInputSys()->getController(playerIndex);
+            int newSlot = UnassignedPlayerIndex;
+            if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_LEFT)) {
+                newSlot = findNextAvailableSlot(s, false);
+                cont->setPressed(GY_CONTROLLER_BUT_DPAD_LEFT, false); //Have to clear these so dpad doesn't immediately trigger when we process the next slot!!!
+            } else if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_RIGHT)) {
+                newSlot = findNextAvailableSlot(s, true);
+                cont->setPressed(GY_CONTROLLER_BUT_DPAD_RIGHT, false);
+            }
+
+            if(newSlot != UnassignedPlayerIndex) {
+                swapPlayerIndexSlots(playerIndex, s, newSlot);
+                dbgprintf("Reassigning Player[%d]'s Party Slot: [%d]=>[%d]", playerIndex, s, newSlot);
+            }
+
+        }
+    }
+
+}
+
+void PartySystem::processInput(void) {
+    pollUnassignedPlayers();
+    _checkDpadPartyMemberSwap();
+}
+
+void PartySystem::swapPlayerIndexSlots(int playerIndex, int oldSlot, int newSlot) {
+    assert(playerIndex >= 0 && oldSlot >= 0 && newSlot >= 0);
+    _partySlotFromPlayerIndex[playerIndex] = newSlot;
+    _characterParty[oldSlot].setPlayerIndex(UnassignedPlayerIndex);
+    _characterParty[newSlot].setPlayerIndex(playerIndex);
+    _resetPartyPathPoints();
+    _updateCamera();
+}
+
+void PartySystem::PartyMember::setPlayerIndex(int index) {
+    playable->setPlayerIndex(index);
+    playerIndex = index;
+   // if(index >= 0) followLogic = false;
+   // else followLogic = true;
+}
+
 
 
 }

@@ -69,11 +69,9 @@ namespace elysian {
         void                    setIntensityOffset(float intensity);
     };
 
-
-
     class RumbleDeviceEvent: public Event {
     private:
-        RumbleDevice* _dev;
+        RumbleDevice*   _dev;
     public:
                         RumbleDeviceEvent(EventType type, RumbleDevice* rumble);
         RumbleDevice*   getRumbleDevice(void) const;
@@ -90,9 +88,6 @@ namespace elysian {
         bool        playEffect(const RumbleEffect& effect, uint32_t iterations) const;
         bool        stop(void) const;
     };
-
-
-
 
 
 //====== RUMBLE INLINEZ =======

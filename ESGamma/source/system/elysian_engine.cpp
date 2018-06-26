@@ -53,12 +53,12 @@ Engine::Engine(void):
 
     //allocate systems
     _eventSystem        = new EventSystem;
+    _partySystem		= new PartySystem;
     _inputSystem        = new InputSystem;
     _levelSystem		= new LevelSystem;
     _mapSystem			= new MapSystem;
     _cameraSystem		= new CameraSystem;
     _characterSystem	= new CharacterSystem;
-    _partySystem		= new PartySystem;
     _timerSystem		= new TimerSystem;
     _warpSystem			= new WarpSystem;
     _collisionSystem	= new CollisionSystem;
@@ -269,12 +269,13 @@ void Engine::processInput(void) {
         case System::ENGINE_CONVERSATION:
             //if(_processInput) _partySystem->processInput();
 
-            _cameraSystem->processInput(_inputSystem->getKeyboard());
+            _cameraSystem->processInput(_inputSystem->getKeyboard(0));
             _guiSystem->processInput();
             _examinableSystem->processInput();
             _dialogSystem->processInput();
+            _partySystem->processInput();
 
-            Debug::getInstance().processInput(_inputSystem->getKeyboard());
+            Debug::getInstance().processInput(_inputSystem->getKeyboard(0));
             //conversationSystem->ProcessInput(input);
             break;
         case System::ENGINE_MODAL_CONVERSATION:

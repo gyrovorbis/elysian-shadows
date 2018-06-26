@@ -781,7 +781,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(VisualMemoryUnit,
 
     \section2 Fetching a Keyboard Object
     \code
-    keybd = Engine.getInputSys():getKeyboard()
+    keybd = Engine.getInputSys():getKeyboard(0)
     \endcode
     NOTE: \e {Since keyboards can be dynamically added and removed on certain platforms, do NOT cache the keyboard
     object between frames, as it may no longer be connected or valid the next frame. Always fetch the keyboard again
@@ -1054,16 +1054,16 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Controller,
  */
 
 /*!
- * \qmlmethod Keyboard* InputSystem::getKeyboard()
+ * \qmlmethod Keyboard* InputSystem::getKeyboard(unsigned playerIndex)
  *
- * Returns a Keyboard object if one is currently connected or nil if one isn't detected.
+ * Returns the \l{Keyboard} device associated with the Player given by \a{playerIndex}.
  * \sa Keyboard
  */
 
 /*!
- * \qmlmethod Mouse* InputSystem::getMouse()
+ * \qmlmethod Mouse* InputSystem::getMouse(unsigned playerIndex)
  *
- * Returns a Mouse object if one is currently connected or nil if one isn't detected.
+ * Returns the \l{Mouse} device associated with the Player given by \a{playerIndex}.
  * \sa Mouse
  */
 

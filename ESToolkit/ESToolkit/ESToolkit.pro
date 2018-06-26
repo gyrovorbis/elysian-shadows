@@ -16,6 +16,7 @@ dreamcast {
 
 vmu_child_app {
     DEFINES+=VMU_CHILD_APP
+
 }
 
 !ios: !dreamcast: !android {

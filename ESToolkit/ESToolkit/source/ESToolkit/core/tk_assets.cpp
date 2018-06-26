@@ -431,7 +431,7 @@ Project* Assets::reloadProject(void) {
     const QString levelName = _curLevel->getNodePath();
     const QString projPath = _project->getLocation();
     const elysian::System::ENGINE_STATE engineState = _engine->getEngineState();
-    const Entity* partyLeader = _engine->getPartySys()->getPartyLeader();
+    Entity* partyLeader = _engine->getPartySys()->getPartyLeader();
     GYVector3 playerPos;
 
     if(partyLeader) {
@@ -460,7 +460,8 @@ Project* Assets::reloadProject(void) {
     }
 
     _engine->setEngineState(engineState);
-    if(partyLeader) _engine->getPartySys()->getPartyLeader()->_transform._pos = playerPos;
+    partyLeader = _engine->getPartySys()->getPartyMember(0);
+    if(partyLeader) partyLeader->_transform._pos = playerPos;
     setCurrentLayer(getCurrentLayer());
 
     return proj;

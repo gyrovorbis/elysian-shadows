@@ -3,8 +3,12 @@
 
 #include <crtp/elysian_behavior.hpp>
 
-#define ELYSIAN_PLAYABLE_BEHAVIOR_NAME  "PlayableBehavior"
-#define ELYSIAN_PLAYABLE_BEHAVIOR_DASH_PART_TIME_INTERVAL    0.3f
+#define ELYSIAN_PLAYABLE_BEHAVIOR_NAME                          "PlayableBehavior"
+#define ELYSIAN_PLAYABLE_BEHAVIOR_DASH_PART_TIME_INTERVAL       0.3f
+#define ELYSIAN_PLAYABLE_BEHAVIOR_RUMBLE_MAG_DASH               0.5f
+#define ELYSIAN_PLAYABLE_BEHAVIOR_RUMBLE_MAG_JUMP               0.2f
+
+ELYSIAN_ASSET_TYPEDEF(LuaBehavior)
 
 namespace elysian {
 
@@ -38,6 +42,8 @@ namespace elysian {
             void                    _processPushPull(const float deltaTime, const Controller*const cont, Entity*const entity);
             void                    _processSwapPartyMember(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys);
 
+            void                    _playerIndexChanged(int oldIndex, int newIndex);
+
         public:
 
                                     PlayableBehavior(Entity& entity);
@@ -61,7 +67,13 @@ namespace elysian {
         // ==== INLINEZ ======
 
         inline int PlayableBehavior::getPlayerIndex(void) const { return _playerIndex; }
-        inline void PlayableBehavior::setPlayerIndex(const int index) { _playerIndex = index; }
+        inline void PlayableBehavior::setPlayerIndex(const int index)  {
+            if(_playerIndex != index) {
+                int oldIndex = _playerIndex;
+                _playerIndex = index;
+                _playerIndexChanged(oldIndex, index);
+            }
+        }
         inline const char* PlayableBehavior::getBehavName(void) const { return ELYSIAN_PLAYABLE_BEHAVIOR_NAME; }
         inline PlayableBehavior::PlayableBehavior(Entity &entity): Behavior(entity) {
             addTrigger(Behavior::ON_UPDATE);
