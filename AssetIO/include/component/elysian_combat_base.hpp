@@ -137,6 +137,7 @@ namespace elysian {
         void            addStatusEffect(const uint32_t effect);
         void            removeStatusEffect(const uint32_t effect);
         Entity*         getSourceEntity(void) const;
+        void            setSourceEntityEmnity(Entity* src, int16_t emnity);
         void            setSourceEntity(Entity* src);
         int16_t         getEmnity(void) const;
         void            setEmnity(int16_t value);
@@ -282,6 +283,10 @@ namespace elysian {
     inline Entity* CombatStatusModifier::getSourceEntity(void) const { return _srcEntity; }
     inline int16_t CombatStatusModifier::getEmnity(void) const { return _emnity; }
     inline void CombatStatusModifier::setEmnity(int16_t value) { _emnity = value; }
+    inline void CombatStatusModifier::setSourceEntityEmnity(Entity* src, int16_t emnity) {
+        setSourceEntity(src);
+        setEmnity(emnity);
+    }
 
     inline void	CombatBase::setSelfTable(OOLUA::Lua_table_ref self) { _selfTable = self; }
     inline OOLUA::Lua_table_ref& CombatBase::getSelfTable(void) { return _selfTable; }
@@ -354,8 +359,7 @@ namespace elysian {
     }
 
     inline Entity* AggroManager::getAggroedEntity(unsigned index) const {
-        assert(index < _aggroedList.size());
-        return _aggroedList[index];
+        return (index < _aggroedList.size())? _aggroedList[index] : nullptr;
     }
 
     inline void AggroManager::addAggroedEntity(Entity *entity) {

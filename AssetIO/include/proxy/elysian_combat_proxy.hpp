@@ -8,6 +8,7 @@ namespace OOLUA {
     typedef elysian::CombatAttrib           CombatAttrib;
     typedef elysian::CombatStatus           CombatStatus;
     typedef elysian::CombatStatusModifier   CombatStatusModifier;
+    typedef elysian::AggroManager           AggroManager;
     typedef elysian::Combat                 Combat;
     typedef elysian::ParticleEmitterAttrib  ParticleEmitterAttrib;
 }
@@ -37,6 +38,22 @@ OOLUA_PROXY_END
 OOLUA_PROXY(CombatStatusModifier, CombatStatus)
     OOLUA_MEM_FUNC(void, addStatusEffect, const uint32_t)
     OOLUA_MEM_FUNC(void, removeStatusEffect, const uint32_t)
+    OOLUA_MFUNC(setSourceEntityEmnity)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(AggroManager)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getEntityAtEmnityPriority, unsigned)
+    OOLUA_MFUNC_CONST(getEntityEmnity)
+    OOLUA_MFUNC(addEntityEmnity)
+    OOLUA_MFUNC(setEntityEmnity)
+    OOLUA_MFUNC_CONST(getEmnityTableSize)
+    //OOLUA_MFUNC_CONST(getEmnityTableEntry)
+    OOLUA_MFUNC_CONST(getAggroedCount)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getAggroedEntity, unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Combat, Component)
@@ -53,6 +70,7 @@ OOLUA_PROXY(Combat, Component)
     OOLUA_MEM_FUNC(void, setDmgActive, bool)
     OOLUA_MEM_FUNC(void, setCollisionFlags, BitMask32)
     OOLUA_MEM_FUNC(CombatStatus&, getStatus)
+    OOLUA_MEM_FUNC(AggroManager&, getAggroManager)
     OOLUA_MEM_FUNC(void, setStatus, const CombatStatus&)
     OOLUA_MEM_FUNC(void, setTargetType, const Combat::TARGET_TYPE)
     OOLUA_MEM_FUNC_CONST(Combat::TARGET_TYPE, getTargetType)

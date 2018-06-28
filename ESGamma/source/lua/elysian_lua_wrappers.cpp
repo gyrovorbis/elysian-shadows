@@ -424,6 +424,7 @@ namespace elysian {
         CombatStatus::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CombatAttrib>();
         CombatAttrib::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<AggroManager>();
 		_mainState->register_class<Combat>();
         Combat::registerProxyMetaTable(*_mainState);
         _mainState->register_class<RigidBodyAttrib>();
