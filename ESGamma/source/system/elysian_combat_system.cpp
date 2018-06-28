@@ -189,6 +189,7 @@ void CombatSystem::_setCombatantActive(Entity *entity, bool active) const {
         } else {
             getCameraSys()->removeEntity(entity);
             if(combat->getTargetType() != Combat::TARGET_NONE) getGuiSys()->removeCombatStatsEntity(entity);
+            entity->getCombat()->getAggroManager().clear();
             getBehavSys()->callTrigger(entity, Behavior::ON_COMBAT_EXIT);
 
         }
@@ -261,6 +262,11 @@ void CombatSystem::sendStatusModifier(Combat* const target,
   getBehavSys()->onCombatReceiveStatusModifier(target->getEntity(), modifier);
 
   target->applyModifier(*modifier);
+  Entity* src = modifier->getSourceEntity();
+  if(src) {
+      target->getAggroManager().addEntityEmnity(src, modifier->getEmnity());
+  }
+
   target->startDmgRecoveryTimer();
 
   _curActionRes.initialVel = GYVector2{0.0f, -3.0f};
@@ -356,7 +362,11 @@ void CombatSystem::update(void) {
                 //if even one party member is within range, add
                 for(unsigned i = 0; i < partySize; ++i) {
                     if(dists[i] < it->getDeaggroDist()) {
+                        bool wasInCombat = it->isInCombat();
                         addCombatant(*it->getEntity());
+                        if(!wasInCombat && it->isInCombat()) {
+                            it->getAggroManager().addEntityEmnity(getPartySys()->getCharacterPartyMember(i), 1);
+                        }
                         break;
                     }
                 }

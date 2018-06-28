@@ -30,7 +30,7 @@
             \li <SCREEN_WIDTH, SCREEN_HEIGHT>
             \li Bottom right of screen
     \endtable
-    The Z axis located with the positive Z direction coming out direclty towards the viewer in the 2D perspective, meaning the furthest back object starts at
+    The Z axis located with the positive Z direction coming out directly towards the viewer in the 2D perspective, meaning the furthest back object starts at
     Z coordinate 0 with closer objects having increasing Z values as they approach the viewer.
 
     \section2 Rotations
@@ -232,7 +232,6 @@
  * Divides each component of \a rhs by \a scalar.
  * \sa multScalar()
  */
-
 /*!
  * \qmlmethod float Vector2::getX()
  *
@@ -395,6 +394,81 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Vector2,
     \inmodule Engine
     \brief Represents a 3-dimensional vector.
     A simple 3D vector containing an \l{x}, \l{y}, and \l{z} component.
+
+    \section2 Overloaded Operators
+    The following overloaded operators are implemented in Lua through the respective metamethods.
+    \table
+        \header
+            \li \b Symbol
+            \li \b Operation
+            \li \b Metamethod
+        \row
+            \li \b ==
+            \li Equality
+            \li \l{Vector3::_eq()}
+        \row
+            \li \b +
+            \li Addition
+            \li \l{Vector3::_add()}
+        \row
+            \li \b -
+            \li Subtraction
+            \li \l{Vector3::_sub()}
+        \row
+            \li \b *
+            \li Multiplication
+            \li \l{Vector3::_mult()}
+        \row
+            \li \b /
+            \li Division
+            \li \l{Vector3::_div()}
+    \endtable
+
+    \section2 Compound Assignment Operations
+    Since Lua does not support in-place compound assignment operators such as +=, -=, *=, and /=, they are implemented as normal methods.
+    If you are performing an operation that can be represented by one of these operators, you should always prefer to use the corresponding
+    method than to use the traditional Lua method, as it saves memory and run-time overhead by not requiring extra copies.
+
+    For example:
+    \code
+    vec1 = vec1 + vec2
+    \endcode
+    should be avoided in favor of:
+    \code
+    vec1:addVec(vec2)
+    \endcode
+
+    The following compound operations are supported.
+    \table
+        \header
+            \li \b Operator
+            \li \b RValue Type
+            \li \b Method
+        \row
+            \li \b +=
+            \li Vector2
+            \li \l{Vector3::addVec()}
+        \row
+            \li \b -=
+            \li Vector2
+            \li \l{Vector3::subVec()}
+        \row
+            \li \b *=
+            \li Vector2
+            \li \l{Vector3::multVec()}
+        \row
+            \li \b /=
+            \li Vector2
+            \li \l{Vector3::divVec()}
+        \row
+            \li \b *=
+            \li float
+            \li \l{Vector3::multScalar()}
+        \row
+            \li \b /=
+            \li float
+            \li \l{Vector3::divScalar()}
+    \endtable
 */
 
 /*!
@@ -411,6 +485,22 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Vector2,
  * \qmlproperty float Vector3::z
  *
  * \sa getZ(), setZ()
+ */
+
+/*!
+ * \qmlmethod Vector3::Vector()
+ *
+ * Creates a new Vector3 with all elements initialized to 0.
+ */
+/*!
+ * \qmlmethod Vector3::Vector3(float xComp, float yComp, float zComp)
+ *
+ * Creates a new Vector2 with \l {Vector3::x} initialized to \a xComp, \l{Vector3::y} initialized to \a yComp, and \l{Vector3::z} initialized to \a zComp.
+ */
+/*!
+ * \qmlmethod Vector3::Vector3(Vector3 other)
+ *
+ * Copy-constructs a new Vector3 whose values are initialized to the values of \a other.
  */
 
 /*!
@@ -443,7 +533,155 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Vector2,
  *
  * Sets the value of the vector's Z component.
  */
+/*!
+ * \qmlmethod Vector3 Vector3::_add(Vector3 rhs)
+ *
+ * Overloaded addition operator (+) metamethod. Adds the components of \a rhs to the components of the given vector and returns the result as a new vector.
+ * \sa _sub(), _div(), _mult(), _eq()
+ */
+/*!
+ * \qmlmethod Vector3 Vector3::_sub(Vector3 rhs)
+ *
+ * Overloaded subtraction operator (-) metamethod. Subtracts the components of \a rhs from the components of the given vector and returns the result as a new vector.
+ * \sa _add(), _div(), _mult(), _eq()
+ */
+/*!
+ * \qmlmethod Vector3 Vector3::_mult(Vector3 rhs)
+ *
+ * Overloaded multiplication operator (*) metamethod. Multiplies the components of \a rhs by the components of the given vector and returns the result as a new vector.
+ * \sa _add(), _div(), _sub(), _eq()
+ */
+/*!
+ * \qmlmethod Vector3 Vector3::_div(Vector3 rhs)
+ *
+ * Overloaded division operator (/) metamethod. Divides the components of the current vector by the components of \a rhs and returns the result as a new vector.
+ * \sa _add(), _sub(), _mult(), _eq()
+ */
+/*!
+ * \qmlmethod Vector3 Vector3::_eq(Vector3 rhs)
+ *
+ * Overloaded equality comparison operator (==) metamethod. Compares the components of the current vector to the components of \a rhs and returns true if they are equal or false otherwise.
+ * \sa _add(), _sub(), _mult(), _div()
+ */
+/*!
+ * \qmlmethod void Vector3::addVec(Vector3 rhs)
+ *
+ * Adds the components of \a rhs to the components of the given vector.
+ * \sa subVec(), multVec(), divVec()
+ */
+/*!
+ * \qmlmethod void Vector3::subVec(Vector3 rhs)
+ *
+ * Subtracts the components of \a rhs from the components of the given vector.
+ * \sa addVec(), multVec(), divVec()
+ */
+/*!
+ * \qmlmethod void Vector3::multVec(Vector3 rhs)
+ *
+ * Multiplies the components of \a rhs by the components of the given vector.
+ * \sa subVec(), addVec(), divVec()
+ */
+/*!
+ * \qmlmethod void Vector3::divVec(Vector3 rhs)
+ *
+ * Divides the components of the given vector by the components of \a rhs.
+ * \sa subVec(), multVec(), multVec()
+ */
+/*!
+ * \qmlmethod void Vector3::multScalar(float scalar)
+ *
+ * Multiplies each component of \a rhs by \a scalar.
+ * \sa divScalar()
+ */
+/*!
+ * \qmlmethod void Vector3::divScalar(float scalar)
+ *
+ * Divides each component of \a rhs by \a scalar.
+ * \sa multScalar()
+ */
+/*!
+ * \qmlmethod float Vector3::getMagnitude()
+ *
+ * Returns the magnitude of the 3D vector. If the vector were to represent a point, this
+ * is geometrically the distance from the origin to the point represented by the vector.
+ *
+ * \e{NOTE: This is not a property, so every time you call this function, the magnitude will
+ * have to be calculated, which requires a square root. Do not call this function repeatedly
+ * unless the Vector has actually changed. If not, cache the value rather than recalling this
+ * function. }
+ * \sa normalize(), getUnitVector()
+ */
+/*!
+ * \qmlmethod void Vector3::normalize()
+ *
+ * Converts the given vector into a unit (direction) vector of unit length (1.0).
+ * \sa getMagnitude(), getUnitVector()
+ */
+/*!
+ * \qmlmethod float Vector3::distance(Vector3 other)
+ *
+ * Finds the distance between two points, represented as vectors, given the current vector
+ * and \a other vector, using the distance formula (magnitude of the difference vector).
+ * \e { NOTE: When you only need a relative distance, in the case of simply comparing distances
+ * between points, rather than the absolute distance for a calculation, ALWAYS favor squaredDistance(),
+ * because it saves on performing and unecessary square root operation.}
+ * \sa squaredDistance()
+ */
+/*!
+ * \qmlmethod float Vector3::squaredDistance(Vector3 other)
+ *
+ * Returns the value of the distance between the two vectors squared. Always use this function rather than
+ * the distance() method when you only care about relative distances, such as when you're comparing the distances
+ * between a set of vectors to see which is furthest, and you don't care about the actual exact distance value. This
+ * will save on unecessary slow square root calls.
+ * \sa distance()
+ */
+/*!
+ * \qmlmethod float Vector3::dotProduct(Vector3 other)
+ *
+ * Returns the dot (or scalar) product between the current vector and the \a {other} vector.
+ * \sa scalarCrossProduct(), vectorCrossProduct()
+ */
+/*!
+ * \qmlmethod Vector3 Vector3::cossProduct(Vector3 other)
+ *
+ * Returns the cross product between the current vector and \a other vector in the form of a vector.
+ * \sa {2D Cross Products}, scalarCrossProduct(), dotProduct()
+ */
+/*!
+ * \qmlmethod Vector3 Vector3::getUnitVector()
+ *
+ * Returns the angle between the vector representing the positive X axis and the given vector using atan2.
+ * The result is in radians.
+ * \sa normalize(), getMagnitude()
+ */
 
+
+
+OOLUA_EXPORT_FUNCTIONS(GYVector3, setX, setY, setZ)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)
+
+OOLUA_EXPORT_FUNCTIONS(Vector3,
+                       addVec,
+                       subVec,
+                       multVec,
+                       divVec,
+                       multScalar,
+                       divScalar,
+                       normalize)
+OOLUA_EXPORT_FUNCTIONS_CONST(Vector3,
+                             getX,
+                             getY,
+                             getZ,
+                             setX,
+                             setY,
+                             setZ,
+                             getMagnitude,
+                             squaredDistance,
+                             distance,
+                             dotProduct,
+                             crossProduct,
+                             getUnitVector)
 
 /*!
     \qmltype Vector4
@@ -788,23 +1026,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Vector2,
 
 //OOLUA_EXPORT_FUNCTIONS(GYVector3)
 //OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3)
-OOLUA_EXPORT_FUNCTIONS(GYVector3, setX, setY, setZ)
-OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)
 
-OOLUA_EXPORT_FUNCTIONS(Vector3)
-OOLUA_EXPORT_FUNCTIONS_CONST(Vector3,
-                             getX,
-                             getY,
-                             getZ,
-                             setX,
-                             setY,
-                             setZ,
-                             getMagnitude,
-                             squaredDistance,
-                             distance,
-                             dotProduct,
-                             crossProduct,
-                             getUnitVector)
 
 //OOLUA_EXPORT_FUNCTIONS(GYVector4)
 //OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4)

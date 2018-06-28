@@ -299,6 +299,8 @@ void CameraSystemBase::initializeProjMatrix(void) {
     gyVec3Normalize(&orient);
 
     _debugState.setOrient(orient.x, orient.y, orient.z);
+    const GYVector3 zeroPos = { 0.0f, 0.0f, 0.0f };
+    gyVidCamFrustumLookAt(&_debugState, &zeroPos, &_debugState._orient, &_debugState.up);
     gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 9000.0f);
 
     _curState->updateViewVolumeBoundingRegion();
@@ -393,9 +395,10 @@ void CameraSystemBase::setPerspectiveFrustum(const float /*fov*/, const float /*
 
 void CameraSystemBase::popState(void) {
     --_depth;
+    GY_ASSERT(_depth >= 0);
     if(_depth <= 0) _depth = 0;
     //_states[_depth] = &_internalStates[_depth];
-    GY_ASSERT(_depth >= 0);
+
     setCurrentCamera(_states[_depth]);
     _customState = false;
     //restore projection matrix if it's supposed to be on the stack is this even really necessary?
@@ -411,7 +414,8 @@ void CameraSystemBase::processInput(const Keyboard* input) {
         _debugActive = !_debugActive;
 
         if(_debugActive) { //enable
-            //_debugState.focalEntity = _curState->focalEntity;
+#if 1
+            _debugState.focalEntity = _curState->focalEntity;
 
             _debugState._pos = GYVector3 {
                 _curState->_pos.x-500.0f,
@@ -419,15 +423,25 @@ void CameraSystemBase::processInput(const Keyboard* input) {
                 _curState->_pos.z+500.0f
             };
 
-            //_curState = &_debugState;
+           // _curState = &_debugState;
             //setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
-        //	setEngineState(ENGINE_CAMERA_DEBUG);
+            //setEngineState(ENGINE_CAMERA_DEBUG);
             pushCustomCamera(&_debugState);
+            gyVidCamFrustum(_curState, 45.0f, 1.0f, 0.5f, 900.0f);
+            _curState->updateViewVolumeBoundingRegion();
+            _curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
+
+#else
+        gyVidCamFrustum(_curState, 45.0f, 1.0f, 0.5f, 900.0f);
+        _curState->updateViewVolumeBoundingRegion();
+        _curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
+
+#endif
 
         } else { //disable
             if(_curState == &_debugState) //Only pop if debug is current camera
                 popState();
-        //	setEngineState(ENGINE_NORMAL);
+            //setEngineState(ENGINE_NORMAL);
         }
     }
 #if 1

@@ -14,30 +14,37 @@ ELYSIAN_ASSET_TYPEDEF(ParticleEmitterAttrib)
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
-#if 0
-    class AggroManager: public LuaTableProxy<AggroManager> {
-    private:
-        struct EmnityTableEntry {
-            Entity*     entity;
-            unsigned    emnity;
 
-            bool operator<(const EmnityTableEntry& rhs) const;
+
+    class AggroManager {
+    private:
+        struct EmnityEntry {
+            Entity* 	entity	= nullptr;
+            int16_t		emnity	= 0;
         };
 
-        std::priority_queue<EmnityTableEntry>   _emnityTable;
-        std::vector<Entity*>                    _aggroList;
-    public:
+        std::vector<EmnityEntry>	_emnityTable;
+        std::vector<Entity*>		_aggroedList;
+        Entity*						_parentEntity	= nullptr;
+        Entity*						_targetEntity 	= nullptr;
 
+        void		_updateEmnityTable(void);
+        void		_updateTargetEntity(void);
+
+    public:
+                    AggroManager(void) = default;
+                    AggroManager(Entity* parent);
+                    ~AggroManager(void);
         void        clear(void);
 
         //Emnity Management
         Entity*     getEntityAtEmnityPriority(unsigned index) const;
         unsigned    getEntityEmnity(Entity* entity) const;              //0 if not in table, saves hasEntity() lua wrapper
-        void        addEntityEmnity(Entity* entity, int emnityDelta);
-        void        setEntityEmnity(Entity* entity, unsigned emnityVal); //0 removes it from the list, save helper Lua wrapper
+        void        addEntityEmnity(Entity* entity, int16_t emnityDelta);
+        void        setEntityEmnity(Entity* entity, int16_t emnityVal); //0 removes it from the list, save helper Lua wrapper
 
         unsigned    getEmnityTableSize(void) const;
-        void        getEmnityTableEntry(unsigned index, Entity*& entity, unsigned& emnity) const;
+        void        getEmnityTableEntry(unsigned index, Entity*& entity, int16_t& emnity) const;
 
         void        clearEmnityTable(void);
 
@@ -49,7 +56,7 @@ namespace elysian {
         void        clearAggroedList(void);
 
     };
-#endif
+
 
     class CombatStatusModifier;
 
@@ -122,11 +129,17 @@ namespace elysian {
     class CombatStatusModifier: public CombatStatus {
         friend class CombatStatus;
     protected:
-        uint32_t        _addRemoveStatusEffects        = 0;
+        Entity*         _srcEntity                  = nullptr;
+        uint32_t        _addRemoveStatusEffects     = 0;
+        int16_t         _emnity                     = 0;
 
     public:
         void            addStatusEffect(const uint32_t effect);
         void            removeStatusEffect(const uint32_t effect);
+        Entity*         getSourceEntity(void) const;
+        void            setSourceEntity(Entity* src);
+        int16_t         getEmnity(void) const;
+        void            setEmnity(int16_t value);
     };
 
     class CombatBase:
@@ -156,7 +169,7 @@ namespace elysian {
         enum TARGET_TYPE { TARGET_NONE, TARGET_PARTY, TARGET_ENEMY, TARGET_FRIENDLY, TARGET_MAX };
 
     private:
-
+        AggroManager                    _aggroMgr;
         OOLUA::Lua_table_ref            _selfTable;
         OOLUA::Lua_table_ref            _actionTable;
 
@@ -190,6 +203,7 @@ namespace elysian {
 		OOLUA::Lua_table_ref&	getSelfTable(void);
 		void					setActionTable(OOLUA::Lua_table_ref self);
 		OOLUA::Lua_table_ref&	getActionTable(void);
+        AggroManager&           getAggroManager(void);
 
 		DMG_TYPE				getDmgType(void) const;
 		void					setDmgType(const DMG_TYPE type);
@@ -264,12 +278,20 @@ namespace elysian {
         _addRemoveStatusEffects &= ~effect;
     }
 
+    inline void CombatStatusModifier::setSourceEntity(Entity *src) { _srcEntity = src; }
+    inline Entity* CombatStatusModifier::getSourceEntity(void) const { return _srcEntity; }
+    inline int16_t CombatStatusModifier::getEmnity(void) const { return _emnity; }
+    inline void CombatStatusModifier::setEmnity(int16_t value) { _emnity = value; }
+
     inline void	CombatBase::setSelfTable(OOLUA::Lua_table_ref self) { _selfTable = self; }
     inline OOLUA::Lua_table_ref& CombatBase::getSelfTable(void) { return _selfTable; }
     inline void	CombatBase::setActionTable(OOLUA::Lua_table_ref self) { _actionTable = self; }
     inline OOLUA::Lua_table_ref& CombatBase::getActionTable(void) { return _actionTable; }
 
-    inline CombatBase::CombatBase(Entity &entity, CombatBase*const prefab): Component(entity) {
+    inline CombatBase::CombatBase(Entity &entity, CombatBase*const prefab):
+        Component(entity),
+        _aggroMgr(&entity)
+    {
         if(prefab) *this = *prefab;
     }
 
@@ -309,11 +331,16 @@ namespace elysian {
         _dmgRecovering = true;
         _dmgRecoveryElapsed = 0.0f;
     }
+    inline AggroManager& CombatBase::getAggroManager(void) { return _aggroMgr; }
 
     //===== AGGROMANAGER INLINEZ ======
-#if 0
-    inline bool AggroManager::EmnityTableEntry::operator <(const EmnityTableEntry& rhs) const {
-        return emnity < rhs.emnity;
+
+    inline AggroManager::AggroManager(Entity* parent):
+        _parentEntity(parent)
+    {}
+
+    inline AggroManager::~AggroManager(void) {
+        clear();
     }
 
     inline void AggroManager::clear(void) {
@@ -323,80 +350,70 @@ namespace elysian {
 
     //Aggro
     inline unsigned AggroManager::getAggroedCount(void) const {
-        return _aggroList.size();
+        return _aggroedList.size();
     }
 
     inline Entity* AggroManager::getAggroedEntity(unsigned index) const {
-        assert(index < _aggroList.size());
-        return _aggroList[index];
+        assert(index < _aggroedList.size());
+        return _aggroedList[index];
     }
 
     inline void AggroManager::addAggroedEntity(Entity *entity) {
-        _aggroList.push_back(entity);
+        _aggroedList.push_back(entity);
     }
 
     inline void AggroManager::removeAggroedEntity(Entity *entity) {
-        for(auto it = _aggroList.begin(); it != _aggroList.end(); ++it) {
+        for(auto it = _aggroedList.begin(); it != _aggroedList.end(); ++it) {
             if((*it) == entity) {
-                _aggroList.erase(it);
+                _aggroedList.erase(it);
                 return;
             }
         }
     }
 
     inline void AggroManager::clearAggroedList(void) {
-        _aggroList.clear();
+        _aggroedList.clear();
     }
 
 
 
     inline Entity* AggroManager::getEntityAtEmnityPriority(unsigned index) const {
-        assert(index < _emnityTable.size());
-        return _emnityTable[index];
+        return (index < _emnityTable.size())? _emnityTable[index].entity : nullptr;
     }
 
     inline unsigned AggroManager::getEntityEmnity(Entity *entity) const {
-        assert(index < _emnityTable.size());
         for(auto&& it : _emnityTable) {
             if(it.entity == entity) return it.emnity;
         }
         return 0;
     }
 
-    inline void AggroManager::addEntityEmnity(Entity *entity, int emnityDelta) {
-        for(auto& it : _emnityTable) {
-            if(it.entity == entity) {
-                it.emnity += emnityDelta;
-                return;
-            }
-        }
-        _emnityTable.emplace(entity, emnity);
-    }
-
-    inline void AggroManager::setEntityEmnity(Entity *entity, unsigned emnityVal) {
-        for(auto& it : _emnityTable) {
-            if(it.entity == entity) {
-                it.emnity = emnityDelta;
-                return;
-            }
-        }
-        _emnityTable.emplace(entity, emnity);
-    }
-
     inline unsigned AggroManager::getEmnityTableSize(void) const {
         return _emnityTable.size();
     }
 
-    inline unsigned AggroManager::getEmnityTableSize(void) const {
-        return _emnityTable.size();
-    }
-
-    inline void AggroManager::getEmnityTableEntry(unsigned index, Entity *&entity, unsigned &emnity) const {
+    inline void AggroManager::getEmnityTableEntry(unsigned index, Entity*& entity, int16_t &emnity) const {
         assert(index < _emnityTable.size());
         entity = _emnityTable[index].entity;
         emnity = _emnityTable[index].emnity;
     }
-#endif
+
+    inline void AggroManager::_updateEmnityTable(void) {
+        if(_emnityTable.size()) {
+            std::sort(_emnityTable.begin(), _emnityTable.end(),
+                [](const EmnityEntry& lhs, const EmnityEntry& rhs) {
+                    return (lhs.emnity > rhs.emnity);
+                });
+        }
+
+        _updateTargetEntity();
+    }
+
+    inline void AggroManager::clearEmnityTable(void) {
+        _emnityTable.clear();
+        _updateTargetEntity();
+    }
+
 
 }
 

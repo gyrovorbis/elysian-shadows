@@ -302,7 +302,7 @@ namespace elysian {
         ++_depth;
         GY_ASSERT(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
         setCurrentCamera(state);
-        //_curState = state;
+        _curState = state;
         _customState = true;
     }
 

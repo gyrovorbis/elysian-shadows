@@ -85,6 +85,7 @@ namespace elysian {
         GYVector3*  _ptr;
 
                     Vector3(void);
+                    Vector3(const float val);
                     Vector3(const float x, const float y, const float z);
                     Vector3(GYVector3*const vec3);
                     Vector3(const GYVector3& vec3);
@@ -119,6 +120,13 @@ namespace elysian {
         void        setX(const float val) const;
         void        setY(const float val) const;
         void        setZ(const float val) const;
+
+        void        addVec(const Vector3& rhs);
+        void        subVec(const Vector3& rhs);
+        void        multVec(const Vector3& rhs);
+        void        divVec(const Vector3& rhs);
+        void        multScalar(float scalar);
+        void        divScalar(float scalar);
 
         float       getMagnitude(void) const;
         float       squaredDistance(const Vector3& rhs) const;
@@ -503,6 +511,7 @@ namespace elysian {
 
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
+    inline Vector3::Vector3(const float val): Vector3(val, val, val) {}
     inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}), _ptr(this) {}
     inline Vector3::Vector3(const GYVector3& vec3): Vector3(vec3.x, vec3.y, vec3.z) {}
     inline Vector3::Vector3(const Vector3 &other) : LuaTableProxy<Vector3>() {
@@ -650,6 +659,31 @@ namespace elysian {
    inline Vector3& Vector3::operator/=(float scalar) {
        gyVec3ScaleAccum(this, 1.0f/scalar);
        return *this;
+   }
+
+   inline void Vector3::addVec(const Vector3& rhs) {
+       setX(getX() + rhs.getX()); setY(getY() + rhs.getY()); setZ(getZ() + rhs.getZ());
+   }
+
+   inline void Vector3::subVec(const Vector3& rhs) {
+       setX(getX() - rhs.getX()); setY(getY() - rhs.getY()); setZ(getZ() - rhs.getZ());
+   }
+
+   inline void Vector3::multVec(const Vector3& rhs) {
+        setX(getX() * rhs.getX()); setY(getY() * rhs.getY()); setZ(getZ() * rhs.getZ());
+   }
+
+   inline void Vector3::divVec(const Vector3& rhs) {
+        setX(getX() / rhs.getX()); setY(getY() / rhs.getY()); setZ(getZ() / rhs.getZ());
+   }
+
+   inline void Vector3::multScalar(float scalar) {
+        multVec(Vector3(scalar));
+   }
+
+   inline void Vector3::divScalar(float scalar) {
+       const float inv = 1.0f/scalar;
+        multVec(Vector3(inv));
    }
 
     inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}
