@@ -255,9 +255,14 @@ void InputSystemBase::_onKeyboardRemoved(void) {
 
 void InputSystemBase::_onVMUAttached(unsigned slot) {
     dbgprintf("InputSystem: VMU Attached! [Port: %d]", slot);
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+    getVMU(slot)->beep(2, 1);
+#endif
     if(strlen(_vmuDefaultIcon)) {
         getVMU(slot)->loadIcon(_vmuDefaultIcon);
     }
+    //Play Dreamcast-y style plug-in beep
+
 }
 
 void InputSystemBase::_onVMURemoved(unsigned slot) {

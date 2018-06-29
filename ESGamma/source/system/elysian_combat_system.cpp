@@ -258,6 +258,7 @@ void CombatSystem::sendStatusModifier(Combat* const target,
   if (target->getDmgType() != Combat::DMG_TARGET &&
       target->getDmgType() != Combat::DMG_SOURCE_TARGET)
     return;
+  if(!target->getDmgActive()) return;
 
   getBehavSys()->onCombatReceiveStatusModifier(target->getEntity(), modifier);
 
@@ -268,8 +269,6 @@ void CombatSystem::sendStatusModifier(Combat* const target,
   }
 
   target->startDmgRecoveryTimer();
-
-  _curActionRes.initialVel = GYVector2{0.0f, -3.0f};
   if (_curActionRes.contact) {
     _curActionRes.contact->getNormal(_curActionRes.initialVel);
     // gyVec2ScaleAccum(&_curActionRes.initialVel,
@@ -280,7 +279,9 @@ void CombatSystem::sendStatusModifier(Combat* const target,
     // target->getEntity()->getCollidable()) {
     //	gyVec2ScaleAccum(&_curActionRes.initialVel, -1.0f);
     //}
-  }
+  } else _curActionRes.initialVel = GYVector2 { 0.0f, 1.0f };
+
+  gyVec2ScaleAccum(&_curActionRes.initialVel, -100.0f);
 
   // Emit combat text from target
   _emitCombatModifierText(target, *modifier);
@@ -404,7 +405,7 @@ void CombatSystem::_emitCombatModifierText(const Combat* const target,
   if (target->getTargetType() == Combat::TARGET_PARTY ||
       target->getTargetType() == Combat::TARGET_FRIENDLY) {
     emitIntegerAttrib(modifier.getHp(), GYColor4{100, 255, 100, 255},
-                      GYColor4{255, 100, 100, 255});
+                      GYColor4{255, 50, 20, 255});
     emitIntegerAttrib(modifier.getMp(), GYColor4{100, 100, 255, 255},
                       GYColor4{200, 100, 50, 255});
   } else {

@@ -223,7 +223,7 @@ bool PlayableBehavior::isAlive(void) const {
 }
 
 void PlayableBehavior::_playerIndexChanged(int oldIndex, int newIndex) {
-
+#if 0
     LuaBehavior* behav = getEntity()->getLuaBehavior("/assets/scripts/combat/_player_combat_behav.lua");
     if(behav) {
         LuaEvent event({
@@ -234,6 +234,7 @@ void PlayableBehavior::_playerIndexChanged(int oldIndex, int newIndex) {
         });
         System::getEventSys()->sendEvent(&event, behav);
     }
+#endif
 }
 
 }

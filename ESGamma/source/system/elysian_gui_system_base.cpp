@@ -135,9 +135,8 @@ void GuiSystem::update(void) {
 
     //update CombatText
     for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
-
-        gyVec2AddAccum(&(*it).pos, &(*it).vel);
-        gyVec2AddAccum(&(*it).vel, &_combatTextGravity);
+        gyVec2AddScaled(&(*it).pos, &(*it).vel, deltaTime);
+        gyVec2AddScaled(&(*it).vel, &_combatTextGravity, deltaTime);
         (*it).timer += deltaTime;
         (*it).color.a = 255.0f - ((*it).timer/ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE)*255.0f;
 
