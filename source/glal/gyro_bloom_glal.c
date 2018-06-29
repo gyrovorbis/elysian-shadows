@@ -56,7 +56,7 @@ int gyVidBloomResizeFramebuffer(unsigned width, unsigned height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GYRO_GLAL_BLOOM_TEXTURE_WRAP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width/2, height/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     }
 
     return 1;
@@ -229,7 +229,7 @@ void gyVidApplyBloom(void) {
                            GL_TEXTURE_2D,
                            _horizontalConvTex,
                            0);
-    glViewport(0, 0, scrWidth/2, scrHeight/2);
+    glViewport(0, 0, scrWidth, scrHeight);
     glClear(GL_COLOR_BUFFER_BIT);
     //GLenum attachments[1] = { GL_COLOR_ATTACHMENT0 };
     //glDrawBuffers(1, attachments);
@@ -271,7 +271,7 @@ void gyVidApplyBloom(void) {
     glalVidBindDefaultFbo();
     glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
 
-#if 0
+#if 1
     gyVidAlphaLevel(GY_ALPHA_NONE);
 
 #else
@@ -283,8 +283,8 @@ void gyVidApplyBloom(void) {
     gyVidTexBind(NULL);
 
             glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 0);
-   // gyVidNormalMapBind(NULL);
-    //gyVidSpecularMapBind(NULL);
+   gyVidNormalMapBind(NULL);
+    gyVidSpecularMapBind(NULL);
     //Render fullscreen quad.
     gyMatPush();
     gyMatLoadIdentity();
@@ -309,8 +309,8 @@ void gyVidApplyBloom(void) {
     gyVidTexBind(NULL);
     gyVidTexBind(&tex);
             glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
-   // gyVidNormalMapBind(NULL);
-    //gyVidSpecularMapBind(NULL);
+   gyVidNormalMapBind(NULL);
+    gyVidSpecularMapBind(NULL);
     //Render fullscreen quad.
     gyMatPush();
     gyMatLoadIdentity();
