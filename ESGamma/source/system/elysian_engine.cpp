@@ -53,6 +53,7 @@ Engine::Engine(void):
 
     //allocate systems
     _eventSystem        = new EventSystem;
+    _audioSystem		= new AudioSystem;
     _partySystem		= new PartySystem;
     _inputSystem        = new InputSystem;
     _levelSystem		= new LevelSystem;
@@ -65,7 +66,6 @@ Engine::Engine(void):
     _rigidBodySystem	= new RigidBodySystem;
     _guiSystem			= new GuiSystem;
     _behaviorSystem		= new BehaviorSystem;
-    _audioSystem		= new AudioSystem;
     _lightSystem		= new LightSystem;
     _particleSystem		= new ParticleSystem;
     _daySystem			= new DaySystem;
@@ -411,7 +411,6 @@ Engine::~Engine(void) {
     delete _mapSystem;
     delete _cameraSystem;
     delete _timerSystem;
-    delete _audioSystem;
     delete _lightSystem;
     delete _rigidBodySystem;
     delete _collisionSystem;
@@ -420,6 +419,7 @@ Engine::~Engine(void) {
     delete _pathfindingSystem;
     delete _eventSystem;
     delete _computeSystem;
+    delete _audioSystem;
 
     dbgpop();
 

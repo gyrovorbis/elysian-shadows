@@ -2,6 +2,7 @@
 #include <crtp/elysian_debug.hpp>
 #include <system/elysian_event_system.hpp>
 #include <gyro_file_api.h>
+#include <system/elysian_audio_system.hpp>
 
 namespace elysian {
 
@@ -186,12 +187,17 @@ InputSystemBase::InputSystemBase(void) {
     for(unsigned i = 0; i < ELYSIAN_INPUT_VMUS_MAX; ++i) {
         _vmus[i].setPlayerIndex(i);
     }
+
+    _deviceAttachedSfx = gyAudWavCreate(ELYSIAN_INPUT_DEVICE_ATTACHED_SFX);
+    _deviceRemovedSfx = gyAudWavCreate(ELYSIAN_INPUT_DEVICE_REMOVED_SFX);
     //Initial input poll, to initialize controller/mouse/keyboard handles
     update();
 }
 
 InputSystemBase::~InputSystemBase(void) {
     gyVisualMemoryUninit();
+    gyAudWavDestroy(_deviceAttachedSfx);
+    gyAudWavDestroy(_deviceRemovedSfx);
 }
 
 bool InputSystemBase::initialize(const GYInputInitParams*const params) {
@@ -226,31 +232,37 @@ bool InputSystemBase::uninitialize(void) {
 void InputSystemBase::_onControllerAttached(const unsigned slot) {
     dbgprintf("InputSystem: Controller Attached! [Port: %d]", slot);
     getEventSys()->broadcastEvent(ControllerEvent(EVENT_CONTROLLER_ATTACHED, &_controllers[slot]));
+    getAudioSys()->playSfxChannel(-1, *_deviceAttachedSfx);
 }
 
 void InputSystemBase::_onControllerRemoved(const unsigned slot) {
     dbgprintf("InputSystem: Controller Removed! [Port: %d]", slot);
     getEventSys()->broadcastEvent(ControllerEvent(EVENT_CONTROLLER_REMOVED, &_controllers[slot]));
+    getAudioSys()->playSfxChannel(-1, *_deviceRemovedSfx);
 }
 
 void InputSystemBase::_onMouseAttached(void) {
     dbgprintf("InputSystem: Mouse Attached!");
     getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_MOUSE_ATTACHED, 0, InputDeviceEvent::ATTACHED));
+    getAudioSys()->playSfxChannel(-1, *_deviceAttachedSfx);
 }
 
 void InputSystemBase::_onMouseRemoved(void) {
     dbgprintf("InputSystem: Mouse Removed!");
     getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_MOUSE_REMOVED, 0, InputDeviceEvent::REMOVED));
+    getAudioSys()->playSfxChannel(-1, *_deviceRemovedSfx);
 }
 
 void InputSystemBase::_onKeyboardAttached(void) {
     dbgprintf("InputSystem: Keyboard Attached!");
     getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_KEYBOARD_ATTACHED, 0, InputDeviceEvent::ATTACHED));
+    getAudioSys()->playSfxChannel(-1, *_deviceAttachedSfx);
 }
 
 void InputSystemBase::_onKeyboardRemoved(void) {
     dbgprintf("InputSystem: Keyboard Removed!");
     getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_KEYBOARD_REMOVED, 0, InputDeviceEvent::REMOVED));
+    getAudioSys()->playSfxChannel(-1, *_deviceRemovedSfx);
 }
 
 void InputSystemBase::_onVMUAttached(unsigned slot) {
@@ -262,15 +274,17 @@ void InputSystemBase::_onVMUAttached(unsigned slot) {
         getVMU(slot)->loadIcon(_vmuDefaultIcon);
     }
     //Play Dreamcast-y style plug-in beep
-
+    getAudioSys()->playSfxChannel(-1, *_deviceAttachedSfx);
 }
 
 void InputSystemBase::_onVMURemoved(unsigned slot) {
     dbgprintf("InputSystem: VMU Removed! [Port: %d]", slot);
+    getAudioSys()->playSfxChannel(-1, *_deviceRemovedSfx);
 }
 
 void InputSystemBase::_onRumbleDeviceAttached(unsigned slot) {
     dbgprintf("InputSystem: RumbleDevice Attached! [Port: %d]", slot);
+ //   getAudioSys()->playSfxChannel(-1, *_deviceAttachedSfx);
 }
 
 void InputSystemBase::_onRumbleDeviceRemoved(unsigned slot) {

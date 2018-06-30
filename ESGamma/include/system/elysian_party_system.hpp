@@ -13,9 +13,8 @@
 #define ELYSIAN_PARTY_SLOTS_MAX                         5
 #define ELYSIAN_PARTY_GUEST_SLOTS_MAX                   10
 
-#define ELYSIAN_PARTY_SYSTEM_PLAYER_JOIN_SFX          "/assets/audio/XXX"
-#define ELYSIAN_PARTY_SYSTEM_PLAYER_QUIT_SFX          "/assets/audio/XXX"
-#define ELYSIAN_PARTY_SYSTEM_PLAYER_SLOT_SWAP_SFX     "/assets/audio/XXX"
+#define ELYSIAN_PARTY_SYSTEM_PLAYER_JOIN_SFX          "/assets/audio/sfx/UI/player_connect.wav"
+#define ELYSIAN_PARTY_SYSTEM_PLAYER_SLOT_SWAP_SFX     "/assets/audio/sfx/UI/menu_select_02.wav"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -137,6 +136,8 @@ namespace elysian {
         float                   _dashAnimSpeedMultiplier    = 5.0f;
         bool                    _footStepSfxLooping         = false;
         GYWav*                  _curWalkSfx                 = nullptr;
+        GYWav*                  _playerJoinSfx              = nullptr;
+        GYWav*                  _playerSwapSfx              = nullptr;
         bool                    _wasOnGround                = true;
         bool                    _partyActive                = false;
         bool                    _followLogic                = true;

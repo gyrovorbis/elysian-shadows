@@ -23,6 +23,24 @@ typedef struct _BloomShaderProgram {
     GLint						uniformLoc[BLOOM_SHADER_UNIFORM_MAX];
 } _BloomShaderProgram;
 
+typedef enum __QUARTER_DOWNSCALE_SHADER_ATTRIB {
+    QUARTER_DOWNSCALE_SHADER_POS         = GLAL_SHADER_POS,
+    QUARTER_DOWNSCALE_SHADER_TEX_COORD   = GLAL_SHADER_TEX_COORD,
+    QUARTER_DOWNSCALE_SHADER_ATTRIB_MAX
+} QUARTER_DOWNSCALE_SHADER_ATTRIB;
+
+typedef enum QUARTER_DOWNSCALE_SHADER_UNIFORM {
+    QUARTER_DOWNSCALE_SHADER_TEXTURE_MAP,
+    QUARTER_DOWNSCALE_SHADER_UNIFORM_MAX
+} QUARTER_DOWNSCALE_SHADER_UNIFORM;
+
+typedef struct _QuarterDownscaleShaderProgram {
+    GYShaderProgram*            program;
+    GLint                       attribLoc[QUARTER_DOWNSCALE_SHADER_ATTRIB_MAX];
+    GLint                       uniformLoc[QUARTER_DOWNSCALE_SHADER_ATTRIB_MAX];
+} _QuarterDownscaleShaderProgram;
+
+
 extern GLuint               _glalMainFbo;
 extern GLuint               _glalColorTex;
 extern GLuint               _glalGlowTex;
@@ -31,21 +49,30 @@ extern GLuint               _glalGlowTex;
 //TERMINLOLOGY
 //
 
-static _BloomShaderProgram   _bloomShader;
+static _BloomShaderProgram  _bloomShader;
 static GLuint               _bloomBuffFbo;
-static GLuint               _bloomBuffTex;
+static GLuint               _bloomVao;
+static GLuint               _bloomVbo;
+
+static _QuarterDownscaleShaderProgram   _downscaleShader;
+static GLuint               _downscaleTex;
+static GLuint               _downscaleFbo;
+static GLuint               _downscaleVao;
+static GLuint               _downscaleVbo;
+
+
 static GLuint               _horizontalConvFbo;
 static GLuint               _horizontalConvTex;
 static GLuint               _finalConvTex;
-static GLuint               _bloomVao;
-static GLuint               _bloomVbo;
+
+
 
 static int                  _bloomInitialized = 0;
 
 
 int gyVidBloomResizeFramebuffer(unsigned width, unsigned height) {
     GLuint textures[3] = {
-        _bloomBuffTex,
+        _downscaleTex,
         _horizontalConvTex,
         _finalConvTex
     };
@@ -56,7 +83,7 @@ int gyVidBloomResizeFramebuffer(unsigned width, unsigned height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GYRO_GLAL_BLOOM_TEXTURE_WRAP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GYRO_GLAL_BLOOM_TEXTURE_FILTER);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width/4, height/4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     }
 
     return 1;
@@ -106,11 +133,11 @@ int glalVidInitializeBloom(void) {
 
     glGenFramebuffers(1, &_bloomBuffFbo);
     glGenFramebuffers(1, &_horizontalConvFbo);
-    glGenTextures(1, &_bloomBuffTex);
+    glGenTextures(1, &_downscaleTex);
     glGenTextures(1, &_horizontalConvTex);
     glGenTextures(1, &_finalConvTex);
 
-    if(_bloomBuffTex == 0 || _horizontalConvTex == 0 || _bloomBuffFbo == 0 || _horizontalConvFbo == 0 || _finalConvTex == 0) {
+    if(_downscaleTex == 0 || _horizontalConvTex == 0 || _bloomBuffFbo == 0 || _horizontalConvFbo == 0 || _finalConvTex == 0) {
         _gyLog(GY_DEBUG_ERROR, "Error creating FBOs and texture targets.");
         _gyPop(1);
         return 0;
@@ -150,6 +177,35 @@ int glalVidInitializeBloom(void) {
     glVertexAttribPointer(_bloomShader.attribLoc[BLOOM_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)0);
     glVertexAttribPointer(_bloomShader.attribLoc[BLOOM_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
     gyVidVertexArrayBind(0);
+
+    //==== QUARTER DOWNSCALE SHADER=====
+    vertShader = gyShaderCreate(GYRO_GLAL_DOWNSCALE_VERTEX_SHADER);
+    fragShader = gyShaderCreate(GYRO_GLAL_DOWNSCALE_FRAGMENT_SHADER);
+    success &= (vertShader && fragShader);
+
+    _downscaleShader.program = gyShaderProgramCreate(vertShader, fragShader);
+
+    if(_downscaleShader.program) {
+        _downscaleShader.attribLoc[QUARTER_DOWNSCALE_SHADER_POS]            = _protectedAttribQuery(_downscaleShader.program, "aPos", 0);
+        _downscaleShader.attribLoc[QUARTER_DOWNSCALE_SHADER_TEX_COORD]      = _protectedAttribQuery(_bloomShader.program, "aTexCoord", 0);
+        _downscaleShader.uniformLoc[QUARTER_DOWNSCALE_SHADER_TEXTURE_MAP]   = _protectedAttribQuery(_downscaleShader.program, "uTexSrc", 0);
+    }
+
+    glGenBuffers(1, &_downscaleVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, _downscaleVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*4, vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glGenVertexArrays(1, &_downscaleVao);
+    gyVidVertexArrayBind(_downscaleVao);
+    glBindBuffer(GL_ARRAY_BUFFER, _downscaleVbo);
+
+    glEnableVertexAttribArray(_downscaleShader.attribLoc[QUARTER_DOWNSCALE_SHADER_POS]);
+    glEnableVertexAttribArray(_downscaleShader.attribLoc[QUARTER_DOWNSCALE_SHADER_TEX_COORD]);
+    glVertexAttribPointer(_downscaleShader.attribLoc[QUARTER_DOWNSCALE_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)0);
+    glVertexAttribPointer(_downscaleShader.attribLoc[QUARTER_DOWNSCALE_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
+    gyVidVertexArrayBind(0);
+
     
     //=====ATTACH BLOOM ATTACHMENT TO DEFAULT FRAMEBUFFER=======
     //glBindFramebuffer(GL_READ_FRAMEBUFFER, glalVidDefaultFbo());
@@ -157,7 +213,7 @@ int glalVidInitializeBloom(void) {
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                            GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D,
-                           _bloomBuffTex,
+                           _downscaleTex,
                            0);
     //gyVidResolution(&scrWidth, &scrHeight);
 
@@ -175,7 +231,7 @@ int glalVidUninitializeBloom(void) {
     int success = gyShaderProgramDestroy(_bloomShader.program);
     glDeleteFramebuffers(1, &_bloomBuffFbo);
     glDeleteFramebuffers(1, &_horizontalConvFbo);
-    glDeleteTextures(1, &_bloomBuffTex);
+    glDeleteTextures(1, &_downscaleTex);
     glDeleteTextures(1, &_horizontalConvTex);
     glDeleteTextures(1, &_finalConvTex);
     glDeleteVertexArrays(1, &_bloomVao);
@@ -202,6 +258,26 @@ void gyVidApplyBloom(void) {
     //1 - Copy backbuffer to texture.
     gyVidVertexBatchFlush();
 
+    gyVidSetCurrentShaderProgram(_downscaleShader.program);
+    glBindFramebuffer(GL_FRAMEBUFFER, _bloomBuffFbo);
+    glBindTexture(GL_TEXTURE_2D, _downscaleTex);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D,
+                           _downscaleTex,
+                           0);
+    glViewport(0, 0, scrWidth/4, scrHeight/4);
+    glClear(GL_COLOR_BUFFER_BIT);
+    GLenum status;
+     if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+         _gyLog(GY_DEBUG_ERROR, "Binding GLAL horizontal bloom texture to frame buffer has reested - %d!", status);
+         return;
+     }
+     //Render fullscreen quad
+     glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
+     gyVidVertexArrayBind(_bloomVao);
+     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+         gyVidVertexBatchFlush();
 
 #if 1
 #if 0
@@ -229,18 +305,17 @@ void gyVidApplyBloom(void) {
                            GL_TEXTURE_2D,
                            _horizontalConvTex,
                            0);
-    glViewport(0, 0, scrWidth, scrHeight);
+    glViewport(0, 0, scrWidth/4, scrHeight/4);
     glClear(GL_COLOR_BUFFER_BIT);
     //GLenum attachments[1] = { GL_COLOR_ATTACHMENT0 };
     //glDrawBuffers(1, attachments);
-    GLenum status;
      if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
          _gyLog(GY_DEBUG_ERROR, "Binding GLAL horizontal bloom texture to frame buffer has reested - %d!", status);
          return;
      }
 
     //Render fullscreen quad
-    glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
+    glBindTexture(GL_TEXTURE_2D, _downscaleTex);
     gyVidVertexArrayBind(_bloomVao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         gyVidVertexBatchFlush();
@@ -269,10 +344,10 @@ void gyVidApplyBloom(void) {
     gyVidSetDefaultShaderProgram();
    gyVidVertexArrayBind(0);
     glalVidBindDefaultFbo();
-    glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
+    glViewport(0.0f, 0.0f, scrWidth, scrHeight);
 
-#if 1
-    gyVidAlphaLevel(GY_ALPHA_NONE);
+#if 0
+    gyVidAlphaLevel(GY_ALPHA_FULL);
 
 #else
     gyVidDepthTest(0);

@@ -5,7 +5,9 @@
 #define ELYSIAN_INPUT_CONTROLLERS_MAX                   ELYSIAN_INPUT_PLAYERS_MAX
 #define ELYSIAN_INPUT_VMUS_MAX                          ELYSIAN_INPUT_PLAYERS_MAX
 #define ELYSIAN_INPUT_RUMBLE_DEVICES_MAX                ELYSIAN_INPUT_PLAYERS_MAX
-#define ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT    0
+#define ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT   0
+#define ELYSIAN_INPUT_DEVICE_ATTACHED_SFX               "/assets/audio/sfx/UI/device_connect.wav"
+#define ELYSIAN_INPUT_DEVICE_REMOVED_SFX                "/assets/audio/sfx/UI/device_disconnect.wav"
 
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MIN    0.3f
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MAX    0.7f
@@ -15,6 +17,8 @@
 #include <gyro_input_api.h>
 #include <gyro_visual_memory_api.h>
 #include <system/elysian_event_system.hpp>
+
+struct GYWav;
 
 namespace elysian {
     class Mouse;
@@ -249,6 +253,8 @@ namespace elysian {
         Mouse               _mouse;
         PowerSupply         _powerSupply;
         char                _vmuDefaultIcon[GYRO_PATH_MAX_SIZE]         = { '\0' };
+        GYWav*              _deviceAttachedSfx                          = nullptr;
+        GYWav*              _deviceRemovedSfx                           = nullptr;
 
         int                 _keyboardAsControllerPort = ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT;
 

@@ -27,6 +27,9 @@ PartySystem::PartySystem(void) {
     memset(_unassignedPlayerIndices, -1, sizeof(int)*ELYSIAN_PARTY_SLOTS_MAX);
     memset(_partySlotFromPlayerIndex, -1, sizeof(int)*ELYSIAN_PARTY_SLOTS_MAX);
 
+    _playerJoinSfx = gyAudWavCreate(ELYSIAN_PARTY_SYSTEM_PLAYER_JOIN_SFX);
+    _playerSwapSfx = gyAudWavCreate(ELYSIAN_PARTY_SYSTEM_PLAYER_SLOT_SWAP_SFX);
+
     for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _players[i].setPlayerNum(i);
 
     getEventSys()->addEventObserver(this, EVENT_AREA_ENTER);
@@ -42,6 +45,8 @@ PartySystem::~PartySystem(void) {
     for(auto* entity : _playables) {
         delete entity;
     }
+    gyAudWavDestroy(_playerSwapSfx);
+    gyAudWavDestroy(_playerJoinSfx);
 #endif
 }
 
@@ -776,6 +781,7 @@ void PartySystem::pollUnassignedPlayers(void) {
                 if(assignPlayerIndex(playerIndex)) {
                     dbgprintf("Player[%d] assuming control of party member [%d]", playerIndex, getSlotFromPlayerIndex(playerIndex));
                     removeUnassignedPlayerIndex(playerIndex);
+                    getAudioSys()->playSfxChannel(-1, *_playerJoinSfx);
                 } else {
                     dbgprintf("Player[%d] could not join the party!", playerIndex);
                 }
@@ -855,6 +861,7 @@ void PartySystem::_checkDpadPartyMemberSwap(void) {
             if(newSlot != UnassignedPlayerIndex) {
                 swapPlayerIndexSlots(playerIndex, s, newSlot);
                 dbgprintf("Reassigning Player[%d]'s Party Slot: [%d]=>[%d]", playerIndex, s, newSlot);
+                getAudioSys()->playSfxChannel(-1, *_playerSwapSfx);
             }
 
         }
