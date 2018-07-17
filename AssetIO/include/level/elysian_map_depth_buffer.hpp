@@ -234,6 +234,7 @@ namespace elysian {
         memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
         _enableDepthTest();
         _processTiles();
+        if(!_isShadowPass()) _renderCustomPassImmediate();
 
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ====
 
@@ -430,7 +431,6 @@ _enableDepthTest();
            // static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 
-
             _enableDepthTest();
             //_beginObjectList();
             for(int j = _scrStartY; j <= _scrEndY; ++j) {
@@ -490,7 +490,6 @@ _enableDepthTest();
 
         //static_cast<T*>(this)->flushTileBuffer();
         //static_cast<T*>(this)->unbindTileBuffer();
-        if(!_isShadowPass()) _renderCustomPassImmediate();
     }
 
     template<typename T, typename O, typename E>

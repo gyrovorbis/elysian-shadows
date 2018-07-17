@@ -25,7 +25,7 @@ namespace elysian {
 
 DialogSystem::DialogSystem(void) {
 	/*
-	 Set the initial values for main text canvas.4
+     Set the initial values for main text canvas.
 	*/
     static const GYColor4 canvColor1 = { 0, 0, 0, 255 };
     static const GYColor4 canvColor2 = { 0, 0, 0, 255 };
@@ -44,7 +44,7 @@ DialogSystem::DialogSystem(void) {
 	_mainCanvas.setVertexColor(1, canvColor2);
 	_mainCanvas.setVertexColor(2, canvColor3);
 	_mainCanvas.setVertexColor(3, canvColor4);
-	_mainCanvas.setVerticesAlpha(100, 100, 100, 100);
+    _mainCanvas.setVerticesAlpha(100, 100, 100, 100);
 
 	_optionBox.setVertexColor(0, optBoxColor);
 	_optionBox.setVertexColor(1, optBoxColor);

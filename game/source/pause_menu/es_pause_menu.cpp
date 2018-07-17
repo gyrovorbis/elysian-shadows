@@ -126,7 +126,7 @@ PauseMenu::PauseMenu(void):
     menu->setLayout(new VerticalLayout);
     //menu->setMaxSize(Vector2(600, 440));
    // menu->setMaxSize(Vector2(750, 600));
-    _mainFrameWidgets[1] = menu;
+    _mainFrameWidgets[2] = menu;
     //_optionsGroupWidget->getLayout<VerticalLayout>()->insertWidget(0, menu);
 
     //===== END TEMP FUCKERY =====

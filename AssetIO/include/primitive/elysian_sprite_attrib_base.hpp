@@ -144,7 +144,7 @@ namespace elysian {
     inline void SpriteAttribBase::submitHeader(void) {
         if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
         else gyVidAlphaLevel(GY_ALPHA_FULL);
-
+        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         //gyVidMaterialBind(nullptr);
         gyVidTexBind(_tex);
         gyVidQuadListBegin(&_color);

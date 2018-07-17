@@ -139,7 +139,7 @@ void MapView::_entitySceneSelectionUpdate(void) {
         sprAttrib->setColor(GYColor4{ 0, 255, 255, 25});
         render->setSpriteAttrib(sprAttrib);
         auto* mat = new elysian::Material;
-        mat->setEmissiveColor(GYVector4{0.0f, 1.0f, 1.0f, 0.0f});
+        mat->setEmissiveColor(GYVector4{0.0f, 0.0f, 0.0f, 0.0f});
         sprAttrib->setMaterial(mat);
 
         auto colAttrib = std::make_shared<elysian::CollidableAttrib>();

@@ -376,11 +376,11 @@ void AreaBase::populateVbo(void) {
         for(unsigned y = 0; y < height; ++y) {
             for(unsigned x = 0; x < width; ++x) {
                 for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
-                TileEntry tileEntry = getTileEntry(z, x, y);
+                    TileEntry tileEntry = getTileEntry(z, x, y);
 
-                vboEntryFromTileEntry(curPtr, &tileEntry, x, y, z);
+                    vboEntryFromTileEntry(curPtr, &tileEntry, x, y, z);
 
-                curPtr += 4;
+                    curPtr += 4;
                 }
 
             }

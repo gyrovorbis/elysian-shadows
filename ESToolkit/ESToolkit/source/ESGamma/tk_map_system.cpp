@@ -8,12 +8,12 @@ void TkMapSystem::staticInitialize(void) {
     MapSystemBase::staticInitialize();
 
     _bgMat = new elysian::Material;
-    _bgMat->setEmissiveColor(GYVector4{4.0f, 4.0f, 4.0f, 0.0f});
+    _bgMat->setEmissiveColor(GYVector4{0.0f, 0.0f, 0.0f, 0.0f});
 
     _selMat = new elysian::Material[DRAW_MAX];
-    _selMat[DRAW_SELECTING].setEmissiveColor(GYVector4{0.0f, 1.0f, 1.0f, 0.0f});
-    _selMat[DRAW_SELECTION].setEmissiveColor(GYVector4{1.0f, 1.0f, 0.0f, 0.0f});
-    _selMat[DRAW_FILLING].setEmissiveColor(GYVector4{1.0f, 0.0f, 1.0f, 0.0f});
+    _selMat[DRAW_SELECTING].setEmissiveColor(GYVector4{0.0f, 0.0f, 0.0f, 0.0f});
+    _selMat[DRAW_SELECTION].setEmissiveColor(GYVector4{0.0f, 0.0f, 0.0f, 0.0f});
+    _selMat[DRAW_FILLING].setEmissiveColor(GYVector4{0.0f, 0.0f, 0.0f, 0.0f});
 
 }
 

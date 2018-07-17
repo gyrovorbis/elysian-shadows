@@ -51,7 +51,7 @@ namespace elysian {
     inline Material::Material(void):
         GYMaterial{
             { 1.0f, 1.0f, 1.0f, 1.0f },
-            { 1.0f, 1.0f, 1.0f, 1.0f },
+            { 1.0f, 1.0f, 1.0f, 0.0f },
             { 0.0f, 0.0f, 0.0f, 0.0f },
             { 0.0f, 0.0f, 0.0f, 0.0f },
             1.0f

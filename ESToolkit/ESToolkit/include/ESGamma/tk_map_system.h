@@ -70,9 +70,9 @@ inline void TkMapSystem::renderCustomPassImmediate(void) {
                 }
             }
         }
-        if(count)
-            _renderCustomPass(count, _objectBuffImmediate, elysian::NORMAL_FLAT);
     }
+    if(count)
+        _renderCustomPass(count, _objectBuffImmediate, elysian::NORMAL_FLAT);
 }
 
 inline void TkMapSystem::renderCustomPassAtElev(const int elev, const elysian::NORMAL_TYPE normalType) const {
@@ -129,6 +129,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
     gyVidRectPlaneType(planeType);
 
     if(_tileDecor != TILE_DECOR_NONE) {
+        gyVidDepthTest(false);
         gyVidAlphaLevel(GY_ALPHA_NONE);
         auto& twcen = getGuiSys()->pragmata18;
         twcen.setColor(255, 255, 255, 255);
@@ -185,14 +186,14 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidSpecularMapBind(nullptr);
         gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        //gyVidDepthTest(1);
-      gyVidMaterialBind(&_selMat[drawStyle]);
+        gyVidDepthTest(false);
+        gyVidDepthTest(false);
+        gyVidMaterialBind(&_selMat[drawStyle]);
 
         const GYColor4& color = selectionDecorColors[drawStyle];
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
 
         //WTF?
-        //gyVidDepthTest(true);
         gyVidQuadListBegin(&color);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
@@ -204,8 +205,8 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             gyMatLoadIdentity();
             if(normalType == elysian::NORMAL_FLAT)
                 //Had to add the offset of +3.0f to get the decoration above tiles. Could be potentially reested.
-                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f, 32.0f, 32.0f, 32.0f);
-            else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f, 32.0f, 32.0f, 32.0f);
+                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f+10.0, 32.0f, 32.0f, 32.0f);
+            else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f+10.0, 32.0f, 32.0f, 32.0f);
             gyVidRect(-1);
             gyMatPop();
 
@@ -213,9 +214,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidQuadListEnd();
         gyVidVertexBatchFlush();
         gyVidVertexBatchEnd();
-
         gyVidMaterialBind(nullptr);
-       //     gyVidDepthTest(false);
     }
 }
 
