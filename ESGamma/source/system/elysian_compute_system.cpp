@@ -4,7 +4,7 @@
 
 namespace elysian {
 
-const char* ComputeSystem::_deviceTypeStrings[ComputeSystem::DEVICE_TYPE_COUNT] = {
+const char* ComputeSystem::_deviceTypeStrings[(int)ComputeDeviceCategory::HardwareDeviceCount] = {
     "DEVICE_GPU_RENDERER_ONLINE",
     "DEVICE_GPU_RENDERER_OFFLINE",
     "DEVICE_GPU_AUXILIARY",
@@ -13,9 +13,9 @@ const char* ComputeSystem::_deviceTypeStrings[ComputeSystem::DEVICE_TYPE_COUNT] 
     "DEVICE_ACCELERATOR"
 };
 
-const char* ComputeSystem::getDeviceTypeString(DEVICE_TYPE type) {
-    assert(type >= 0 && type < DEVICE_TYPE_COUNT);
-    return _deviceTypeStrings[type];
+const char* ComputeSystem::getDeviceTypeString(ComputeDeviceCategory type) {
+    assert((int)type >= 0 && (int)type < (int)ComputeDeviceCategory::HardwareDeviceCount);
+    return _deviceTypeStrings[(int)type];
 }
 
 bool ComputeSystem::_assignRendererPlatform(void) {
@@ -568,5 +568,94 @@ bool ComputeCommandQueue::enqueueReleaseRendererSharedObject(unsigned count, Com
 bool ComputeCommandQueue::finish(void) {
     return gyComputeCommandQueueFinish(_gyCmdQueue);
 }
+
+
+ComputeTask::ComputeTask(const char*                        kernelName,
+                         const ProgramCreateInfo&           progInfo,
+                         DeviceCategoryPriorityList         categoryPriorityList,
+                         NativeKernel                       nativeFallbackFunc,
+                         bool                               requireRendererSharedContext,
+                         bool                               outOfOrderExecution):
+    _deviceCategoryPriorityList(std::move(categoryPriorityList)),
+    _nativeFallback(nativeFallbackFunc)
+{
+    bool valid = true;
+    DbgEvent event("Creating ComputeTask: [%s]", kernelName);
+
+    valid &= _validatePrioritizedDeviceCategories(requireRendererSharedContext);
+
+    if(valid) {
+        valid = _resolvePrioritizedDeviceCategories();
+    }
+
+    if(valid) {
+
+        if(nativeCallbackFunc) {
+            dbgprintf("[NATIVE_FALLBACK]: %x", &nativeFallbackFunc);
+        } else {
+            warnprintf("[NATIVE_FALLBACK]: NONE");
+        }
+
+        if(!_devicePriorityList.size()) {
+            if(nativeFallbackFunc) {
+                dbgprintf("No accelerator device found, using native fallback!");
+                _useNative = true;
+            } else {
+                errprintf("No accelerator device found, and no native callback specified!");
+                valid = false;
+            }
+        }
+    }
+
+
+    _isValid = valid;
+}
+
+bool ComputeTask::_resolvePrioritizedDevices(bool rendererSharedContext) {
+    bool success = true;
+
+    DbgEvent event("Resolving Prioritized Category List");
+
+    enum {
+        INVALID,
+        UNAVAILABLE,
+        INCOMPATIBLE,
+        OK
+    } status = INVALID;
+    char buff[100];
+    ComputeDevice* firstDev = nullptr;
+    ComputeDevice* dev;
+    Debug::SEVERITY severity = Debug::LOG_VERBOSE;
+
+
+    for(size_t i = 0; i < _deviceCategoryPriorityList.size(); ++i) {
+
+        if(rendererSharedContext && !ComputeSystem::isRendererSharedContextDeviceCategory(_deviceCategoryPriorityList[i])) {
+            status      = INVALID;
+            severity    = Debug::LOG_ERROR;
+            success     = false;
+            strcpy(buff, "INVALID");
+        } else if((dev = getComputeSystem()->getDeviceByCategory(_deviceCategoryPriorityList[i]))) {
+            status = UNAVAILABLE;
+            strcpy(buff, "UNAVAILABLE");
+        } else {
+            if(firstDev && dev->getPlatformIdx() != firstDev->getPlatformIdx()) {
+                status = INCOMPATIBLE;
+                strcpy(buff, "INCOMPATIBLE PLATFORM");
+            } else if(!firstDev) {
+                firstDev = dev;
+            }
+
+            status = OK;
+            _devicePriorityList.push_back(dev);
+            sprintf(buffer, "[Priority: %d, Device: %s <%d, %d>]", _devicePriorityList.size()-1, dev->getInfo()->deviceName, dev->getPlatformIdx(), dev->getDeviceIdx());
+        }
+
+        Debug::Log(severity, "[%d] - %s", i, buffer);
+    }
+
+    return success;
+}
+
 
 }

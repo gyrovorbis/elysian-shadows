@@ -51,9 +51,16 @@ namespace elysian {
         ComputeProgram*         _particleVboProgram             = nullptr;
         ComputeKernel*          _particleVboKernel              = nullptr;
 
+        ComputeBuffer*          _fboBuffer                      = nullptr;
+        ComputeBuffer*          _lumStatsBuffer                 = nullptr;
+        ComputeBuffer*          _lumStatsProgram                = nullptr;
+        ComputeBuffer*          _lumStatsKernel                 = nullptr;
+        bool                    _automaticExposureActive        = false;
 
     protected:
         void                    _setParticleAccelerationAvailable(bool val);
+        bool                    _initializeAutomaticExposureKernel(void);
+        bool                    _uninitializeAutomaticExposureKernel(void);
 
     public:
         bool                    initialize(void);

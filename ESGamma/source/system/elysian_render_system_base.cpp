@@ -214,4 +214,13 @@ bool RenderSystemBase::renderParticles(void) {
 }
 
 
+bool RenderSystemBase::_initializeAutomaticExposureKernel(void) {
+}
+
+
+bool RenderSystemBase::_uninitializeAutomaticExposureKernel(void) {
+
+}
+
+
 }
