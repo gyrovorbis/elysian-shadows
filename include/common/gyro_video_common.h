@@ -286,8 +286,8 @@ static inline void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const flo
      float height = ymax - ymin;
 
      float depth = zfar - znear;
-     float q = -(zfar + znear) / depth;
-     float qn = -2 * (zfar * znear) / depth;
+     float q = -1.0f;//-(zfar + znear) / depth;
+     float qn = -2.0f*znear;//-2 * (zfar * znear) / depth;
 
      float w = 2 * znear / width;
      w = w / aspect;
