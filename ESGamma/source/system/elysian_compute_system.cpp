@@ -4,7 +4,7 @@
 
 namespace elysian {
 
-const char* ComputeSystem::_deviceTypeStrings[(int)ComputeDeviceCategory::HardwareDeviceCount] = {
+const char* ComputeSystem::_deviceCategoryStrings[(int)ComputeDeviceCategory::HardwareDeviceCount] = {
     "DEVICE_GPU_RENDERER_ONLINE",
     "DEVICE_GPU_RENDERER_OFFLINE",
     "DEVICE_GPU_AUXILIARY",
@@ -15,7 +15,7 @@ const char* ComputeSystem::_deviceTypeStrings[(int)ComputeDeviceCategory::Hardwa
 
 const char* ComputeSystem::getDeviceTypeString(ComputeDeviceCategory type) {
     assert((int)type >= 0 && (int)type < (int)ComputeDeviceCategory::HardwareDeviceCount);
-    return _deviceTypeStrings[(int)type];
+    return _deviceCategoryStrings[(int)type];
 }
 
 bool ComputeSystem::_assignRendererPlatform(void) {
@@ -62,9 +62,9 @@ bool ComputeSystem::_assignDeviceTypes(void) {
             if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
                 if(devInfo->isRenderDevice) {
                     if(devInfo->rendererSharedContext) {
-                        _deviceTypes[DEVICE_GPU_RENDERER_ONLINE].push_back(dev);
-                        dev->setDeviceType(DEVICE_GPU_RENDERER_ONLINE);
-                        size_t size = _deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size();
+                        _categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOnline].push_back(dev);
+                        dev->setDeviceCategory(ComputeDeviceCategory::GpuRendererOnline);
+                        size_t size = _categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOnline].size();
                         Debug::Logf((size == 1)? Debug::LOG_VERBOSE : Debug::LOG_WARNING,
                                     "GPU_RENDERER_ONLINE[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
                     }
@@ -78,7 +78,7 @@ bool ComputeSystem::_assignDeviceTypes(void) {
      *  b. located within the same driver platform4
      *  c. supports graphics/compute API interop
      */
-    if(!_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
+    if(!_categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOnline].size()) {
         dbgprintf("GPU_RENDERER_ONLINE Device(s): NONE");
     } else {
 
@@ -89,9 +89,9 @@ bool ComputeSystem::_assignDeviceTypes(void) {
             if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
                 if(devInfo->rendererSharedContext) {
                     if(!devInfo->isRenderDevice) {
-                        _deviceTypes[DEVICE_GPU_RENDERER_OFFLINE].push_back(dev);
-                        dev->setDeviceType(DEVICE_GPU_RENDERER_OFFLINE);
-                        size_t size = _deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size();
+                        _categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOffline].push_back(dev);
+                        dev->setDeviceCategory(ComputeDeviceCategory::GpuRendererOffline);
+                        size_t size = _categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOffline].size();
                         Debug::Logf(Debug::LOG_VERBOSE, "GPU_RENDERER_OFFLINE[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
                     }
                 }
@@ -99,7 +99,7 @@ bool ComputeSystem::_assignDeviceTypes(void) {
         }
     }
 
-    if(!_deviceTypes[DEVICE_GPU_RENDERER_OFFLINE].size()) {
+    if(!_categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOffline].size()) {
         dbgprintf("GPU_RENDERER_OFFLINE Devices: NONE");
     }
 
@@ -112,17 +112,17 @@ bool ComputeSystem::_assignDeviceTypes(void) {
             ComputeDevice* dev = getDevice(p, d);
             const GYComputeDeviceInfo* devInfo = dev->getInfo();
              if(devInfo->devType == GY_COMPUTE_DEVICE_GPU) {
-                 if((int)p != _rendererPlatformIdx || !devInfo->rendererSharedContext || !_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
-                    _deviceTypes[DEVICE_GPU_AUXILIARY].push_back(dev);
-                    dev->setDeviceType(DEVICE_GPU_AUXILIARY);
-                    size_t size = _deviceTypes[DEVICE_GPU_AUXILIARY].size();
+                 if((int)p != _rendererPlatformIdx || !devInfo->rendererSharedContext || !_categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOnline].size()) {
+                    _categorizedDevices[(int)ComputeDeviceCategory::GpuAuxiliary].push_back(dev);
+                    dev->setDeviceCategory(ComputeDeviceCategory::GpuAuxiliary);
+                    size_t size = _categorizedDevices[(int)ComputeDeviceCategory::GpuAuxiliary].size();
                     Debug::Logf(Debug::LOG_VERBOSE, "GPU_AUXILIARY[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
                  }
              }
         }
     }
 
-    if(!_deviceTypes[DEVICE_GPU_AUXILIARY].size()) {
+    if(!_categorizedDevices[(int)ComputeDeviceCategory::GpuAuxiliary].size()) {
         dbgprintf("GPU_AUXILIARY Devices: NONE");
     }
 
@@ -130,23 +130,23 @@ bool ComputeSystem::_assignDeviceTypes(void) {
      *  a. CPU device located within the same platform as the GPU_RENDERER_ONLINE/OFFLINE devices
      *  b. supports graphics/compute API interop with the GPUs
     */
-    if(_deviceTypes[DEVICE_GPU_RENDERER_ONLINE].size()) {
+    if(_categorizedDevices[(int)ComputeDeviceCategory::GpuRendererOnline].size()) {
         for(unsigned d = 0; d < getPlatformDeviceCount(_rendererPlatformIdx); ++d) {
             ComputeDevice* dev = getDevice(_rendererPlatformIdx, d);
             const GYComputeDeviceInfo* devInfo = dev->getInfo();
 
             if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
                 if(devInfo->rendererSharedContext) {
-                    _deviceTypes[DEVICE_CPU_RENDERER].push_back(dev);
-                    dev->setDeviceType(DEVICE_CPU_RENDERER);
-                    size_t size = _deviceTypes[DEVICE_CPU_RENDERER].size();
+                    _categorizedDevices[(int)ComputeDeviceCategory::CpuRenderer].push_back(dev);
+                    dev->setDeviceCategory(ComputeDeviceCategory::CpuRenderer);
+                    size_t size = _categorizedDevices[(int)ComputeDeviceCategory::CpuRenderer].size();
                     Debug::Logf(Debug::LOG_VERBOSE, "CPU_RENDERER[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
                 }
             }
         }
     }
 
-    if(!_deviceTypes[DEVICE_CPU_RENDERER].size()) {
+    if(!_categorizedDevices[(int)ComputeDeviceCategory::CpuRenderer].size()) {
         dbgprintf("CPU_RENDERER Device(s): NONE");
     }
 
@@ -161,17 +161,17 @@ bool ComputeSystem::_assignDeviceTypes(void) {
 
              if(devInfo->devType == GY_COMPUTE_DEVICE_CPU) {
 
-                 if((int)p != _rendererPlatformIdx || !devInfo->rendererSharedContext || !_deviceTypes[DEVICE_CPU_RENDERER].size()) {
-                     _deviceTypes[DEVICE_CPU_AUXILIARY].push_back(dev);
-                     size_t size = _deviceTypes[DEVICE_CPU_AUXILIARY].size();
-                     dev->setDeviceType(DEVICE_CPU_AUXILIARY);
+                 if((int)p != _rendererPlatformIdx || !devInfo->rendererSharedContext || !_categorizedDevices[(int)ComputeDeviceCategory::CpuRenderer].size()) {
+                     _categorizedDevices[(int)ComputeDeviceCategory::CpuAuxiliary].push_back(dev);
+                     size_t size = _categorizedDevices[(int)ComputeDeviceCategory::CpuAuxiliary].size();
+                     dev->setDeviceCategory(ComputeDeviceCategory::CpuAuxiliary);
                      Debug::Logf(Debug::LOG_VERBOSE, "CPU_AUXILIARY[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
                  }
              }
         }
     }
 
-    if(!_deviceTypes[DEVICE_CPU_AUXILIARY].size()) {
+    if(!_categorizedDevices[(int)ComputeDeviceCategory::CpuAuxiliary].size()) {
         dbgprintf("CPU_AUXILIARY Device(s): NONE");
     }
 
@@ -186,22 +186,22 @@ bool ComputeSystem::_assignDeviceTypes(void) {
             const GYComputeDeviceInfo* devInfo = dev->getInfo();
 
              if(devInfo->devType != GY_COMPUTE_DEVICE_GPU && devInfo->devType != GY_COMPUTE_DEVICE_CPU) {
-                 _deviceTypes[DEVICE_ACCELERATOR].push_back(dev);
-                 dev->setDeviceType(DEVICE_ACCELERATOR);
-                 size_t size = _deviceTypes[DEVICE_ACCELERATOR].size();
+                 _categorizedDevices[(int)ComputeDeviceCategory::OtherAccelerator].push_back(dev);
+                 dev->setDeviceCategory(ComputeDeviceCategory::OtherAccelerator);
+                 size_t size = _categorizedDevices[(int)ComputeDeviceCategory::OtherAccelerator].size();
                  Debug::Logf(Debug::LOG_VERBOSE, "ACCELERATOR[%u]: <%u, %u> [%s]", size-1, dev->getPlatformIdx(), dev->getDeviceIdx(), devInfo->deviceName);
              }
         }
     }
 
-    if(!_deviceTypes[DEVICE_ACCELERATOR].size()) {
+    if(!_categorizedDevices[(int)ComputeDeviceCategory::OtherAccelerator].size()) {
         dbgprintf("ACCELERATOR Device(s): NONE");
     }
 
     //Now check whether we even have a single fucking compute device/accelerator and don't bother even trying otherwise.
     unsigned computeDevCount = 0;
-    for(unsigned t = 0; t < DEVICE_TYPE_COUNT; ++t)
-        computeDevCount += _deviceTypes[t].size();
+    for(unsigned t = 0; t < (int)ComputeDeviceCategory::HardwareDeviceCount; ++t)
+        computeDevCount += _categorizedDevices[t].size();
 
     if(!computeDevCount) {
         warnprintf("No compute devices found. Disabling compute acceleration!");
@@ -227,8 +227,7 @@ bool ComputeSystem::_createContexts(void) {
     dbgprintf("ComputeSystem: Creating Contexts");
     dbgpush();
 
-
-    ComputeDevice* rendererDevice = getDeviceByType(DEVICE_GPU_RENDERER_ONLINE);
+    ComputeDevice* rendererDevice = getDeviceByCategory(ComputeDeviceCategory::GpuRendererOnline);
     if(rendererDevice) {
         dbgprintf("Creating Renderer Context.");
         dbgpush();
@@ -236,12 +235,12 @@ bool ComputeSystem::_createContexts(void) {
 
         devices.push_back(rendererDevice);
 
-        for(unsigned d = 0; d < getDeviceCountForType(DEVICE_GPU_RENDERER_OFFLINE); ++d) {
-            devices.push_back(getDeviceByType(DEVICE_GPU_RENDERER_OFFLINE, d));
+        for(unsigned d = 0; d < getDeviceCountForCategory(ComputeDeviceCategory::GpuRendererOffline); ++d) {
+            devices.push_back(getDeviceByCategory(ComputeDeviceCategory::GpuRendererOffline, d));
         }
 
-        for(unsigned d = 0; d < getDeviceCountForType(DEVICE_CPU_RENDERER); ++d) {
-            devices.push_back(getDeviceByType(DEVICE_CPU_RENDERER, d));
+        for(unsigned d = 0; d < getDeviceCountForCategory(ComputeDeviceCategory::CpuRenderer); ++d) {
+            devices.push_back(getDeviceByCategory(ComputeDeviceCategory::CpuRenderer, d));
         }
 
         _rendererContext = createContext(_rendererPlatformIdx, true, devices.size(), devices.data());
@@ -359,6 +358,8 @@ bool ComputeSystem::uninitialize(void) {
     dbgprintf("ComputeSystem::uninitialize()");
     dbgpush();
 
+    for(auto it: _computeTasks) delete it.second;
+
     if(_rendererContext) {
         gyComputeContextDestroy(_rendererContext->getGyContext());
         delete _rendererContext;
@@ -442,6 +443,15 @@ ComputeBuffer* ComputeContext::createBufferFromRendererBuffer(intptr_t rendererB
     }
 }
 
+ComputeBuffer* ComputeContext::createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType) {
+    GYComputeBuffer* gyBuff = gyComputeBufferCreateFromRendererTexture(_gyContext, memType, rendererTexture);
+    if(gyBuff) {
+        return new ComputeBuffer(gyBuff);
+    } else {
+        return nullptr;
+    }
+}
+
 ComputeProgram* ComputeContext::loadProgram(const char *filePath) {
     assert(filePath);
     GYComputeProgram* program = gyComputeProgramLoad(filePath, _gyContext);
@@ -505,8 +515,11 @@ const GYComputeKernelWorkgroupInfo* ComputeDevice::getKernelWorkGroupInfo(const 
     return nullptr;
 }
 
-bool ComputeProgram::compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options) {
-    _compiled = gyComputeProgramCompile(_gyProgram, devices[0].getGyDevice(), deviceCount, options);
+bool ComputeProgram::compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options, GYComputeBuildInfo* info) {
+    assert(deviceCount);
+    std::vector<GYComputeDevice> gyDevices;
+    for(unsigned d = 0; d < deviceCount; ++d) gyDevices.push_back(*devices[d].getGyDevice());
+    _compiled = gyComputeProgramCompile(_gyProgram, &gyDevices.front(), deviceCount, options, nullptr);
     if(_compiled) {
         for(unsigned d = 0; d < deviceCount; ++d)
             _compiledDevices.push_back(&devices[d]);
@@ -571,26 +584,22 @@ bool ComputeCommandQueue::finish(void) {
 
 
 ComputeTask::ComputeTask(const char*                        kernelName,
-                         const ProgramCreateInfo&           progInfo,
+                         const ProgramCreateInfo&           programInfo,
                          DeviceCategoryPriorityList         categoryPriorityList,
                          NativeKernel                       nativeFallbackFunc,
                          bool                               requireRendererSharedContext,
                          bool                               outOfOrderExecution):
-    _deviceCategoryPriorityList(std::move(categoryPriorityList)),
+    _categoryPriorityList(std::move(categoryPriorityList)),
     _nativeFallback(nativeFallbackFunc)
 {
     bool valid = true;
     DbgEvent event("Creating ComputeTask: [%s]", kernelName);
 
-    valid &= _validatePrioritizedDeviceCategories(requireRendererSharedContext);
-
-    if(valid) {
-        valid = _resolvePrioritizedDeviceCategories();
-    }
+    valid &= _resolvePrioritizedDevices(requireRendererSharedContext);
 
     if(valid) {
 
-        if(nativeCallbackFunc) {
+        if(nativeFallbackFunc) {
             dbgprintf("[NATIVE_FALLBACK]: %x", &nativeFallbackFunc);
         } else {
             warnprintf("[NATIVE_FALLBACK]: NONE");
@@ -607,6 +616,21 @@ ComputeTask::ComputeTask(const char*                        kernelName,
         }
     }
 
+    if(valid && !_useNative) {
+        valid &= _initializeResources(kernelName, programInfo, outOfOrderExecution, requireRendererSharedContext);
+
+        //Attemt to fall-back to native if all compute devices failed
+        if(!valid) {
+            if(nativeFallbackFunc) {
+                warnprintf("Falling back to native callback kernel!");
+                _useNative = true;
+            } else {
+                errprintf("No native kernel was specified for fallback! Compute Task not available!");
+                valid = false;
+            }
+
+        }
+    }
 
     _isValid = valid;
 }
@@ -628,14 +652,14 @@ bool ComputeTask::_resolvePrioritizedDevices(bool rendererSharedContext) {
     Debug::SEVERITY severity = Debug::LOG_VERBOSE;
 
 
-    for(size_t i = 0; i < _deviceCategoryPriorityList.size(); ++i) {
+    for(size_t i = 0; i < _categoryPriorityList.size(); ++i) {
 
-        if(rendererSharedContext && !ComputeSystem::isRendererSharedContextDeviceCategory(_deviceCategoryPriorityList[i])) {
+        if(rendererSharedContext && !ComputeSystem::isRendererSharedContextDeviceCategory(_categoryPriorityList[i])) {
             status      = INVALID;
             severity    = Debug::LOG_ERROR;
             success     = false;
             strcpy(buff, "INVALID");
-        } else if((dev = getComputeSystem()->getDeviceByCategory(_deviceCategoryPriorityList[i]))) {
+        } else if(!(dev = getComputeSystem()->getDeviceByCategory(_categoryPriorityList[i]))) {
             status = UNAVAILABLE;
             strcpy(buff, "UNAVAILABLE");
         } else {
@@ -647,14 +671,189 @@ bool ComputeTask::_resolvePrioritizedDevices(bool rendererSharedContext) {
             }
 
             status = OK;
-            _devicePriorityList.push_back(dev);
-            sprintf(buffer, "[Priority: %d, Device: %s <%d, %d>]", _devicePriorityList.size()-1, dev->getInfo()->deviceName, dev->getPlatformIdx(), dev->getDeviceIdx());
+            _devicePriorityList.push_back(*dev);
+            sprintf(buff, "[Priority: %u, Device: %s <%d, %d>]", _devicePriorityList.size()-1, dev->getInfo()->deviceName, dev->getPlatformIdx(), dev->getDeviceIdx());
         }
 
-        Debug::Log(severity, "[%d] - %s", i, buffer);
+        Debug::Logf(severity, "[%d] - %s", i, buff);
     }
 
     return success;
+}
+
+bool ComputeTask::_initializeResources(const char* kernelName,
+                                       const ProgramCreateInfo& programInfo,
+                                       bool outOfOrderExecution,
+                                       bool requireRendererSharedContext)
+{
+    bool success = true;
+
+    DbgEvent dbgEvent("Initializing Compute Resources");
+
+    int flags = outOfOrderExecution? GY_COMPUTE_COMMAND_QUEUE_FLAG_OUT_OF_ORDER_EXECUTION : 0;
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+    flags |= GY_COMPUTE_COMMAND_QUEUE_FLAG_ENABLE_PROFILING;
+#endif
+
+    _device = &_devicePriorityList[0];
+    if(!_device) {
+        errprintf("Failed to select the highest priority device!");
+        success = false;
+        goto done;
+    }
+
+    _context = requireRendererSharedContext? getComputeSystem()->getRendererContext() :
+                                             getComputeSystem()->getPlatformContext(_device->getPlatformIdx());
+    if(!_context) {
+        errprintf("Failed to assign context!");
+        success = false;
+        goto done;
+    }
+
+    _program = _context->loadProgram(programInfo.sourceFilePath);
+    if(!_program) {
+        errprintf("Failed to create program: [%s]", programInfo.sourceFilePath);
+        success = false;
+        goto done;
+    }
+
+    GYComputeBuildInfo buildInfo[ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES];
+
+    if(!_program->compile(&_devicePriorityList[0], _devicePriorityList.size(), &programInfo.buildOptions, buildInfo)) {
+        for(size_t d = 0; d < _devicePriorityList.size(); ++d) {
+            ComputeDevice* curDev = &_devicePriorityList[d];
+
+            if(buildInfo[d].buildStatus == GY_COMPUTE_BUILD_STATUS_SUCCESS) {
+                _device = curDev;
+                dbgprintf("Defaulting to Device <%d, %d> at Priority: %d", curDev->getGyDevice()->platformIdx,
+                                                                           curDev->getGyDevice()->deviceIdx,
+                                                                           d);
+                break;
+            } else {
+                _device = nullptr;
+                errprintf("Build failed for device <%d, %d> at Priority [%u], falling through to next priority...", curDev->getGyDevice()->platformIdx,
+                                                                                              curDev->getGyDevice()->deviceIdx,
+                                                                                              d);
+            }
+        }
+    }
+
+    if(!_device) {
+        success = false;
+        goto done;
+    }
+
+    _kernel = _program->createKernel(kernelName);
+    if(!_kernel) {
+        errprintf("Failed to create kernel: [%s]", kernelName);
+        success = false;
+        goto done;
+    }
+
+    _cmdQueue = _context->createCommandQueue(_device, flags);
+    if(!_cmdQueue) {
+        errprintf("Failed to create command queue for the chosen Device!");
+        success = false;
+    }
+
+done:
+    if(!success) {
+        errprintf("Failed to initialize hardware acceleration resources for ComputeTask!");
+    }
+    return success;
+
+}
+
+ComputeTask::~ComputeTask(void) {
+    delete _cmdQueue;
+    delete _kernel;
+    delete _program;
+}
+
+
+
+ComputeTask* ComputeSystem::createComputeTask(const char*                               kernelName,
+                                              ComputeTask::ProgramCreateInfo            progInfo,
+                                              ComputeTask::DeviceCategoryPriorityList   deviceCategoryPriorities,
+                                              ComputeTask::NativeKernel                 nativeFallbackFunc,
+                                              bool                                      requireRendererSharedContext,
+                                              bool                                      outOfOrderExecution)
+{
+    ComputeTask* task = new ComputeTask(kernelName, progInfo, deviceCategoryPriorities,
+                                        nativeFallbackFunc, requireRendererSharedContext, outOfOrderExecution);
+
+    _computeTasks[kernelName] = task;
+    return task;
+}
+
+bool ComputeTask::enqueueKernel(size_t globalSize) {
+    assert(_isValid);
+    size_t globalOffsets = 0;
+    size_t paddedGlobalSize;
+    size_t localWorkSize;
+    optimizeWorkSize(globalSize, paddedGlobalSize, localWorkSize);
+    const bool retVal = getCommandQueue()->enqueueKernel(getKernel(), 1, &globalOffsets, &paddedGlobalSize, &localWorkSize);
+    if(!retVal) _isValid = false;
+    return retVal;
+}
+
+// Recursive function to return gcd of a and b
+size_t gcd(size_t a, size_t b)
+{
+    // Everything divides 0
+    if (a == 0 || b == 0)
+       return 0;
+
+    // base case
+    if (a == b)
+        return a;
+
+    // a is greater
+    if (a > b)
+        return gcd(a-b, b);
+    return gcd(a, b-a);
+}
+
+void ComputeTask::optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localWorkSize) {
+    assert(_isValid);
+    const GYComputeKernelWorkgroupInfo* info = getDevice()->getKernelWorkGroupInfo(getKernel());
+
+    size_t prefMult = info->preferredWorkGroupSizeMultiple;
+    size_t maxSize  = info->workGroupSize;
+
+    paddedGlobalSize = globalSize;
+    size_t rem = globalSize % maxSize;
+    if(rem) paddedGlobalSize += (maxSize - rem);
+
+#if 0
+    localWorkSize = (paddedGlobalSize >= maxSize)?
+        maxSize :
+        paddedGlobalSize;
+#else
+#if 0
+    size_t multiples = paddedGlobalSize / prefMult;
+
+    localWorkSize = multiples * prefMult;
+
+    if(localWorkSize > globalSize) {
+        while(localWorkSize )
+
+
+    }
+
+#if 0
+    while((paddedGlobalSize % workSize == 0) && workSize < maxSize) {
+        workSize += prefMult;
+    }
+#endif
+#else
+    localWorkSize = maxSize;//prefMult;
+#endif
+#endif
+
+    size_t error = paddedGlobalSize % localWorkSize;
+
+    assert(error == 0);
 }
 
 

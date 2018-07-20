@@ -354,6 +354,7 @@ void Engine::render(void) {
 
              _collisionSystem->render();
              _particleSystem->render();
+             _renderSystem->postRender();
           //  func();
 
              _lightSystem->removeLightSourcesFromScene();

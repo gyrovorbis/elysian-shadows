@@ -89,6 +89,7 @@ typedef struct GYComputeDeviceInfo {
     int                     isRenderDevice;
     int                     imageSupport;
     int                     depthTextureSupport;
+    int                     rendererResourceSyncSupport;
     GY_COMPUTE_DEVICE_TYPE  devType;
 } GYComputeDeviceInfo;
 
@@ -96,12 +97,13 @@ typedef struct GYComputeDevice {
     int platformIdx;
     int deviceIdx;
 } GYComputeDevice;
-typedef struct GYComputeContext {
 
+typedef struct GYComputeContext {
+  //  char fuckoff;
 } GYComputeContext;
 
 typedef struct GYComputeCommandQueue {
-
+ //   char fuckoff;
 } GYComputeCommandQueue;
 
 typedef enum GY_COMPUTE_MEMORY_TYPE {
@@ -114,7 +116,7 @@ typedef enum GY_COMPUTE_MEMORY_TYPE {
 } GY_COMPUTE_MEMORY_TYPE;
 
 typedef struct GYComputeBuffer {
-
+    char fuckoff;
 } GYComputeBuffer;
 
 typedef void (*GYComputeKernelNative)(void*);
@@ -125,8 +127,19 @@ typedef struct GYComputeProgram {
 } GYComputeProgram;
 
 typedef struct GYComputeProgramBuildOptions {
-
+  //  char fuckoff;
 } GYComputeProgramBuildOptions;
+
+
+typedef enum GY_COMPUTE_BUILD_STATUS {
+    GY_COMPUTE_BUILD_STATUS_NONE,
+    GY_COMPUTE_BUILD_STATUS_SUCCESS,
+    GY_COMPUTE_BUILD_STATUS_FAILURE
+} GY_COMPUTE_BUILD_STATUS;
+
+typedef struct GYComputeBuildInfo {
+    GY_COMPUTE_BUILD_STATUS     buildStatus;
+} GYComputeBuildInfo;
 
 typedef struct GYComputeKernelWorkgroupInfo {
     size_t      workGroupSize;
@@ -191,7 +204,7 @@ typedef struct GYComputeDebugInfo {
 #endif
 
 typedef struct GYComputeEvent {
-
+    char fuckoff;
 } GYComputeEvent;
 
 
@@ -213,7 +226,11 @@ int                             gyComputeContextDestroy(GYComputeContext* contex
 
 GYComputeProgram*               gyComputeProgramLoad(const char* filePath, const GYComputeContext* context);
 int                             gyComputeProgramUnload(GYComputeProgram* program);
-int                             gyComputeProgramCompile(GYComputeProgram* program, const GYComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options);
+int                             gyComputeProgramCompile(GYComputeProgram* program,
+                                                        const GYComputeDevice* devices,
+                                                        unsigned deviceCount,
+                                                        const GYComputeProgramBuildOptions* options,
+                                                        GYComputeBuildInfo* buildInfo); //optional
 
 GYComputeBuffer*                gyComputeBufferCreate(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, size_t size, void* data);
 GYComputeBuffer*                gyComputeBufferCreateFromRendererBuffer(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, intptr_t renderBuff);

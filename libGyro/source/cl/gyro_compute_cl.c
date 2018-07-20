@@ -456,9 +456,11 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
     if(info) strncpy(info->gyInfo.extensions, buffer, GY_COMPUTE_DEVICE_INFO_EXTENSIONS_SIZE);
 
     //Check for OpenGL shared context extensions
-    if(info && _clDeviceExtensionSupported(&info->gyInfo, GY_CL_GL_DEVICE_SHARED_CONTEXT_EXTENSION)) info->gyInfo.rendererSharedContext = 1;
-    if(info && _clDeviceExtensionSupported(&info->gyInfo, "cl_khr_global_int32_base_atomics")) info->gyInfo.globalInt32BaseAtomics = 1;
-    if(info && _clDeviceExtensionSupported(&info->gyInfo, "cl_khr_local_int32_base_atomics")) info->gyInfo.localInt32BaseAtomics = 1;
+    if(info && _clDeviceExtensionSupported(&info->gyInfo, GY_CL_GL_DEVICE_SHARED_CONTEXT_EXTENSION))    info->gyInfo.rendererSharedContext          = 1;
+    if(info && _clDeviceExtensionSupported(&info->gyInfo, "cl_khr_global_int32_base_atomics"))          info->gyInfo.globalInt32BaseAtomics         = 1;
+    if(info && _clDeviceExtensionSupported(&info->gyInfo, "cl_khr_local_int32_base_atomics"))           info->gyInfo.localInt32BaseAtomics          = 1;
+    if(info && _clDeviceExtensionSupported(&info->gyInfo, GY_CL_DEVICE_GL_EVENT_EXTENSION))             info->gyInfo.rendererResourceSyncSupport    = 1;
+
 
     //Check OpenGL interop-related info (if enabled)
 #ifdef GY_CL_OPENGL_INTEROP
@@ -1556,7 +1558,12 @@ int gyComputeProgramUnload(GYComputeProgram* program) {
     return 0;
 }
 
-int gyComputeProgramCompile(GYComputeProgram *program, const GYComputeDevice *devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options) {
+int gyComputeProgramCompile(GYComputeProgram*                       program,
+                            const GYComputeDevice*                  devices,
+                            unsigned                                deviceCount,
+                            const GYComputeProgramBuildOptions*     options,
+                            GYComputeBuildInfo*                     buildInfo)
+{
     _gyLog(GY_DEBUG_VERBOSE, "GY_COMPUTE_PROGRAM_COMPILE");
     (void)options;
 
@@ -1575,8 +1582,9 @@ int gyComputeProgramCompile(GYComputeProgram *program, const GYComputeDevice *de
     }
 
     for(unsigned d = 0; d < deviceCount; ++d) {
-     GY_ASSERT(devices[d].platformIdx < _clPlatformCount && devices[d].deviceIdx >= 0 && devices[d].deviceIdx < _clDeviceCount[devices[d].platformIdx]);
+        GY_ASSERT(devices[d].platformIdx < _clPlatformCount && devices[d].deviceIdx >= 0 && devices[d].deviceIdx < _clDeviceCount[devices[d].platformIdx]);
         devIds[d] = _clDeviceFromGyComputeDevice(&devices[d])->deviceId;
+        if(buildInfo) buildInfo[d].buildStatus = GY_COMPUTE_BUILD_STATUS_NONE;
     }
 
     if(GY_CL_CHECK_ERROR(clBuildProgram(pgm->program, deviceCount, devIds, GY_CL_BUILD_FLAGS, NULL, NULL))) {
@@ -1585,8 +1593,13 @@ int gyComputeProgramCompile(GYComputeProgram *program, const GYComputeDevice *de
             GY_CL_CHECK_ERROR(clGetProgramBuildInfo(pgm->program, devIds[d], CL_PROGRAM_BUILD_STATUS, sizeof(cl_build_status), &buildStatus, NULL));
 
             _gyLog((buildStatus != CL_BUILD_SUCCESS)? GY_DEBUG_ERROR : GY_DEBUG_VERBOSE, "Device[%u] Build Status: [%s]", d, _clProgramBuildStatusStr(buildStatus));
-            if(buildStatus == CL_BUILD_SUCCESS) continue;
-            else success = 0;
+            if(buildStatus == CL_BUILD_SUCCESS) {
+                if(buildInfo) buildInfo[d].buildStatus = GY_COMPUTE_BUILD_STATUS_SUCCESS;
+                continue;
+            } else {
+                success = 0;
+                if(buildInfo) buildInfo[d].buildStatus = GY_COMPUTE_BUILD_STATUS_FAILURE;
+            }
             _gyPush();
 
             size_t logSize;

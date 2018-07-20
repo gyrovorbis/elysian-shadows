@@ -5,11 +5,11 @@
 
 namespace elysian {
 
-	class cstr_map {
-        bool operator(const char*const a, const char*const b) const {
-            return strcmp(a, b) == 0;
+    struct cstr_map {
+        bool operator()(const char* a, const char* b) const {
+            return (strcmp(a, b) == 0);
         }
-	};
+    };
 
 }
 

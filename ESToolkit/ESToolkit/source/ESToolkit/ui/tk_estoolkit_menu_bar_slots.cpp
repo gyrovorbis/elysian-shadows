@@ -945,5 +945,5 @@ void ESToolkit::on_actionTexture_Dump_triggered()
 
 void ESToolkit::on_actionParticles_triggered(bool checked)
 {
-    getAssets().getEngine()->getRenderSystem()->setUseParticleAcceleration(checked);
+  //  getAssets().getEngine()->getRenderSystem()->setUseParticleAcceleration(checked);
 }

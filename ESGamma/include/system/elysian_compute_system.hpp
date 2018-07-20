@@ -8,7 +8,9 @@
 #include <cassert>
 #include <initializer_list>
 #include <vector>
+#include <map>
 #include <functional>
+#include <utility/elysian_cstr_map.hpp>
 
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
 #   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES 5
@@ -16,11 +18,16 @@
 #   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES 1
 #endif
 
-#define ELYSIAN_COMPUTE_CONTEXTS_PER_DEVICE     2
-#define ELYSIAN_COMPUTE_PLATFORM_INVALID        -1
-#define ELYSIAN_COMPUTE_DEVICE_INVALID          -1
+#define ELYSIAN_COMPUTE_CONTEXTS_PER_DEVICE    2
+#define ELYSIAN_COMPUTE_PLATFORM_INVALID       -1
+#define ELYSIAN_COMPUTE_DEVICE_INVALID         -1
 
-#define ELYSIAN_COMPUTE_HEADER_FILES_MAX        3
+#define ELYSIAN_COMPUTE_HEADER_FILES_MAX       3
+
+#ifndef ELYSIAN_COMPUTE_PROFILING_ENABLED
+#   define ELYSIAN_COMPUTE_PROFILING_ENABLED   1
+#endif
+
 
 struct GYComputeDevice;
 
@@ -32,6 +39,18 @@ namespace elysian {
     class ComputeBuffer;
     class ComputeProgram;
     class ComputeKernel;
+
+    enum class ComputeDeviceCategory {
+        GpuRendererOnline,
+        GpuRendererOffline,
+        GpuAuxiliary,
+        CpuRenderer,
+        CpuAuxiliary,
+        OtherAccelerator,
+        HardwareDeviceCount,
+        NativeFallback,
+        Invalid
+    };
 
     class ComputeContext {
         friend class ComputeSystem;
@@ -63,8 +82,9 @@ namespace elysian {
         bool isRendererContext(void) const { return _isRendererContext; }
 
         ComputeCommandQueue*    createCommandQueue(ComputeDevice* device, int flags);
-        ComputeBuffer*          createBuffer(GY_COMPUTE_MEMORY_TYPE memType, size_t size, void *data);
+        ComputeBuffer*          createBuffer(GY_COMPUTE_MEMORY_TYPE memType, size_t size, void *data=nullptr);
         ComputeBuffer*          createBufferFromRendererBuffer(intptr_t rendererBuffer, GY_COMPUTE_MEMORY_TYPE memType);
+        ComputeBuffer*          createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType);
         ComputeProgram*         loadProgram(const char* filePath);
 
 
@@ -86,9 +106,9 @@ namespace elysian {
         bool enqueueKernel(ComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize);
         bool enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer** buffers);
         bool enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer** buffers);
-        bool finish(void);
+        bool        finish(void);
 
-        ~ComputeCommandQueue(void);
+                ~ComputeCommandQueue(void);
     };
 
     class ComputeBuffer {
@@ -116,7 +136,7 @@ namespace elysian {
         bool                            addHeaderFile(const char* filePath);
         bool                            addBuildFlag(const char* flag);
 
-        bool                            compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options);
+        bool                            compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options, GYComputeBuildInfo* buildInfo);
         ComputeKernel*                  createKernel(const char* name) const;
 
         bool                            isValid(void) const; //valid for at least one device
@@ -141,16 +161,105 @@ namespace elysian {
         const GYComputeKernelInfo* getInfo(void) const;
     };
 
-    enum class ComputeDeviceCategory {
-        GpuRendererOnline,
-        GpuRendererOffline,
-        GpuAuxiliary,
-        CpuRenderer,
-        CpuAuxiliary,
-        OtherAccelerator,
-        HardwareDeviceCount,
-        NativeFallback,
-        Invalid
+
+    class ComputeEvent {
+    private:
+        GYComputeEvent* _gyEvent;
+    };
+
+    class ComputeEventList {
+    private:
+        std::vector<ComputeEvent*> events;
+    public:
+        bool wait(float secs=0.10f);//?
+    };
+
+
+
+    //subclass in ESTk for perf monitoring shit
+    class ComputeTask: public System {
+        friend class ComputeSystem;
+    public:
+
+        struct ProgramCreateInfo {
+            const char*                         sourceFilePath = nullptr;
+            GYComputeProgramBuildOptions        buildOptions;
+                                                ProgramCreateInfo(const char* sourcePath);
+        };
+
+        struct NativeThreadData {
+            uint32_t         workDim             = 0;
+            uint32_t         globalSize[3]       = { 0 };
+            uint32_t         localSize[3]        = { 0 };
+            uint32_t         globalId[3]         = { 0 };
+            uint32_t         localId[3]          = { 0 };
+
+            uint32_t         get_work_dim(void) const;
+            uint32_t         get_global_size(uint32_t dim) const;
+            uint32_t         get_global_id(uint32_t dim) const;
+            uint32_t         get_local_size(uint32_t dim) const;
+            uint32_t         get_local_id(uint32_t dim) const;
+            uint32_t         get_num_groups(uint32_t dim) const;
+            uint32_t         get_group_id(uint32_t dim) const;
+        };
+
+        using NativeKernel                  = std::function<void(NativeThreadData*)>;
+        using DeviceCategoryPriorityList    = std::vector<ComputeDeviceCategory>;
+        using DevicePriorityList            = std::vector<ComputeDevice>;
+
+    protected:
+        DeviceCategoryPriorityList  _categoryPriorityList;
+        DevicePriorityList      _devicePriorityList;
+        NativeKernel            _nativeFallback;
+        ComputeDevice*          _device                 = nullptr;
+        ComputeProgram*         _program                = nullptr;
+        ComputeKernel*          _kernel                 = nullptr;
+        ComputeCommandQueue*    _cmdQueue               = nullptr;
+        ComputeContext*         _context                = nullptr;
+        bool                    _useNative              = false;
+        bool                    _isValid                = false;
+
+        bool                    _resolvePrioritizedDevices(bool requirerenderSharedContext);
+        bool                    _initializeResources(const char* kernelName,
+                                                     const ProgramCreateInfo& programInfo,
+                                                     bool outOfOrderExecution,
+                                                     bool requireRendererSharedContext);
+        bool                    _uninitializeResources(void);
+
+    public:
+
+        ComputeTask(const char*                         kernelName,
+                    const ProgramCreateInfo&            progInfo,
+                    DeviceCategoryPriorityList          deviceCategoryPriorities,
+                    NativeKernel                        nativeFallbackFunc              = NativeKernel(),
+                    bool                                requireRendererSharedContext    = false,
+                    bool                                outOfOrderExecution             = false);
+
+        ~ComputeTask(void);
+
+        int                     getPlatformIndex(void) const;
+        ComputeDeviceCategory   getDeviceAtPriority(unsigned priority) const;
+        ComputeDevice*          getDevice(void) const;
+        ComputeProgram*         getProgram(void) const;
+        ComputeKernel*          getKernel(void) const;
+        ComputeCommandQueue*    getCommandQueue(void) const;
+        ComputeContext*         getContext(void) const;
+        NativeKernel            getNativeFallback(void) const;
+
+
+        bool                    enqueueKernel(size_t globalSize);
+        bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY);
+        bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY, size_t globalSizeZ);
+
+        void                    optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localSize);
+
+        bool                    isValid(void) const; //can call kernel in any form
+        void                    setValid(bool val=true);
+        bool                    isAccelerationAvailable(void) const;
+        bool                    isAccelerated(void) const;
+        void                    setAccelerated(bool val);
+        void                    setNativeFallback(NativeKernel nativeFunc);
+
     };
 
 
@@ -160,11 +269,10 @@ namespace elysian {
         const constexpr static int InvalidPlatform = ELYSIAN_COMPUTE_PLATFORM_INVALID;
 
 
-        static const char*      _deviceTypeStrings[(int)ComputeDeviceCategory::HardwareDeviceCount];
+        static const char*      _deviceCategoryStrings[(int)ComputeDeviceCategory::HardwareDeviceCount];
 
         static const char*      getDeviceTypeString(ComputeDeviceCategory category);
         static bool             isRendererSharedContextDeviceCategory(ComputeDeviceCategory category);
-
 
         bool                    initialize(void);
         bool                    uninitialize(void);
@@ -173,6 +281,15 @@ namespace elysian {
         bool                    isComputeEnabled(void) const;
         void                    setComputeEnabled(bool enabled=true);
 
+
+
+        ComputeTask*            findComputeTask(const char*const kernelName) const;
+        ComputeTask*            createComputeTask(const char*                                      kernelName,
+                                                  ComputeTask::ProgramCreateInfo                   progInfo,
+                                                  ComputeTask::DeviceCategoryPriorityList          deviceCategoryPriorities,
+                                                  ComputeTask::NativeKernel                        nativeFallbackFunc              = ComputeTask::NativeKernel(),
+                                                  bool                                             requireRendererSharedContext    = false,
+                                                  bool                                             outOfOrderExecution             = false);
 
         ComputeContext*         createContext(int gyPlatformIdx, bool isRendererContext, unsigned deviceCount, ComputeDevice** devices);
         ComputeDevice*          getDevice(int platformIdx, int deviceIdx);
@@ -206,8 +323,13 @@ namespace elysian {
         ComputeDevice**			_devices;
 
         std::vector<ComputeDevice*>
-                                _deviceTypes[(int)ComputeDeviceCategory::HardwareDeviceCount];
+                                _categorizedDevices[(int)ComputeDeviceCategory::HardwareDeviceCount];
+
+        std::map<const char*, ComputeTask*, cstr_map>
+                                _computeTasks;
     };
+
+
 
     class ComputeDevice {
         friend class ComputeProgram;
@@ -222,14 +344,14 @@ namespace elysian {
         GYComputeDevice                     _gyDevice;
         ComputeContext*                     _context        = nullptr;
         bool                                _isValid        = false;
-        ComputeDeviceCategory               _deviceCategory = ComputeDeviceCategory::Invalid;
+        ComputeDeviceCategory               _category       = ComputeDeviceCategory::Invalid;
 
 
         bool                                _addCompiledKernel(ComputeKernel* kernel);
     public:
         void                                setGyDevice(GYComputeDevice dev) { _gyDevice = dev; _isValid = true; }
-        void                                setDeviceType(ComputeDeviceCategory category) { _deviceCategory = category; }
-        auto                                getDeviceType(void) const { return _deviceCategory; }
+        void                                setDeviceCategory(ComputeDeviceCategory category) { _category = category; }
+        auto                                getDeviceType(void) const { return _category; }
         void                                setContext(ComputeContext* ctx) { assert(ctx); _context = ctx; }
         const GYComputeDevice*              getGyDevice(void) const { return (_isValid)? &_gyDevice : nullptr; }
         ComputeContext*                     getContext(void) const;
@@ -237,82 +359,8 @@ namespace elysian {
         const GYComputeDeviceInfo*          getInfo(void) const;
         int                                 getPlatformIdx(void) const;
         int                                 getDeviceIdx(void) const;
+        ComputeDeviceCategory               getDeviceCategory(void) const;
     };
-
-
-    //subclass in ESTk for perf monitoring shit
-    class ComputeTask: public System {
-    public:
-
-        struct ProgramCreateInfo {
-            const char* sourceFilePath                                      = nullptr;
-            const char* buildFlags                                          = nullptr;
-            const char* includeFilePaths[ELYSIAN_COMPUTE_HEADER_FILES_MAX]  = { nullptr };
-        };
-
-        struct NativeThreadData {
-            uint32_t         workDim             = 0;
-            uint32_t         globalSize[3]       = { 0 };
-            uint32_t         localSize[3]        = { 0 };
-            uint32_t         globalId[3]         = { 0 };
-            uint32_t         localId[3]          = { 0 };
-
-            uint32_t         get_work_dim(void) const;
-            uint32_t         get_global_size(uint32_t dim) const;
-            uint32_t         get_global_id(uint32_t dim) const;
-            uint32_t         get_local_size(uint32_t dim) const;
-            uint32_t         get_local_id(uint32_t dim) const;
-            uint32_t         get_num_groups(uint32_t dim) const;
-            uint32_t         get_group_id(uint32_t dim) const;
-        };
-
-        using NativeKernel                  = std::function<void(NativeThreadData*)>;
-        using DeviceCategoryPriorityList    = std::vector<ComputeDeviceCategory>;
-
-    private:
-        DeviceCategoryPriorityList  _ctegoryPriorityList;
-        std::vector<ComputeDevice*> _devicePriorityList;
-        NativeKernel            _nativeFallback;
-        ComputeDevice*          _device                 = nullptr;
-        ComputeProgram*         _program                = nullptr;
-        ComputeKernel*          _kernel                 = nullptr;
-        ComputeCommandQueue*    _cmdQueue               = nullptr;
-        ComputeContext*         _context                = nullptr;
-        bool                    _useNative              = false;
-        bool                    _isValid                = false;
-
-        bool                    _resolvePrioritizedDevices(bool requirerenderSharedContext);
-
-    public:
-
-                                ComputeTask(const char*                         kernelName,
-                                            const ProgramCreateInfo&            progInfo,
-                                            DeviceCategoryPriorityList          deviceCategoryPriorities,
-                                            NativeKernel                        nativeFallbackFunc              = NativeKernel(),
-                                            bool                                requireRendererSharedContext    = false,
-                                            bool                                outOfOrderExecution             = false);
-
-                                //IMPLEMENT MEEEEE
-                                ~ComputeTask(void);
-
-        int                     getPlatformIndex(void) const;
-        ComputeDeviceCategory   getDeviceAtPriority(unsigned priority) const;
-        ComputeDevice*          getDevice(void) const;
-        ComputeProgram*         getProgram(void) const;
-        ComputeKernel*          getKernel(void) const;
-        ComputeCommandQueue*    getCommandQueue(void) const;
-        ComputeContext*         getContext(void) const;
-        NativeKernel            getNativeFallback(void) const;
-
-        bool                    isValid(void) const; //can call kernel in any form
-        bool                    isAccelerationAvailable(void) const;
-        bool                    isAccelerated(void) const;
-        void                    setAccelerated(bool val);
-        void                    setNativeFallback(NativeKernel nativeFunc);
-
-    };
-
-
 
 
 
@@ -351,10 +399,38 @@ namespace elysian {
         return globalId[dim] / localSize[dim];
     }
 
+    inline ComputeTask::ProgramCreateInfo::ProgramCreateInfo(const char* sourcePath):
+        sourceFilePath(sourcePath)
+    {
+        memset(&buildOptions, 0, sizeof(GYComputeProgramBuildOptions));
+    }
 
+    inline ComputeContext* ComputeTask::getContext(void) const {
+        return _context;
+    }
+
+    inline ComputeCommandQueue* ComputeTask::getCommandQueue(void) const {
+        return _cmdQueue;
+    }
+
+    inline ComputeDevice* ComputeTask::getDevice(void) const {
+        return _device;
+    }
+
+    inline ComputeKernel* ComputeTask::getKernel(void) const {
+        return _kernel;
+    }
+
+    inline ComputeProgram* ComputeTask::getProgram(void) const {
+        return _program;
+    }
+
+    inline void ComputeTask::setValid(bool val) { _isValid = val; }
+
+    inline bool ComputeTask::isValid(void) const { return _isValid; }
+    inline bool ComputeTask::isAccelerated(void) const { return !_useNative; }
 
     inline ComputeContext* ComputeDevice::getContext(void) const { return _context; }
-
 
     inline ComputeCommandQueue::ComputeCommandQueue(GYComputeCommandQueue* queue, ComputeDevice* device):
         _gyCmdQueue(queue),
@@ -403,6 +479,8 @@ namespace elysian {
         return _gyDevice.deviceIdx;
     }
 
+    inline ComputeDeviceCategory ComputeDevice::getDeviceCategory(void) const { return _category; }
+
 
     //===== COMPUTE SYSTEM INLINEZ ==========
     inline ComputeDevice* ComputeSystem::getDevice(int platformIdx, int deviceIdx) {
@@ -412,17 +490,17 @@ namespace elysian {
 
     inline ComputeDevice* ComputeSystem::getDeviceByCategory(ComputeDeviceCategory type, unsigned idx) {
         assert((int)type >= 0 && (int)type < (int)ComputeDeviceCategory::HardwareDeviceCount);
-        return (idx < _deviceTypes[(int)type].size())? _deviceTypes[(int)type][idx] : nullptr;
+        return (idx < _categorizedDevices[(int)type].size())? _categorizedDevices[(int)type][idx] : nullptr;
     }
 
     inline unsigned ComputeSystem::getDeviceCountForCategory(ComputeDeviceCategory type) const {
         assert((int)type >= 0 && (int)type < (int)ComputeDeviceCategory::HardwareDeviceCount);
-        return _deviceTypes[(int)type].size();
+        return _categorizedDevices[(int)type].size();
     }
 
     inline ComputeContext* ComputeSystem::getPlatformContextFromDeviceCategory(ComputeDeviceCategory type, unsigned idx) const {
         assert((int)type >= 0 && (int)type < (int)ComputeDeviceCategory::HardwareDeviceCount);
-        return getPlatformContext(_deviceTypes[(int)type][idx]->getPlatformIdx());
+        return getPlatformContext(_categorizedDevices[(int)type][idx]->getPlatformIdx());
     }
 
     inline ComputeContext* ComputeSystem::getRendererContext(void) const { return _rendererContext; }
@@ -438,6 +516,11 @@ namespace elysian {
     inline unsigned ComputeSystem::getPlatformDeviceCount(int platformIdx) const {
         assert(platformIdx < (int)_platformCount && platformIdx >= 0);
         return _deviceCount[platformIdx];
+    }
+
+    inline ComputeTask* ComputeSystem::findComputeTask(const char * const kernelName) const {
+        auto task = _computeTasks.find(kernelName);
+        return (task != _computeTasks.end())? task->second : nullptr;
     }
 
     inline bool ComputeSystem::isComputeSupported(void) const { return _initialized; }

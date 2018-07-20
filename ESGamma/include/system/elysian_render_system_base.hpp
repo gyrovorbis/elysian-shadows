@@ -2,21 +2,18 @@
 #define ELYSIAN_RENDER_SYSTEM_BASE_HPP
 
 #include <system/elysian_system.hpp>
+#include <system/elysian_compute_system.hpp>
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
+
 
 #define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX    1000000
 #define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH          "/assets/opencl/particle_vbo.cl"
 #define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME          "PopulateParticleVbo"
+#define ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_PATH   "/assets/opencl/luminance_histogram.cl"
+#define ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_NAME   "CreateGlobalLuminanceHistogram"
 
 namespace elysian {
-
-    class ComputeDevice;
-    class ComputeContext;
-    class ComputeCommandQueue;
-    class ComputeBuffer;
-    class ComputeProgram;
-    class ComputeKernel;
 
     struct KernelParticle {
         float       pos[4];
@@ -33,24 +30,45 @@ namespace elysian {
        uint32_t  baseInstance;
     };
 
+    class ParticleComputeTask: public ComputeTask {
+
+
+    };
+
+    class LuminanceHistogramComputeTask: public ComputeTask {
+    public:
+
+        struct LuminanceStats {
+            uint32_t max;
+            uint32_t min;
+            uint32_t histBins[256];
+        }               _lumStats;
+
+        LuminanceHistogramComputeTask(uintptr_t textureId);
+
+        ComputeBuffer*  _statsBuffer = nullptr;
+        ComputeBuffer*  _fboBuffer   = nullptr;
+    };
+
+
     class RenderSystemBase: public System {
 
     private:
-        ComputeCommandQueue*    _renderCmdQueue                 = nullptr;
 
         //Particles
-        bool                    _particleAccelerationAvailable  = false;
-        bool                    _useParticleAcceleration        = false;
         size_t                  _activeParticles                = 0;
-
+        ComputeTask*            _particleComputeTask            = nullptr;
+        LuminanceHistogramComputeTask* _luminanceComputeTask    = nullptr;
+#if 0
         ComputeDevice*          _particleDevice                 = nullptr;
+        ComputeProgram*         _particleVboProgram             = nullptr;
+        ComputeKernel*          _particleVboKernel              = nullptr;
+#else
         ComputeBuffer*          _particleInBuffer               = nullptr;
         ComputeBuffer*          _particleVboOutBuffer           = nullptr;
         ComputeBuffer*          _particleDrawIndirectOutBuffer  = nullptr;
         ComputeBuffer*          _particleViewProjInBuffer       = nullptr;
-        ComputeProgram*         _particleVboProgram             = nullptr;
-        ComputeKernel*          _particleVboKernel              = nullptr;
-
+#endif
         ComputeBuffer*          _fboBuffer                      = nullptr;
         ComputeBuffer*          _lumStatsBuffer                 = nullptr;
         ComputeBuffer*          _lumStatsProgram                = nullptr;
@@ -58,7 +76,7 @@ namespace elysian {
         bool                    _automaticExposureActive        = false;
 
     protected:
-        void                    _setParticleAccelerationAvailable(bool val);
+       // void                    _setParticleAccelerationAvailable(bool val);
         bool                    _initializeAutomaticExposureKernel(void);
         bool                    _uninitializeAutomaticExposureKernel(void);
 
@@ -66,12 +84,11 @@ namespace elysian {
         bool                    initialize(void);
         bool                    uninitialize(void);
         void                    render(void);
+        void                    postRender(void);
         bool                    populateParticleVbos(void);
         bool                    renderParticles(void);
 
-        bool                    isParticleAccelerationAvailable(void) const;
-        bool                    getUseParticleAcceleration(void) const;
-        void                    setUseParticleAcceleration(bool val=true);
+
     };
 
 
@@ -80,21 +97,7 @@ namespace elysian {
 
     //========== INLINEZ ===========
 
-    inline bool RenderSystemBase::isParticleAccelerationAvailable(void) const {
-        return _particleAccelerationAvailable;
-    }
 
-    inline bool RenderSystemBase::getUseParticleAcceleration(void) const {
-        return _useParticleAcceleration;
-    }
-
-    inline void RenderSystemBase::setUseParticleAcceleration(bool val) {
-        _useParticleAcceleration = _particleAccelerationAvailable? val : false;
-    }
-
-    inline void RenderSystemBase::_setParticleAccelerationAvailable(bool val) {
-        _particleAccelerationAvailable = val;
-    }
 
 }
 

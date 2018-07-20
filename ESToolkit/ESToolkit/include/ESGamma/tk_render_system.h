@@ -8,15 +8,15 @@ class TkRenderSystem: public QObject, public elysian::RenderSystemBase {
     Q_OBJECT
 
 protected:
-    void _setParticleAccelerationAvailable(bool val);
+    //void _setParticleAccelerationAvailable(bool val);
 public:
 
-    void setUseParticleAcceleration(bool val);
+    //void setUseParticleAcceleration(bool val);
 
 Q_SIGNALS:
 
-    void useParticleAccelerationChanged(bool val);
-    void particleAccelerationAvailableChanged(bool val);
+    //void useParticleAccelerationChanged(bool val);
+    //void particleAccelerationAvailableChanged(bool val);
 
 
 

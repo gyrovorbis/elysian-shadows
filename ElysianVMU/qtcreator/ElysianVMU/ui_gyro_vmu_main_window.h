@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'gyro_vmu_main_window.ui'
 **
-** Created by: Qt User Interface Compiler version 5.10.1
+** Created by: Qt User Interface Compiler version 5.9.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -308,75 +308,75 @@ public:
 
     void retranslateUi(QMainWindow *VMUMainWindow)
     {
-        VMUMainWindow->setWindowTitle(QApplication::translate("VMUMainWindow", "ElysianVMU v 0.0.1 Alpha", nullptr));
-        actionLoad_ROM->setText(QApplication::translate("VMUMainWindow", "Open ROM", nullptr));
+        VMUMainWindow->setWindowTitle(QApplication::translate("VMUMainWindow", "ElysianVMU v 0.0.1 Alpha", Q_NULLPTR));
+        actionLoad_ROM->setText(QApplication::translate("VMUMainWindow", "Open ROM", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
-        actionLoad_ROM->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+O", nullptr));
+        actionLoad_ROM->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+O", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
-        actionSave_State->setText(QApplication::translate("VMUMainWindow", "Save State", nullptr));
+        actionSave_State->setText(QApplication::translate("VMUMainWindow", "Save State", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
-        actionSave_State->setShortcut(QApplication::translate("VMUMainWindow", "Shift+F1", nullptr));
+        actionSave_State->setShortcut(QApplication::translate("VMUMainWindow", "Shift+F1", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
-        actionLoad_State->setText(QApplication::translate("VMUMainWindow", "Load State", nullptr));
+        actionLoad_State->setText(QApplication::translate("VMUMainWindow", "Load State", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
-        actionLoad_State->setShortcut(QApplication::translate("VMUMainWindow", "F1", nullptr));
+        actionLoad_State->setShortcut(QApplication::translate("VMUMainWindow", "F1", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
-        actionAbout->setText(QApplication::translate("VMUMainWindow", "About", nullptr));
-        actionReset->setText(QApplication::translate("VMUMainWindow", "Reset", nullptr));
-        actionScreenshot->setText(QApplication::translate("VMUMainWindow", "Screenshot", nullptr));
-        actionEmulate_Audio->setText(QApplication::translate("VMUMainWindow", "Enable Audio", nullptr));
-        actionDump_Icons->setText(QApplication::translate("VMUMainWindow", "Dump Icons", nullptr));
-        actionDump_Eyecatch->setText(QApplication::translate("VMUMainWindow", "Dump Eyecatch", nullptr));
-        actionEnable_Low_Battery->setText(QApplication::translate("VMUMainWindow", "Enable Low Battery", nullptr));
-        actionQuick_Connect->setText(QApplication::translate("VMUMainWindow", "Quick Connect", nullptr));
-        actionTCP_Connection_Manager->setText(QApplication::translate("VMUMainWindow", "TCP Connection Manager", nullptr));
-        actionConfigure_Input_Devices->setText(QApplication::translate("VMUMainWindow", "Configure Input Devices", nullptr));
-        actionQuit->setText(QApplication::translate("VMUMainWindow", "Quit", nullptr));
-        actionView_Log->setText(QApplication::translate("VMUMainWindow", "View Log", nullptr));
-        actionLoad_BIOS_Image->setText(QApplication::translate("VMUMainWindow", "Load BIOS Image", nullptr));
-        actionDisassemble_ROM->setText(QApplication::translate("VMUMainWindow", "Disassemble ROM", nullptr));
-        actionEnable_Pixel_Ghosting->setText(QApplication::translate("VMUMainWindow", "Enable Pixel Ghosting", nullptr));
-        action1x->setText(QApplication::translate("VMUMainWindow", "1x", nullptr));
-        action2x->setText(QApplication::translate("VMUMainWindow", "2x", nullptr));
-        action4x->setText(QApplication::translate("VMUMainWindow", "4x", nullptr));
-        action8x->setText(QApplication::translate("VMUMainWindow", "8x", nullptr));
-        action16x->setText(QApplication::translate("VMUMainWindow", "16x", nullptr));
-        action32x->setText(QApplication::translate("VMUMainWindow", "32x", nullptr));
-        action64x->setText(QApplication::translate("VMUMainWindow", "64x", nullptr));
-        actionPreserve_Aspect_Ratio->setText(QApplication::translate("VMUMainWindow", "Preserve Aspect Ratio", nullptr));
-        actionSerial_COM_Connection_Manager->setText(QApplication::translate("VMUMainWindow", "Serial/COM Connection Manager", nullptr));
-        actionHalt->setText(QApplication::translate("VMUMainWindow", "Halt", nullptr));
+        actionAbout->setText(QApplication::translate("VMUMainWindow", "About", Q_NULLPTR));
+        actionReset->setText(QApplication::translate("VMUMainWindow", "Reset", Q_NULLPTR));
+        actionScreenshot->setText(QApplication::translate("VMUMainWindow", "Screenshot", Q_NULLPTR));
+        actionEmulate_Audio->setText(QApplication::translate("VMUMainWindow", "Enable Audio", Q_NULLPTR));
+        actionDump_Icons->setText(QApplication::translate("VMUMainWindow", "Dump Icons", Q_NULLPTR));
+        actionDump_Eyecatch->setText(QApplication::translate("VMUMainWindow", "Dump Eyecatch", Q_NULLPTR));
+        actionEnable_Low_Battery->setText(QApplication::translate("VMUMainWindow", "Enable Low Battery", Q_NULLPTR));
+        actionQuick_Connect->setText(QApplication::translate("VMUMainWindow", "Quick Connect", Q_NULLPTR));
+        actionTCP_Connection_Manager->setText(QApplication::translate("VMUMainWindow", "TCP Connection Manager", Q_NULLPTR));
+        actionConfigure_Input_Devices->setText(QApplication::translate("VMUMainWindow", "Configure Input Devices", Q_NULLPTR));
+        actionQuit->setText(QApplication::translate("VMUMainWindow", "Quit", Q_NULLPTR));
+        actionView_Log->setText(QApplication::translate("VMUMainWindow", "View Log", Q_NULLPTR));
+        actionLoad_BIOS_Image->setText(QApplication::translate("VMUMainWindow", "Load BIOS Image", Q_NULLPTR));
+        actionDisassemble_ROM->setText(QApplication::translate("VMUMainWindow", "Disassemble ROM", Q_NULLPTR));
+        actionEnable_Pixel_Ghosting->setText(QApplication::translate("VMUMainWindow", "Enable Pixel Ghosting", Q_NULLPTR));
+        action1x->setText(QApplication::translate("VMUMainWindow", "1x", Q_NULLPTR));
+        action2x->setText(QApplication::translate("VMUMainWindow", "2x", Q_NULLPTR));
+        action4x->setText(QApplication::translate("VMUMainWindow", "4x", Q_NULLPTR));
+        action8x->setText(QApplication::translate("VMUMainWindow", "8x", Q_NULLPTR));
+        action16x->setText(QApplication::translate("VMUMainWindow", "16x", Q_NULLPTR));
+        action32x->setText(QApplication::translate("VMUMainWindow", "32x", Q_NULLPTR));
+        action64x->setText(QApplication::translate("VMUMainWindow", "64x", Q_NULLPTR));
+        actionPreserve_Aspect_Ratio->setText(QApplication::translate("VMUMainWindow", "Preserve Aspect Ratio", Q_NULLPTR));
+        actionSerial_COM_Connection_Manager->setText(QApplication::translate("VMUMainWindow", "Serial/COM Connection Manager", Q_NULLPTR));
+        actionHalt->setText(QApplication::translate("VMUMainWindow", "Halt", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
-        actionHalt->setShortcut(QApplication::translate("VMUMainWindow", "F2", nullptr));
+        actionHalt->setShortcut(QApplication::translate("VMUMainWindow", "F2", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
-        actionAdvance_Frame->setText(QApplication::translate("VMUMainWindow", "Advance Frame", nullptr));
+        actionAdvance_Frame->setText(QApplication::translate("VMUMainWindow", "Advance Frame", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        actionAdvance_Frame->setToolTip(QApplication::translate("VMUMainWindow", "Advance Execution by a Frame", nullptr));
+        actionAdvance_Frame->setToolTip(QApplication::translate("VMUMainWindow", "Advance Execution by a Frame", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_SHORTCUT
-        actionAdvance_Frame->setShortcut(QApplication::translate("VMUMainWindow", "F3", nullptr));
+        actionAdvance_Frame->setShortcut(QApplication::translate("VMUMainWindow", "F3", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
-        actionRecordAnim->setText(QApplication::translate("VMUMainWindow", "Record", nullptr));
+        actionRecordAnim->setText(QApplication::translate("VMUMainWindow", "Record", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        actionRecordAnim->setToolTip(QApplication::translate("VMUMainWindow", "Record to Animated GIF", nullptr));
+        actionRecordAnim->setToolTip(QApplication::translate("VMUMainWindow", "Record to Animated GIF", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_SHORTCUT
-        actionRecordAnim->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+R", nullptr));
+        actionRecordAnim->setShortcut(QApplication::translate("VMUMainWindow", "Ctrl+R", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
-        actionSave_Game->setText(QApplication::translate("VMUMainWindow", "Save Game", nullptr));
-        actionLoad_Game->setText(QApplication::translate("VMUMainWindow", "Load Game", nullptr));
-        actionBIOS_Runtime_Disassembly->setText(QApplication::translate("VMUMainWindow", "BIOS Dynamic Disassembly", nullptr));
-        actionBuzzer_Tool->setText(QApplication::translate("VMUMainWindow", "Buzzer Tool", nullptr));
-        menuFile->setTitle(QApplication::translate("VMUMainWindow", "File", nullptr));
-        menuLoad_Recent->setTitle(QApplication::translate("VMUMainWindow", "Open Recent", nullptr));
-        menuEmulation->setTitle(QApplication::translate("VMUMainWindow", "Emulation", nullptr));
-        menuSerial_Communications->setTitle(QApplication::translate("VMUMainWindow", "Serial Communications", nullptr));
-        menuPlayback->setTitle(QApplication::translate("VMUMainWindow", "Playback", nullptr));
-        menuTools->setTitle(QApplication::translate("VMUMainWindow", "Tools", nullptr));
-        menuScreen_Capture->setTitle(QApplication::translate("VMUMainWindow", "Capture Animation", nullptr));
-        menuHelp->setTitle(QApplication::translate("VMUMainWindow", "Help", nullptr));
-        menuView->setTitle(QApplication::translate("VMUMainWindow", "View", nullptr));
-        menuPixel_Perfect_Aspect_Zoom->setTitle(QApplication::translate("VMUMainWindow", "Pixel-Perfect Zoom", nullptr));
+        actionSave_Game->setText(QApplication::translate("VMUMainWindow", "Save Game", Q_NULLPTR));
+        actionLoad_Game->setText(QApplication::translate("VMUMainWindow", "Load Game", Q_NULLPTR));
+        actionBIOS_Runtime_Disassembly->setText(QApplication::translate("VMUMainWindow", "BIOS Dynamic Disassembly", Q_NULLPTR));
+        actionBuzzer_Tool->setText(QApplication::translate("VMUMainWindow", "Buzzer Tool", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("VMUMainWindow", "File", Q_NULLPTR));
+        menuLoad_Recent->setTitle(QApplication::translate("VMUMainWindow", "Open Recent", Q_NULLPTR));
+        menuEmulation->setTitle(QApplication::translate("VMUMainWindow", "Emulation", Q_NULLPTR));
+        menuSerial_Communications->setTitle(QApplication::translate("VMUMainWindow", "Serial Communications", Q_NULLPTR));
+        menuPlayback->setTitle(QApplication::translate("VMUMainWindow", "Playback", Q_NULLPTR));
+        menuTools->setTitle(QApplication::translate("VMUMainWindow", "Tools", Q_NULLPTR));
+        menuScreen_Capture->setTitle(QApplication::translate("VMUMainWindow", "Capture Animation", Q_NULLPTR));
+        menuHelp->setTitle(QApplication::translate("VMUMainWindow", "Help", Q_NULLPTR));
+        menuView->setTitle(QApplication::translate("VMUMainWindow", "View", Q_NULLPTR));
+        menuPixel_Perfect_Aspect_Zoom->setTitle(QApplication::translate("VMUMainWindow", "Pixel-Perfect Zoom", Q_NULLPTR));
     } // retranslateUi
 
 };

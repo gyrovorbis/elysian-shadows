@@ -1,5 +1,4 @@
 #include <crtp/elysian_render_system.hpp>
-#include <system/elysian_compute_system.hpp>
 #include <crtp/elysian_debug.hpp>
 #include <gyro_video_api.h>
 #include <crtp/elysian_area.hpp>
@@ -11,6 +10,7 @@
 
 extern int glalVertexArray;
 extern GLuint                      _streamVao[2];
+extern GLuint _glalColorTex;
 
 namespace elysian {
 
@@ -19,6 +19,23 @@ GLuint _glParticleVbo           = 0;
 GLuint _glParticleIndirectBuff  = 0;
 
 
+#if 0
+bool RenderSystemBase::isParticleAccelerationAvailable(void) const {
+    return _particleComputeTask->isAccelerationAvailable();
+}
+
+RenderSystemBase::getUseParticleAcceleration(void) const {
+    return _particleComputeTask->isAccelerated();
+}
+
+void RenderSystemBase::setUseParticleAcceleration(bool val) {
+    _particleComputeTask->setAccelerated(val);
+}
+
+void RenderSystemBase::_setParticleAccelerationAvailable(bool val) {
+    _particleAccelerationAvailable = val;
+}
+#endif
 
 bool RenderSystemBase::initialize(void) {
     bool success = true;
@@ -55,8 +72,8 @@ bool RenderSystemBase::initialize(void) {
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
-
-        _particleDevice = getComputeSystem()->getDeviceByType(ComputeSystem::DEVICE_GPU_RENDERER_ONLINE);
+#if 0
+        _particleDevice = getComputeSystem()->getDeviceByCategory(ComputeDeviceCategory::GpuRendererOnline);
         if(_particleDevice) {
             ComputeContext* ctx = getComputeSystem()->getRendererContext();
             _renderCmdQueue = ctx->createCommandQueue(_particleDevice, 0);
@@ -68,7 +85,7 @@ bool RenderSystemBase::initialize(void) {
                 if(_particleVboOutBuffer && _particleInBuffer && _particleDrawIndirectOutBuffer && _particleViewProjInBuffer) {
                     _particleVboProgram = ctx->loadProgram(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH);
                     if(_particleVboProgram) {
-                        if(_particleVboProgram->compile(_particleDevice, 1, nullptr)) {
+                        if(_particleVboProgram->compile(_particleDevice, 1, nullptr, nullptr)) {
                             _particleVboKernel = _particleVboProgram->createKernel(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME);
                             if(_particleVboKernel) {
                                 bool success = true;
@@ -85,13 +102,47 @@ bool RenderSystemBase::initialize(void) {
                 }
             }
         }
+#else
+      _particleComputeTask = getComputeSystem()->createComputeTask(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME,
+                                                                   {
+                                                                        ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH
+                                                                   },
+                                                                   {
+                                                                       ComputeDeviceCategory::GpuRendererOnline,
+                                                                       ComputeDeviceCategory::GpuRendererOffline,
+                                                                       ComputeDeviceCategory::CpuRenderer
+                                                                   },
+                                                                   NULL,
+                                                                   true);
+
+        if(_particleComputeTask->isAccelerated()) {
+            _particleInBuffer = _particleComputeTask->getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr);
+            _particleVboOutBuffer = _particleComputeTask->getContext()->createBufferFromRendererBuffer(_glParticleVbo, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY);
+            _particleDrawIndirectOutBuffer = _particleComputeTask->getContext()->createBufferFromRendererBuffer(_glParticleIndirectBuff, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
+            _particleViewProjInBuffer = _particleComputeTask->getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYMatrix4), nullptr);
+            if(_particleVboOutBuffer && _particleInBuffer && _particleDrawIndirectOutBuffer && _particleViewProjInBuffer) {
+                ComputeKernel* kernel =  _particleComputeTask->getKernel();
+                if(kernel) {
+                    success &= kernel->setArg(1, _particleInBuffer);
+                    success &= kernel->setArg(2, _particleViewProjInBuffer);
+                    success &= kernel->setArg(3, _particleDrawIndirectOutBuffer);
+                    success &= kernel->setArg(4, _particleVboOutBuffer);
+                }
+            }
+        }
+
+        _luminanceComputeTask = new LuminanceHistogramComputeTask(_glalColorTex);
+        dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
+
+#endif
     }
 
-    if(_useParticleAcceleration) {
+    if(_particleComputeTask && _particleComputeTask->isValid()) {
         dbgprintf("RendererSystem: Compute accelerated particles enabled.");
-        setUseParticleAcceleration(true);
+        success = true;
     } else {
         warnprintf("RenderSystem: No compute acceleration available for particles!");
+        success = false;
     }
 
     dbgpop();
@@ -100,7 +151,6 @@ bool RenderSystemBase::initialize(void) {
 
 bool RenderSystemBase::uninitialize(void) {
     delete _particleVboOutBuffer;
-    delete _renderCmdQueue;
     return true;
 }
 
@@ -109,7 +159,7 @@ bool RenderSystemBase::populateParticleVbos(void) {
     bool success = true;
 
     if(gyVidShadowPass()) return true;
-    if(!_useParticleAcceleration) return false;
+    if(_particleComputeTask && !_particleComputeTask->isValid()) return false;
 
     _activeParticles = 0;
     for(unsigned i = 0; i < getCurrentArea()->particleEmitters.size(); ++i) {
@@ -133,7 +183,7 @@ bool RenderSystemBase::populateParticleVbos(void) {
 
     if(_activeParticles) {
 
-        auto* wgInfo = _particleDevice->getKernelWorkGroupInfo(_particleVboKernel);
+        auto* wgInfo = _particleComputeTask->getDevice()->getKernelWorkGroupInfo(_particleComputeTask->getKernel());
         size_t offset = 0;
         size_t globalWorkSize = _activeParticles;
 
@@ -156,18 +206,16 @@ bool RenderSystemBase::populateParticleVbos(void) {
             (int32_t)res.x, (int32_t)res.y
         };
 
-        glFinish();
-        success &= _renderCmdQueue->enqueueAcquireRendererSharedObject(2, sharedBuffs);
-        success &= _renderCmdQueue->enqueueBufferWrite(_particleViewProjInBuffer, 0, sizeof(GYMatrix4), getCameraSys()->getCurrentState()->projViewMat, false);
-        success &= _renderCmdQueue->enqueueBufferWrite(_particleInBuffer, 0, sizeof(KernelParticle)*_activeParticles, kernParts, false);
-        success &= _particleVboKernel->setArg(0, sizeof(uint32_t), &_activeParticles);
-        success &= _particleVboKernel->setArg(5, sizeof(int32_t)*2, viewportSize);
-        success &= _renderCmdQueue->enqueueKernel(_particleVboKernel, 1, &offset, &globalWorkSize, &localWorkSize);
-        success &= _renderCmdQueue->enqueueReleaseRendererSharedObject(2, sharedBuffs);
+        success &= _particleComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(2, sharedBuffs);
+        success &= _particleComputeTask->getCommandQueue()->enqueueBufferWrite(_particleViewProjInBuffer, 0, sizeof(GYMatrix4), getCameraSys()->getCurrentState()->projViewMat, false);
+        success &= _particleComputeTask->getCommandQueue()->enqueueBufferWrite(_particleInBuffer, 0, sizeof(KernelParticle)*_activeParticles, kernParts, false);
+        success &= _particleComputeTask->getKernel()->setArg(0, sizeof(uint32_t), &_activeParticles);
+        success &= _particleComputeTask->getKernel()->setArg(5, sizeof(int32_t)*2, viewportSize);
+        success &= _particleComputeTask->getCommandQueue()->enqueueKernel(_particleComputeTask->getKernel(), 1, &offset, &globalWorkSize, &localWorkSize);
+        success &= _particleComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(2, sharedBuffs);
 
         if(!success) {
             errprintf("RenderSystem: GPGPU Particle VBO population failed! Falling back to software from now on!");
-            setUseParticleAcceleration(false);
         }
     }
 
@@ -178,14 +226,12 @@ bool RenderSystemBase::renderParticles(void) {
     bool success = true;
     if(gyVidShadowPass()) return true;
 
-    if(!_useParticleAcceleration) {
+    if(!_particleComputeTask || !_particleComputeTask->isValid()) {
         for(unsigned i = 0; i < getCurrentArea()->particleEmitters.size(); ++i) {
             auto* emitter = getCurrentArea()->particleEmitters[i];
             emitter->render();
         }
     } else if(_activeParticles) {
-
-        success &= _renderCmdQueue->finish();
 
         if(success) {
             gyVidTexBind(nullptr);
@@ -206,11 +252,42 @@ bool RenderSystemBase::renderParticles(void) {
             glBindVertexArray(_streamVao[0]);
         } else {
             errprintf("RenderSystem: Failed to render GPGPU accelerated particles! Falling back to software from now on!");
-            setUseParticleAcceleration(false);
+           // setUseParticleAcceleration(false);
         }
     }
 
     return success;
+}
+
+void RenderSystemBase::postRender(void) {
+    bool success = true;
+    unsigned int width;
+    unsigned int height;
+    gyVidResolution(&width, &height);
+
+    if(_luminanceComputeTask->isAccelerated()) {
+        success &= _luminanceComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(1, &_luminanceComputeTask->_fboBuffer);
+        success &= _luminanceComputeTask->enqueueKernel(width*height);
+        success &= _luminanceComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(1, &_luminanceComputeTask->_fboBuffer);
+        success &= _luminanceComputeTask->getCommandQueue()->enqueueBufferRead(_luminanceComputeTask->_statsBuffer,
+                                                                               0,
+                                                                               sizeof(LuminanceHistogramComputeTask::LuminanceStats),
+                                                                               &_luminanceComputeTask->_lumStats);
+
+        if(!success) {
+            errprintf("Something dun fucked up when trying to construct LuminanceComputeTasks's command queue!");
+           // _luminanceComputeTask->_isValid = false;
+        } else {
+            static int framez = 0;
+            if(++framez % 60 == 0) {
+               // DbgEvent event("Luminance Stats");
+           //     dbgprintf("Min - %u, Max - %u", _luminanceComputeTask->_lumStats.min, _luminanceComputeTask->_lumStats.max);
+             //   for(unsigned i = 0; i < 256; ++i) dbgprintf("[%u] - %u", i, _luminanceComputeTask->_lumStats.histBins[i]);
+            }
+        }
+
+    }
+
 }
 
 
@@ -219,6 +296,43 @@ bool RenderSystemBase::_initializeAutomaticExposureKernel(void) {
 
 
 bool RenderSystemBase::_uninitializeAutomaticExposureKernel(void) {
+
+}
+
+LuminanceHistogramComputeTask::LuminanceHistogramComputeTask(uintptr_t textureId):
+    ComputeTask(ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_NAME,
+        {
+             ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_PATH
+        },
+        {
+            //ComputeDeviceCategory::GpuRendererOffline//,
+            ComputeDeviceCategory::GpuRendererOnline//,
+            //ComputeDeviceCategory::CpuRenderer
+        },
+        NULL,
+        true)
+{
+    DbgEvent event("LuminanceHistogramTask - Initializing Kernel");
+
+    if(isValid()) {
+        _fboBuffer      = getContext()->createBufferFromRendererTexture(textureId, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
+        if(_fboBuffer) _statsBuffer    = getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(LuminanceStats));
+
+        if(!_fboBuffer || !_statsBuffer) {
+            errprintf("Histogram compute resource allocation failed.");
+            _useNative = false;
+        } else {
+
+            int success = 1;
+            success &= getKernel()->setArg(0, _statsBuffer);
+            success &= getKernel()->setArg(1, _fboBuffer);
+
+            if(!success) {
+                errprintf("Failed to set initial kernel arguments!");
+                _useNative = false;
+            }
+        }
+    }
 
 }
 
