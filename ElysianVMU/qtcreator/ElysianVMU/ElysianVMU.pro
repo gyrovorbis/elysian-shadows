@@ -1,4 +1,5 @@
-include(../../../qtcreator/ESDev/ESDev.pri)
+#include(../../../qtcreator/ESDev/ESDev.pri)
+
 vmu {
     TEMPLATE = app
 }
@@ -10,6 +11,10 @@ vmu_child_app {
 }
 TARGET = ElysianVMU
 QT += gui opengl
+
+isEmpty(LIBGYRO_PATH) {
+    LIBGYRO_PATH = libGyro
+}
 
 !raspberrypi : !ios {
     QT += serialport
@@ -125,11 +130,11 @@ HEADERS += \
     HEADERS += gyro_vmu_com_dialog.hpp
 }
 
-INCLUDEPATH += ../../../libGyro/include \
+INCLUDEPATH += $${LIBGYRO_PATH}/include \
     ../../lib/source \
     gif
 
-DEPENDPATH += ../../../libGyro/include \
+DEPENDPATH += $${LIBGYRO_PATH}/include \
     ../../lib/source \
     ../../lib/include \
     gif
@@ -141,30 +146,32 @@ FORMS += \
     gyro_vmu_buzzer_dialog.ui
 
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/ -llibGyro
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/ -llibGyro
-else:unix:!vmu_child_app: LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/ -llibGyro
+LIBGYRO_BUILD_PATH = -L$${OUT_PWD}/../../$${LIBGYRO_PATH}
 
-INCLUDEPATH += $$PWD/../../../libGyro/qtcreator/libGyro
-DEPENDPATH += $$PWD/../../../libGyro/qtcreator/libGyro
+win32:CONFIG(release, debug|release): LIBS += -L$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/ -llibGyro
+else:win32:CONFIG(debug, debug|release): LIBS += -L$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/ -llibGyro
+else:unix:!vmu_child_app: LIBS += -L$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/ -llibGyro
 
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/liblibGyro.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/liblibGyro.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/libGyro.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/libGyro.lib
-else:unix:!vmu_child_app: PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/liblibGyro.a
+INCLUDEPATH += $${LIBGYRO_BUILD_PATH}/libGyro/qtcreator/libGyro
+DEPENDPATH += $${LIBGYRO_BUILD_PATH}/libGyro/qtcreator/libGyro
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/liblibGyro.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/liblibGyro.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/libGyro.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/libGyro.lib
+else:unix:!vmu_child_app: PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/liblibGyro.a
 
 !vmu_child_app {
 
 macx {
-  LIBS +=  -L../../../libGyro/lib/osx \
+  LIBS +=  -L$${LIBGYRO_PATH}/lib/osx \
         -framework Metal \
         -framework OpenGL \
         -framework OpenAL \
         -lz \
         -F../../../ESGamma/lib/osx \
         -L../../../ESGamma/lib/osx \
-        -F../../../libGyro/lib/osx \
+        -F$${LIBGYRO_PATH}/lib/osx \
         -framework SDL2 \
         -framework SDL2_net
 vulkan {
@@ -221,9 +228,9 @@ raspberrypi {
 
 win32 {
     QMAKE_CFLAGS += -msse -std=c99
-    INCLUDEPATH += ../../../libGyro/lib/win32
+    INCLUDEPATH += $${LIBGYRO_PATH}//lib/win32
     LIBS += -L../../../lib/win32 \
-        -L../../../libGyro/lib/win32 \
+        -L$${LIBGYRO_PATH}/lib/win32 \
         -lDbgHelp \
         -lglew32 \
         -lglu32 \
