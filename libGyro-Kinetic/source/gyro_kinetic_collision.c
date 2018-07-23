@@ -1,0 +1,587 @@
+#include "kinetic/gyro_kinetic_collision.h"
+#include "kinetic/gyro_kinetic_contact.h"
+#include "kinetic/gyro_kinetic_static.h"
+#include <gyro_matrix_api.h>
+
+const GYVector4 gyBoxLocalVerts[4] = {
+    { -0.5f, -0.5f, 1.0f, 1.0f },
+    { 0.5f, -0.5f, 1.0f, 1.0f },
+    { 0.5f, 0.5f, 0.0f, 1.0f },
+    { -0.5f, 0.5f, 0.0f, 1.0f }
+};
+
+const GYVector4 gyRTriLocalVerts[3] = {
+    { 0.5f, -0.5f, 0.0f, 1.0f },
+    { -0.5f, 0.5f, 0.0f, 1.0f },
+    { 0.5f, 0.5f, 0.0f, 1.0f }
+};
+
+const GYVector4 gyCirLocalVert = {
+    0.0f, 0.0f, 0.0f, 1.0f
+};
+
+const GYCollider *_curCol = 0;
+const struct _GYStatic *_curStat = 0;
+
+// ======== INTENRALS ========
+
+static inline unsigned OBB_getSupportPoints(const GYBoxCollider*const collider, const GYVector2*const normal, GYVector2*const support) {
+    float t[4];
+    float min = -1.0f;
+    const float threshold = 1.0E-1;
+    unsigned count = 0;
+
+
+    for(int i = 0; i < 4; ++i) {
+        t[i] = gyVec2DotProd((GYVector2*)&collider->worldVert[i], normal);
+
+        if(t[i] < min || i == 0)
+            min = t[i];
+    }
+
+    for(int i = 0; i < 4; ++i) {
+        if(t[i] < min+threshold) {
+          support[count].x = collider->worldVert[i].x;
+          support[count++].y = collider->worldVert[i].y;
+          if (count == 2) break;
+        }
+    }
+    return count;
+
+}
+
+static inline unsigned OBB_getContactPoints_VertexVertex(const GYVector2*const PA,
+                                                         const GYVector2*const PB,
+                                                         GYVector2*const contacts)
+{
+    contacts[0] = *PA;
+    contacts[1] = *PB;
+    return 1;
+}
+
+static inline void OBB_getClosestPointOnEdge(GYVector2*const closest,
+                                             const GYVector2*const P,
+                                             const GYVector2*const A,
+                                             const GYVector2*const B)
+{
+    GYVector2 AB, AP;
+
+    gyVec2Sub(&AB, B, A);
+    gyVec2Sub(&AP, P, A);
+
+    float ab_ab = gyVec2DotProd(&AB, &AB);
+    float ab_ap = gyVec2DotProd(&AP, &AB);
+    float t = ab_ap / ab_ab;
+
+    t = (t < 0.0f)? 0.0f : (t > 1.0f)? 1.0f : t;
+
+    gyVec2Scale(closest, &AB, t);
+    gyVec2AddAccum(closest, A);
+}
+
+
+static inline unsigned OBB_getContactPoints_EdgeVertex(const GYVector2*const edgeA,
+                                                       const GYVector2*const PB,
+                                                       GYVector2*const contacts)
+{
+    OBB_getClosestPointOnEdge(&contacts[0], PB, &edgeA[0], &edgeA[1]);
+    contacts[1] = *PB;
+    return 1;
+}
+
+static inline unsigned OBB_getContactPoints_VertexEdge(const GYVector2*const PA,
+                                                       const GYVector2*const edgeB,
+                                                       GYVector2*const contacts)
+{
+    contacts[0] = *PA;
+    OBB_getClosestPointOnEdge(&contacts[1], PA, &edgeB[0], &edgeB[1]);
+    return 1;
+}
+
+typedef struct __VSort {
+    const GYVector2*    vert;
+    float               dot;
+    unsigned            body;
+} _VSort;
+
+static inline unsigned OBB_getContactPoints_EdgeEdge(const GYVector2*const edgeA,
+                                                     const GYVector2*const edgeB,
+                                                     GYVector2*const contacts)
+{
+    _VSort vsort[4] = {
+        { &edgeA[0], 0.0f, 0 },
+        { &edgeA[1], 0.0f, 0 },
+        { &edgeB[0], 0.0f, 1 },
+        { &edgeB[1], 0.0f, 1 }
+    };
+    GYVector2 dir;
+
+    gyVec2Sub(&dir, &edgeA[1], &edgeA[0]);
+
+    for(unsigned i = 0; i < 4; ++i) {
+        vsort[i].dot = gyVec2DotProd(&dir, vsort[i].vert);
+    }
+
+    //bubble sort it ... :*(
+    for(unsigned i = 0; i < 4; ++i) {
+        for(unsigned j = i+1; j < 4; ++j) {
+            _VSort temp;
+            if(vsort[i].dot < vsort[j].dot) {
+                temp = vsort[i];
+                vsort[i] = vsort[j];
+                vsort[j] = temp;
+            }
+        }
+    }
+
+    for(unsigned i = 0; i < 2; ++i) {
+        // Vertex belonged to body A
+        if(vsort[i+1].body == 0) {
+            contacts[i*2] = *vsort[i+1].vert;
+            OBB_getClosestPointOnEdge(&contacts[i*2+1], vsort[i+1].vert, &edgeB[0], &edgeB[1]);
+        } else { // Vertex belonged to body B
+            OBB_getClosestPointOnEdge(&contacts[i*2], vsort[i+1].vert, &edgeA[0], &edgeA[1]);
+            contacts[i*2+1] = *vsort[i+1].vert;
+        }
+    }
+    return 2;
+
+}
+
+static inline unsigned OBB_getContactPoints(const GYVector2*const supportA, const unsigned numSupportA,
+                                     const GYVector2*const supportB, const unsigned numSupportB,
+                                     GYVector2*const contacts) {
+    switch(numSupportA + numSupportB) {
+    // shit has reested
+    default:
+    case 0:
+    case 1:
+      //  assert(0); SHOULDN'T EVER FUCKING HAPPEN
+        return 0;
+    case 2:
+        return OBB_getContactPoints_VertexVertex(&supportA[0], &supportB[0], contacts);
+    case 3:
+        if(numSupportA > numSupportB)
+            return OBB_getContactPoints_EdgeVertex(supportA, &supportB[0], contacts);
+        else
+            return OBB_getContactPoints_VertexEdge(&supportA[0], supportB, contacts);
+    case 4:
+        return OBB_getContactPoints_EdgeEdge(supportA, supportB, contacts);
+    }
+
+}
+
+
+// ======== /INTERNALS =======
+
+
+
+void gyColliderCurrent(const GYCollider *const col, const struct _GYStatic *const stat) {
+    _curCol = col;
+    _curStat = stat;
+}
+
+void gyCalcCirWorldVert(GYCirCollider *const cir) {
+    gyMatMultVec(&gyCirLocalVert, &cir->worldVert, 1);
+}
+
+//Should we push/pop from the stack here? Probably?
+//No reason to normalize axes for AABBs!!!
+//Doesn't push/pop matrices, so that you can parent the bastards
+void gyCalcBoxWorldVert(GYBoxCollider *const box) {
+    //gyMatPush();
+    //gyMatLoadIdentity();
+    //gyMatInstance(&box->collider.transform);
+    //Calculate vertices in world coordinates
+    gyMatMultVec(gyBoxLocalVerts, box->worldVert, 4);
+    //Normalize axes for later collision checks
+    gyVec2Sub((GYVector2*)&box->axis[0], (GYVector2*)&box->worldVert[1], (GYVector2*)&box->worldVert[0]);
+    gyVec2Sub((GYVector2*)&box->axis[1], (GYVector2*)&box->worldVert[3], (GYVector2*)&box->worldVert[0]);
+    gyVec2Normalize(&box->axis[0]);
+    gyVec2Normalize(&box->axis[1]);
+    //gyMatPop();
+}
+
+void gyCalcTriWorldVert(GYTriCollider *const tri) {
+    //gyMatPush();
+    //gyMatLoadIdentity();
+    //gyMatInstance(&tri->collider.transform);
+    //Calculate vertices in world coordinates
+    gyMatMultVec(gyRTriLocalVerts, tri->worldVert, 3);
+    //Normalize axes for later collision checks
+    gyVec2Sub((GYVector2*)&tri->axis[0], (GYVector2*)&tri->worldVert[1], (GYVector2*)&tri->worldVert[0]);
+    gyVec2Sub((GYVector2*)&tri->axis[1], (GYVector2*)&tri->worldVert[2], (GYVector2*)&tri->worldVert[0]);
+    gyVec2Sub((GYVector2*)&tri->axis[2], (GYVector2*)&tri->worldVert[2], (GYVector2*)&tri->worldVert[1]);
+    gyVec2Normalize(&tri->axis[0]);
+    gyVec2Normalize(&tri->axis[1]);
+    gyVec2Normalize(&tri->axis[2]);
+    //gyMatPop();
+}
+
+int gyCollision(GYCollider *bodB, const struct _GYStatic *statB, struct _GYContact *con, int *swapFlag) {
+    const GYCollider *const bodA = (const GYCollider *)_curCol;
+    const GYCollider *const colB = (const GYCollider *)bodB;
+    const struct _GYStatic *statA = _curStat;
+    *swapFlag = 0;
+
+    switch(_curCol->type) {
+
+        case GY_COLLIDER_AABB:
+            switch(colB->type) {
+                case GY_COLLIDER_AABB:
+                    //return gyCollisionAABBvAABB((const GYBoxCollider *)bodA, (const GYBoxCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_OBB:
+                    return gyCollisionOBBvOBB((const GYBoxCollider *)bodA, (const GYBoxCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_RTRI:
+                    return gyCollisionOBBvTri((const GYBoxCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+
+                break;
+                default:
+                    assert(0);
+            }
+            break;
+
+        case GY_COLLIDER_OBB:
+            switch(colB->type) {
+                case GY_COLLIDER_AABB:
+                case GY_COLLIDER_OBB:
+                    return gyCollisionOBBvOBB((const GYBoxCollider *)bodA, (const GYBoxCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_RTRI:
+                    return gyCollisionOBBvTri((const GYBoxCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+
+                break;
+                default:
+                    assert(0);
+            }
+            break;
+
+        case GY_COLLIDER_RTRI:
+            switch(colB->type) {
+                case GY_COLLIDER_AABB:
+                case GY_COLLIDER_OBB:
+                    *swapFlag = 1; //Tri is the second argument, swapping order!
+                    return gyCollisionOBBvTri((const GYBoxCollider *)bodB, (const GYTriCollider *)bodA, con, statB, statA);
+                case GY_COLLIDER_RTRI:
+                    return gyCollisionTrivTri((const GYTriCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+
+                    break;
+                default:
+                    assert(0);
+            }
+            break;
+
+        case GY_COLLIDER_CIR:
+            switch(colB->type) {
+                case GY_COLLIDER_AABB:
+                case GY_COLLIDER_OBB:
+                    *swapFlag = 1; //Tri is the second argument, swapping order!
+                    return gyCollisionOBBvTri((const GYBoxCollider *)bodB, (const GYTriCollider *)bodA, con, statB, statA);
+                case GY_COLLIDER_RTRI:
+                    return gyCollisionTrivTri((const GYTriCollider *)bodA, (const GYTriCollider *)bodB, con, statA, statB);
+                case GY_COLLIDER_CIR:
+                    return gyCollisionCirclevCircle((const GYCirCollider *)bodA, (const GYCirCollider *)bodB, con, statA, statB);
+                default:
+                    assert(0);
+            }
+            break;
+
+        default:
+            assert(0);
+    }
+    assert(0);
+    return 0;
+}
+
+
+
+//SIMPLIFIED SAT - Only AABB v AABB
+int gyCollisionAABBvAABB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
+    return gyCollisionOBBvOBB(boxA, boxB, con, statA, statB);
+}
+
+
+//SPECIALIZED SAT - Only OBB v Tri
+int gyCollisionOBBvTri(const GYBoxCollider *boxA, const GYTriCollider *triB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
+    (void)boxA;
+    (void)triB;
+    (void)con;
+    (void)statA;
+    (void)statB;
+    return 0;
+}
+
+//SPECIALIZED SAT - Only Tri v Tri
+int gyCollisionTrivTri(const GYTriCollider *triA, const GYTriCollider *triB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
+    (void)triA;
+    (void)triB;
+    (void)con;
+    (void)statA;
+    (void)statB;
+    return 0;
+}
+
+
+int gyCollisionCirclevCircle(const GYCirCollider *cirA, const GYCirCollider *cirB, struct _GYContact *con, const struct _GYStatic * const statA, const struct _GYStatic * const statB) {
+    GYVector3 normal;
+    gyVec3Sub(&normal, &cirA->worldVert, &cirB->worldVert);
+    float dist = gyVec3MagAndNormalize(&normal);
+    float depth = cirA->collider.transform._scale.x + cirB->collider.transform._scale.x - dist;
+    if(depth > 0) {
+        con->depth = depth;
+        memcpy(&con->normal, &normal, sizeof(GYVector3));
+        memcpy(&con->worldPos, &cirB->worldVert, sizeof(GYVector3));
+        gyVec3AddScaled(&con->worldPos, &normal, 0.5f*dist);
+        con->staticAttrib[0] = statA;
+        con->staticAttrib[1] = statB;
+        con->collider[0] = (const GYCollider*)cirA;
+        con->collider[1] = (const GYCollider*)cirB;
+        return 1;
+    }
+    return 0;
+}
+
+
+static inline void Swapf(float *const a, float *const b) {
+    float temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+
+static inline void ProjectPolygon(const GYVector2 *const axis, const GYVector4 vertex[], float *const min, float *const max, int *const minIndex, int *const maxIndex) {
+    unsigned int i = 1;
+    float dotProduct = gyVec2DotProd((GYVector2*)&vertex[0], axis);
+
+    *max = *min = dotProduct;
+    *minIndex = *maxIndex = 0;
+    for(; i < 4; ++i) {
+        dotProduct = gyVec2DotProd((GYVector2*)&vertex[i], axis);
+        if(dotProduct < *min) {
+            *min = dotProduct;
+            *minIndex = i;
+        }
+        else if(dotProduct > *max) {
+            *max = dotProduct;
+            *maxIndex = i;
+        }
+    }
+}
+
+// SAT - OBB v OBB && OBB v AABB
+int gyCollisionOBBvOBB(const GYBoxCollider *boxA,
+                       const GYBoxCollider *boxB,
+                       struct _GYContact *con,
+                       const struct _GYStatic *const statA,
+                       const struct _GYStatic *const statB) {
+    float min, max;
+    unsigned int i = 0;
+    //int minIndex, maxIndex;
+    //gyroVector2 axis[4]; //move this shit
+    //cache the bitches
+
+    // evens are min projections, odds are max
+    // scalarA[0-1] and scalarB[0-1] are scalar projections onto axis[0]
+    // scalarA[2-3] and scalarB[2-3] are scalar projections onto axis[1]
+    // scalarA[4-5] and scalarB[4-5] are scalar projections onto axis[2]
+    // scalarA[6-7] and scalarB[6-7] are scalar projections onto axis[3]
+    //Indeces hold the worldVertex index number of the largest/smallest projections onto the axes
+    float scalarA[8], scalarB[8];
+    int scalarAIndex[8], scalarBIndex[8];
+
+    //=============
+    float diff, minDiff;
+    unsigned int axisNum = 0;
+    char neg = 0;
+
+    //MAKE FUCKING SURE COLLIDABLE::CALCULATEVERTICES() HAS BEEN CALLED!
+
+    // Determine 4 axes (move this elsewhere later)
+    /*gyroVector2Sub(&axis[0], &colA->worldVertex[1], &colA->worldVertex[0]);
+    gyroVector2Sub(&axis[1], &colA->worldVertex[3], &colA->worldVertex[0]);
+    gyroVector2Sub(&axis[2], &colB->worldVertex[1], &colB->worldVertex[0]);
+    gyroVector2Sub(&axis[3], &colB->worldVertex[3], &colB->worldVertex[0]);
+
+    for(; i < 4; ++i) gyroVector2Normalize(&axis[i]); //ugh*/
+
+    // Calculate axis[0] projections.
+    scalarA[0] = gyVec2DotProd((GYVector2*)&boxA->worldVert[0], (GYVector2*)&boxA->axis[0]);
+    scalarA[1] = gyVec2DotProd((GYVector2*)&boxA->worldVert[1], (GYVector2*)&boxA->axis[0]);
+    if(scalarA[0] > scalarA[1]) {
+        Swapf(&scalarA[0], &scalarA[1]);
+        scalarAIndex[0] = 0;
+        scalarAIndex[1] = 1;
+    }
+    else {
+        scalarAIndex[0] = 1;
+        scalarAIndex[1] = 0;
+    }
+
+    ProjectPolygon(&boxA->axis[0], boxB->worldVert, &min, &max, &scalarBIndex[0], &scalarBIndex[1]);
+    scalarB[0] = min;
+    scalarB[1] = max;
+
+    if(!((scalarB[0] < scalarA[1]) && (scalarB[1] > scalarA[0]))) return 0; //De Morgan, dumbass
+
+    // Calculate axis[1] projections.
+    scalarA[2] = gyVec2DotProd((GYVector2*)&boxA->worldVert[0], (GYVector2*)&boxA->axis[1]);
+    scalarA[3] = gyVec2DotProd((GYVector2*)&boxA->worldVert[3], (GYVector2*)&boxA->axis[1]);
+    if(scalarA[2] > scalarA[3]) {
+        Swapf(&scalarA[2], &scalarA[3]);
+        scalarAIndex[2] = 0;
+        scalarAIndex[3] = 3;
+    }
+    else {
+        scalarAIndex[2] = 3;
+        scalarAIndex[3] = 0;
+    }
+
+    ProjectPolygon(&boxA->axis[1], boxB->worldVert, &min, &max, &scalarBIndex[2], &scalarBIndex[3]);
+    scalarB[2] = min;
+    scalarB[3] = max;
+
+    if(!((scalarB[2] < scalarA[3]) && (scalarB[3] > scalarA[2]))) return 0;
+
+    // Calculate axis[2] projections.
+    scalarB[4] = gyVec2DotProd((GYVector2*)&boxB->worldVert[0], (GYVector2*)&boxB->axis[0]);
+    scalarB[5] = gyVec2DotProd((GYVector2*)&boxB->worldVert[1], (GYVector2*)&boxB->axis[0]);
+    if(scalarB[4] > scalarB[5]) {
+        Swapf(&scalarB[4], &scalarB[5]);
+        scalarBIndex[4] = 0;
+        scalarBIndex[5] = 1;
+    }
+    else {
+        scalarBIndex[4] = 1;
+        scalarBIndex[5] = 0;
+    }
+
+    ProjectPolygon(&boxB->axis[0], boxA->worldVert, &min, &max, &scalarAIndex[4], &scalarAIndex[5]);
+    scalarA[4] = min;
+    scalarA[5] = max;
+
+    if(!((scalarB[4] < scalarA[5]) && (scalarB[5] > scalarA[4]))) return 0;
+
+    // Calculate axis[3] projections.
+    scalarB[6] = gyVec2DotProd((GYVector2*)&boxB->worldVert[0], (GYVector2*)&boxB->axis[1]);
+    scalarB[7] = gyVec2DotProd((GYVector2*)&boxB->worldVert[3], (GYVector2*)&boxB->axis[1]);
+    if(scalarB[6] > scalarB[7]) {
+        Swapf(&scalarB[6], &scalarB[7]);
+        scalarBIndex[6] = 0;
+        scalarBIndex[7] = 3;
+    }
+    else {
+        scalarBIndex[6] = 3;
+        scalarBIndex[7] = 0;
+    }
+
+    ProjectPolygon(&boxB->axis[1], boxA->worldVert, &min, &max, &scalarAIndex[6], &scalarAIndex[7]);
+    scalarA[6] = min;
+    scalarA[7] = max;
+
+    if(!((scalarB[6] < scalarA[7]) && (scalarB[7] > scalarA[6]))) return 0;
+
+    // Otherwise, there is a collision!
+
+    // The direction of the normal vector is in the same direction as the axis with the smallest area of overlap.
+    // The magnitude of the normal vector is the magnitude of said overlap.
+
+    // diff is a temporary difference that is recalculated and compared with minDiff for each of the eight overlaps.
+    // minDiff stores the magnitude of the minimal overlap.
+    // axisNum stores the axis number (0-3) that minDiff occurs on.
+    // neg indicates whether or not the colliding rectangle is coming from a direction in which the normal vector
+    // must be negated in order to push the rectangle being collided with in the right direction.
+
+    con->staticAttrib[0] = statA;
+    con->staticAttrib[1] = statB;
+    con->collider[0] = (const GYCollider*)boxA;
+    con->collider[1] = (const GYCollider*)boxB;
+
+    minDiff = scalarB[1] - scalarA[0];
+    for(i = 0; i < 8; i += 2) {
+        //Use position to avoid these two conditionals?
+        diff = scalarB[i+1] - scalarA[i];
+        if(diff < minDiff) {
+            minDiff = diff;
+            axisNum = i>>1;
+            neg = 0;
+        }
+        diff = scalarA[i+1] - scalarB[i];
+        if(diff < minDiff) {
+            minDiff = diff;
+            axisNum = i>>1;
+            neg = 1;
+        }
+    }
+
+    // Calculate the normal vector.
+    //normal = (neg)? (axis[axisNum] * minDiff * -1) : (axis[axisNum] * minDiff);
+    //Contact generation
+    //con->_colIndex[0] = colIndexA;
+    //con->_colIndex[1] = colIndexB;
+    //printf("axisnum - %d, <%f, %f>\n", axisNum, axis[axisNum].x, axis[axisNum].y);
+    con->normal = (axisNum <= 1)? boxA->axis[axisNum] : boxB->axis[axisNum-2];
+    //contact->_normal.y = axis[axisNum].y;
+    /*contact->_depth = (neg)? minDiff * -1 : minDiff;*/
+    if(neg) {
+        con->normal.x = -con->normal.x;
+        con->normal.y = -con->normal.y;
+    }
+    con->depth = minDiff;
+
+//    if(!poc) return 1;
+    //else do extra calculations for point-of-contact
+
+#if 0
+    con->worldPos.x = (boxA->collider.worldPos.x + boxB->collider.worldPos.x) * 0.5f;
+    con->worldPos.y = (boxA->collider.worldPos.y + boxB->collider.worldPos.y) * 0.5f;
+#else
+
+    GYVector2 supportA[2];
+    GYVector2 supportB[2];
+    GYVector2 MTD;
+    GYVector2 contacts[4];
+    unsigned numSupportA;
+    unsigned numSupportB;
+    unsigned numContacts;
+
+    gyVec2Scale(&MTD, &con->normal, minDiff);
+
+    numSupportA = OBB_getSupportPoints(boxA, &MTD, supportA);
+
+    gyVec2ScaleAccum(&MTD, -1.0f);
+    numSupportB = OBB_getSupportPoints(boxB, &MTD, supportB);
+
+    numContacts = OBB_getContactPoints(supportA, numSupportA,
+                                    supportB, numSupportB,
+                                    contacts);
+
+
+
+   // int edge;
+
+    //Hurrrr durrr... average all the points for a single world-space POC?
+    if(numContacts == 1) {
+       // edge = 0;
+        con->worldPos.x = (contacts[0].x + contacts[1].x) * 0.5f;
+        con->worldPos.y = (contacts[0].y + contacts[1].y) * 0.5f;
+    } else {
+        gyVec2Clear(&con->worldPos);
+        for(unsigned i = 0; i < 4; ++i) {
+            gyVec2AddAccum(&con->worldPos, &contacts[i]);
+        }
+        gyVec2ScaleAccum(&con->worldPos, 0.25f);
+       // edge = 1;
+    }
+
+   /* _gyLog(GY_DEBUG_LOG_VERBOSE, "POC[%d] = <%f, %f>, A = <%f, %f>, B = <%f, %f>",
+           edge,
+           con->worldPos.x, con->worldPos.y,
+           boxA->collider.worldPos.x, boxA->collider.worldPos.y,
+           boxB->collider.worldPos.x, boxB->collider.worldPos.y);
+*/
+#endif
+
+    return 1;
+}
