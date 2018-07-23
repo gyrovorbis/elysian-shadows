@@ -21,6 +21,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+isEmpty(LIBGYRO_PATH) {
+    LIBGYRO_PATH = lib/libGyro
+}
+
+INCLUDEPATH += $${LIBGYRO_PATH}/api \
+                $${LIBGYRO_PATH}/include
+
+DEPENDPATH += $${LIBGYRO_PATH}
+
+
 SOURCES += \
     source/gyro_kinetic_collision.c \
     source/gyro_kinetic_physics.c
@@ -33,8 +43,11 @@ HEADERS += \
     include/gyro_kinetic_kinetic.h \
     include/gyro_kinetic_physics.h \
     include/gyro_kinetic_static.h \
-    v2_api/gyro_physics_simulation.h
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
+    v2_api/gyro_physics_simulation.h \
+    api/gyro_kinetic.h \
+    api/gyro_kinetic_collider.h \
+    api/gyro_kinetic_collision.h \
+    api/gyro_kinetic_contact.h \
+    api/gyro_kinetic_kinetic.h \
+    api/gyro_kinetic_physics.h \
+    api/gyro_kinetic_static.h
