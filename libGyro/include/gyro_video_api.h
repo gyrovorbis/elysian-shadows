@@ -50,6 +50,7 @@ void gyVidBlendMode(const GY_BLEND_MODE mode);
 void gyVidDepthTest(const int enable);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
 void gyVidClearColor(const GYColor4 color);
+void gyVidHighDynamicRangeExposure(float exposure);
 
 //Camera API
 void gyVidCamUpdate(const struct GYCamera *const cam);

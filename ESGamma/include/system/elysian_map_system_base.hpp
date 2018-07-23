@@ -19,7 +19,7 @@
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
-#include <glal/gyro_video_glal.h>
+#include <gl/gyro_video_gl.h>
 #include <stdint.h>
 
 //#define NEW_RENDERER

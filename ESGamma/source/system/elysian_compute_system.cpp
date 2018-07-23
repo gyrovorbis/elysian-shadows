@@ -1,6 +1,9 @@
 #include <system/elysian_compute_system.hpp>
 #include <gyro_compute_api.h>
 #include <crtp/elysian_debug.hpp>
+#ifndef GYRO_COMPUTE_PROFILING_DISABLED
+#include <crtp/elysian_task_monitor.hpp>
+#endif
 
 namespace elysian {
 
@@ -541,10 +544,10 @@ const GYComputeKernelInfo* ComputeKernel::getInfo(void) const {
     return gyComputeKernelQueryInfo(_gyKernel);
 }
 
-bool ComputeCommandQueue::enqueueBufferRead(ComputeBuffer *buffer, size_t offset, size_t size, void *ptr, bool blocking) {
+bool ComputeCommandQueue::enqueueBufferRead(ComputeBuffer *buffer, size_t offset, size_t size, void* ptr, bool blocking, const ComputeEventList* eventList, ComputeEvent* event) {
     assert(buffer && ptr);
     if(!size) return 1;
-    return gyComputeCommandQueueEnqueueBufferRead(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, ptr, 0, nullptr, nullptr);
+    return gyComputeCommandQueueEnqueueBufferRead(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, ptr, eventList? eventList->getSize() : 0, nullptr, event->getGyEvent());
 }
 
 bool ComputeCommandQueue::enqueueBufferWrite(ComputeBuffer *buffer, size_t offset, size_t size, void *data, bool blocking) {
@@ -591,6 +594,9 @@ ComputeTask::ComputeTask(const char*                        kernelName,
                          bool                               outOfOrderExecution):
     _categoryPriorityList(std::move(categoryPriorityList)),
     _nativeFallback(nativeFallbackFunc)
+#ifndef GYRO_COMPUTE_PROFILING_DISABLED
+    ,_taskMonitor(new TaskMonitor(kernelName))
+#endif
 {
     bool valid = true;
     DbgEvent event("Creating ComputeTask: [%s]", kernelName);
@@ -854,6 +860,11 @@ void ComputeTask::optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, 
     size_t error = paddedGlobalSize % localWorkSize;
 
     assert(error == 0);
+}
+
+bool ComputeEvent::wait(void) const {
+    assert(_gyEvent);
+    return gyComputeEventWait(_gyEvent);
 }
 
 

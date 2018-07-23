@@ -1,7 +1,7 @@
 #include "elysian_map_system_base.hpp"
-#include <glal/gyro_gl.h>
-#include <glal/gyro_video_glal.h>
-#include <glal/gyro_shaders_glal.h>
+#include <gl/gyro_gl.h>
+#include <gl/gyro_video_gl.h>
+#include <gl/gyro_shaders_gl.h>
 
 
 

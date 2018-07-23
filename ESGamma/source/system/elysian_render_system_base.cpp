@@ -4,13 +4,15 @@
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_particle_emitter.hpp>
 #include <crtp/elysian_camera_system.hpp>
-#include <glal/gyro_video_glal.h>
-#include <glal/gyro_gl.h>
-#include <glal/gyro_shaders_glal.h>
+#include <gl/gyro_video_gl.h>
+#include <gl/gyro_gl.h>
+#include <gl/gyro_shaders_gl.h>
 
 extern int glalVertexArray;
 extern GLuint                      _streamVao[2];
 extern GLuint _glalColorTex;
+extern GLuint   _glalDepthBuffer;
+
 
 namespace elysian {
 
@@ -72,37 +74,7 @@ bool RenderSystemBase::initialize(void) {
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
-#if 0
-        _particleDevice = getComputeSystem()->getDeviceByCategory(ComputeDeviceCategory::GpuRendererOnline);
-        if(_particleDevice) {
-            ComputeContext* ctx = getComputeSystem()->getRendererContext();
-            _renderCmdQueue = ctx->createCommandQueue(_particleDevice, 0);
-            if(_renderCmdQueue) {
-                _particleVboOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleVbo, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY);
-                _particleInBuffer = ctx->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr);
-                _particleDrawIndirectOutBuffer = ctx->createBufferFromRendererBuffer(_glParticleIndirectBuff, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
-                _particleViewProjInBuffer = ctx->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYMatrix4), nullptr);
-                if(_particleVboOutBuffer && _particleInBuffer && _particleDrawIndirectOutBuffer && _particleViewProjInBuffer) {
-                    _particleVboProgram = ctx->loadProgram(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH);
-                    if(_particleVboProgram) {
-                        if(_particleVboProgram->compile(_particleDevice, 1, nullptr, nullptr)) {
-                            _particleVboKernel = _particleVboProgram->createKernel(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME);
-                            if(_particleVboKernel) {
-                                bool success = true;
-                                success &= _particleVboKernel->setArg(1, _particleInBuffer);
-                                success &= _particleVboKernel->setArg(2, _particleViewProjInBuffer);
-                                success &= _particleVboKernel->setArg(3, _particleDrawIndirectOutBuffer);
-                                success &= _particleVboKernel->setArg(4, _particleVboOutBuffer);
 
-                                if(success) _setParticleAccelerationAvailable(true);
-                                //_useParticleAcceleration = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-#else
       _particleComputeTask = getComputeSystem()->createComputeTask(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME,
                                                                    {
                                                                         ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH
@@ -134,11 +106,13 @@ bool RenderSystemBase::initialize(void) {
         _luminanceComputeTask = new LuminanceHistogramComputeTask(_glalColorTex);
         dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
 
-#endif
+        _lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer);
+
     }
 
     if(_particleComputeTask && _particleComputeTask->isValid()) {
         dbgprintf("RendererSystem: Compute accelerated particles enabled.");
+
         success = true;
     } else {
         warnprintf("RenderSystem: No compute acceleration available for particles!");
@@ -255,7 +229,6 @@ bool RenderSystemBase::renderParticles(void) {
            // setUseParticleAcceleration(false);
         }
     }
-
     return success;
 }
 
@@ -272,18 +245,72 @@ void RenderSystemBase::postRender(void) {
         success &= _luminanceComputeTask->getCommandQueue()->enqueueBufferRead(_luminanceComputeTask->_statsBuffer,
                                                                                0,
                                                                                sizeof(LuminanceHistogramComputeTask::LuminanceStats),
-                                                                               &_luminanceComputeTask->_lumStats);
+                                                                               &_luminanceComputeTask->_lumStats,
+                                                                               true,
+                                                                               nullptr,
+                                                                               &_luminanceComputeTask->_readCompleteEvent);
+
+        success &= _luminanceComputeTask->_readCompleteEvent.wait();
 
         if(!success) {
             errprintf("Something dun fucked up when trying to construct LuminanceComputeTasks's command queue!");
            // _luminanceComputeTask->_isValid = false;
         } else {
-            static int framez = 0;
-            if(++framez % 60 == 0) {
-               // DbgEvent event("Luminance Stats");
-           //     dbgprintf("Min - %u, Max - %u", _luminanceComputeTask->_lumStats.min, _luminanceComputeTask->_lumStats.max);
-             //   for(unsigned i = 0; i < 256; ++i) dbgprintf("[%u] - %u", i, _luminanceComputeTask->_lumStats.histBins[i]);
+            double avg = 0.0f;
+            uint64_t count = 0;
+            //DbgEvent event("Luminance Stats");
+            //dbgprintf("Min - %u, Max - %u", _luminanceComputeTask->_lumStats.min, _luminanceComputeTask->_lumStats.max);
+            for(unsigned i = 0; i < 256; ++i) {
+                count += _luminanceComputeTask->_lumStats.histBins[i];
+                avg += _luminanceComputeTask->_lumStats.histBins[i]*(float)i;
             }
+
+            if(count != 0.0f) {
+                avg /= (double)(count);
+#if 0
+            int max = 0;
+
+            for(unsigned i = 1; i < 256; ++i) {
+                if(_luminanceComputeTask->_lumStats.histBins[i] > _luminanceComputeTask->_lumStats.histBins[max]) max = i;
+            }
+#endif
+ //           avg = max;
+
+            const float key = _curArea->getAmbientColor().getW();
+            if((key/avg) >= 1.1) {
+
+                _luminanceComputeTask->_exposure *= 1.005f;
+                gyVidHighDynamicRangeExposure(_luminanceComputeTask->_exposure);
+            } else if((key/avg) <= 0.9) {
+                _luminanceComputeTask->_exposure *= 0.995f;
+                //_curArea->getAmbientColor().setW(_curArea->getAmbientColor().getW() * 0.995);
+                gyVidHighDynamicRangeExposure(_luminanceComputeTask->_exposure);
+            }
+            }
+
+            static int framez = 0;
+
+            if(++framez %60 == 0) {
+                dbgprintf("Avg - %lf, Exp - %f", avg, _luminanceComputeTask->_exposure);
+                        framez = 0;
+
+            }
+
+        //if fucking w/ exp and NOT modifying average, STOP
+
+
+
+             //   dbgprintf("AVG = %lf", avg);
+                //dbgprintf("[%u] - %u", i, _luminanceComputeTask->_lumStats.histBins[i]);
+
+
+
+           // if(fabs(150.0f - avg) >= 20) {
+
+             //   _curArea->getAmbientColor().setW(150.0f/avg);
+
+            //}
+
         }
 
     }
@@ -335,6 +362,21 @@ LuminanceHistogramComputeTask::LuminanceHistogramComputeTask(uintptr_t textureId
     }
 
 }
+
+
+LightCullingComputeTask::LightCullingComputeTask(uintptr_t depthBuffTexId):
+    ComputeTask(ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_NAME,
+        {
+             ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_PATH
+        },
+        {
+            ComputeDeviceCategory::GpuRendererOffline,
+            ComputeDeviceCategory::GpuRendererOnline,
+            ComputeDeviceCategory::CpuRenderer
+        },
+        NULL,
+        true)
+{}
 
 
 }

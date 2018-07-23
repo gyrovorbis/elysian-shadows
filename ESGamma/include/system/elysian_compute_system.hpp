@@ -31,6 +31,10 @@
 
 struct GYComputeDevice;
 
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+ELYSIAN_ASSET_TYPEDEF(TaskMonitor)
+#endif
+
 namespace elysian {
 
     class ComputeSystem;
@@ -51,6 +55,29 @@ namespace elysian {
         NativeFallback,
         Invalid
     };
+
+
+    class ComputeEvent {
+    private:
+        GYComputeEvent* _gyEvent    = nullptr;
+
+    public:
+                                    ComputeEvent(void);
+                                    ~ComputeEvent(void);
+        bool                        wait(void) const;
+        GY_COMPUTE_EVENT_STATUS     getStatus(void) const;
+        GYComputeEvent*             getGyEvent(void) const;
+    };
+
+    class ComputeEventList {
+    private:
+        std::vector<ComputeEvent*> _list;
+    public:
+        bool        wait(void);//?
+        unsigned    getSize(void) const;
+    };
+
+
 
     class ComputeContext {
         friend class ComputeSystem;
@@ -87,10 +114,7 @@ namespace elysian {
         ComputeBuffer*          createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType);
         ComputeProgram*         loadProgram(const char* filePath);
 
-
-
     };
-
 
 
     class ComputeCommandQueue {
@@ -102,7 +126,7 @@ namespace elysian {
     public:
         //int                             gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue* queue, const GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, const void* data, unsigned eventCount, void* eventList, void* event);
         bool enqueueBufferWrite(ComputeBuffer* buffer, size_t offset, size_t size, void* data, bool blocking=true);
-        bool enqueueBufferRead(ComputeBuffer* buffer, size_t offset, size_t size, void* ptr, bool blocking=true);
+        bool enqueueBufferRead(ComputeBuffer* buffer, size_t offset, size_t size, void* ptr, bool blocking=true, const ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
         bool enqueueKernel(ComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize);
         bool enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer** buffers);
         bool enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer** buffers);
@@ -162,21 +186,7 @@ namespace elysian {
     };
 
 
-    class ComputeEvent {
-    private:
-        GYComputeEvent* _gyEvent;
-    };
 
-    class ComputeEventList {
-    private:
-        std::vector<ComputeEvent*> events;
-    public:
-        bool wait(float secs=0.10f);//?
-    };
-
-
-
-    //subclass in ESTk for perf monitoring shit
     class ComputeTask: public System {
         friend class ComputeSystem;
     public:
@@ -208,23 +218,26 @@ namespace elysian {
         using DevicePriorityList            = std::vector<ComputeDevice>;
 
     protected:
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+        TaskMonitor*                _taskMonitor            = nullptr;
+#endif
         DeviceCategoryPriorityList  _categoryPriorityList;
-        DevicePriorityList      _devicePriorityList;
-        NativeKernel            _nativeFallback;
-        ComputeDevice*          _device                 = nullptr;
-        ComputeProgram*         _program                = nullptr;
-        ComputeKernel*          _kernel                 = nullptr;
-        ComputeCommandQueue*    _cmdQueue               = nullptr;
-        ComputeContext*         _context                = nullptr;
-        bool                    _useNative              = false;
-        bool                    _isValid                = false;
+        DevicePriorityList          _devicePriorityList;
+        NativeKernel                _nativeFallback;
+        ComputeDevice*              _device                 = nullptr;
+        ComputeProgram*             _program                = nullptr;
+        ComputeKernel*              _kernel                 = nullptr;
+        ComputeCommandQueue*        _cmdQueue               = nullptr;
+        ComputeContext*             _context                = nullptr;
+        bool                        _useNative              = false;
+        bool                        _isValid                = false;
 
-        bool                    _resolvePrioritizedDevices(bool requirerenderSharedContext);
-        bool                    _initializeResources(const char* kernelName,
-                                                     const ProgramCreateInfo& programInfo,
-                                                     bool outOfOrderExecution,
-                                                     bool requireRendererSharedContext);
-        bool                    _uninitializeResources(void);
+        bool                        _resolvePrioritizedDevices(bool requirerenderSharedContext);
+        bool                        _initializeResources(const char* kernelName,
+                                                        const ProgramCreateInfo& programInfo,
+                                                        bool outOfOrderExecution,
+                                                        bool requireRendererSharedContext);
+        bool                        _uninitializeResources(void);
 
     public:
 
@@ -245,6 +258,9 @@ namespace elysian {
         ComputeCommandQueue*    getCommandQueue(void) const;
         ComputeContext*         getContext(void) const;
         NativeKernel            getNativeFallback(void) const;
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+        TaskMonitor*            getTaskMonitor(void) const;
+#endif
 
 
         bool                    enqueueKernel(size_t globalSize);
@@ -458,6 +474,19 @@ namespace elysian {
     {
         assert(kernel);
     }
+
+    inline ComputeEvent::ComputeEvent(void):
+        _gyEvent(gyComputeEventCreate()) {
+
+    }
+
+    inline ComputeEvent::~ComputeEvent(void) {
+        gyComputeEventDestroy(_gyEvent);
+    }
+
+    inline GYComputeEvent* ComputeEvent::getGyEvent(void) const { return _gyEvent; }
+
+    inline unsigned ComputeEventList::getSize(void) const { return _list.size(); }
 
     inline GYComputeBuffer* ComputeBuffer::getGyBuffer(void) const {
         return _gyBuffer;

@@ -30,8 +30,8 @@
 #include <crtp/elysian_input_system.hpp>
 #include <system/elysian_event_system.hpp>
 #include <utility/elysian_sort_sweep.hpp>
-#include <glal/gyro_radial_blur_glal.h>
-#include <glal/gyro_chromatic_aberration_glal.h>
+#include <gl/gyro_radial_blur_gl.h>
+#include <gl/gyro_chromatic_aberration_gl.h>
 #include <system/elysian_compute_system.hpp>
 #include <crtp/elysian_render_system.hpp>
 

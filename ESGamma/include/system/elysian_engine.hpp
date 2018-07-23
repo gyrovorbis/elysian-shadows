@@ -21,29 +21,29 @@ namespace elysian {
 
 	public:
 
-       PerformanceMonitor renderMonitor = PerformanceMonitor("Engine::render");
-       PerformanceMonitor shadowPassMonitor = PerformanceMonitor("Shadow Render Pass");
-       PerformanceMonitor lightPassMonitor = PerformanceMonitor("Main Render Pass");
-       PerformanceMonitor guiRenderMonitor  = PerformanceMonitor("Render UI");
-       PerformanceMonitor bloomMonitor  = PerformanceMonitor("Bloom Lighting");
+       PerformanceMonitor renderMonitor             = PerformanceMonitor("Engine::render");
+       PerformanceMonitor shadowPassMonitor         = PerformanceMonitor("Shadow Render Pass");
+       PerformanceMonitor lightPassMonitor          = PerformanceMonitor("Main Render Pass");
+       PerformanceMonitor guiRenderMonitor          = PerformanceMonitor("Render UI");
+       PerformanceMonitor bloomMonitor              = PerformanceMonitor("Bloom Lighting");
+        PerformanceMonitor updateMonitor            = PerformanceMonitor("Engine::update");
 
-        PerformanceMonitor updateMonitor = PerformanceMonitor("Engine::update");
-        PerformanceMonitor updateRigidBodyMonitor = PerformanceMonitor("RigidBodySystem");
-        PerformanceMonitor updateCollisionMonitor = PerformanceMonitor("CollisionSystem");
-        PerformanceMonitor updatePartyMonitor = PerformanceMonitor("PartySystem");
-        PerformanceMonitor updateAudioMonitor = PerformanceMonitor("AudioSystem");
-        PerformanceMonitor updateSkeletonMonitor = PerformanceMonitor("SkeletonSystem");
-        PerformanceMonitor updateLightMonitor = PerformanceMonitor("LightSystem");
-        PerformanceMonitor updateMapMonitor = PerformanceMonitor("MapSystem");
-        PerformanceMonitor updateCharacterMonitor = PerformanceMonitor("CharacterSystem");
-        PerformanceMonitor updateGuiMonitor = PerformanceMonitor("GuiSystem");
-        PerformanceMonitor updateTimerMonitor = PerformanceMonitor("TimerSystem");
-        PerformanceMonitor updateWarpMonitor = PerformanceMonitor("WarpSystem");
-        PerformanceMonitor updateParticleMonitor = PerformanceMonitor("ParticleSystem");
-        PerformanceMonitor updateDayMonitor = PerformanceMonitor("DaySystem");
-        PerformanceMonitor updateDialogMonitor = PerformanceMonitor("DialogSystem");
-        PerformanceMonitor updateCombatMonitor = PerformanceMonitor("CombatSystem");
-        PerformanceMonitor updateLuaMonitor = PerformanceMonitor("Behavior::onUpdate");
+        PerformanceMonitor updateRigidBodyMonitor   = PerformanceMonitor("RigidBodySystem");
+        PerformanceMonitor updateCollisionMonitor   = PerformanceMonitor("CollisionSystem");
+        PerformanceMonitor updatePartyMonitor       = PerformanceMonitor("PartySystem");
+        PerformanceMonitor updateAudioMonitor       = PerformanceMonitor("AudioSystem");
+        PerformanceMonitor updateSkeletonMonitor    = PerformanceMonitor("SkeletonSystem");
+        PerformanceMonitor updateLightMonitor       = PerformanceMonitor("LightSystem");
+        PerformanceMonitor updateMapMonitor         = PerformanceMonitor("MapSystem");
+        PerformanceMonitor updateCharacterMonitor   = PerformanceMonitor("CharacterSystem");
+        PerformanceMonitor updateGuiMonitor         = PerformanceMonitor("GuiSystem");
+        PerformanceMonitor updateTimerMonitor       = PerformanceMonitor("TimerSystem");
+        PerformanceMonitor updateWarpMonitor        = PerformanceMonitor("WarpSystem");
+        PerformanceMonitor updateParticleMonitor    = PerformanceMonitor("ParticleSystem");
+        PerformanceMonitor updateDayMonitor         = PerformanceMonitor("DaySystem");
+        PerformanceMonitor updateDialogMonitor      = PerformanceMonitor("DialogSystem");
+        PerformanceMonitor updateCombatMonitor      = PerformanceMonitor("CombatSystem");
+        PerformanceMonitor updateLuaMonitor         = PerformanceMonitor("Behavior::onUpdate");
 
 
         PerformanceMonitor processInputMonitor = PerformanceMonitor("Engine::processInput");

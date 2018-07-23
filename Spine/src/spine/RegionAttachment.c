@@ -32,7 +32,7 @@
 #include <spine/extension.h>
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
-#include <glal/gyro_video_glal.h>
+#include <gl/gyro_video_gl.h>
 
 void _spRegionAttachment_dispose (spAttachment* attachment) {
 	spRegionAttachment* self = SUB_CAST(spRegionAttachment, attachment);

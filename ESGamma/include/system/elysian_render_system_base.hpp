@@ -7,11 +7,13 @@
 #include <gyro_video_api.h>
 
 
-#define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX    1000000
+#define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX    10000
 #define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_PATH          "/assets/opencl/particle_vbo.cl"
 #define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME          "PopulateParticleVbo"
 #define ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_PATH   "/assets/opencl/luminance_histogram.cl"
 #define ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_NAME   "CreateGlobalLuminanceHistogram"
+#define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_NAME         "CullLights"
+#define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_PATH         "/assets/opencl/light_culling.cl"
 
 namespace elysian {
 
@@ -35,6 +37,7 @@ namespace elysian {
 
     };
 
+
     class LuminanceHistogramComputeTask: public ComputeTask {
     public:
 
@@ -42,16 +45,37 @@ namespace elysian {
             uint32_t max;
             uint32_t min;
             uint32_t histBins[256];
+            float    exp        = 1.0f;
+            float    prevExp    = 1.0f;
         }               _lumStats;
 
         LuminanceHistogramComputeTask(uintptr_t textureId);
 
-        ComputeBuffer*  _statsBuffer = nullptr;
-        ComputeBuffer*  _fboBuffer   = nullptr;
+        ComputeEvent    _readCompleteEvent;
+        ComputeBuffer*  _statsBuffer        = nullptr;
+        ComputeBuffer*  _fboBuffer          = nullptr;
+        float           _exposure           = 1.0f;
+    };
+
+
+
+    class LightCullingComputeTask: public ComputeTask {
+    public:
+
+                        LightCullingComputeTask(uintptr_t depthBuffTexId);
+
+    private:
+
+        ComputeBuffer*  _depthBuffer         = nullptr;
+        ComputeBuffer*  _lightingUbo         = nullptr;
+
+
     };
 
 
     class RenderSystemBase: public System {
+    public:
+
 
     private:
 
@@ -74,6 +98,9 @@ namespace elysian {
         ComputeBuffer*          _lumStatsProgram                = nullptr;
         ComputeBuffer*          _lumStatsKernel                 = nullptr;
         bool                    _automaticExposureActive        = false;
+
+
+        LightCullingComputeTask*    _lightCullComputeTask       = nullptr;
 
     protected:
        // void                    _setParticleAccelerationAvailable(bool val);

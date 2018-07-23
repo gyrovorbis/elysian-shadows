@@ -29,6 +29,7 @@ void TimerSystemBase::startTimerEvent(const float duration, EventMonitor *monito
 
 TimerSystemBase::TimerSystemBase(void)
 {
+    gyPerfInit(nullptr);
 
     auto& proc = get<SUBPROC_TIMER_EVENT_POOL> ( static_cast<SubProcessManager<TimerSystem,
                                               TimerEventPool>& >(*this));
@@ -41,6 +42,10 @@ TimerSystemBase::TimerSystemBase(void)
 
     //TIMER_CLEAR;
     //TIMER_START;
+}
+
+TimerSystemBase::~TimerSystemBase(void) {
+    gyPerfUninit();
 }
 
 void TimerSystemBase::update(void) {

@@ -6,8 +6,8 @@
 #include <utility/elysian_generic.hpp>
 #include <crtp/elysian_behavior.hpp>
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
-#include <glal/gyro_gl.h>
-#include <glal/gyro_shaders_glal.h>
+#include <gl/gyro_gl.h>
+#include <gl/gyro_shaders_gl.h>
 //#include <glal/gyro_video_glal.h>
 #endif
 #include <gyro_file_api.h>

@@ -72,6 +72,7 @@ namespace elysian {
 
 	public:
                         TimerSystemBase(void);
+                        ~TimerSystemBase(void);
         void            update(void);
 
         unsigned long   getTotalTicks(void) const;

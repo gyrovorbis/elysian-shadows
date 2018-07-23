@@ -158,12 +158,17 @@ namespace elysian {
         int                         lastOffset[2] = {0};
         int                         minIndex[2] = {INT_MAX};
         int                         maxIndex[2] = {0};
-        GYVector4                   _ambientColor   = { 0.5f, 0.5f, 0.5f, 1.0f };
+        GYVector4                   _ambientColor   = { 0.5f, 0.5f, 0.5f, 100.0f };
         bool                        _useSun         = true;
 
         char                        _bgmOggTracks[3][ELYSIAN_AREA_PATH_SIZE] = {{ 0 }};
         char                        _auxOggTracks[2][ELYSIAN_AREA_PATH_SIZE] = {{ 0 }};
         float                       _oggGain = 1.0f;
+
+        //HDR Parameters
+        unsigned char               luminanceKey    = 53;
+        unsigned char               luminanceMax    = 100;
+        unsigned char               luminanceMin    = 10;
 
                                     AreaBase(void);
                                     ~AreaBase(void);

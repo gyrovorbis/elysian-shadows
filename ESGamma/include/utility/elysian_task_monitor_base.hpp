@@ -6,8 +6,9 @@
 #define PERFORMANCE_MONITOR_NAME_SIZE               50
 
 #include <utility/elysian_mem_pool.hpp>
-#include <gyro_timer_api.h>
+#include <gyro_performance_api.h>
 #include <utility/elysian_asset_typedefs.hpp>
+#include <vector>
 
 ELYSIAN_ASSET_TYPEDEF(TaskMonitor);
 
@@ -15,14 +16,14 @@ namespace elysian {
 
     class TaskMonitorBase {
         int64_t             _tickBuffer [PERFORMANCE_MONITOR_CIRC_BUFFER_SIZE]  = { 0 };
-        TaskMonitor*        _children   [PERFORMANCE_MONITOR_MAX_CHILDREN]      = { nullptr };
+        TaskMonitor*        _children[PERFORMANCE_MONITOR_MAX_CHILDREN];
         char                _name       [PERFORMANCE_MONITOR_NAME_SIZE];
         double              _avgTime    = 0.0;
         int64_t             _startTicks = 0;
+        int                 _buffDepth  = 0;
         TaskMonitor*        _parent     = nullptr;
-        unsigned            _buffDepth  = 0;
         unsigned            _curIndex   = 0;
-        bool                _dirty      = false;
+        bool                _dirty      = true;
     public:
 
                             TaskMonitorBase(const char*const name);
@@ -65,11 +66,11 @@ namespace elysian {
     }
 
     inline void TaskMonitorBase::resume(void) {
-        _startTicks = gyTimerTicks();
+        _startTicks = gyPerfCounter();
     }
 
     inline void TaskMonitorBase::pause(void) {
-        _tickBuffer[_curIndex] += gyTimerTicks() - _startTicks;
+        _tickBuffer[_curIndex] += (double)((gyPerfCounter()-_startTicks)*1000.0f)/gyPerfFrequencyCached();
     }
 
     inline const char* TaskMonitorBase::getName(void) const { return _name; }

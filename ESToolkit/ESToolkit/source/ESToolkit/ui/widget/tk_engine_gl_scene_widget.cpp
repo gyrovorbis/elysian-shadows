@@ -1,7 +1,7 @@
 #include <crtp/elysian_camera_system.hpp>
 #include <gyro_video_api.h>
 #include <ESToolkit/ui/widget/tk_engine_gl_scene_widget.h>
-#include <glal/gyro_video_glal.h>
+#include <gl/gyro_video_gl.h>
 #include "elysian_engine.hpp"
 #include <elysian_timer_system.hpp>
 #include <system/elysian_light_system.hpp>

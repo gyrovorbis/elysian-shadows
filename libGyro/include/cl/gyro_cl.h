@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include <glal/gyro_gl.h>
+#include <gl/gyro_gl.h>
 
 #ifdef __APPLE__
 #   ifdef GY_CL_OPENGL_INTEROP
