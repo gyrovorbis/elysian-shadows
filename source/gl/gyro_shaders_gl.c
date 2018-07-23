@@ -413,6 +413,11 @@ void gyVidSetGlobalAmbience(const GYVector4*const color) {
     }
 }
 
+void gyVidHighDynamicRangeExposure(float exposure) {
+    glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_HDR_EXPOSURE], exposure);
+
+}
+
 //======= INTERNAL QUERY FUNCTIONS FOR DEFAULT SHADER =======
 
 int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
@@ -463,6 +468,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uSpecularMapEnabled", !light);
     shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap", !light);
     shader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat", !light);
+    shader->uniformLoc[GLAL_SHADER_HDR_EXPOSURE]	= _protectedUniformQuery(shader->program, "uHDRExposure", !light);
 
     //poll for GYMaterial uniform locations
     shader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess", !light);
@@ -548,6 +554,7 @@ void glalDefaultShadersLoadUniforms(void) {
     gyVidLightSourceAdd(NULL);
 
     gyVidSetGlobalAmbience(&_globalAmbience);
+    gyVidHighDynamicRangeExposure(100.0f);
     //gyVidLightingSetEnable(glalLightingEnabled);
 
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);

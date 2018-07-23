@@ -257,8 +257,6 @@ void gyVidSceneEnd(void) {
 }
 
 
-
-
 void gyVidClearColor(const GYColor4 color) {
     _clearColor.x = (float)color.r * 255.0f;
     _clearColor.y = (float)color.g * 255.0f;

@@ -9,7 +9,8 @@ QMAKE_CFLAGS += -std=c99
 }
 
 INCLUDEPATH += ../../include \
-                ../../../Spine/include
+                ../../../Spine/include \
+                ../../api
 
 #==========PLATFORM-SPECIFIC BULLSHIT==========
 
@@ -79,22 +80,6 @@ ios {
 }
 
 HEADERS += \
-    ../../include/gyro.h \
-    ../../include/gyro_wav_api.h \
-    ../../include/gyro_video_api.h \
-    ../../include/gyro_timer_api.h \
-    ../../include/gyro_texture_api.h \
-    ../../include/gyro_system_api.h \
-    ../../include/gyro_shader_api.h \
-    ../../include/gyro_platform.h \
-    ../../include/gyro_ogg_api.h \
-    ../../include/gyro_matrix_api.h \
-    ../../include/gyro_math_api.h \
-    ../../include/gyro_input_api.h \
-    ../../include/gyro_file_api.h \
-    ../../include/gyro_defines.h \
-    ../../include/gyro_audio_api.h \
-    ../../include/gyro_compute_api.h \
     ../../include/common/gyro_wav_common.h \
     ../../include/common/gyro_texture_common.h \
     ../../include/common/gyro_system_common.h \
@@ -115,43 +100,38 @@ HEADERS += \
     ../../include/common/gyro_input_common.h \
     ../../include/common/gyro_spine_common.h \
     ../../include/gl/gyro_bloom_gl.h \
-    ../../include/gyro_net_api.h \
-    ../../include/gyro_rumble_api.h \
-    ../../include/gyro_test_api.h \
     ../../include/gl/gyro_gl_utils.h \
-    ../../include/gyro_visual_memory_api.h \
     ../../include/gl/gyro_radial_blur_gl.h \
     ../..//include/gl/gyro_chromatic_aberration_gl.h \
     ../../include/cl/gyro_cl.h \
-    ../../include/gyro_compute_api.h \
-    ../../include/gyro_performance_api.h \
-    ../../include/gyro_thread_api.h \
-    ../../include/gyro_motion_api.h \
     ../../include/al/gyro_al.h \
     ../../include/gl/gyro_gl.h \
     ../../include/gl/gyro_shaders_gl.h \
     ../../include/gl/gyro_video_gl.h \
-    ../../include/gyro.h \
-    ../../include/gyro_audio_api.h \
-    ../../include/gyro_file_api.h \
-    ../../include/gyro_math_api.h \
-    ../../include/gyro_matrix_api.h \
-    ../../include/gyro_motion_api.h \
-    ../../include/gyro_net_api.h \
-    ../../include/gyro_ogg_api.h \
-    ../../include/gyro_performance_api.h \
-    ../../include/gyro_platform.h \
-    ../../include/gyro_rumble_api.h \
-    ../../include/gyro_shader_api.h \
-    ../../include/gyro_system_api.h \
-    ../../include/gyro_test_api.h \
-    ../../include/gyro_texture_api.h \
-    ../../include/gyro_thread_api.h \
-    ../../include/gyro_timer_api.h \
-    ../../include/gyro_version.h \
-    ../../include/gyro_video_api.h \
-    ../../include/gyro_visual_memory_api.h \
-    ../../include/gyro_wav_api.h
+    ../../api/gyro.h \
+    ../../api/gyro_audio_api.h \
+    ../../api/gyro_compute_api.h \
+    ../../api/gyro_defines.h \
+    ../../api/gyro_file_api.h \
+    ../../api/gyro_input_api.h \
+    ../../api/gyro_math_api.h \
+    ../../api/gyro_matrix_api.h \
+    ../../api/gyro_motion_api.h \
+    ../../api/gyro_net_api.h \
+    ../../api/gyro_ogg_api.h \
+    ../../api/gyro_performance_api.h \
+    ../../api/gyro_platform.h \
+    ../../api/gyro_rumble_api.h \
+    ../../api/gyro_shader_api.h \
+    ../../api/gyro_system_api.h \
+    ../../api/gyro_test_api.h \
+    ../../api/gyro_texture_api.h \
+    ../../api/gyro_thread_api.h \
+    ../../api/gyro_timer_api.h \
+    ../../api/gyro_version.h \
+    ../../api/gyro_video_api.h \
+    ../../api/gyro_visual_memory_api.h \
+    ../../api/gyro_wav_api.h
 
 vulkan {
     HEADERS += \
