@@ -59,6 +59,11 @@ typedef struct _Buffer {
     cl_GLuint               glBuffer;
 } _Buffer;
 
+typedef struct _Event {
+    GYComputeEvent          event;
+    cl_event                clEvent;
+} _Event;
+
 //===== OPENCL INTERNAL DATA ====
 static cl_context*             _clContexts         = NULL;
 static cl_platform_id*         _clPlatforms        = NULL;
@@ -225,6 +230,28 @@ inline static const char* _gyKernelArgTypeQualifierStr(uint32_t qualifier) {
     return buffer;
 }
 
+inline static GY_COMPUTE_EVENT_STATUS _clEventStatusToGyro(cl_int status) {
+    switch(status) {
+    case CL_QUEUED:     return GY_COMPUTE_EVENT_STATUS_QUEUED;
+    case CL_SUBMITTED:  return GY_COMPUTE_EVENT_STATUS_SUBMITTED;
+    case CL_RUNNING:    return GY_COMPUTE_EVENT_STATUS_RUNNING;
+    case CL_COMPLETE:   return GY_COMPUTE_EVENT_STATUS_COMPLETE;
+    default:            return GY_COMPUTE_EVENT_STATUS_INVALID;
+    }
+}
+
+inline static int _clEventStatusFromGyro(GY_COMPUTE_EVENT_STATUS status) {
+    switch(status) {
+    case GY_COMPUTE_EVENT_STATUS_QUEUED:    return CL_QUEUED;
+    case GY_COMPUTE_EVENT_STATUS_SUBMITTED: return CL_SUBMITTED;
+    case GY_COMPUTE_EVENT_STATUS_RUNNING:   return CL_RUNNING;
+    case GY_COMPUTE_EVENT_STATUS_COMPLETE:  return CL_COMPLETE;
+    default: return -1; assert(0);
+    }
+}
+
+
+
 inline static const char* _clDeviceTypeStr(cl_device_type type) {
     switch(type) {
     case CL_DEVICE_TYPE_ACCELERATOR: return "CL_DEVICE_TYPE_ACCELERATOR";
@@ -287,6 +314,17 @@ inline static int _clMemTypeFromGyro(GY_COMPUTE_MEMORY_TYPE type) {
     case GY_COMPUTE_MEMORY_TYPE_COPY_HOST_POINTER:      return CL_MEM_COPY_HOST_PTR;
     default: GY_ASSERT(0);
     }
+}
+
+static inline int _clProfilingInfoFromGyro(GY_COMPUTE_PROFILING_COUNTER counter) {
+    switch(counter) {
+    case GY_COMPUTE_PROFILING_COMMAND_QUEUED_COUNTER:   return CL_PROFILING_COMMAND_QUEUED;
+    case GY_COMPUTE_PROFILING_COMMAND_SUBMIT_COUNTER:   return CL_PROFILING_COMMAND_SUBMIT;
+    case GY_COMPUTE_PROFILING_COMMAND_START_COUNTER:    return CL_PROFILING_COMMAND_START;
+    case GY_COMPUTE_PROFILING_COMMAND_END_COUNTER:      return CL_PROFILING_COMMAND_END;
+    default: GY_ASSERT(0);                              return -1;
+    }
+
 }
 
 static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
@@ -1155,6 +1193,9 @@ int gyComputeUninit(void) {
     if(_debugInfo.activeBufferCount != 0) {
         _gyLog(GY_DEBUG_ERROR, "%u GYComputeBuffer objects were never destroyed!",          _debugInfo.activeBufferCount);
     }
+    if(_debugInfo.activeEventCount != 0) {
+        _gyLog(GY_DEBUG_ERROR, "%u GYComputeEvent objects were never destroyed!",          _debugInfo.activeEventCount);
+    }
 #endif
 
     _gyPop(1);
@@ -1378,7 +1419,7 @@ int gyComputeCommandQueueDestroy(GYComputeCommandQueue* queue) {
     return success;
 }
 
-int gyComputeCommandQueueEnqueueKernel(GYComputeCommandQueue* queue, GYComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, unsigned eventCount, void* eventList, void* event) {
+int gyComputeCommandQueueEnqueueKernel(GYComputeCommandQueue* queue, GYComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, unsigned eventCount, GYComputeEvent* eventList, GYComputeEvent* event) {
     _Kernel* kern = ((_Kernel*)kernel);
     _CommandQueue* cmd = ((_CommandQueue*)queue);
 
@@ -1390,16 +1431,16 @@ int gyComputeCommandQueueEnqueueKernel(GYComputeCommandQueue* queue, GYComputeKe
     return 1;
 }
 
-int gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue *queue, const GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, const void *data, unsigned eventCount, void *eventList, void *event) {
+int gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue *queue, const GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, const void *data, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffer && data && cb);
 
-    return !GY_CL_CHECK_ERROR(clEnqueueWriteBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, data, eventCount, eventList, event));
+    return !GY_CL_CHECK_ERROR(clEnqueueWriteBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, data, eventCount, (cl_event*)eventList, event? &((_Event*)event)->clEvent : NULL));
 }
 
-int gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue *queue, GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, void *ptr, unsigned eventCount, void *eventList, void *event) {
+int gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue *queue, GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, void *ptr, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffer && ptr && cb);
 
-    return !GY_CL_CHECK_ERROR(clEnqueueReadBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, ptr, eventCount, eventList, event));
+    return !GY_CL_CHECK_ERROR(clEnqueueReadBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, ptr, eventCount, (cl_event*)eventList, &((_Event*)event)->clEvent));
 }
 
 int gyComputeCommandQueueEnqueueAcquireRendererObject(GYComputeCommandQueue *queue, unsigned count, const GYComputeBuffer** buffers) {
@@ -1692,6 +1733,51 @@ int gyComputeKernelArg(GYComputeKernel* kernel, unsigned index, size_t size, voi
 
 int gyComputeKernelArgBuffer(GYComputeKernel *kernel, unsigned index, GYComputeBuffer *buffer) {
     return gyComputeKernelArg(kernel, index, sizeof(cl_mem), &((_Buffer*)buffer)->clBuffer);
+}
+
+
+//================= GYRO COMPUTE EVENT API ====================
+GY_COMPUTE_EVENT_STATUS gyComputeEventStatus(const GYComputeEvent* event) {
+    cl_int status;
+
+    if(GY_CL_CHECK_ERROR(clGetEventInfo((cl_event*)event, CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(CL_EVENT_COMMAND_EXECUTION_STATUS), &status, NULL))) {
+        return GY_COMPUTE_EVENT_STATUS_INVALID;
+    }
+    return _clEventStatusFromGyro(status);
+}
+
+int gyComputeEventWait(const GYComputeEvent* event) {
+    return !GY_CL_CHECK_ERROR(clWaitForEvents(1, &((_Event*)event)->clEvent));
+}
+
+GYComputeEvent* gyComputeEventCreate(void) {
+    _Event* event = malloc(sizeof(_Event));
+    memset(event, 0, sizeof(_Event));
+#ifdef GY_COMPUTE_DEBUG
+    ++_debugInfo.activeKernelCount;
+#endif
+    return &event->event;
+}
+
+int gyComputeEventDestroy(GYComputeEvent* event) {
+    if(!event) return 0;
+#ifdef GY_COMPUTE_DEBUG
+    --_debugInfo.activeEventCount;
+#endif
+    free(event);
+    return 1;
+}
+
+uint64_t gyComputeEventProfilingCounter(const GYComputeEvent* event, GY_COMPUTE_PROFILING_COUNTER counterType) {
+    GY_ASSERT(event && counterType >= 0 && counterType < GY_COMPUTE_PROFILING_COUNTER_MAX);
+    uint64_t counter;
+    if(!GY_CL_CHECK_ERROR(clGetEventProfilingInfo(((_Event*)event), _clProfilingInfoFromGyro(counterType), sizeof(cl_profiling_info), &counter, NULL))) {
+        return counter;
+    } else {
+        _gyLog(GY_DEBUG_ERROR, "[GYRO_COMPUTE_API]: Failed to query cl_event counter for profiling info!");
+        return 0;
+    }
+
 }
 
 //================== GYRO COMPUTE DEBUG API ===================
