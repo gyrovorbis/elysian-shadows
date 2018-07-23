@@ -202,8 +202,7 @@ SOURCES += \
     ../../source/gl/gyro_chromatic_aberration_gl.c \
     ../../source/cl/gyro_compute_cl.c \
     ../../source/sdl/gyro_performance_sdl.c \
-    ../../source/sdl/gyro_rumble_sdl.c \
-    ../../source/sdl/gyro_timer_sdl.c
+    ../../source/sdl/gyro_rumble_sdl.c
 
 vulkan {
     SOURCES += \
