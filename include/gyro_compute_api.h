@@ -199,8 +199,28 @@ typedef struct GYComputeDebugInfo {
     int activeProgramCount;
     int activeKernelCount;
     int activeBufferCount;
+    int activeEventCount;
 } GYComputeDebugInfo;
 
+#endif
+
+typedef enum GY_COMPUTE_EVENT_STATUS {
+    GY_COMPUTE_EVENT_STATUS_INVALID,
+    GY_COMPUTE_EVENT_STATUS_QUEUED,
+    GY_COMPUTE_EVENT_STATUS_SUBMITTED,
+    GY_COMPUTE_EVENT_STATUS_RUNNING,
+    GY_COMPUTE_EVENT_STATUS_COMPLETE
+} GY_COMPUTE_EVENT_STATUS;
+
+#ifndef GYRO_COMPUTE_PROFILING_DISABLED
+typedef enum GY_COMPUTE_PROFILING_COUNTER {
+    GY_COMPUTE_PROFILING_COMMAND_QUEUED_COUNTER,
+    GY_COMPUTE_PROFILING_COMMAND_SUBMIT_COUNTER,
+    GY_COMPUTE_PROFILING_COMMAND_START_COUNTER,
+    GY_COMPUTE_PROFILING_COMMAND_END_COUNTER,
+   // GY_COMPUTE_PROFILING_COMMAND_COMPLETE_COUNTER,
+    GY_COMPUTE_PROFILING_COUNTER_MAX
+} GY_COMPUTE_PROFILING_COUNTER;
 #endif
 
 typedef struct GYComputeEvent {
@@ -244,12 +264,21 @@ int                             gyComputeKernelQueryWorkgroupInfo(const GYComput
 int                             gyComputeKernelArg(GYComputeKernel* kernel, unsigned index, size_t size, void* arg);
 int                             gyComputeKernelArgBuffer(GYComputeKernel* kernel, unsigned index, GYComputeBuffer* buffer);
 
+
+GYComputeEvent*                 gyComputeEventCreate(void);
+int                             gyComputeEventDestroy(GYComputeEvent* event);
+GY_COMPUTE_EVENT_STATUS         gyComputeEventStatus(const GYComputeEvent* event);
+int                             gyComputeEventWait(const GYComputeEvent* event);
+#ifndef GYRO_COMPUTE_PROFILING_DISABLED
+uint64_t                        gyComputeEventProfilingCounter(const GYComputeEvent* event, GY_COMPUTE_PROFILING_COUNTER counterType);
+#endif
+
 GYComputeCommandQueue*          gyComputeCommandQueueCreate(const GYComputeContext* context, const GYComputeDevice* device, int flags);
 int                             gyComputeCommandQueueDestroy(GYComputeCommandQueue* queue);
 int                             gyComputeCommandQueueFinish(GYComputeCommandQueue* queue);
-int                             gyComputeCommandQueueEnqueueKernel(GYComputeCommandQueue* queue, GYComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, unsigned eventCount, void* eventList, void* event);
-int                             gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue* queue, const GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, const void* data, unsigned eventCount, void* eventList, void* event);
-int                             gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue* queue, GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, void* ptr, unsigned eventCount, void* eventList, void* event);
+int                             gyComputeCommandQueueEnqueueKernel(GYComputeCommandQueue* queue, GYComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, unsigned eventCount, GYComputeEvent* eventList, GYComputeEvent* event);
+int                             gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue* queue, const GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, const void* data, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event);
+int                             gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue* queue, GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, void* ptr, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event);
 int                             gyComputeCommandQueueEnqueueAcquireRendererObject(GYComputeCommandQueue* queue, unsigned count, const GYComputeBuffer** buffers);
 int                             gyComputeCommandQueueEnqueueReleaseRendererObject(GYComputeCommandQueue* queue, unsigned count, const GYComputeBuffer** buffers);
 

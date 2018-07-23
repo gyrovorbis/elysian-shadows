@@ -61,9 +61,10 @@ dreamcast {
 #==========/PLATFORM-SPECIFIC BULLSHIT==========
 
 DEPENDPATH += ../../include \
-    ../../source/glal/shaders \
-    ../../source/glal \
-    ../../include/glal
+    ../../source/gl \
+    ../../include/gl \
+    ../../source/al \
+    .../../include/al
 
 vulkan {
     DEPENDPATH += ../../include/vulkan
@@ -76,20 +77,6 @@ ios {
 } else {
     DEPENDPATH += ../../include/x86
 }
-
-OTHER_FILES += \
-    ../../source/glal/shaders/fixedFunctionTextured.vsh \
-    ../../source/glal/shaders/fixedFunctionTextured.fsh \
-    ../../source/glal/shaders/fixedFunctionUntextured.vsh \
-    ../../source/glal/shaders/fixedFunctionUntextured.fsh \
-    ../../source/glal/shaders/vertexLightingDirectional.fsh \
-    ../../source/glal/shaders/vertexLightingDirectional.vsh \
-    ../../source/glal/shaders/vertexLighting.fsh \
-    ../../source/glal/shaders/vertexLighting.vsh \
-    ../../source/glal/shaders/pixelLighting.fsh \
-    ../../source/glal/shaders/pixelLighting.vsh \
-    ../../source/glal/shaders/shadowMap.vsh \
-    ../../source/glal/shaders/shadowMap.fsh
 
 HEADERS += \
     ../../include/gyro.h \
@@ -121,30 +108,29 @@ HEADERS += \
     ../../include/kinetic/gyro_kinetic_collider.h \
     ../../include/physics/gyro_physics_simulation.h \
     ../../source/common/gyro_asset_bank.h \
-    ../../include/glal/gyro_audio_glal.inl \
-    ../../include/glal/gyro_texture_glal.inl \
+    ../../include/al/gyro_audio_al.inl \
+    ../../include/gl/gyro_texture_gl.inl \
     ../../include/common/gyro_video_common.h \
     ../../source/common/gyro_system_callbacks.h \
     ../../source/common/internal.h \
-    ../../source/glal/tinycthread.h \
-    ../../include/glal/gyro_shaders_glal.h \
-    ../../include/glal/gyro_video_glal.h \
-    ../../include/glal/gyro_gl.h \
-    ../../include/glal/gyro_al.h \
-    ../../include/glal/gyro_al.h \
+    ../../source/x86/tinycthread.h \
+    ../../include/gl/gyro_shaders_gl.h \
+    ../../include/gl/gyro_video_gl.h \
+    ../../include/gl/gyro_gl.h \
+    ../../include/al/gyro_al.h \
     ../../include/common/turfs.h \
-    ../../include/glal/gyro_file_glal.inl \
+    ../../include/x86/gyro_file_x86.inl \
     ../../include/common/gyro_input_common.h \
     ../../include/common/gyro_spine_common.h \
-    ../../include/glal/gyro_bloom_glal.h \
+    ../../include/gl/gyro_bloom_gl.h \
     ../../include/gyro_net_api.h \
     ../../include/gyro_rumble_api.h \
     ../../include/gyro_test_api.h \
-    ../../include/glal/gyro_gl_utils.h \
-    ../../include/x86/gyro_sdl_input.h \
+    ../../include/gl/gyro_gl_utils.h \
+    ../../include/sdl/gyro_sdl_input.h \
     ../../include/gyro_visual_memory_api.h \
-    ../../include/glal/gyro_radial_blur_glal.h \
-    ../..//include/glal/gyro_chromatic_aberration_glal.h \
+    ../../include/gl/gyro_radial_blur_gl.h \
+    ../..//include/gl/gyro_chromatic_aberration_gl.h \
     ../../include/cl/gyro_cl.h \
     ../../include/gyro_compute_api.h \
     ../../include/gyro_performance_api.h \
@@ -188,7 +174,7 @@ android {
     HEADERS += ../../include/x86/gyro_input_x86.inl \
     ../../include/x86/gyro_math_sse_x86.inl \
     ../../include/x86/gyro_matrix_sse_x86.inl \
-    ../../include/x86/gyro_sdl_x86.inl \
+    ../../include/sdl/gyro_sdl.inl \
     ../../include/x86/gyro_video_x86.inl \
     ../../include/x86/gyro_net_x86.inl
 
@@ -210,12 +196,14 @@ SOURCES += \
     ../../source/common/gyro_video.c \
     ../../source/common/gyro_timer.c \
     ../../source/common/gyro_test.c \
-    ../../source/glal/gyro_gl_utils.c \
-    ../../source/x86/gyro_rumble_sdl_x86.c \
+    ../../source/gl/gyro_gl_utils.c \
     ../../source/common/gyro_visual_memory_common.c \
-    ../../source/glal/gyro_radial_blur_glal.c \
-    ../../source/glal/gyro_chromatic_aberration_glal.c \
-    ../../source/cl/gyro_compute_cl.c
+    ../../source/gl/gyro_radial_blur_gl.c \
+    ../../source/gl/gyro_chromatic_aberration_gl.c \
+    ../../source/cl/gyro_compute_cl.c \
+    ../../source/sdl/gyro_performance_sdl.c \
+    ../../source/sdl/gyro_rumble_sdl.c \
+    ../../source/sdl/gyro_timer_sdl.c
 
 vulkan {
     SOURCES += \
@@ -247,15 +235,15 @@ dreamcast {
 } else {
 
     SOURCES+= \
-        ../../source/glal/gyro_lighting_glal.c \
-        ../../source/glal/gyro_shaders_glal.c \
-        ../../source/glal/gyro_video_glal.c \
-        ../../source/glal/gyro_audio_glal.c \
-        ../../source/glal/gyro_wav_glal.c \
-        ../../source/glal/tinycthread.c \
-        ../../source/glal/gyro_ogg_glal.c \
+        ../../source/gl/gyro_lighting_gl.c \
+        ../../source/gl/gyro_shaders_gl.c \
+        ../../source/gl/gyro_video_gl.c \
+        ../../source/al/gyro_audio_al.c \
+        ../../source/al/gyro_wav_al.c \
+        ../../source/x86/tinycthread.c \
+        ../../source/al/gyro_ogg_al.c \
         ../../source/x86/gyro_matrix_x86.c \
-        ../../source/glal/gyro_bloom_glal.c
+        ../../source/gl/gyro_bloom_gl.c
 
     !ios:!android {
         SOURCES += \
@@ -266,8 +254,8 @@ dreamcast {
             ../../source/qt/gyro_timer_qt.cpp \
             ../../source/qt/gyro_file_qt.cpp \
             ../../source/qt/gyro_video_qt.cpp \
-            ../../source/x86/gyro_controller_sdl_x86.c \
-            ../../source/x86/gyro_net_sdl_x86.c
+            ../../source/sdl/gyro_controller_sdl.c \
+            ../../source/sdl/gyro_net_sdl.c
     } else: android {
         SOURCES += ../../source/android/android_native_app_glue.c \
             ../../source/android/bionic_polyfill.c \
