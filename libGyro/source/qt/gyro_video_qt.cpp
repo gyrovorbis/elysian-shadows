@@ -1,5 +1,5 @@
 
-#include <glal/gyro_gl.h>
+#include <gl/gyro_gl.h>
 
 
 uint32_t glalDefaultFbo(void);
