@@ -1,4 +1,5 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
+
 vmu {
     TEMPLATE = app
 }
