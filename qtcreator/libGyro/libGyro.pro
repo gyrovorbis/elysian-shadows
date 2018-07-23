@@ -99,14 +99,6 @@ HEADERS += \
     ../../include/common/gyro_texture_common.h \
     ../../include/common/gyro_system_common.h \
     ../../include/common/gyro_matrix_stack.h \
-    ../../include/kinetic/gyro_kinetic.h \
-    ../../include/kinetic/gyro_kinetic_static.h \
-    ../../include/kinetic/gyro_kinetic_physics.h \
-    ../../include/kinetic/gyro_kinetic_kinetic.h \
-    ../../include/kinetic/gyro_kinetic_contact.h \
-    ../../include/kinetic/gyro_kinetic_collision.h \
-    ../../include/kinetic/gyro_kinetic_collider.h \
-    ../../include/physics/gyro_physics_simulation.h \
     ../../source/common/gyro_asset_bank.h \
     ../../include/al/gyro_audio_al.inl \
     ../../include/gl/gyro_texture_gl.inl \
@@ -127,7 +119,6 @@ HEADERS += \
     ../../include/gyro_rumble_api.h \
     ../../include/gyro_test_api.h \
     ../../include/gl/gyro_gl_utils.h \
-    ../../include/sdl/gyro_sdl_input.h \
     ../../include/gyro_visual_memory_api.h \
     ../../include/gl/gyro_radial_blur_gl.h \
     ../..//include/gl/gyro_chromatic_aberration_gl.h \
@@ -135,7 +126,32 @@ HEADERS += \
     ../../include/gyro_compute_api.h \
     ../../include/gyro_performance_api.h \
     ../../include/gyro_thread_api.h \
-    ../../include/gyro_motion_api.h
+    ../../include/gyro_motion_api.h \
+    ../../include/al/gyro_al.h \
+    ../../include/gl/gyro_gl.h \
+    ../../include/gl/gyro_shaders_gl.h \
+    ../../include/gl/gyro_video_gl.h \
+    ../../include/gyro.h \
+    ../../include/gyro_audio_api.h \
+    ../../include/gyro_file_api.h \
+    ../../include/gyro_math_api.h \
+    ../../include/gyro_matrix_api.h \
+    ../../include/gyro_motion_api.h \
+    ../../include/gyro_net_api.h \
+    ../../include/gyro_ogg_api.h \
+    ../../include/gyro_performance_api.h \
+    ../../include/gyro_platform.h \
+    ../../include/gyro_rumble_api.h \
+    ../../include/gyro_shader_api.h \
+    ../../include/gyro_system_api.h \
+    ../../include/gyro_test_api.h \
+    ../../include/gyro_texture_api.h \
+    ../../include/gyro_thread_api.h \
+    ../../include/gyro_timer_api.h \
+    ../../include/gyro_version.h \
+    ../../include/gyro_video_api.h \
+    ../../include/gyro_visual_memory_api.h \
+    ../../include/gyro_wav_api.h
 
 vulkan {
     HEADERS += \
@@ -175,8 +191,7 @@ android {
     ../../include/x86/gyro_math_sse_x86.inl \
     ../../include/x86/gyro_matrix_sse_x86.inl \
     ../../include/sdl/gyro_sdl.inl \
-    ../../include/x86/gyro_video_x86.inl \
-    ../../include/x86/gyro_net_x86.inl
+    ../../include/x86/gyro_video_x86.inl
 
 }
 
@@ -184,8 +199,6 @@ android {
 SOURCES += \
     ../../source/common/turfs_common.c \
     ../../source/common/gyro_file.c \
-    ../../source/kinetic/gyro_kinetic_collision.c \
-    ../../source/kinetic/gyro_kinetic_physics.c \
     ../../source/common/gyro_asset_bank.c \
     ../../source/common/gyro_matrix_stack.c \
     ../../source/common/gyro_shader.c \
@@ -196,13 +209,14 @@ SOURCES += \
     ../../source/common/gyro_video.c \
     ../../source/common/gyro_timer.c \
     ../../source/common/gyro_test.c \
-    ../../source/gl/gyro_gl_utils.c \
     ../../source/common/gyro_visual_memory_common.c \
     ../../source/gl/gyro_radial_blur_gl.c \
     ../../source/gl/gyro_chromatic_aberration_gl.c \
     ../../source/cl/gyro_compute_cl.c \
     ../../source/sdl/gyro_performance_sdl.c \
-    ../../source/sdl/gyro_rumble_sdl.c
+    ../../source/sdl/gyro_rumble_sdl.c \
+    ../../source/gl/gyro_bloom_gl.c \
+    ../../source/gl/gyro_gl_utils.c
 
 vulkan {
     SOURCES += \
@@ -241,8 +255,7 @@ dreamcast {
         ../../source/al/gyro_wav_al.c \
         ../../source/x86/tinycthread.c \
         ../../source/al/gyro_ogg_al.c \
-        ../../source/x86/gyro_matrix_x86.c \
-        ../../source/gl/gyro_bloom_gl.c
+        ../../source/x86/gyro_matrix_x86.c
 
     !ios:!android {
         SOURCES += \
