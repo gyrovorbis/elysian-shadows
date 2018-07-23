@@ -217,6 +217,7 @@ void GuiSystem::_renderDebugOverlay(void) {
     switch(_debugOverlayPage) {
     case 0:
         _printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
+        _printDebugLine("Frame Time:", "%.2fms", getTimerSys()->getDeltaTime()*1000.0f);
         _printDebugLine("Verts:", "%u", gyVidDbgVertexRenderCount());
         _printDebugLine("Uniform Uploads:", "%u", gyVidDbgShaderUniformChangeCount());
         _printDebugLine("LightSys Uploads:", "%u", getLightSys()->getShaderUniformChangesLastFrame());

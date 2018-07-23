@@ -300,23 +300,12 @@ void Engine::processInput(void) {
 
 void Engine::render(void) {
 
-  _timerSystem->pushTaskMonitor(&_renderMonitor);
-    renderMonitor.start();
-    for(unsigned i = 0; i < 100; ++i) {
-    processInputMonitor.start();
-    processInputMonitor.stop();
-    processInputMonitor.resume();
-    processInputMonitor.stop();
-    }
-    renderMonitor.stop();
-
-
-
     switch(System::_engineState) {
         default:
             _cameraSystem->update();
             gyVidSceneBegin();
             gyMatLoadIdentity();
+            _renderSystem->updateHDRExposure();
 
         /*	unsigned w, h;
             gyVidResolution(&w, &h);
@@ -354,7 +343,7 @@ void Engine::render(void) {
 
              _collisionSystem->render();
              _particleSystem->render();
-             _renderSystem->postRender();
+             _renderSystem->createLuminanceHistogram();
           //  func();
 
              _lightSystem->removeLightSourcesFromScene();

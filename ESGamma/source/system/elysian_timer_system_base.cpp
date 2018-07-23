@@ -54,8 +54,8 @@ void TimerSystemBase::update(void) {
     //TIMER_STOP;
 
 	//MS since last frame
-	_prevFrameTicks = _curFrameTicks;
-    _curFrameTicks = gyTimerTicks();
+    _prevFrameCounter = _curFrameCounter;
+    _curFrameCounter = gyPerfCounter();
     //_curFrameTicks =
 	//TIMER_START;
 			//gyTimerTicks();
@@ -66,7 +66,7 @@ void TimerSystemBase::update(void) {
 	//Calculate delta (sec)
 	//_deltaTime = (_curFrameTicks - _prevFrameTicks)/1000.0f;
 #if 1
-    delta = ((double)(_curFrameTicks-_prevFrameTicks))/1000000000.0;
+    delta = ((double)(_curFrameCounter-_prevFrameCounter)/gyPerfFrequencyCached());//1000000000.0;
 #else
   //  delta = 1.0f/60.0f;
 #endif

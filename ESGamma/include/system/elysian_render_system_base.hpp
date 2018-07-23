@@ -111,7 +111,8 @@ namespace elysian {
         bool                    initialize(void);
         bool                    uninitialize(void);
         void                    render(void);
-        void                    postRender(void);
+        void                    createLuminanceHistogram(void);
+        void                    updateHDRExposure(void);
         bool                    populateParticleVbos(void);
         bool                    renderParticles(void);
 

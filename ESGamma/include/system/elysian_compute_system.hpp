@@ -273,7 +273,7 @@ namespace elysian {
         void                    setValid(bool val=true);
         bool                    isAccelerationAvailable(void) const;
         bool                    isAccelerated(void) const;
-        void                    setAccelerated(bool val);
+        void                    setAccelerated(bool val=true);
         void                    setNativeFallback(NativeKernel nativeFunc);
 
     };
@@ -442,9 +442,15 @@ namespace elysian {
     }
 
     inline void ComputeTask::setValid(bool val) { _isValid = val; }
-
     inline bool ComputeTask::isValid(void) const { return _isValid; }
     inline bool ComputeTask::isAccelerated(void) const { return !_useNative; }
+    inline void ComputeTask::setAccelerated(bool val) {
+        if(_nativeFallback) {
+            _useNative = true;
+        } else {
+            _isValid = false;
+        }
+    }
 
     inline ComputeContext* ComputeDevice::getContext(void) const { return _context; }
 

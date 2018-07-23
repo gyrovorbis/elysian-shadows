@@ -232,7 +232,7 @@ bool RenderSystemBase::renderParticles(void) {
     return success;
 }
 
-void RenderSystemBase::postRender(void) {
+void RenderSystemBase::createLuminanceHistogram(void) {
     bool success = true;
     unsigned int width;
     unsigned int height;
@@ -250,70 +250,78 @@ void RenderSystemBase::postRender(void) {
                                                                                nullptr,
                                                                                &_luminanceComputeTask->_readCompleteEvent);
 
-        success &= _luminanceComputeTask->_readCompleteEvent.wait();
-
         if(!success) {
-            errprintf("Something dun fucked up when trying to construct LuminanceComputeTasks's command queue!");
-           // _luminanceComputeTask->_isValid = false;
-        } else {
-            double avg = 0.0f;
-            uint64_t count = 0;
-            //DbgEvent event("Luminance Stats");
-            //dbgprintf("Min - %u, Max - %u", _luminanceComputeTask->_lumStats.min, _luminanceComputeTask->_lumStats.max);
-            for(unsigned i = 0; i < 256; ++i) {
-                count += _luminanceComputeTask->_lumStats.histBins[i];
-                avg += _luminanceComputeTask->_lumStats.histBins[i]*(float)i;
-            }
-
-            if(count != 0.0f) {
-                avg /= (double)(count);
-#if 0
-            int max = 0;
-
-            for(unsigned i = 1; i < 256; ++i) {
-                if(_luminanceComputeTask->_lumStats.histBins[i] > _luminanceComputeTask->_lumStats.histBins[max]) max = i;
-            }
-#endif
- //           avg = max;
-
-            const float key = _curArea->getAmbientColor().getW();
-            if((key/avg) >= 1.1) {
-
-                _luminanceComputeTask->_exposure *= 1.005f;
-                gyVidHighDynamicRangeExposure(_luminanceComputeTask->_exposure);
-            } else if((key/avg) <= 0.9) {
-                _luminanceComputeTask->_exposure *= 0.995f;
-                //_curArea->getAmbientColor().setW(_curArea->getAmbientColor().getW() * 0.995);
-                gyVidHighDynamicRangeExposure(_luminanceComputeTask->_exposure);
-            }
-            }
-
-            static int framez = 0;
-
-            if(++framez %60 == 0) {
-                dbgprintf("Avg - %lf, Exp - %f", avg, _luminanceComputeTask->_exposure);
-                        framez = 0;
-
-            }
-
-        //if fucking w/ exp and NOT modifying average, STOP
-
-
-
-             //   dbgprintf("AVG = %lf", avg);
-                //dbgprintf("[%u] - %u", i, _luminanceComputeTask->_lumStats.histBins[i]);
-
-
-
-           // if(fabs(150.0f - avg) >= 20) {
-
-             //   _curArea->getAmbientColor().setW(150.0f/avg);
-
-            //}
-
+            errprintf("Something reested with the LuminanceComputeTask! Disabling acceleration!");
+            _luminanceComputeTask->setAccelerated(false);
         }
 
+        success &= _luminanceComputeTask->_readCompleteEvent.wait();
+
     }
+
+}
+
+
+void RenderSystemBase::updateHDRExposure(void) {
+    if(_luminanceComputeTask->isAccelerated()) {
+        double avg = 0.0f;
+        uint64_t count = 0;
+        //DbgEvent event("Luminance Stats");
+        //dbgprintf("Min - %u, Max - %u", _luminanceComputeTask->_lumStats.min, _luminanceComputeTask->_lumStats.max);
+        for(unsigned i = 0; i < 256; ++i) {
+            count += _luminanceComputeTask->_lumStats.histBins[i];
+            avg += _luminanceComputeTask->_lumStats.histBins[i]*(float)i;
+        }
+
+        if(count != 0.0f) {
+            avg /= (double)(count);
+#if 0
+        int max = 0;
+
+        for(unsigned i = 1; i < 256; ++i) {
+            if(_luminanceComputeTask->_lumStats.histBins[i] > _luminanceComputeTask->_lumStats.histBins[max]) max = i;
+        }
+#endif
+//           avg = max;
+
+        const float key = _curArea->getAmbientColor().getW();
+        if((key/avg) >= 1.1) {
+
+            _luminanceComputeTask->_exposure *= 1.005f;
+            gyVidHighDynamicRangeExposure(_luminanceComputeTask->_exposure);
+        } else if((key/avg) <= 0.9) {
+            _luminanceComputeTask->_exposure *= 0.995f;
+            //_curArea->getAmbientColor().setW(_curArea->getAmbientColor().getW() * 0.995);
+            gyVidHighDynamicRangeExposure(_luminanceComputeTask->_exposure);
+        }
+        }
+#if 0
+        static int framez = 0;
+
+        if(++framez %60 == 0) {
+            dbgprintf("Avg - %lf, Exp - %f", avg, _luminanceComputeTask->_exposure);
+                    framez = 0;
+
+        }
+#endif
+
+    //if fucking w/ exp and NOT modifying average, STOP
+
+
+
+         //   dbgprintf("AVG = %lf", avg);
+            //dbgprintf("[%u] - %u", i, _luminanceComputeTask->_lumStats.histBins[i]);
+
+
+
+       // if(fabs(150.0f - avg) >= 20) {
+
+         //   _curArea->getAmbientColor().setW(150.0f/avg);
+
+        //}
+
+    }
+
 
 }
 

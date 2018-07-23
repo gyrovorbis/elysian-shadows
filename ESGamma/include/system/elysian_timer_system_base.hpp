@@ -52,8 +52,8 @@ namespace elysian {
         enum SUBPROCS { SUBPROC_TIMER_EVENT_POOL };
 
         int64_t         _totalTicks				= 0; //play-time essentially
-        int64_t         _prevFrameTicks			= 0;
-        int64_t         _curFrameTicks			= 0;
+        uint64_t        _prevFrameCounter		= 0;
+        uint64_t        _curFrameCounter		= 0;
 		float           _deltaTime				= 0.0f;
 		float           _realDeltaTime			= 0.0f;
         float           _speedMultiplier        = 1.0f;
@@ -104,13 +104,13 @@ namespace elysian {
     inline unsigned long int TimerSystemBase::getTotalTicks(void) const { return _totalTicks; }
     inline double TimerSystemBase::getTotalTime(void) const { return _totalTime; }
     inline unsigned long int TimerSystemBase::getPreviousFrameTicks(void) const {
-		return _prevFrameTicks;
+        return _prevFrameCounter;
 	}
     inline unsigned long int TimerSystemBase::getCurrentFrameTicks(void) const {
-		return _curFrameTicks;
+        return _curFrameCounter;
     }
     inline float TimerSystemBase::getCurrentFrameTime(void) const {
-        return (float)(gyTimerTicks()-_prevFrameTicks)/10000000000.0f;
+        return (float)((gyPerfCounter()-_prevFrameCounter)/gyPerfFrequencyCached())/10000000000.0f;
     }
     inline float TimerSystemBase::getDeltaTime(void) const {
 		return _deltaTime;
