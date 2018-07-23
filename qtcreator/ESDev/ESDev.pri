@@ -1,5 +1,5 @@
 exists( ESDevCommandLineArgs.pri ) {
-    message("Including ESDevCommandLineArgs.pri in project file")
+    message("Including ESDevCommandLineArgs.pri in project file $${PWD}")
     include( ESDevCommandLineArgs.pri )
 }
 

@@ -66,7 +66,7 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../ESGamma/include/utility \
     ../../game/include \
     ../../libGyro/include \
-    ../../libGyro/include/kinetic
+    ../../libGyro/api
 
 !ios: !dreamcast: !android{
     DEPENDPATH += include
@@ -79,7 +79,8 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/include/gui \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
-    ../../ESGamma/include/utility
+    ../../ESGamma/include/utility \
+    ../../libGyro/api
 
 !ios: !dreamcast: !android {
     INCLUDEPATH += include
@@ -950,3 +951,16 @@ else:linux {
 DISTFILES += \
     ESToolkit.qdocconf \
     ESToolkit.qhcp
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/release/ -llibGyroKinetic
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/debug/ -llibGyroKinetic
+else:unix: LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/ -llibGyroKinetic
+
+INCLUDEPATH += $$PWD/../../libGyro-Kinetic
+DEPENDPATH += $$PWD/../../libGyro-Kinetic
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/release/liblibGyroKinetic.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/debug/liblibGyroKinetic.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/release/libGyroKinetic.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/debug/libGyroKinetic.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/liblibGyroKinetic.a

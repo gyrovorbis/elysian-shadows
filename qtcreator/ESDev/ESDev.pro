@@ -4,8 +4,10 @@ TEMPLATE = subdirs
 CONFIG += ordered
 CONFIG 	+= console
 
+
 SUBDIRS +=  ../../libGyro/qtcreator/libGyro\
-    ../../Spine/qtcreator/Spine
+    ../../Spine/qtcreator/Spine \
+    ../../libGyro-Kinetic
 
 estk {
     SUBDIRS += ../../Lua5.2/qtcreator/Lua5_2 \
@@ -35,7 +37,8 @@ vulkan {
 }
 
 
-libGyro.depends = Spine
+libGyro.depends = Spine \
+        LibGyro-Kinetic
 
 estk {
 
@@ -43,7 +46,8 @@ estk {
 
     ESToolkit.depends += libGyro \
       OOLua \
-      Spine
+      Spine \
+        LibGyro-Kinetic
 
 }
 
@@ -52,7 +56,8 @@ tests {
 }
 
 vmu {
-    ElysianVMU.depends += libGyro
+    ElysianVMU.depends += libGyro \
+            QESTkUtils
 }
 
 vmu_child_app {

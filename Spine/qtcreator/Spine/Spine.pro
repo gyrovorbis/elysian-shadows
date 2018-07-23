@@ -11,7 +11,8 @@ DEFINES+=ELYSIAN_RUNTIME_CHECKS
 
 
 INCLUDEPATH += ../../include \
-                ../../../libGyro/include
+                ../../../libGyro/include \
+                ../../../libGyro/api
 QMAKE_CFLAGS += -Wno-unused-parameter -std=c99
 
 SOURCES += \
