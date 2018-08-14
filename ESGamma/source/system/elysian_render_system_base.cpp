@@ -11,14 +11,15 @@
 extern int glalVertexArray;
 extern GLuint                      _streamVao[2];
 extern GLuint _glalColorTex;
-extern GLuint   _glalDepthBuffer;
-
+extern GLuint  _glalDepthBuffer;
+extern GLuint glalLightingUBO;
 
 namespace elysian {
 
 GLuint _glParticleVao           = 0;
 GLuint _glParticleVbo           = 0;
 GLuint _glParticleIndirectBuff  = 0;
+
 
 
 #if 0
@@ -106,7 +107,8 @@ bool RenderSystemBase::initialize(void) {
         _luminanceComputeTask = new LuminanceHistogramComputeTask(_glalColorTex);
         dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
 
-        _lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer);
+        _lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer,
+                                                            glalLightingUBO);
 
     }
 
@@ -208,6 +210,8 @@ bool RenderSystemBase::renderParticles(void) {
     } else if(_activeParticles) {
 
         if(success) {
+            _particleComputeTask->getCommandQueue()->finish();
+
             gyVidTexBind(nullptr);
 
             gyVidNormalMapBind(nullptr);
@@ -245,17 +249,12 @@ void RenderSystemBase::createLuminanceHistogram(void) {
         success &= _luminanceComputeTask->getCommandQueue()->enqueueBufferRead(_luminanceComputeTask->_statsBuffer,
                                                                                0,
                                                                                sizeof(LuminanceHistogramComputeTask::LuminanceStats),
-                                                                               &_luminanceComputeTask->_lumStats,
-                                                                               true,
-                                                                               nullptr,
-                                                                               &_luminanceComputeTask->_readCompleteEvent);
+                                                                               &_luminanceComputeTask->_lumStats);
 
         if(!success) {
             errprintf("Something reested with the LuminanceComputeTask! Disabling acceleration!");
             _luminanceComputeTask->setAccelerated(false);
         }
-
-        success &= _luminanceComputeTask->_readCompleteEvent.wait();
 
     }
 
@@ -263,7 +262,9 @@ void RenderSystemBase::createLuminanceHistogram(void) {
 
 
 void RenderSystemBase::updateHDRExposure(void) {
-    if(_luminanceComputeTask->isAccelerated()) {
+
+
+    if(_luminanceComputeTask->isAccelerated() && _luminanceComputeTask->getCommandQueue()->finish()) {
         double avg = 0.0f;
         uint64_t count = 0;
         //DbgEvent event("Luminance Stats");
@@ -340,8 +341,8 @@ LuminanceHistogramComputeTask::LuminanceHistogramComputeTask(uintptr_t textureId
              ELYSIAN_RENDER_SYSTEM_LUMINANCE_HISTOGRAM_KERNEL_PATH
         },
         {
-            //ComputeDeviceCategory::GpuRendererOffline//,
-            ComputeDeviceCategory::GpuRendererOnline//,
+            //ComputeDeviceCategory::GpuRendererOffline,
+            ComputeDeviceCategory::GpuRendererOnline,
             //ComputeDeviceCategory::CpuRenderer
         },
         NULL,
@@ -350,7 +351,7 @@ LuminanceHistogramComputeTask::LuminanceHistogramComputeTask(uintptr_t textureId
     DbgEvent event("LuminanceHistogramTask - Initializing Kernel");
 
     if(isValid()) {
-        _fboBuffer      = getContext()->createBufferFromRendererTexture(textureId, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
+        _fboBuffer      = getContext()->createBufferFromRendererTexture(textureId, GY_COMPUTE_MEMORY_TYPE_READ_WRITE, GL_TEXTURE_2D);
         if(_fboBuffer) _statsBuffer    = getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(LuminanceStats));
 
         if(!_fboBuffer || !_statsBuffer) {
@@ -372,19 +373,111 @@ LuminanceHistogramComputeTask::LuminanceHistogramComputeTask(uintptr_t textureId
 }
 
 
-LightCullingComputeTask::LightCullingComputeTask(uintptr_t depthBuffTexId):
+LightCullingComputeTask::LightCullingComputeTask(uintptr_t depthBuffTexId,
+                                                 uintptr_t lightingUboId):
     ComputeTask(ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_NAME,
         {
              ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_PATH
         },
         {
-            ComputeDeviceCategory::GpuRendererOffline,
+            //ComputeDeviceCategory::GpuRendererOffline,
             ComputeDeviceCategory::GpuRendererOnline,
-            ComputeDeviceCategory::CpuRenderer
+            //ComputeDeviceCategory::CpuRenderer
         },
         NULL,
         true)
-{}
+{
+    return;
+    DbgEvent event("CullLights - Initializing Kernel");
+    if(isValid()) {
+
+        uint32_t tileSize = ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_TILE_SIZE_DEFAULT;
+       // _tileSizeBuffer     = getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(uint32_t));
+      //  _projViewMatBuff    = getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(float)*16);
+        _lightingUboBuff    = getContext()->createBufferFromRendererBuffer(lightingUboId,       GY_COMPUTE_MEMORY_TYPE_READ_ONLY);
+
+        glGenTextures(1, &_lightMapTexId);
+        glBindTexture(GL_TEXTURE_1D, _lightMapTexId);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        unsigned scrWidth, scrHeight;
+        gyVidResolution(&scrWidth, &scrHeight);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, scrWidth*scrHeight*ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX/4, 0, GL_RGBA8, GL_UNSIGNED_BYTE, NULL);
+
+        _lightMapBuff = getContext()->createBufferFromRendererTexture(_lightMapTexId, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY, GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, 0);
+     //   _depthBuffer = getContext()->createBufferFromRendererTexture(depthBuffTexId, GY_COMPUTE_MEMORY_TYPE_READ_ONLY, GL_TEXTURE_2D);
+
+       // getKernel()->setArg(0, _tileSizeBuffer);
+        //getKernel()->setArg(0, _projViewMatBuff);
+        getKernel()->setArg(0, _lightingUboBuff);
+        getKernel()->setArg(1, _lightMapBuff);
+       // getKernel()->setArg(3, _depthBuffer);
+
+    }
+}
+
+bool LightCullingComputeTask::updateScreenResolution(unsigned int width, unsigned int height) {
+    return true;
+    if(!isValid()) return false;
+    glBindTexture(GL_TEXTURE_1D, _lightMapTexId);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, width*height*ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX, 0, GL_RGBA8, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_1D, 0);
+    return true;
+}
+
+
+bool RenderSystemBase::forwardPlusCullLights(void) {
+    return true;
+    bool success = true;
+    static unsigned prevWidth = 0;
+    static unsigned prevHeight = 0;
+    unsigned scrWidth, scrHeight;
+    gyVidResolution(&scrWidth, &scrHeight);
+
+    if(scrWidth != prevWidth || scrHeight != prevHeight) {
+        _lightCullComputeTask->updateScreenResolution(scrWidth, scrHeight);
+        prevWidth = scrWidth;
+        prevHeight = scrHeight;
+    }
+
+    assert(_lightCullComputeTask->isValid());
+    size_t globalOffsets[]  = { 0, 0 };
+    size_t localWorkSize[]  = {  8, 8 };
+    size_t globalWorkSize[] = { scrWidth, scrHeight };
+
+    ComputeBuffer* buffers[] = {
+     //   _lightCullComputeTask->_depthBuffer,
+        _lightCullComputeTask->_lightMapBuff//,
+       // _lightCullComputeTask->_projViewMatBuff,
+        ,_lightCullComputeTask->_lightingUboBuff
+    };
+
+    for(unsigned i = 0; i < 2; ++i) {
+        if(globalWorkSize[i] % 8) globalWorkSize[i] += (8 - globalWorkSize[i]%8);
+    }
+
+
+
+   // success &= _lightCullComputeTask->getCommandQueue()->enqueueBufferWrite(_lightCullComputeTask->_projViewMatBuff, 0, sizeof(float)*16, getCameraSys()->getCurrentState()->projViewMat, false);
+    success &= _lightCullComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(2, buffers);
+    success &= _lightCullComputeTask->enqueueKernel(scrWidth*scrHeight);
+  /*  success &= _lightCullComputeTask->getCommandQueue()->enqueueKernel(_lightCullComputeTask->getKernel(),
+                                                                       2,
+                                                                       globalOffsets,
+                                                                       globalWorkSize,
+                                                                       localWorkSize);*/
+ //   success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(2, buffers, nullptr, &_lightCullComputeTask->_completeEvent);
+    gyComputeCommandQueueFinish(_lightCullComputeTask->getCommandQueue()->_gyCmdQueue);
+       success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(2, buffers, nullptr, nullptr);
+    //success &= _lightCullComputeTask->getComm
+    // success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(1, buffers);
+    return success;
+}
+
 
 
 }

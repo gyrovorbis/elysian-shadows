@@ -58,14 +58,14 @@ void Camera::clipBoundingRegion(const Camera &cam) {
     };
 
     //Find X/Y extremes given each vertex to create bounding box
-    checkPointBounds(cam.viewVolume.ftr);
-    checkPointBounds(cam.viewVolume.ftl);
-    checkPointBounds(cam.viewVolume.fbr);
-    checkPointBounds(cam.viewVolume.fbl);
-    checkPointBounds(cam.viewVolume.ntr);
-    checkPointBounds(cam.viewVolume.ntl);
-    checkPointBounds(cam.viewVolume.nbr);
-    checkPointBounds(cam.viewVolume.nbl);
+    checkPointBounds(cam.viewProjVolume.ftr);
+    checkPointBounds(cam.viewProjVolume.ftl);
+    checkPointBounds(cam.viewProjVolume.fbr);
+    checkPointBounds(cam.viewProjVolume.fbl);
+    checkPointBounds(cam.viewProjVolume.ntr);
+    checkPointBounds(cam.viewProjVolume.ntl);
+    checkPointBounds(cam.viewProjVolume.nbr);
+    checkPointBounds(cam.viewProjVolume.nbl);
 
     clipBoundingRegion(startX, endX, startY, endY);
 }

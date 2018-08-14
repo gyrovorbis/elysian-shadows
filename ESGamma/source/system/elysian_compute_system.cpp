@@ -428,7 +428,7 @@ ComputeCommandQueue* ComputeContext::createCommandQueue(ComputeDevice* device, i
     }
 }
 
-ComputeBuffer* ComputeContext::createBuffer(GY_COMPUTE_MEMORY_TYPE memType, size_t size, void *data) {
+ComputeBuffer* ComputeContext::createBuffer(int memType, size_t size, void *data) {
     GYComputeBuffer* buffer = gyComputeBufferCreate(_gyContext, memType, size, data);
     if(buffer) {
         return new ComputeBuffer(buffer);
@@ -446,8 +446,8 @@ ComputeBuffer* ComputeContext::createBufferFromRendererBuffer(intptr_t rendererB
     }
 }
 
-ComputeBuffer* ComputeContext::createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType) {
-    GYComputeBuffer* gyBuff = gyComputeBufferCreateFromRendererTexture(_gyContext, memType, rendererTexture);
+ComputeBuffer* ComputeContext::createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType, int target) {
+    GYComputeBuffer* gyBuff = gyComputeBufferCreateFromRendererTexture(_gyContext, memType, rendererTexture, target);
     if(gyBuff) {
         return new ComputeBuffer(gyBuff);
     } else {
@@ -547,7 +547,7 @@ const GYComputeKernelInfo* ComputeKernel::getInfo(void) const {
 bool ComputeCommandQueue::enqueueBufferRead(ComputeBuffer *buffer, size_t offset, size_t size, void* ptr, bool blocking, const ComputeEventList* eventList, ComputeEvent* event) {
     assert(buffer && ptr);
     if(!size) return 1;
-    return gyComputeCommandQueueEnqueueBufferRead(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, ptr, eventList? eventList->getSize() : 0, nullptr, event->getGyEvent());
+    return gyComputeCommandQueueEnqueueBufferRead(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, ptr, eventList? eventList->getSize() : 0, nullptr, event? event->getGyEvent() : nullptr);
 }
 
 bool ComputeCommandQueue::enqueueBufferWrite(ComputeBuffer *buffer, size_t offset, size_t size, void *data, bool blocking) {
@@ -555,9 +555,9 @@ bool ComputeCommandQueue::enqueueBufferWrite(ComputeBuffer *buffer, size_t offse
     return gyComputeCommandQueueEnqueueBufferWrite(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, data, 0, nullptr, nullptr);
 }
 
-bool ComputeCommandQueue::enqueueKernel(ComputeKernel *kernel, unsigned workDimensions, const size_t *globalWorkOffset, const size_t *globalWorkSize, const size_t *localWorkSize) {
+bool ComputeCommandQueue::enqueueKernel(ComputeKernel *kernel, unsigned workDimensions, const size_t *globalWorkOffset, const size_t *globalWorkSize, const size_t *localWorkSize, ComputeEventList* eventList, ComputeEvent* event) {
     assert(kernel && workDimensions && globalWorkOffset && globalWorkSize && localWorkSize);
-    return gyComputeCommandQueueEnqueueKernel(_gyCmdQueue, kernel->getGyKernel(), workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, 0, nullptr, nullptr);
+    return gyComputeCommandQueueEnqueueKernel(_gyCmdQueue, kernel->getGyKernel(), workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, eventList? eventList->getSize() : 0, nullptr, event? event->getGyEvent() : nullptr);
 }
 
 bool ComputeCommandQueue::enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer **buffers) {
@@ -570,13 +570,13 @@ bool ComputeCommandQueue::enqueueAcquireRendererSharedObject(unsigned count, Com
     return gyComputeCommandQueueEnqueueAcquireRendererObject(_gyCmdQueue, count, (const GYComputeBuffer**)gyBuffers);
 }
 
-bool ComputeCommandQueue::enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer **buffers) {
+bool ComputeCommandQueue::enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer **buffers, const ComputeEventList* eventList, ComputeEvent* event) {
     assert(count > 0 && count < ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES && buffers);
     GYComputeBuffer* gyBuffers[ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES];
     for(unsigned i = 0; i < count; ++i) {
         gyBuffers[i] = buffers[i]->getGyBuffer();
     }
-    return gyComputeCommandQueueEnqueueReleaseRendererObject(_gyCmdQueue, count, (const GYComputeBuffer**)gyBuffers);
+    return gyComputeCommandQueueEnqueueReleaseRendererObject(_gyCmdQueue, count, (const GYComputeBuffer**)gyBuffers, eventList? eventList->getSize() : 0, nullptr, event? event->getGyEvent() : nullptr);
 }
 
 //acquire/release GL SHIT
@@ -594,7 +594,7 @@ ComputeTask::ComputeTask(const char*                        kernelName,
                          bool                               outOfOrderExecution):
     _categoryPriorityList(std::move(categoryPriorityList)),
     _nativeFallback(nativeFallbackFunc)
-#ifndef GYRO_COMPUTE_PROFILING_DISABLED
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
     ,_taskMonitor(new TaskMonitor(kernelName))
 #endif
 {
@@ -802,6 +802,7 @@ bool ComputeTask::enqueueKernel(size_t globalSize) {
     if(!retVal) _isValid = false;
     return retVal;
 }
+
 
 // Recursive function to return gcd of a and b
 size_t gcd(size_t a, size_t b)

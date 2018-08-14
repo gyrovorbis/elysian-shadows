@@ -20,7 +20,7 @@ tests {
 
 vmu_child_app {
     DEFINES += VMU_CHILD_APP
-    SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
+    SUBDIRS += ../../ElysianVMU/build/qtcreator/ElysianVMU
 }
 
 estk {
@@ -28,7 +28,7 @@ estk {
 }
 
 vmu {
-    SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
+    SUBDIRS += ../../ElysianVMU/build/qtcreator/ElysianVMU
 }
 
 

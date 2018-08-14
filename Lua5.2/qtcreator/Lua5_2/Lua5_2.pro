@@ -3,7 +3,7 @@
 # Project created by QtCreator 2014-12-21T07:10:54
 # DONT FUCKING USE -msse IN LUA LIBS ON WINDOWS!!!!111
 #-------------------------------------------------
-include(../../../qtcreator/ESDev/ESDev.pri)
+#include(../../../qtcreator/ESDev/ESDev.pri)
 QT       -= core gui
 
 TARGET = Lua5_2

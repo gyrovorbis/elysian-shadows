@@ -305,6 +305,7 @@ void Engine::render(void) {
             _cameraSystem->update();
             gyVidSceneBegin();
             gyMatLoadIdentity();
+                       // _renderSystem->forwardPlusCullLights();
             _renderSystem->updateHDRExposure();
 
         /*	unsigned w, h;

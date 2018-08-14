@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-03-06T14:23:27
 # And modified to all fuck by Falco ALL THE DAYS
 # -------------------------------------------------
-include(../../qtcreator/ESDev/ESDev.pri)
+#include(../../qtcreator/ESDev/ESDev.pri)
 
 TARGET = ESToolkit
 
@@ -90,10 +90,11 @@ INCLUDEPATH += ../../AssetIO/include \
 vmu_child_app {
     QT += serialport
 
-    INCLUDEPATH += ../../ElysianVMU/lib/source
+    INCLUDEPATH += ../../ElysianVMU/app/qt/include \
+                ../../ElysianVMU/evmu-core/include
 
-    DEPENDPATH += ../../ElysianVMU/lib/source \
-        ../../ElysianVMU/qtcreator/ElysianVMU
+    DEPENDPATH += ../../ElysianVMU/app/qt \
+        ../../ElysianVMU/build/qtcreator/ElysianVMU
 }
 
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
@@ -699,7 +700,7 @@ opencl {
 RESOURCES += resource/resource.qrc
 
 vmu_child_app {
-    RESOURCES += ../../ElysianVMU/qtcreator/ElysianVMU/resource/evmu.qrc
+    RESOURCES += ../../ElysianVMU/app/qt/resource/evmu.qrc
 }
 
 docs {
@@ -762,19 +763,32 @@ linux {
 
 vmu_child_app {
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ -lElysianVMU
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ -lElysianVMU
-    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU -lElysianVMU
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/release/ -lElysianVMU
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/debug/ -lElysianVMU
+    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU -lElysianVMU
 
-    INCLUDEPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
-    DEPENDPATH += $$PWD/../../ElysianVMU/qtcreator/ElysianVMU
+    INCLUDEPATH += $$PWD/../../ElysianVMU/build/qtcreator/ElysianVMU
+    DEPENDPATH += $$PWD/../../ElysianVMU/build/qtcreator/ElysianVMU
 
-    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/libElysianVMU.a
-    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/libElysianVMU.a
-    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/release/ElysianVMU.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/debug/ElysianVMU.lib
-    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/qtcreator/ElysianVMU/libElysianVMU.a
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/release/libElysianVMU.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/debug/libElysianVMU.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/release/ElysianVMU.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/debug/ElysianVMU.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/libElysianVMU.a
 }
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/release/ -llibGyroKinetic
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/debug/ -llibGyroKinetic
+else:unix: LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/ -llibGyroKinetic
+
+INCLUDEPATH += $$PWD/../../libGyro-Kinetic
+DEPENDPATH += $$PWD/../../libGyro-Kinetic
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/release/liblibGyroKinetic.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/debug/liblibGyroKinetic.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/release/libGyroKinetic.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/debug/libGyroKinetic.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/liblibGyroKinetic.a
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/ -llibGyro
@@ -880,14 +894,14 @@ win32 {
 }
 
 macx {
-  LIBS +=  -L../../libGyro/lib/osx \
+  LIBS += -L$${LIBGYRO_PATH}/lib/osx \
         -framework OpenGL \
         -framework OpenCL \
         -framework OpenAL \
         -lz \
-        -F../../ESGamma/lib/osx \
-        -L../../ESGamma/lib/osx \
-        -F../../libGyro/lib/osx \
+        -F$${PWD}/../../ESGamma/lib/osx \
+        -L$${PWD}/../../ESGamma/lib/osx \
+        -F$${LIBGYRO_PATH}/lib/osx \
         -framework SDL2 \
         -framework SDL2_net \
         -framework Foundation \
@@ -897,7 +911,7 @@ macx {
         -lvorbis \
         -lvorbisenc \
         -lvorbisfile \
-        -L../../ESGamma/lib/osx
+
 }
 
 ios {
@@ -952,15 +966,3 @@ DISTFILES += \
     ESToolkit.qdocconf \
     ESToolkit.qhcp
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/release/ -llibGyroKinetic
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/debug/ -llibGyroKinetic
-else:unix: LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/ -llibGyroKinetic
-
-INCLUDEPATH += $$PWD/../../libGyro-Kinetic
-DEPENDPATH += $$PWD/../../libGyro-Kinetic
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/release/liblibGyroKinetic.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/debug/liblibGyroKinetic.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/release/libGyroKinetic.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/debug/libGyroKinetic.lib
-else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../libGyro-Kinetic/liblibGyroKinetic.a

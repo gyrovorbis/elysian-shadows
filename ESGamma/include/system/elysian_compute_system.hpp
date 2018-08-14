@@ -109,9 +109,9 @@ namespace elysian {
         bool isRendererContext(void) const { return _isRendererContext; }
 
         ComputeCommandQueue*    createCommandQueue(ComputeDevice* device, int flags);
-        ComputeBuffer*          createBuffer(GY_COMPUTE_MEMORY_TYPE memType, size_t size, void *data=nullptr);
+        ComputeBuffer*          createBuffer(int memType, size_t size, void *data=nullptr);
         ComputeBuffer*          createBufferFromRendererBuffer(intptr_t rendererBuffer, GY_COMPUTE_MEMORY_TYPE memType);
-        ComputeBuffer*          createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType);
+        ComputeBuffer*          createBufferFromRendererTexture(intptr_t rendererTexture, GY_COMPUTE_MEMORY_TYPE memType, int target);
         ComputeProgram*         loadProgram(const char* filePath);
 
     };
@@ -119,7 +119,7 @@ namespace elysian {
 
     class ComputeCommandQueue {
     friend class ComputeContext;
-    private:
+public:
         GYComputeCommandQueue*  _gyCmdQueue = nullptr;
         ComputeDevice*          _device     = nullptr;
         ComputeCommandQueue(GYComputeCommandQueue* queue, ComputeDevice* device);
@@ -127,9 +127,9 @@ namespace elysian {
         //int                             gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue* queue, const GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, const void* data, unsigned eventCount, void* eventList, void* event);
         bool enqueueBufferWrite(ComputeBuffer* buffer, size_t offset, size_t size, void* data, bool blocking=true);
         bool enqueueBufferRead(ComputeBuffer* buffer, size_t offset, size_t size, void* ptr, bool blocking=true, const ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
-        bool enqueueKernel(ComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize);
+        bool enqueueKernel(ComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
         bool enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer** buffers);
-        bool enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer** buffers);
+        bool enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer** buffers, const ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
         bool        finish(void);
 
                 ~ComputeCommandQueue(void);

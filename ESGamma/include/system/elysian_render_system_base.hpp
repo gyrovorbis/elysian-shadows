@@ -15,6 +15,10 @@
 #define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_NAME         "CullLights"
 #define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_KERNEL_PATH         "/assets/opencl/light_culling.cl"
 
+
+#define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_TILE_SIZE_DEFAULT       16
+#define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX     256
+
 namespace elysian {
 
     struct KernelParticle {
@@ -62,14 +66,23 @@ namespace elysian {
     class LightCullingComputeTask: public ComputeTask {
     public:
 
-                        LightCullingComputeTask(uintptr_t depthBuffTexId);
+                        LightCullingComputeTask(uintptr_t depthBuffTexId,
+                                                uintptr_t lightingUboId);
 
-    private:
+        void            setSampleDepthBuffer(bool val=true);
+        bool            isSamplingDepthBuffer(void) const;
+        bool            updateScreenResolution(unsigned int width, unsigned int height);
 
-        ComputeBuffer*  _depthBuffer         = nullptr;
-        ComputeBuffer*  _lightingUbo         = nullptr;
+        bool            _sampleDepthBuffer      = false;
+        uint32_t        _tileSize               = ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_TILE_SIZE_DEFAULT;
+        uint32_t        _lightMapTexId           = 0;
+        ComputeEvent    _completeEvent;
 
-
+        ComputeBuffer*  _tileSizeBuffer         = nullptr;
+        ComputeBuffer*  _depthBuffer            = nullptr;
+        ComputeBuffer*  _lightMapBuff           = nullptr;
+        ComputeBuffer*  _lightingUboBuff        = nullptr;
+        ComputeBuffer*  _projViewMatBuff        = nullptr;
     };
 
 
@@ -111,6 +124,7 @@ namespace elysian {
         bool                    initialize(void);
         bool                    uninitialize(void);
         void                    render(void);
+        bool                    forwardPlusCullLights(void);
         void                    createLuminanceHistogram(void);
         void                    updateHDRExposure(void);
         bool                    populateParticleVbos(void);

@@ -31,5 +31,6 @@ TileEntry SheetViewTileGraphicsItem::getTileEntry(const unsigned /*x*/, const un
 void SheetViewTileGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 	if(!getCurrentLevel()) return;
 	if(!getCurrentLevel()->getTileImage(511)) return; //band-aid for broken levels without sheets.
+    if(!isVisible()) return;
 	TileGraphicsItem<TileEntry>::paint(painter, option, widget);
 }
