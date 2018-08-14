@@ -8,18 +8,19 @@
 extern "C" {
 #endif
 
+#define GYRO_VIDEO_QUAD_VERTEX_COUNT    4
+
 typedef enum GY_FRUSTUM_PLANE {
-    GY_FRUSTUM_TOP,
-    GY_FRUSTUM_BOTTOM,
-    GY_FRUSTUM_LEFT,
-    GY_FRUSTUM_RIGHT,
-    GY_FRUSTUM_NEARP,
-    GY_FRUSTUM_FARP
+    GY_FRUSTUM_PLANE_RIGHT,
+    GY_FRUSTUM_PLANE_LEFT,
+    GY_FRUSTUM_PLANE_BOTTOM,
+    GY_FRUSTUM_PLANE_TOP,
+    GY_FRUSTUM_PLANE_FAR,
+    GY_FRUSTUM_PLANE_NEAR,
+    GY_FRUSTUM_PLANE_COUNT
 } GY_FRUSTUM_PLANE;
 
-typedef struct GYPlane {
-    GYVector3 p[3];
-} GYPlane;
+typedef struct GYVector4 GYPlane;
 
 typedef enum GY_PROJECTION_TYPE {
     GY_PROJECTION_ORTHO,
@@ -29,19 +30,77 @@ typedef enum GY_PROJECTION_TYPE {
 //figure out how to make this represent ORTHO too
 typedef struct GYViewVolume {
     //static enum {OUTSIDE, INTERSECT, INSIDE};
-    GYPlane pl[6];
+    GYPlane planes[6];
     GYVector3 ntl,ntr,nbl,nbr,ftl,ftr,fbl,fbr;
     float nearD, farD, ratio, angle, tang;
     float nw, nh, fw, fh;
 } GYViewVolume;
 
 typedef struct GYCamera {
-    GYViewVolume		viewVolume;
+    GYViewVolume		viewProjVolume;
     GYMatrix4			projMat;
     GYMatrix4			viewMat;
     GYMatrix4			projViewMat;
     GY_PROJECTION_TYPE	projType;
 } GYCamera;
+
+
+static inline void gyVidFrustumCalculatePlanes(GYPlane planes[], GYMatrix4 mat) {
+    const float* clip = (const float*)mat;
+    const GYPlane localPlanes[GY_FRUSTUM_PLANE_COUNT] = {
+        { clip[ 3] - clip[ 0], clip[ 7] - clip[ 4], clip[11] - clip[ 8], clip[15] - clip[12] }, //RIGHT
+        { clip[ 3] + clip[ 0], clip[ 7] + clip[ 4], clip[11] + clip[ 8], clip[15] + clip[12] }, //LEFT
+        { clip[ 3] + clip[ 1], clip[ 7] + clip[ 5], clip[11] + clip[ 9], clip[15] + clip[13] }, //BOTTOM
+        { clip[ 3] - clip[ 1], clip[ 7] - clip[ 5], clip[11] - clip[ 9], clip[15] - clip[13] }, //TOP
+        { clip[ 3] - clip[ 2], clip[ 7] - clip[ 6], clip[11] - clip[10], clip[15] - clip[14] }, //FAR
+        { clip[ 3] + clip[ 2], clip[ 7] + clip[ 6], clip[11] + clip[10], clip[15] + clip[14] }  //NEAR
+    };
+
+    for(unsigned i = 0; i < GY_FRUSTUM_PLANE_COUNT; ++i) {
+        //Normalize the normal vectors of the plane, does not include D distance,
+        //although the D factor is normalized by the same factor afterwards.
+        const float len = gyVec3Magnitude((const GYVector3*)&planes[i]);
+        gyVec4ScaleAccum((void*)&localPlanes[i], 1.0f/len);
+    }
+
+    memcpy(planes, localPlanes, sizeof(localPlanes));
+}
+
+//Signed Distance Between Plane and Point (Ax + By + Cz + D)
+//If the distance < 0, we're on the other side of the plane.
+static inline float gyPlanePointDistance(const GYPlane* plane, const GYVector4* point) {
+    return
+#if 1
+    gyVec3DotProd(point, plane) + plane->w;
+#else
+    point[v].x * plane[j].x +
+    point[v].y * plane[j].y +
+    point[v].z * plane[j].z +
+    plane[j].w;
+#endif
+}
+
+
+//Basically the separating axis fucking theorem.
+static inline int gyVidFrustumCullVerts(const GYPlane* planes, const GYVector4* locs, size_t vertCount) {
+    int culled = 0;
+    for (unsigned j = 0; j < GY_FRUSTUM_PLANE_COUNT; j++) {
+        unsigned visibleVerts = 0;
+        for(unsigned v = 0; v < vertCount; v++) {
+
+            // If one of the tests fails, then there is no intersection
+            if (gyPlanePointDistance(&planes[j], &locs[v]) > 0.0) {
+                ++visibleVerts;
+            }
+        }
+        if(!visibleVerts) {
+            culled = 1;
+            break;
+        }
+    }
+    return culled;
+}
+
 
 
 
@@ -75,10 +134,10 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
     gyMatMultMat(cam->projViewMat, (const float (*)[4])cam->projMat, (const float (*)[4])cam->viewMat);
     cam->projType = GY_PROJECTION_ORTHO;
 
-    cam->viewVolume.nw = pright-pleft;
-    cam->viewVolume.fw = pright-pleft;
-    cam->viewVolume.nh = pbottom-ptop;
-    cam->viewVolume.fh = pbottom-ptop;
+    cam->viewProjVolume.nw = pright-pleft;
+    cam->viewProjVolume.fw = pright-pleft;
+    cam->viewProjVolume.nh = pbottom-ptop;
+    cam->viewProjVolume.fh = pbottom-ptop;
 /*
     cam->viewVolume.ftr.x = pright;
     cam->viewVolume.ftr.y = ptop;
@@ -196,7 +255,7 @@ static inline void gyVidLookAtMat(GYMatrix4 mat, float eyeX, float eyeY, float e
 static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float angle, const GYVector3* dir) {
 
     unsigned scrWidth, scrHeight;
-    GYViewVolume*const volume = &cam->viewVolume;
+    GYViewVolume*const volume = &cam->viewProjVolume;
 
 
     float rectWidth = volume->nw/scale;
@@ -262,6 +321,8 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 
     gyMatMultMat(cam->projViewMat, (const float(*)[4])cam->projMat, (const float(*)[4])cam->viewMat);
 
+    gyVidFrustumCalculatePlanes(cam->viewProjVolume.planes, cam->projViewMat);
+
 }
 
 
@@ -275,6 +336,7 @@ static inline void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const flo
     glalTranspose(mat);
     glLoadIdentity();
 #else
+    (void)zfar;
 
     float *m = (float*)mat;
     float ymax = znear * tan(fov * M_PI/360.0f);
@@ -285,7 +347,7 @@ static inline void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const flo
      float width = xmax - xmin;
      float height = ymax - ymin;
 
-     float depth = zfar - znear;
+    // float depth = zfar - znear;
      float q = -1.0f;//-(zfar + znear) / depth;
      float qn = -2.0f*znear;//-2 * (zfar * znear) / depth;
 
@@ -340,7 +402,7 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 
     gyMatMultMat(cam->projViewMat, (const float (*)[4])cam->projMat, (const float (*)[4])cam->viewMat);
 
-    GYViewVolume* const volume = &cam->viewVolume;
+    GYViewVolume* const volume = &cam->viewProjVolume;
 #if 0
     GYVector3 dir, nc, fc, X, Y, Z;
     (void)dir;
@@ -433,7 +495,7 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 
 
 static inline void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
-    GYViewVolume* volume = &cam->viewVolume;
+    GYViewVolume* volume = &cam->viewProjVolume;
 
     gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
     cam->projType = GY_PROJECTION_PERSPECTIVE;
@@ -450,6 +512,8 @@ static inline void gyVidCamFrustum(GYCamera* const cam, const float fov, const f
     volume->nw = volume->nh * volume->ratio;
     volume->fh = volume->farD * volume->tang;
     volume->fw = volume->fh * volume->ratio;
+
+    gyVidFrustumCalculatePlanes(cam->viewProjVolume.planes, cam->projViewMat);
 
 }
 

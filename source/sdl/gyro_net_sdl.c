@@ -1,5 +1,6 @@
 #include <gyro_net_api.h>
 #include <gyro_system_api.h>
+#include <sdl/gyro_sdl.inl>
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -19,9 +20,11 @@
 #endif
 
 #ifdef __APPLE__ // D: Fuck my life...
-#include <SDL2_net/SDL_net.h>
+#include <SDL_net.h>
 #endif
 #endif
+
+
 
 typedef struct TcpSocketServer {
     TCPsocket           serverSocket;
