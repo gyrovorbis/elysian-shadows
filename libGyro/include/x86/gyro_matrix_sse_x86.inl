@@ -128,6 +128,24 @@ static inline void gyVec4Sub(void* const dest, const void* const v1, const void*
 #endif
 }
 
+static inline float gyVec4DotProd(const void *const vec1, const void*const vec2) {
+    const GYVector4* v1 = (const GYVector4*)vec1;
+    const GYVector4* v2 = (const GYVector4*)vec2;
+#if 1
+    return v1->x * v2->x + v1->y + v2->y + v1->z + v2->z + v1->w + v2->w;
+#else
+    const
+    v0 = _mm_mul_ps(v0, v1);
+
+    v1 = _mm_shuffle_ps(v0, v0, _MM_SHUFFLE(2, 3, 0, 1));
+    v0 = _mm_add_ps(v0, v1);
+    v1 = _mm_shuffle_ps(v0, v0, _MM_SHUFFLE(0, 1, 2, 3));
+    v0 = _mm_add_ps(v0, v1);
+
+    return v0;
+#endif
+}
+
 static inline void gyVec4Mult(void* const dest, const void* const v1, const void* const v2) {
 #ifdef GYRO_MATH_NOASM
   for(int i = 0; i < 4; ++i) {
@@ -166,6 +184,12 @@ static inline void gyVec4Scale(void* const dest, const void* const v1, const flo
     MM_STORE_ALIGN((float*)dest, d);
 #endif
 }
+
+static inline void gyVec4ScaleAccum(void* const vec, const float s) {
+    gyVec4Scale(vec, vec, s);
+}
+
+
 
 #define VEC2(a) ((GYVector2*)a)
 #define VEC3(a) ((GYVector3*)a)

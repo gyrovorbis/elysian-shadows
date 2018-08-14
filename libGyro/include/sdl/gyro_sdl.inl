@@ -1,5 +1,5 @@
-#ifndef GYRO_SDL_X86_H
-#define GYRO_SDL_X86_H
+#ifndef GYRO_SDL_H
+#define GYRO_SDL_H
 
 #ifdef WIN32 // :D Mmmmmm
 #   include <windows.h>

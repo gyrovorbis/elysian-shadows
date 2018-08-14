@@ -24,6 +24,14 @@ typedef struct GYVertex {
     float       normalZ;    //4 bytes
 } GYVertex;                 //68 bytes
 
+typedef struct GYVidFrameStats {
+    size_t primCount;
+    size_t vertCount;
+    size_t primCullCount;
+    size_t batchCount;
+    size_t avgBatchSize;
+} GYVidFrameStats;
+
 typedef enum _GY_ALPHA_LEVEL { GY_ALPHA_NONE, GY_ALPHA_PUNCHTHRU, GY_ALPHA_FULL } GY_ALPHA_LEVEL;
 
 typedef enum _GY_RECT_PLANE_TYPE {
@@ -52,6 +60,8 @@ void gyVidResolution(unsigned int *const width, unsigned int *const height);
 void gyVidClearColor(const GYColor4 color);
 void gyVidHighDynamicRangeExposure(float exposure);
 
+void gyVidCpuFrustumCulling(int value);
+
 //Camera API
 void gyVidCamUpdate(const struct GYCamera *const cam);
 void gyVidSetCamWorldPos(const GYVector3*const pos);
@@ -61,6 +71,7 @@ int         gyVidInit(const struct GYVidInitParams *const params); //MUST SET PR
 int         gyVidUninit(void);
 void        gyVidSceneBegin(void);
 void        gyVidSceneEnd(void);
+const GYVidFrameStats* gyVidFrameStatistics(void);
 
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);

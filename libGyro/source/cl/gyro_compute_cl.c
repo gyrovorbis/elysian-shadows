@@ -450,6 +450,8 @@ static int _clQueryDeviceInfo(cl_device_id device, _DeviceInfo* info) {
     if(info) info->gyInfo.profilingTimerResolution = buf_sizet;
     QUERY_DEV_INFO_BOOL(CL_DEVICE_IMAGE_SUPPORT)
     if(info) info->gyInfo.imageSupport = buf_bool;
+    QUERY_DEV_INFO_BOOL(CL_DEVICE_PREFERRED_INTEROP_USER_SYNC);
+    if(info) info->gyInfo.preferredInteropUserSync = buf_bool;
 
     //Query CL_DEVICE_SINGLE_FP_CONFIG
     if(!GY_CL_CHECK_ERROR(clGetDeviceInfo(device, CL_DEVICE_SINGLE_FP_CONFIG, sizeof(cl_device_fp_config), &dev_fpConfig, NULL))) {
@@ -886,166 +888,6 @@ done:
 
 #endif
 
-#if 0
-void initializeOpenCL(void) {
-
-   dbgprintf("OpenCL Initialization");
-   dbgpush();
-
-   cl_int status = CL_SUCCESS;
-
-   //Initialize platforms
-#ifdef __APPLE__
-
-#elif defined(__WIN32)
-
-
-#else
-   /*
-   cl_context_properties props[] = {
-       CL_GL_CONTEXT_KHR,
-       (cl_context_properties)glXGetCurrentContext()
-   };
-   clGetGL*/
-#endif
-
-
-#if 0
-   //Initialize devices
- for(unsigned i = 0; i < _platformCount; ++i) {
-   status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, 0, nullptr, &_deviceCount[i]);
-   _checkClError(status, "Could not get device count!");
-   _devices[i] = (cl_device_id*)malloc(_deviceCount[i]*sizeof(cl_device_id));
-   status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, _deviceCount[i], _devices[i], nullptr);
-   _checkClError(status, "Could not populate device array!");
-
- }
-
-#ifdef __APPLE__
-  CGLContextObj kCGLContext = CGLGetCurrentContext(); // GL Context
-  CGLShareGroupObj kCGLShareGroup =
-  CGLGetShareGroup(kCGLContext); // Share Group
-  cl_context_properties props[] =
-  {
-  CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
-  (cl_context_properties) kCGLShareGroup, 0
-      /*
-      ,
-
-      CL_CONTEXT_PLATFORM,
-  (cl_context_properties) cpPlatform, 0*/
-  };
-#elif defined(__WIN32)
- cl_context_properties props[] =
- {
- CL_GL_CONTEXT_KHR,
- (cl_context_properties) wglGetCurrentContext(), // HGLRC handle
- CL_WGL_HDC_KHR,
- (cl_context_properties) wglGetCurrentDC(), // HDC handle
- CL_CONTEXT_PLATFORM,
- (cl_context_properties)_platforms[0], 0
- };
-#else
-  cl_context_properties props[] = {
-      CL_CONTEXT_PLATFORM,
-      (cl_context_properties)_platforms[i],
-      CL_GLX_DISPLAY_KHR,
-      (intptr_t)glXGetCurrentDisplay(),
-      CL_GL_CONTEXT_KHR,
-      (intptr_t)glXGetCurrentContext(),
-      0
-  };
-
-#endif
-
-
-
-
- _clPrintPlatformInfo();
- //Create context
- _context = clCreateContext(props, _deviceCount[0], _devices[0], nullptr, nullptr, &status);
- _checkClError(status, "Could not create context!");
-
-   //Create command queue
-   _cmdQueue = clCreateCommandQueue(_context, _devices[_curPlatformIndex][_curDeviceIndex], 0, &status);
-   _checkClError(status, "Could not create command queue!");
-
-   //Initialize buffers
-   _aabbListBuff               = clCreateBuffer(_context, CL_MEM_READ_ONLY, ELYSIAN_SORT_SWEEP_POOL_SIZE*sizeof(SortSweepCollidable), nullptr, &status);
-   _checkClError(status, "Could not allocate aabbListBuff");
-   _aabbListSizeBuff           = clCreateBuffer(_context, CL_MEM_READ_ONLY, sizeof(cl_uint), nullptr, &status);
-   _checkClError(status, "Could not allocate aabbListSizeBuff");
-   _aabbContactListBuff        = clCreateBuffer(_context, CL_MEM_WRITE_ONLY, ELYSIAN_SORT_SWEEP_AABB_CONTACT_LIST_SIZE*sizeof(SortSweepAABBContact), nullptr, &status);
-   _checkClError(status, "Could not allocate aabbContactListBuff");
-   _aabbContactListSizeBuff    = clCreateBuffer(_context, CL_MEM_WRITE_ONLY, sizeof(cl_uint), nullptr, &status);
-   _checkClError(status, "Could not allocate aabbContactListSizeBuff");
-#if 0
-   //Load program source from file
-   GYFile* fp;
-   size_t fileLen;
-   char* programSource;
-   dbgprintf("Compiling program: %s [%s]", ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS);
-   dbgpush();
-   if(!gyFileOpen(ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, "r", &fp)) {
-       Debug::printf(Debug::LOG_WARNING, "Could not open source file!");
-   }
-   gyFileLength(fp, &fileLen);
-   programSource = (char*)malloc(sizeof(char)*(fileLen+1));
-   gyFileRead(fp, (void*)programSource, fileLen, nullptr);
-   programSource[fileLen] = '\0';^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^[OS^
-   gyFileClose(&fp);
-
-   //Create and compile program
-   _program = clCreateProgramWithSource(_context, 1, (const char**)&programSource, nullptr, &status);
-   _checkClError(status, "Could not create program object!");
-   status = clBuildProgram(_program, _deviceCount[_curPlatformIndex], _devices[_curPlatformIndex], ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS, nullptr, nullptr);
-
-   //Check for compilation errors
-   if(status != CL_SUCCESS) {
-       size_t logSize;
-       status = clGetProgramBuildInfo(_program, _devices[_curPlatformIndex][_curDeviceIndex], CL_PROGRAM_BUILD_LOG, 0, nullptr, &logSize);
-       _checkClError(status, "Could not retrieve program build information!");
-       char*const buildLog = (char*)malloc(sizeof(char)*(logSize+1));
-       status = clGetProgramBuildInfo(_program, _devices[_curPlatformIndex][_curDeviceIndex], CL_PROGRAM_BUILD_LOG, logSize, buildLog, nullptr);
-       buildLog[logSize] = '\0';
-       dbgprintf("Build failed!");
-       dbgprintf("%s", buildLog);
-       free(buildLog);
-   } else dbgprintf("Compiled successfully!");
-   free(programSource);
-   dbgpop();
-
-   //Initialize kernel
-   dbgprintf("Initiliazing kernel: %s", ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME);
-   _kernel = clCreateKernel(_program, ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_NAME, &status);
-   _checkClError(status, "Could not create kernel!");
-
-   //Set kernel arguments
-   status = clSetKernelArg(_kernel, 0, sizeof(cl_mem), &_aabbListBuff);
-   _checkClError(status, "Could not set arg 0!");
-   status = clSetKernelArg(_kernel, 1, sizeof(cl_mem), &_aabbListSizeBuff);
-   _checkClError(status, "Could not set arg 1!");
-   status = clSetKernelArg(_kernel, 2, sizeof(cl_mem), &_aabbContactListBuff);
-   _checkClError(status, "Could not set arg 2!");
-   status = clSetKernelArg(_kernel, 3, sizeof(cl_mem), &_aabbContactListSizeBuff);
-   _checkClError(status, "Could not set arg 3!");
-#endif
-/*
-   cl_mem ubo_cl = clCreateFromGLBuffer(_context, CL_MEM_READ_WRITE, glalLightingUBO, nullptr);
-
-   cl_gl_object_type objType;
-   GLuint objName;
-   cl_int stats = clGetGLObjectInfo(ubo_cl, &objType, &objName);
-
-   dbgprintf("Status: %d, GL ID - %d, CL ID - %d, CL TYPE - %d", stats, ubo_cl, objName, objType);
-  // CL_GL_OBJECT_BUFFER
-
-*/
-   dbgpop();
-#endif
-}
-#endif
-
 //===================== GYRO COMPUTE SUBSYSTEM API ========================
 int gyComputeInit(const GYComputeInitParams* params) {
     int success = 1;
@@ -1440,7 +1282,7 @@ int gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue *queue, const 
 int gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue *queue, GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, void *ptr, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffer && ptr && cb);
 
-    return !GY_CL_CHECK_ERROR(clEnqueueReadBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, ptr, eventCount, (cl_event*)eventList, &((_Event*)event)->clEvent));
+    return !GY_CL_CHECK_ERROR(clEnqueueReadBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, ptr, eventCount, (cl_event*)eventList, event? &((_Event*)event)->clEvent : NULL));
 }
 
 int gyComputeCommandQueueEnqueueAcquireRendererObject(GYComputeCommandQueue *queue, unsigned count, const GYComputeBuffer** buffers) {
@@ -1451,12 +1293,12 @@ int gyComputeCommandQueueEnqueueAcquireRendererObject(GYComputeCommandQueue *que
     return !GY_CL_CHECK_ERROR(clEnqueueAcquireGLObjects(((_CommandQueue*)queue)->queue, count, clBuffers, 0, NULL, NULL));
 }
 
-int gyComputeCommandQueueEnqueueReleaseRendererObject(GYComputeCommandQueue *queue, unsigned count, const GYComputeBuffer** buffers) {
+int gyComputeCommandQueueEnqueueReleaseRendererObject(GYComputeCommandQueue *queue, unsigned count, const GYComputeBuffer** buffers, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffers && count > 0 && count < GY_CL_ENQUEUE_ACQUIRE_RENDERER_OBJECTS_MAX);
     cl_mem clBuffers[GY_CL_ENQUEUE_ACQUIRE_RENDERER_OBJECTS_MAX];
     for(unsigned i = 0; i < count; ++i) clBuffers[i] = ((_Buffer*)buffers[i])->clBuffer;
 
-    return !GY_CL_CHECK_ERROR(clEnqueueReleaseGLObjects(((_CommandQueue*)queue)->queue, count, clBuffers, 0, NULL, NULL));
+    return !GY_CL_CHECK_ERROR(clEnqueueReleaseGLObjects(((_CommandQueue*)queue)->queue, count, clBuffers, eventCount, (cl_event*)eventList, event? &((_Event*)event)->clEvent : NULL));
 }
 
 int gyComputeCommandQueueFinish(GYComputeCommandQueue* queue) {
@@ -1466,7 +1308,7 @@ int gyComputeCommandQueueFinish(GYComputeCommandQueue* queue) {
 
 //================== GYRO COMPUTE BUFFER API ===================
 
-GYComputeBuffer* gyComputeBufferCreate(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, size_t size, void* data) {
+GYComputeBuffer* gyComputeBufferCreate(GYComputeContext* context, int type, size_t size, void* data) {
     GY_ASSERT(context && size);
 
     cl_int success;
@@ -1486,7 +1328,7 @@ GYComputeBuffer* gyComputeBufferCreate(GYComputeContext* context, GY_COMPUTE_MEM
     }
 }
 
-GYComputeBuffer* gyComputeBufferCreateFromRendererBuffer(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, intptr_t renderBuff) {
+GYComputeBuffer* gyComputeBufferCreateFromRendererBuffer(GYComputeContext* context, int type, intptr_t renderBuff) {
     cl_int retVal;
     cl_mem clBuff = clCreateFromGLBuffer(((_Context*)context)->ctx, _clMemTypeFromGyro(type), (cl_GLuint)renderBuff, &retVal);
 
@@ -1505,9 +1347,9 @@ GYComputeBuffer* gyComputeBufferCreateFromRendererBuffer(GYComputeContext* conte
     return &buffer->gyBuffer;
 }
 
-GYComputeBuffer* gyComputeBufferCreateFromRendererTexture(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, intptr_t renderTex) {
+GYComputeBuffer* gyComputeBufferCreateFromRendererTexture(GYComputeContext* context, int type, intptr_t renderTex, int target) {
     cl_int retVal;
-    cl_mem clBuff = clCreateFromGLTexture2D(((_Context*)context)->ctx, _clMemTypeFromGyro(type), GL_TEXTURE_2D, 0, (GLuint)renderTex, &retVal);
+    cl_mem clBuff = clCreateFromGLTexture(((_Context*)context)->ctx, _clMemTypeFromGyro(type), target, 0, (GLuint)renderTex, &retVal);
 
     if(GY_CL_CHECK_ERROR(retVal)) {
         _gyLog(GY_DEBUG_ERROR, "Failed to create OpenCL buffer from OpenGL texture!");

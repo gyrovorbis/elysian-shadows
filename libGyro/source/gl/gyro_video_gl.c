@@ -188,6 +188,9 @@ void                        (*glalFlushCallback)(void*) = NULL;
 void*                       glalFlushObject             = NULL;
 int                         glalVersionMajor            = 0;
 int                         glalVersionMinor            = 0;
+int                         glalCpuFrustumCulling       = 1;
+size_t                      glalCpuPrimCullCount        = 0;
+GYVidFrameStats             glalFrameStats              = { 0, 0, 0, 0, 0 };
 
 //Private video state variables
 static unsigned int			_projWidth                  = 0;
@@ -207,12 +210,24 @@ GLuint                      _glalGlowTex                = 0;
 GLuint                      _glalDepthBuffer            = 0;
 
 
+const GYVidFrameStats* gyVidFrameStatistics(void) {
+    return &glalFrameStats;
+}
+
 void glalBindMainMrtFbo(void) {
 
 
 }
 
+void gyVidCpuFrustumCulling(int value) {
+    glalCpuFrustumCulling = value;
+}
+
+
 void gyVidSceneBegin(void) {
+    glalFrameStats.primCullCount    = glalCpuPrimCullCount;
+    glalCpuPrimCullCount            = 0;
+
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #if 1
@@ -849,10 +864,17 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
     const GYVector3*    normal;
 
    // if(!gyVidShadowPass()) {
+
+        gyMatMultVec(verts, worldVerts, GYRO_VIDEO_QUAD_VERTEX_COUNT);
+        //first check whether this bitch should be culled or not
+        if(glalCpuFrustumCulling && gyVidFrustumCullVerts(glalCurCamera->viewProjVolume.planes, worldVerts, GYRO_VIDEO_QUAD_VERTEX_COUNT)) {
+            ++glalCpuPrimCullCount;
+            return;
+        }
+
         tangent = &glalRectTangents[glalRectTexOrient];
         normal = glalPlaneNormalVector(glalNormalMapActive, glalPlaneType, glalRectTexOrient);
 
-        gyMatMultVec(verts, worldVerts, 4);
         //Connect current and previous polys with degenerate triangles to continue batching operation
         if(_vertexQueueSize) {
 

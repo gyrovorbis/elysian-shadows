@@ -90,6 +90,7 @@ typedef struct GYComputeDeviceInfo {
     int                     imageSupport;
     int                     depthTextureSupport;
     int                     rendererResourceSyncSupport;
+    int                     preferredInteropUserSync;
     GY_COMPUTE_DEVICE_TYPE  devType;
 } GYComputeDeviceInfo;
 
@@ -252,9 +253,9 @@ int                             gyComputeProgramCompile(GYComputeProgram* progra
                                                         const GYComputeProgramBuildOptions* options,
                                                         GYComputeBuildInfo* buildInfo); //optional
 
-GYComputeBuffer*                gyComputeBufferCreate(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, size_t size, void* data);
-GYComputeBuffer*                gyComputeBufferCreateFromRendererBuffer(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, intptr_t renderBuff);
-GYComputeBuffer*                gyComputeBufferCreateFromRendererTexture(GYComputeContext* context, GY_COMPUTE_MEMORY_TYPE type, intptr_t renderTex);
+GYComputeBuffer*                gyComputeBufferCreate(GYComputeContext* context, int type, size_t size, void* data);
+GYComputeBuffer*                gyComputeBufferCreateFromRendererBuffer(GYComputeContext* context, int type, intptr_t renderBuff);
+GYComputeBuffer*                gyComputeBufferCreateFromRendererTexture(GYComputeContext* context, int type, intptr_t renderTex, int target);
 int                             gyComputeBufferDestroy(GYComputeBuffer* buffer);
 
 GYComputeKernel*                gyComputeKernelCreate(const GYComputeProgram* program, const char* kernelName, void* softwareFallbackFuncPtr);
@@ -280,7 +281,7 @@ int                             gyComputeCommandQueueEnqueueKernel(GYComputeComm
 int                             gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue* queue, const GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, const void* data, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event);
 int                             gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue* queue, GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, void* ptr, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event);
 int                             gyComputeCommandQueueEnqueueAcquireRendererObject(GYComputeCommandQueue* queue, unsigned count, const GYComputeBuffer** buffers);
-int                             gyComputeCommandQueueEnqueueReleaseRendererObject(GYComputeCommandQueue* queue, unsigned count, const GYComputeBuffer** buffers);
+int                             gyComputeCommandQueueEnqueueReleaseRendererObject(GYComputeCommandQueue* queue, unsigned count, const GYComputeBuffer** buffers, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event);
 
 #ifdef GY_COMPUTE_DEBUG
 const GYComputeDebugInfo*       gyComputeDebugQueryInfo(void);

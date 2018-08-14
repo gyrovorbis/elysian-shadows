@@ -1,4 +1,4 @@
-include(../../../qtcreator/ESDev/ESDev.pri)
+#include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = lib
 QT += opengl
 CONFIG += staticlib console
@@ -21,9 +21,11 @@ win32 {
 }
 
 macx {
-    QMAKE_CFLAGS+= -F../../lib/osx
+    QMAKE_CFLAGS+= -F../../lib/osx \
+            -I../../lib/osx
     QMAKE_LFLAGS += -F../../lib/osx
-    LIBS += -framework SDL2.framework \
+    LIBS += -F../../lib/osx \
+        -framework SDL2.framework \
         -framework SDL2_net.framework
     vulkan {
         LIBS += -framework MoltenVK.framework
@@ -40,7 +42,7 @@ macx {
 
 linux {
     LIBS += \
-        -ldynamic
+     -ldynamic
     SOURCES +=	../../source/x86/turfs_unix.c
 }
 
