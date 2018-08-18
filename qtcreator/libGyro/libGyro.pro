@@ -198,7 +198,8 @@ SOURCES += \
     ../../source/sdl/gyro_performance_sdl.c \
     ../../source/sdl/gyro_rumble_sdl.c \
     ../../source/gl/gyro_bloom_gl.c \
-    ../../source/gl/gyro_gl_utils.c
+    ../../source/gl/gyro_gl_utils.c \
+    ../../source/sdl/gyro_thread_sdl.c
 
 vulkan {
     SOURCES += \

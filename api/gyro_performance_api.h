@@ -12,6 +12,7 @@ typedef struct GYPerfInitParams {
 } GYPerfInitParams;
 
 typedef struct GYPerfStatistics {
+    char dummy;
     //cache hits/misses
     //clock cycles
     //branch prediction
