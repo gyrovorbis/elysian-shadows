@@ -12,6 +12,14 @@
 #include <functional>
 #include <utility/elysian_cstr_map.hpp>
 
+#ifndef ELYSIAN_COMPUTE_PROFILING_ENABLED
+#   define ELYSIAN_COMPUTE_PROFILING_ENABLED   1
+#endif
+
+#ifdef ELYSIAN_COMPUTE_PROFILING_ENABLED
+#   include <utility/elysian_performance_monitor.hpp>
+#endif
+
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
 #   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES 5
 #else
@@ -24,9 +32,7 @@
 
 #define ELYSIAN_COMPUTE_HEADER_FILES_MAX       3
 
-#ifndef ELYSIAN_COMPUTE_PROFILING_ENABLED
-#   define ELYSIAN_COMPUTE_PROFILING_ENABLED   1
-#endif
+
 
 
 struct GYComputeDevice;
@@ -67,6 +73,9 @@ namespace elysian {
         bool                        wait(void) const;
         GY_COMPUTE_EVENT_STATUS     getStatus(void) const;
         GYComputeEvent*             getGyEvent(void) const;
+#ifdef ELYSIAN_COMPUTE_PROFILING_ENABLED
+        uint64_t                    getExecutionTime(void) const;
+#endif
     };
 
     class ComputeEventList {
@@ -219,7 +228,9 @@ public:
 
     protected:
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
-        TaskMonitor*                _taskMonitor            = nullptr;
+        PerformanceMonitor          _perfMonitor;
+        ComputeEvent                _profilerEvent;
+        bool                        _profilerEventPending = false;
 #endif
         DeviceCategoryPriorityList  _categoryPriorityList;
         DevicePriorityList          _devicePriorityList;
@@ -259,13 +270,16 @@ public:
         ComputeContext*         getContext(void) const;
         NativeKernel            getNativeFallback(void) const;
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
-        TaskMonitor*            getTaskMonitor(void) const;
+        PerformanceMonitor*     getPerfMonitor(void);
 #endif
 
 
         bool                    enqueueKernel(size_t globalSize);
         bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY);
         bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY, size_t globalSizeZ);
+        bool                    enqueueKernel(unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
+
+        bool                    finish(void);
 
         void                    optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localSize);
 
@@ -306,7 +320,7 @@ public:
                                                   ComputeTask::NativeKernel                        nativeFallbackFunc              = ComputeTask::NativeKernel(),
                                                   bool                                             requireRendererSharedContext    = false,
                                                   bool                                             outOfOrderExecution             = false);
-
+        void                    addComputeTask(ComputeTask* task);
         ComputeContext*         createContext(int gyPlatformIdx, bool isRendererContext, unsigned deviceCount, ComputeDevice** devices);
         ComputeDevice*          getDevice(int platformIdx, int deviceIdx);
         ComputeDevice*          getDeviceByCategory(ComputeDeviceCategory type, unsigned idx = 0);
@@ -320,9 +334,16 @@ public:
         bool                    isRendererInteropSupported(void) const;
         bool                    queryEnvironmentInfo(void) const;
 
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+        PerformanceMonitor*     getPerfMonitor(void);
+#endif
+
 
     private:
 
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+        PerformanceMonitor      _perfMonitor = PerformanceMonitor("ComputeTasks");
+#endif
         bool                    _assignRendererPlatform(void);
         bool                    _assignDeviceTypes(void);
         bool                    _sortDeviceTypesByPerformance(void);
@@ -440,6 +461,9 @@ public:
     inline ComputeProgram* ComputeTask::getProgram(void) const {
         return _program;
     }
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+    inline PerformanceMonitor* ComputeTask::getPerfMonitor(void) { return &_perfMonitor; }
+#endif
 
     inline void ComputeTask::setValid(bool val) { _isValid = val; }
     inline bool ComputeTask::isValid(void) const { return _isValid; }
@@ -574,6 +598,9 @@ public:
         }
     }
 
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+    inline PerformanceMonitor* ComputeSystem::getPerfMonitor(void) { return &_perfMonitor; }
+#endif
 
 }
 

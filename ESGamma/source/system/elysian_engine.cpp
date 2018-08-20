@@ -401,7 +401,7 @@ Engine::~Engine(void) {
     LuaManager::uninitialize();
     _renderSystem->uninitialize();
     _computeSystem->uninitialize();
-    _threadSystem->uninitialize();
+
 
     delete _inputSystem;
     delete _combatSystem;
@@ -421,6 +421,7 @@ Engine::~Engine(void) {
     delete _eventSystem;
     delete _computeSystem;
     delete _audioSystem;
+    _threadSystem->uninitialize();
     delete _threadSystem;
 
     dbgpop();

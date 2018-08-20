@@ -33,6 +33,8 @@
 #define dbgpush()                           Debug::push()
 #define dbgpop()                            Debug::pop()
 
+#define ELYSIAN_DEBUG_PRINTF_BUFFER_SIZE    GYRO_PRINTF_BUFFER_SIZE
+
 using namespace std;
 
 ELYSIAN_ASSET_TYPEDEF(Entity)

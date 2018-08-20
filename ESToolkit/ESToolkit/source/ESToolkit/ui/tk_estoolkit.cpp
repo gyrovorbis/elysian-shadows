@@ -330,6 +330,9 @@ void ESToolkit::_libGyroInitialize(void) {
 
             };
     gySysInit(&sysParams);
+    GYThreadInitParams thdParams;
+    memset(&thdParams, 0, sizeof(GYThreadInitParams));
+    gyThreadInit(&thdParams);
     //gyVidInit(&vidParams);
     gyAudInit();
     //gyTimerInit();

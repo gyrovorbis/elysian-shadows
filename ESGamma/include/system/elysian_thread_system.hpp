@@ -347,6 +347,7 @@ namespace elysian {
         bool success = true;
         while(!_forceQuit) {
             success &= _queueSemaphore.wait();
+            if(_forceQuit) break;
             TaskEntry entry = popFront();
 
             if(entry.task) {

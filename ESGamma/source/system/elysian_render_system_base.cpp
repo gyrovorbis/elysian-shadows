@@ -107,6 +107,7 @@ bool RenderSystemBase::initialize(void) {
         }
 
         _luminanceComputeTask = new LuminanceHistogramComputeTask(_glalColorTex);
+        getComputeSystem()->addComputeTask(_luminanceComputeTask);
         dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
 
         _lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer,
@@ -190,7 +191,8 @@ bool RenderSystemBase::populateParticleVbos(void) {
         success &= _particleComputeTask->getCommandQueue()->enqueueBufferWrite(_particleInBuffer, 0, sizeof(KernelParticle)*_activeParticles, kernParts, false);
         success &= _particleComputeTask->getKernel()->setArg(0, sizeof(uint32_t), &_activeParticles);
         success &= _particleComputeTask->getKernel()->setArg(5, sizeof(int32_t)*2, viewportSize);
-        success &= _particleComputeTask->getCommandQueue()->enqueueKernel(_particleComputeTask->getKernel(), 1, &offset, &globalWorkSize, &localWorkSize);
+        //success &= _particleComputeTask->getCommandQueue()->enqueueKernel(_particleComputeTask->getKernel(), 1, &offset, &globalWorkSize, &localWorkSize);
+        success &= _particleComputeTask->enqueueKernel(1, &offset, &globalWorkSize, &localWorkSize);
         success &= _particleComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(2, sharedBuffs);
 
         if(!success) {
@@ -214,7 +216,7 @@ bool RenderSystemBase::renderParticles(void) {
 
         if(success) {
             renderParticlesMonitor.start();
-            _particleComputeTask->getCommandQueue()->finish();
+            success &= _particleComputeTask->finish();
             renderParticlesMonitor.stop();
 
             gyVidTexBind(nullptr);
@@ -272,7 +274,7 @@ void RenderSystemBase::updateHDRExposure(void) {
         bool retVal;
 
         updateHDRExposureMonitor.start();
-        retVal = _luminanceComputeTask->getCommandQueue()->finish();
+        retVal = _luminanceComputeTask->finish();
         updateHDRExposureMonitor.stop();
 
         if(!retVal) {

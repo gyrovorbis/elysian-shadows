@@ -1,5 +1,5 @@
 #include <ESToolkit/ui/dialog/tk_task_monitor_dialog.h>
-#include <QESTkUtils/ui/widget/tk_pie_chart_view.h>
+#include <QESTkUtils/ui/widget/tk_pie_chart_widget.h>
 #include <QtWidgets>
 #include <QTableView>
 #include <QTreeView>
@@ -34,7 +34,7 @@ void TaskMonitorDialog::_setupViews(void)
 
     QSplitter *splitter = new QSplitter;
     _table = new QTreeView;
-    _pieChart = new TkPieChartView;
+   // _pieChart = new TkPieChartView;
     splitter->addWidget(_table);
     splitter->addWidget(_pieChart);
     splitter->setStretchFactor(0, 0);

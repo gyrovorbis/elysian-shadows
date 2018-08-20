@@ -17,7 +17,35 @@ namespace elysian {
 		//Allocate audio channels
 		//and initialize channel data
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-			_channels[i].src = (i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2_TRAN)? gyAudOggStreamCreate() : gyAudSourceCreate();
+            if(i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2_TRAN) {
+                char buffer[100] = "OGG Stream Thread: ";
+                const char* typeStr = nullptr;
+                switch(i) {
+                case AudioChannel::BGM_1:
+                    typeStr = "BGM";
+                    break;
+                case AudioChannel::BGM_1_TRAN:
+                    typeStr = "BGM_TRAN";
+                    break;
+                case AudioChannel::AUX_1:
+                    typeStr = "AUX_1";
+                    break;
+                case AudioChannel::AUX_1_TRAN:
+                    typeStr = "AUX_1_TRAN";
+                    break;
+                case AudioChannel::AUX_2:
+                    typeStr = "AUX_2";
+                    break;
+                case AudioChannel::AUX_2_TRAN:
+                    typeStr = "AUX_2_TRAN";
+                    break;
+                default: break;
+                }
+                strcat(buffer, typeStr);
+                _channels[i].src = gyAudOggStreamCreate(buffer);
+            } else {
+                _channels[i].src = gyAudSourceCreate();
+            }
 			_channels[i].owner = AudioChannel::FREE;
 		}
 
@@ -45,7 +73,7 @@ namespace elysian {
 	AudioSystem::~AudioSystem(void) {
 		//Deallocate channels and their sources
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-            if(i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2) {
+            if(i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2_TRAN) {
                 gyAudOggStreamStop(_channels[i].src);
                 gyAudOggStreamDestroy(_channels[i].src);
             } else {

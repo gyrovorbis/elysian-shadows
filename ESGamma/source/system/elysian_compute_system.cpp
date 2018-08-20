@@ -301,6 +301,14 @@ bool ComputeSystem::_createContexts(void) {
     return success;
 }
 
+void ComputeSystem::addComputeTask(ComputeTask* task) {
+    assert(task && task->getKernel());
+    _computeTasks[task->getKernel()->getGyKernel()->name] = task;
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+    _perfMonitor.addChild(task->getPerfMonitor());
+#endif
+}
+
 bool ComputeSystem::initialize(void) {
     bool success = true;
     GYComputeInitParams params = {
@@ -465,6 +473,14 @@ ComputeProgram* ComputeContext::loadProgram(const char *filePath) {
     }
 }
 
+#ifdef ELYSIAN_COMPUTE_PROFILING_ENABLED
+uint64_t ComputeEvent::getExecutionTime(void) const {
+    auto start = gyComputeEventProfilingCounter(_gyEvent, GY_COMPUTE_PROFILING_COMMAND_START_COUNTER);
+    auto end = gyComputeEventProfilingCounter(_gyEvent, GY_COMPUTE_PROFILING_COMMAND_END_COUNTER);
+    return end-start;
+}
+#endif
+
 ComputeKernel* ComputeProgram::createKernel(const char* name) const {
     assert(name);
     if(!_compiled) return nullptr;
@@ -595,7 +611,7 @@ ComputeTask::ComputeTask(const char*                        kernelName,
     _categoryPriorityList(std::move(categoryPriorityList)),
     _nativeFallback(nativeFallbackFunc)
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
-    ,_taskMonitor(new TaskMonitor(kernelName))
+    ,_perfMonitor(kernelName)
 #endif
 {
     bool valid = true;
@@ -787,8 +803,7 @@ ComputeTask* ComputeSystem::createComputeTask(const char*                       
 {
     ComputeTask* task = new ComputeTask(kernelName, progInfo, deviceCategoryPriorities,
                                         nativeFallbackFunc, requireRendererSharedContext, outOfOrderExecution);
-
-    _computeTasks[kernelName] = task;
+    addComputeTask(task);
     return task;
 }
 
@@ -798,11 +813,33 @@ bool ComputeTask::enqueueKernel(size_t globalSize) {
     size_t paddedGlobalSize;
     size_t localWorkSize;
     optimizeWorkSize(globalSize, paddedGlobalSize, localWorkSize);
-    const bool retVal = getCommandQueue()->enqueueKernel(getKernel(), 1, &globalOffsets, &paddedGlobalSize, &localWorkSize);
+    const bool retVal = enqueueKernel(1, &globalOffsets, &paddedGlobalSize, &localWorkSize);
     if(!retVal) _isValid = false;
     return retVal;
 }
 
+bool ComputeTask::enqueueKernel(unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList, ComputeEvent* event) {
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+    if(!event && !_profilerEventPending) {
+        event = &_profilerEvent;
+        _profilerEventPending = true;
+    }
+#endif
+    return getCommandQueue()->enqueueKernel(getKernel(), workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, eventList, event);
+}
+
+bool ComputeTask::finish(void) {
+    bool success = getCommandQueue()->finish();
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+    if(_profilerEventPending) {
+        if((success &= _profilerEvent.wait())) {
+            _perfMonitor.setTicks(_profilerEvent.getExecutionTime());
+        }
+        _profilerEventPending = false;
+    }
+#endif
+    return success;
+}
 
 // Recursive function to return gcd of a and b
 size_t gcd(size_t a, size_t b)

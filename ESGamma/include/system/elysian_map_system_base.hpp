@@ -601,7 +601,7 @@ break;
     inline void MapSystemCrtp<P, T, E>::staticUninitialize(void) {}
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemCrtp<P, T, E>::isShadowPass(void) const { return false/gyVidShadowPass(); }
+    inline bool MapSystemCrtp<P, T, E>::isShadowPass(void) const { return gyVidShadowPass(); }
 
     template<typename P, typename T, typename E>
     inline bool MapSystemCrtp<P, T, E>::isDepthPrePass(void) const { return _depthPassState == DEPTH_Z_PREPASS; }

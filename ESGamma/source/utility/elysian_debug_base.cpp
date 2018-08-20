@@ -37,6 +37,7 @@
 #include <gui/elysian_label_widget.hpp>
 #include <gui/elysian_entity_widget.hpp>
 #include <system/elysian_thread_system.hpp>
+#include <system/elysian_compute_system.hpp>
 
 namespace elysian {
 
@@ -168,16 +169,18 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 	}
 
 	//Append string
-	strcat(buffer, str);
+    //trcat(buffer, str);
 
 	//Append newline character to the end
 //	size_t length = strlen(buffer);
-	strcat(buffer, "\n");
+    //strcat(buffer, "\n");
 
     if(!_logMutex->acquire()) return;
 
 #if !defined(ANDROID) && GYRO_PLATFORM != GYRO_PLATFORM_iOS
 	fputs(buffer, _dbgFile);
+    fputs(str, _dbgFile);
+    fputc('\n', _dbgFile);
 	fflush(_dbgFile);
 	if(source == LUA) {
 		fputs(str, _luaDbgFile);
@@ -187,7 +190,11 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 #endif
 
     //Only print to standard IO if we give a shit about this kind of output
-    if(level >= _level) gyPrintf(buffer); //use the "preferred" IO of each platform
+    if(level >= _level) {
+        gyPrintf(buffer); //use the "preferred" IO of each platform
+        gyPrintf(str);
+        gyPrintf("\n");
+    }
 
     if(_advLogWrap != ADV_LOG_LOG_OFF) {
 	AdventureLog::TEXT_TYPE advType;
@@ -209,7 +216,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
         {
             //characters that the adventure log cannot display--shouldn't it handle this? Not debug? No shit.
             for(unsigned int i = 0; i < strlen(buffer); ++i) if(buffer[i] == '\n' || buffer[i] == '\t') buffer[i] = ' ';
-            if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
+            if(_engine) getGuiSys()->adventureLog.addLine(advType, str);
         }
     }
 
@@ -310,6 +317,7 @@ void DebugBase::processInput(Keyboard*const input) {
     static int i = 0;
 
     if(input->isTapped(GY_KEY_B)) {
+#if 0
         AsyncTask* task = new AsyncTask("BitchTask", [](void* data) {
             int val = (uintptr_t)data;
             dbgprintf("TROLOLO!!! %d", val);
@@ -319,6 +327,10 @@ void DebugBase::processInput(Keyboard*const input) {
         int newI = i + 40;
         for(; i < newI; ++i)
             getThreadSystem()->enqueueAsyncTask(task, (void*)i);
+#endif
+#if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
+        PerformanceMonitor::print(getComputeSystem()->getPerfMonitor());
+#endif
     }
 
 	//Camera zoom

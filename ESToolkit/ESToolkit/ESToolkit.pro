@@ -237,7 +237,8 @@ SOURCES += \
     source/ESGamma/tk_render_system.cpp \
     ../../ESGamma/source/system/elysian_render_system_base.cpp \
     ../../ESGamma/source/gui/elysian_item_delegate.cpp \
-    ../../ESGamma/source/system/elysian_thread_system.cpp
+    ../../ESGamma/source/system/elysian_thread_system.cpp \
+    source/QESTkUtils/ui/widget/tk_pie_chart_widget.cpp
 
 
 !ios: !dreamcast: !android {
@@ -308,7 +309,6 @@ SOURCES += \
         source/QESTkUtils/tile_engine/tk_source_view.cpp \
         source/ESToolkit/ui/dock/tk_history_dock_widget.cpp \
         source/QESTkUtils/ui/widget/tk_documentation_browser.cpp \
-        source/QESTkUtils/ui/widget/tk_pie_chart_view.cpp \
         source/ESToolkit/ui/dialog/tk_task_monitor_dialog.cpp \
         source/QESTkUtils/tk_network_access_manager.cpp \
         source/ESGamma/tk_timer_system.cpp \
@@ -530,7 +530,8 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_item_model.hpp \
     ../../ESGamma/include/gui/elysian_item_delegate.hpp \
     ../../AssetIO/include/level/elysian_scene_object.hpp \
-    ../../ESGamma/include/system/elysian_thread_system.hpp
+    ../../ESGamma/include/system/elysian_thread_system.hpp \
+    include/QESTkUtils/ui/widget/tk_pie_chart_widget.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -624,7 +625,6 @@ HEADERS += \
         include/QESTkUtils/tk_lua_qt_utils.h \
         include/QESTkUtils/ui/widget/tk_documentation_browser.h \
         include/ESGamma/tk_task_monitor.h \
-        include/QESTkUtils/ui/widget/tk_pie_chart_view.h \
         include/ESToolkit/ui/dialog/tk_task_monitor_dialog.h \
         include/ESGamma/tk_timer_system.h \
         include/QESTkUtils/ui/widget/tk_gitlab_dialog.h \

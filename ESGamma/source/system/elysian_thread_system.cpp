@@ -56,8 +56,10 @@ bool ThreadSystem::uninitialize(void) {
 
     dbgprintf("Killing Async Task Queue threads.");
     dbgpush();
-    for(unsigned c = 0; c < getCpuCoreCount(); ++c)
+    for(unsigned c = 0; c < getCpuCoreCount(); ++c) {
         success &= _taskThreads[c]->forceQuit(false);
+        _taskThreads[c]->enqueueTask(nullptr); //Enqueue dummy task to wake the fucker up to commit suicide
+    }
     for(unsigned c = 0; c < getCpuCoreCount(); ++c) {
         success &= _taskThreads[c]->wait();
         delete _taskThreads[c];
