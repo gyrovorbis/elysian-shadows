@@ -10,6 +10,13 @@ extern "C" {
 #define GY_THREAD_DEBUG
 
 typedef uint32_t GYCpuAffinityMask[4];
+typedef int      GYAtomic;
+
+#define GY_CPU_AFFINITY_MASK_CORE_SET(m, c) \
+    m[c/32] |= (0x1 << (c%32))
+
+#define GY_CPU_AFFINITY_MASK_CORE_GET(m, c) \
+    ((m[c/32] >> (c%32)) & 0x1)
 
 typedef int (*GYThreadFunction)(void*);
 
@@ -22,6 +29,7 @@ typedef enum GY_THREAD_PRIORITY {
     GY_THREAD_PRIORITY_LOW,
     GY_THREAD_PRIORITY_MEDIUM,
     GY_THREAD_PRIORITY_HIGH,
+    GY_THREAD_PRIORITY_REALTIME,
     GY_THREAD_PRIORITY_COUNT
 } GY_THREAD_PRIORITY;
 
@@ -61,7 +69,7 @@ int gyThreadUninit(void);
 GYThread*       gyThreadCreate(const char* name,
                                GYThreadFunction fn,
                                void* data);
-int             gyThreadDestroy(GYThread* thread);
+int             gyThreadKill(GYThread* thread);
 void            gyThreadDetach(GYThread* thread);
 const char*     gyThreadName(GYThread* thread);
 int             gyThreadWait(GYThread* thread);
@@ -94,7 +102,7 @@ int             gyConditionDestroy(GYCondition* cond);
 int             gyConditionBroadcast(GYCondition* cond);
 int             gyConditionSignal(GYCondition* cond);
 int             gyConditionWait(GYCondition* cond, GYMutex* mtx);
-int             gyConditionWaitTimeout(GYCondition* cond, uint32_t ms);
+int             gyConditionWaitTimeout(GYCondition* cond, GYMutex* mtx, uint32_t ms);
 
 //=== ATOMICS API ====
 
@@ -104,6 +112,10 @@ const GYThreadDebugInfo* gyThreadDebugQueryInfo(void);
 #endif
 
 //Atomics
+int gyAtomicAdd(GYAtomic* a, int v);
+int gyAtomicGet(GYAtomic* a);
+int gyAtomicSet(GYAtomic* a, int v);
+void gyCompilerBarrier(void);
 
 
 
