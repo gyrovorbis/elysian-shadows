@@ -637,7 +637,7 @@ void gyVidLightSourceClear(void) {
 void gyVidLightSourceBeginShadowPasses(void) {
     gyVidVertexBatchEnd();
     gyVidVertexBatchFlush();
-    glFlush();
+    //glFlush();
     gyVidSetCurrentShaderProgram(glalShadowMapShader.program);
     glalCurLightShader = &glalShadowMapShader;
     gyVidAlphaLevel(GY_ALPHA_NONE);

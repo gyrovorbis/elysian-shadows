@@ -34,6 +34,8 @@
 //Manually provide the pthread functionality MacOS is missing from the POSIX standard
 #ifdef __APPLE__
 #   include <mach/mach.h>
+#   include <sys/sysctl.h>
+#   include <mach/mach_time.h>
 #   define SYSCTL_CORE_COUNT   "machdep.cpu.core_count"
 
 typedef struct cpu_set {
@@ -69,17 +71,25 @@ static int sched_getaffinity(pid_t pid, size_t cpu_size, cpu_set_t *cpu_set)
 static int pthread_setaffinity_np(pthread_t thread, size_t cpu_size,
                            cpu_set_t *cpu_set)
 {
-  thread_port_t mach_thread;
-  int core = 0;
+    int success = 1;
+    thread_port_t mach_thread;
+    int core = 0;
+    int retVal;
 
-  for (core = 0; core < 8 * cpu_size; core++) {
-    if (CPU_ISSET(core, cpu_set)) break;
-  }
-  thread_affinity_policy_data_t policy = { core };
-  mach_thread = pthread_mach_thread_np(thread);
-  thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY,
-                    (thread_policy_t)&policy, 1);
-  return 0;
+    for (core = 0; core < 8 * cpu_size; core++) {
+        if (CPU_ISSET(core, cpu_set)) break;
+    }
+    thread_affinity_policy_data_t policy = { core };
+    mach_thread = pthread_mach_thread_np(thread);
+    if((retVal =
+        thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY, (thread_policy_t)&policy, 1)
+        != KERN_SUCCESS))
+    {
+        _gyLog(GY_DEBUG_ERROR, "GYRO_THEAD_API: Mach thread_policy_set failed! [Error Code: %d]", retVal);
+        success = 0;
+    }
+
+    return success;
 }
 #endif
 
@@ -93,9 +103,10 @@ static struct SDLThreadContext {
 
 static inline const char* gyThreadPriorityString(GY_THREAD_PRIORITY priority) {
     switch(priority) {
-    SWITCH_CASE_STRING(GY_THREAD_PRIORITY_LOW);
-    SWITCH_CASE_STRING(GY_THREAD_PRIORITY_MEDIUM);
-    SWITCH_CASE_STRING(GY_THREAD_PRIORITY_HIGH);
+    GYRO_SWITCH_CASE_STRING(GY_THREAD_PRIORITY_LOW);
+    GYRO_SWITCH_CASE_STRING(GY_THREAD_PRIORITY_MEDIUM);
+    GYRO_SWITCH_CASE_STRING(GY_THREAD_PRIORITY_HIGH);
+    GYRO_SWITCH_CASE_STRING(GY_THREAD_PRIORITY_REALTIME);
     default:
         assert(0);
         return "UNKNOWN PRIORITY";
@@ -110,19 +121,32 @@ int gyThreadInit(const GYThreadInitParams *params) {
 }
 
 int gyThreadUninit(void) {
+    int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_THREAD_API: Uninitializing SDL Thread Back-End.");
     _gyPush();
 
 //Check for objects that were never deallocated
 #ifdef GY_THREAD_DEBUG
-    if(_context.dbg.activeThreadCount)      _gyLog(GY_DEBUG_WARNING, "Remaining Thread(s): %u",     _context.dbg.activeThreadCount);
-    if(_context.dbg.activeMutexCount)       _gyLog(GY_DEBUG_WARNING, "Remaining Mutex(es): %u",     _context.dbg.activeMutexCount);
-    if(_context.dbg.activeSemaphoreCount)   _gyLog(GY_DEBUG_WARNING, "Remaining Semaphore(s): %u",  _context.dbg.activeSemaphoreCount);
-    if(_context.dbg.activeConditionCount)   _gyLog(GY_DEBUG_WARNING, "Remaining Condition(s): %u",  _context.dbg.activeConditionCount);
+    if(_context.dbg.activeThreadCount) {
+        _gyLog(GY_DEBUG_WARNING, "Remaining Thread(s): %u",     _context.dbg.activeThreadCount);
+        success = 0;
+    }
+    if(_context.dbg.activeMutexCount) {
+        _gyLog(GY_DEBUG_WARNING, "Remaining Mutex(es): %u",     _context.dbg.activeMutexCount);
+        success = 0;
+    }
+    if(_context.dbg.activeSemaphoreCount) {
+        _gyLog(GY_DEBUG_WARNING, "Remaining Semaphore(s): %u",  _context.dbg.activeSemaphoreCount);
+        success = 0;
+    }
+    if(_context.dbg.activeConditionCount)   {
+        _gyLog(GY_DEBUG_WARNING, "Remaining Condition(s): %u",  _context.dbg.activeConditionCount);
+        success = 0;
+    }
 #endif
 
     _gyPop(1);
-    return 1;
+    return success;
 }
 
 //==== THREAD API ======
@@ -139,6 +163,9 @@ GYThread* gyThreadCreate(const char* name,
     return (GYThread*)thread;
 }
 
+int gyThreadKill(GYThread* thread) {
+
+}
 
 void gyThreadDetach(GYThread* thread) {
     //assert(thread); Safely accepts NULL threads
@@ -182,9 +209,49 @@ static inline int _pthreadPriority(GY_THREAD_PRIORITY gyPriority, int priorityMa
     }
     return priorityMax*scalar;
 }
+
+static inline int _macEnableRealtimePriority(void) {
+    struct thread_time_constraint_policy ttcpolicy;
+    kern_return_t retVal;
+
+    const double kGuaranteedAudioDutyCycle = 0.75;
+    const double kMaxAudioDutyCycle = 0.85;
+
+    // About 128 frames @44.1KHz
+    const double kTimeQuantum = 16.666;
+    // Time guaranteed each quantum.
+    const double kAudioTimeNeeded = kGuaranteedAudioDutyCycle * kTimeQuantum;
+    // Maximum time each quantum.
+    const double kMaxTimeAllowed = kMaxAudioDutyCycle * kTimeQuantum;
+
+    mach_timebase_info_data_t tb_info;
+    mach_timebase_info(&tb_info);
+
+    double ms_to_abs_time =
+          ((double)(tb_info.denom) / tb_info.numer) * 1000000;
+
+    ttcpolicy.period = kTimeQuantum * ms_to_abs_time;
+    ttcpolicy.computation = kAudioTimeNeeded * ms_to_abs_time;
+    ttcpolicy.constraint = kMaxTimeAllowed * ms_to_abs_time;
+    ttcpolicy.preemptible   = 1;
+
+
+    if((retVal = thread_policy_set(mach_thread_self(),
+                                     THREAD_TIME_CONSTRAINT_POLICY,
+                                     (thread_policy_t)&ttcpolicy,
+                                     THREAD_TIME_CONSTRAINT_POLICY_COUNT)) != KERN_SUCCESS) {
+        _gyLog(GY_DEBUG_ERROR, "GYRO_THREAD_API: Failed to enable real-time scheduling!");
+        return 0;
+    }
+
+    return 1;
+}
+
 #endif
 
 int gyThreadPriority(GY_THREAD_PRIORITY priority) {
+    if(priority == GY_THREAD_PRIORITY_REALTIME) return _macEnableRealtimePriority();
+
     int success = 1;
 
 #ifdef GY_THREAD_PTHREADS
@@ -195,8 +262,8 @@ int gyThreadPriority(GY_THREAD_PRIORITY priority) {
     int errorCode;
     struct sched_param param;
 
-    _gyLog(GY_DEBUG_VERBOSE, "Assigning priority [%s] for thread: %d", gyThreadPriorityString(priority), sdlId);
-    _gyPush();
+    //_gyLog(GY_DEBUG_VERBOSE, "Assigning priority [%s] for thread: %d", gyThreadPriorityString(priority), sdlId);
+    //_gyPush();
 
     if((errorCode = pthread_getschedparam(thId, &policy, &param))) {
         _gyLog(GY_DEBUG_ERROR, "Failed to retreive pthread scheduling policy! [Error: %d]", strerror(errorCode));
@@ -210,10 +277,10 @@ int gyThreadPriority(GY_THREAD_PRIORITY priority) {
         goto end;
     } else {
         param.sched_priority = _pthreadPriority(priority, max_prio_for_policy);
-        _gyLog(GY_DEBUG_VERBOSE, "New Priority: [%d/%d]", param.sched_priority, max_prio_for_policy);
+        _gyLog(GY_DEBUG_VERBOSE, "Assining Thread [%d] Priority: [%d/%d]", sdlId, param.sched_priority, max_prio_for_policy);
     }
 
-    if((errorCode = pthread_setschedparam(thId, priority, &param))) {
+    if((errorCode = pthread_setschedparam(thId, policy, &param))) {
         _gyLog(GY_DEBUG_ERROR, "Failed to set pthread priority [%d]! [Error: %d]", priority, strerror(errorCode));
         success = 0;
         goto end;
@@ -224,7 +291,7 @@ int gyThreadPriority(GY_THREAD_PRIORITY priority) {
 #endif
 
 end:
-    _gyPop(1);
+   // _gyPop(1);
     return success;
 }
 
@@ -234,8 +301,8 @@ int gyThreadCpuAffinity(GYCpuAffinityMask mask) {
     int success = 1;
     SDL_threadID sdlId = SDL_ThreadID();
 
-    _gyLog(GY_DEBUG_VERBOSE, "Assigning Thread [%u] CPU Affinity.", sdlId);
-    _gyPush();
+    //_gyLog(GY_DEBUG_VERBOSE, "Assigning Thread [%u] CPU Affinity.", sdlId);
+    //_gyPush();
 
     cpu_set_t cpuMask;
     memset(&cpuMask, 0, sizeof(cpu_set_t));
@@ -246,30 +313,31 @@ int gyThreadCpuAffinity(GYCpuAffinityMask mask) {
     char intBuff[10];
     strcat(buffer, "<");
     int first = 1;
+    int cpuCount = gySystemQueryInfo()->cpuCount;
 
     for(unsigned i = 0; i < maskSize*8; ++i) {
+        if(i >= cpuCount) break;
         uint32_t curByte = i/8;
         uint32_t curBit = i%8;
-        uint8_t gyByte = *(((uint8_t*)&mask) + curByte);
-        if(gyByte & curBit) {
-            if(first) {
+        uint8_t gyByte = *(((uint8_t*)mask) + curByte);
+        if(gyByte & (0x1<<curBit)) {
+            if(!first) {
                 strcat(buffer, ", ");
-                first = 0;
-            }
+            } else first = 0;
             sprintf(intBuff, "%u", i);
             strcat(buffer, intBuff);
             CPU_SET(i, &cpuMask);
         }
     }
     strcat(buffer, ">");
-    _gyLog("Cores: %s", buffer);
+    _gyLog(GY_DEBUG_VERBOSE, "Setting CPU Affinity for Thread [%d]: Cores: %s", sdlId, buffer);
 
     success &= pthread_setaffinity_np(pthread_self(), maskSize, &cpuMask);
     if(!success) {
-        _gyLog(GY_DEBUG_ERROR, "GY_THREAD_API: Failed to modify thread CPU affinity.");
+        _gyLog(GY_DEBUG_ERROR, "GY_THREAD_API: Failed to modify thread CPU affinity for thread: %d", sdlId);
     }
 
-    _gyPop(1);
+   // _gyPop(1);
     return success;
 }
 
@@ -384,7 +452,7 @@ GYCondition* gyConditionCreate(void) {
 }
 
 int gyConditionDestroy(GYCondition* cond) {
-    SDL_DestroySemaphore((SDL_cond*)cond);
+    SDL_DestroyCond((SDL_cond*)cond);
 #ifdef GY_THREAD_DEBUG
     assert(_context.dbg.activeConditionCount);
     --_context.dbg.activeConditionCount;
@@ -415,8 +483,8 @@ int gyConditionWait(GYCondition* cond, GYMutex* mtx) {
     return 1;
 }
 
-int gyConditionWaitTimeout(GYCondition* cond, uint32_t ms) {
-    int retVal = SDL_CondWait((SDL_cond*)cond, ms);
+int gyConditionWaitTimeout(GYCondition* cond, GYMutex* mtx, uint32_t ms) {
+    int retVal = SDL_CondWaitTimeout((SDL_cond*)cond, (SDL_mutex*)mtx, ms);
     if(retVal) {
         if(retVal != SDL_MUTEX_TIMEDOUT)
             _gyLog(GY_DEBUG_ERROR, "GY_THREAD_API: Failed to wait on SDL Condition variable: [%s]", SDL_GetError());
@@ -426,3 +494,22 @@ int gyConditionWaitTimeout(GYCondition* cond, uint32_t ms) {
 }
 
 const GYThreadDebugInfo* gyThreadDebugQueryInfo(void) { return &_context.dbg; }
+
+//==== ATOMICS ====
+
+int gyAtomicAdd(GYAtomic* a, int v) {
+    return SDL_AtomicAdd((SDL_atomic_t*)a, v);
+}
+
+int gyAtomicGet(GYAtomic* a) {
+    return SDL_AtomicGet((SDL_atomic_t*)a);
+}
+
+int gyAtomicSet(GYAtomic* a, int v) {
+    return SDL_AtomicSet((SDL_atomic_t*)a, v);
+}
+
+void gyCompilerBarrier(void) {
+    SDL_CompilerBarrier();
+}
+
