@@ -1,6 +1,7 @@
 #include <crtp/elysian_render_system.hpp>
 #include <crtp/elysian_debug.hpp>
 #include <gyro_video_api.h>
+#include <level/elysian_scene_object.hpp>
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_particle_emitter.hpp>
 #include <crtp/elysian_camera_system.hpp>
@@ -41,6 +42,7 @@ void RenderSystemBase::_setParticleAccelerationAvailable(bool val) {
 #endif
 
 bool RenderSystemBase::initialize(void) {
+    getEventSys()->addEventObserver(this, EVENT_VIEWPORT_SIZE_CHANGED);
     bool success = true;
 
     dbgprintf("RenderSystem::initialize()");
@@ -126,6 +128,7 @@ bool RenderSystemBase::initialize(void) {
 }
 
 bool RenderSystemBase::uninitialize(void) {
+    getEventSys()->removeEventObserver(this, EVENT_VIEWPORT_SIZE_CHANGED);
     delete _particleVboOutBuffer;
     return true;
 }
@@ -210,7 +213,9 @@ bool RenderSystemBase::renderParticles(void) {
     } else if(_activeParticles) {
 
         if(success) {
+            renderParticlesMonitor.start();
             _particleComputeTask->getCommandQueue()->finish();
+            renderParticlesMonitor.stop();
 
             gyVidTexBind(nullptr);
 
@@ -238,9 +243,7 @@ bool RenderSystemBase::renderParticles(void) {
 
 void RenderSystemBase::createLuminanceHistogram(void) {
     bool success = true;
-    unsigned int width;
-    unsigned int height;
-    gyVidResolution(&width, &height);
+    auto [width, height] = getCameraSys()->getViewportSize();
 
     if(_luminanceComputeTask->isAccelerated()) {
         success &= _luminanceComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(1, &_luminanceComputeTask->_fboBuffer);
@@ -249,7 +252,8 @@ void RenderSystemBase::createLuminanceHistogram(void) {
         success &= _luminanceComputeTask->getCommandQueue()->enqueueBufferRead(_luminanceComputeTask->_statsBuffer,
                                                                                0,
                                                                                sizeof(LuminanceHistogramComputeTask::LuminanceStats),
-                                                                               &_luminanceComputeTask->_lumStats);
+                                                                               &_luminanceComputeTask->_lumStats,
+                                                                               false);
 
         if(!success) {
             errprintf("Something reested with the LuminanceComputeTask! Disabling acceleration!");
@@ -264,7 +268,18 @@ void RenderSystemBase::createLuminanceHistogram(void) {
 void RenderSystemBase::updateHDRExposure(void) {
 
 
-    if(_luminanceComputeTask->isAccelerated() && _luminanceComputeTask->getCommandQueue()->finish()) {
+    if(_luminanceComputeTask->isAccelerated()) {
+        bool retVal;
+
+        updateHDRExposureMonitor.start();
+        retVal = _luminanceComputeTask->getCommandQueue()->finish();
+        updateHDRExposureMonitor.stop();
+
+        if(!retVal) {
+            return;
+        }
+
+
         double avg = 0.0f;
         uint64_t count = 0;
         //DbgEvent event("Luminance Stats");
@@ -476,6 +491,146 @@ bool RenderSystemBase::forwardPlusCullLights(void) {
     //success &= _lightCullComputeTask->getComm
     // success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(1, buffers);
     return success;
+}
+
+
+
+
+void RenderSystemBase::beginScene(void) {
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+    memcpy(_prevSceneStats, _curSceneStats, sizeof(SceneStats));
+    memset(_curSceneStats, 0, sizeof(SceneStats));
+    _curSceneStats.totalSceneObjs = _sceneObjs.size();
+    for(auto& obj : _sceneObjs) {
+        obj.setSceneObjTransformDirty(true);
+    }
+#endif
+}
+
+void RenderSystemBase::endScene(void) {
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+    _curSceneStats.avgBatchSize /= _curSceneStats.batchCount;
+#endif
+}
+
+void RenderSystemBase::enableTransparentGeometry(bool val) {
+    _transparentGeometryEnabled = val;
+}
+
+bool RenderSystemBase::isTransparentGeometryEnabled(void) const {
+    return _transparentGeometryEnabled;
+}
+
+void RenderSystemBase::onObserveEvent(Event* event, EventTarget*) {
+    switch(event->getEventType()) {
+    case EVENT_VIEWPORT_SIZE_CHANGED:
+        _onViewportSizeChange();
+    default:
+        break;
+    }
+}
+void RenderSystemBase::_onViewportSizeChange() {
+    auto [scrWidth, scrHeight] = getCameraSys()->getViewportSize();
+    _lightCullComputeTask->updateScreenResolution(scrWidth, scrHeight);
+}
+
+//Don't recalculate world-space geometric shit if it's the same shit used again later
+//Do all of the opaque shit in parallel with all of the transparent shit
+void RenderSystemBase::renderScene(void) {
+#if 0
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+    _curSceneStats.totalSceneObjs += _sceneObjs.size();
+    ++_curSceneStats.sceneRenderPasses;
+#endif
+
+    _opaqueSceneObjs.clear();
+    _alphaSceneObjs.clear();
+
+    //Look at every object in the scene (PARALLELIZE ME!!!)
+    for(auto& obj : _sceneObjs) {
+        //skip transparency if alpha is disabled this pass
+        if(obj.isTransparent() && !_transparentGeometryEnabled) {
+            continue;
+        }
+
+        //update object's internals (if necessary)
+        obj.updateBoundingVolume(_curCamera->viewProjMat);
+
+        //world-space frustum culling
+        if(cullSceneObj(obj)) {
+            obj.setVisible(false);
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+            ++_curSceneStats.culledSceneObjs;
+#endif
+            continue;
+        } else {
+            obj.setVisible(true);
+
+            //update priority values
+            obj.updateRenderPriority();
+
+            //write object into respective queue
+            if(obj.isTransparent())
+                _alphaSceneObjs.push_back(obj);
+            else
+                _opaqueSceneObjs.push_back(obj);
+        }
+
+    }
+
+    //do both in parallel
+    quicksort(&_opaqueSceneObjs); //ascending Z depth
+    quicksort(&_alphaSceneObjs);  //descending Z depth
+
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+    _curSceneStats.opaqueSceneObjs 	+= _opaqueSceneObjs.size();
+    _curSceneStats.alphaSceneObjs 	+= _alphaSceneObjs.size();
+#endif
+
+    std::vector<SceneObject*>& objLists[2] = {
+        _curSceneStats.opaqueSceneObjs,
+        _curSceneStats.alphaSceneObjs
+    };
+
+    //Pass 0: opaque geometry, Pass 1: transparent geometry (optional)
+    for(unsigned p = 0; p < _transparentGeometryEnabled? 2 : 1; ++p) {
+
+        for(size_t i = 0; i < objLists[p].size(); ++i) {
+            const SceneObject*const obj = _objLists[p][i];
+
+            //Determine number of objects within current batch
+            const uint32_t batchId = (obj->getRenderPriority()&0xffffffff);
+            size_t end = i;
+            for(size_t e = i+1; e < objLists[i].size(); ++e) {
+                if(objLists[e]->getRenderPriority()&0xffffffff == batchId) {
+                    end = e;
+                } else break;
+            }
+
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+            ++_curSceneStats.batchCount;
+            _curSceneStats.avgBatchSize += e-i + 1;
+#endif
+
+            GYVidPipelineState pipeState = {
+                obj->getTextureId(),
+                obj->getBlendMode(),
+                obj->shaderId()
+            };
+
+            gyVidPipelineState(&pipeState);
+            for(size_t o = i; o <= end; ++o) {
+                obj->render();
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+                ++_curSceneStats.renderCalls;
+#endif
+            }
+
+            i = end;
+        }
+
+    }
+#endif
 }
 
 

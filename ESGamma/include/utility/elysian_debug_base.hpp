@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <gyro_system_api.h>
 #include <elysian_system.hpp>
+#include <gyro_thread_api.h>
 
 #define ASSETS_VROOT						"/assets"
 
@@ -41,6 +42,7 @@ namespace elysian {
 
     class Engine;
     class Keyboard;
+    class Mutex;
 
     struct DbgEvent {
         unsigned                depth = 0;
@@ -67,7 +69,8 @@ namespace elysian {
                                 CmdLineArgs(void)   = default;
         }                       _cmdLineArgs;
 
-        static unsigned int		_stackDepth;
+        static Mutex*           _logMutex;
+        static GYAtomic         _stackDepth;
         static ADV_LOG_WRAP		_advLogWrap;
         static FILE*			_dbgFile;
         static FILE*			_luaDbgFile;
@@ -88,6 +91,8 @@ namespace elysian {
         static void             push(void);
         static void             pop(const unsigned count=1);
         static unsigned         getStackDepth(void);
+        template<typename F>
+        static void             contextBlock(const char* header, F&& fn);
 
     protected:
 
@@ -95,7 +100,7 @@ namespace elysian {
         GYDebugCallbacks        _gyDbgCallbacks;
 
         static Engine*          _engine;
-        static SEVERITY            _level;
+        static SEVERITY         _level;
 
                                 DebugBase(void);
     public:
@@ -130,12 +135,18 @@ namespace elysian {
 
 
     //=========INLINEZ=======
-    inline void DebugBase::push(void) { ++_stackDepth; }
+    inline void DebugBase::push(void) { gyAtomicAdd(&_stackDepth, 1); }
     inline void DebugBase::pop(const unsigned count) {
-        GY_ASSERT((int)_stackDepth - (int)count >= 0);
-        _stackDepth -= count;
+        const int depth = gyAtomicAdd(&_stackDepth, -count);
+        GY_ASSERT((int)depth - (int)count >= 0);
     }
-    inline unsigned DebugBase::getStackDepth(void) { return _stackDepth; }
+    template<typename F>
+    inline void DebugBase::contextBlock(const char* header, F&& fn) {
+        DbgEvent ev(header);
+        (void)ev;
+        fn();
+    }
+    inline unsigned DebugBase::getStackDepth(void) { return gyAtomicGet(&_stackDepth); }
     inline void DebugBase::setEngine(Engine &eng) { _engine = &eng; }
     inline void DebugBase::setLevel(const SEVERITY level) { _level = level; }
     inline const DebugBase::CmdLineArgs& DebugBase::getCmdLineArgs(void) const { return _cmdLineArgs; }

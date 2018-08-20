@@ -27,6 +27,8 @@ namespace elysian {
     class   CameraSystemBase;
     struct  Camera;
 
+    using ViewportSize = std::pair<unsigned, unsigned>;
+
     class CameraKeyFrame: public InstanceTransform {
         friend class            CameraSystemBase;
         friend struct           Camera;
@@ -86,6 +88,7 @@ namespace elysian {
         Camera*                 _states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
         Camera                  _debugState;
         Camera                  _uiCamera;
+        ViewportSize            _viewportSize       = std::make_pair(0, 0);
         Camera*                 _curState           = &_internalStates[0];
         int						_depth              = 0; //depth is technically +1... my code, fuck you.
         bool					_projViewActive     = false;
@@ -93,8 +96,6 @@ namespace elysian {
         bool					_customState        = false;
         bool                    _followEnabled      = true;
 
-        unsigned				_scrWidth           = 0;
-        unsigned				_scrHeight          = 0;
 
         int						_topBoundary        = -1;
         int						_bottomBoundary     = -1;
@@ -156,6 +157,7 @@ namespace elysian {
         void                    pushViewMatrixToStack(void);
         void                    popViewMatrixFromStack(void);
         Vector2                 getScreenResolution(void) const;
+        ViewportSize            getViewportSize(void) const;
         void                    ensureVisibleRect(const Rectf& in, Rectf& out, const Rectf margins=Rectf(16.0f, 16.0f, 16.0f, 16.0f)) const;
 
         //Transforms a WORLD COORDINATE vector into SCREEN COORDINATES
@@ -274,6 +276,7 @@ namespace elysian {
 
     inline bool CameraSystemBase::isBoundByMap(void) const { return _boundByMap; }
     inline void CameraSystemBase::setBoundByMap(const bool val) { _boundByMap = val; }
+    inline ViewportSize CameraSystemBase::getViewportSize(void) const { return _viewportSize; }
 
     //doesn't take camera rotation into account yet!
     inline void CameraSystemBase::inverseTransform(GYVector3 *dest, const GYVector3 *src) {

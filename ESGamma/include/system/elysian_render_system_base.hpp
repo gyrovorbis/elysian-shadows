@@ -3,6 +3,8 @@
 
 #include <system/elysian_system.hpp>
 #include <system/elysian_compute_system.hpp>
+#include <system/elysian_thread_system.hpp>
+#include <system/elysian_event_system.hpp>
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
 
@@ -20,6 +22,8 @@
 #define ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX     256
 
 namespace elysian {
+
+    class Thread;
 
     struct KernelParticle {
         float       pos[4];
@@ -86,11 +90,27 @@ namespace elysian {
     };
 
 
-    class RenderSystemBase: public System {
-    public:
+    class RendererThread: public Thread {
+
+    };
 
 
+    class RenderSystemBase: public System, public EventObserver {
     private:
+    #ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+        struct SceneStats {
+            size_t totalSceneObjs 		= 0;
+            size_t opaqueSceneObjs 		= 0;
+            size_t transparentSceneObjs	= 0;
+            size_t culledSceneObjs      = 0;
+            size_t batchCount           = 0;
+            size_t avgBatchSize         = 0;
+            size_t renderCalls          = 0;
+            size_t sceneRenderPasses	= 0;
+        } _prevSceneStats, _curSceneStats;
+    #endif
+
+        Thread*                 _rendererThread                 = nullptr;
 
         //Particles
         size_t                  _activeParticles                = 0;
@@ -112,15 +132,23 @@ namespace elysian {
         ComputeBuffer*          _lumStatsKernel                 = nullptr;
         bool                    _automaticExposureActive        = false;
 
+        bool                    _transparentGeometryEnabled     = true;
+
 
         LightCullingComputeTask*    _lightCullComputeTask       = nullptr;
+
 
     protected:
        // void                    _setParticleAccelerationAvailable(bool val);
         bool                    _initializeAutomaticExposureKernel(void);
         bool                    _uninitializeAutomaticExposureKernel(void);
+        void                    _onViewportSizeChange(void);
 
     public:
+
+        PerformanceMonitor renderParticlesMonitor             = PerformanceMonitor("Render Particles");
+        PerformanceMonitor updateHDRExposureMonitor           = PerformanceMonitor("Update HDR Exposure");
+
         bool                    initialize(void);
         bool                    uninitialize(void);
         void                    render(void);
@@ -130,6 +158,25 @@ namespace elysian {
         bool                    populateParticleVbos(void);
         bool                    renderParticles(void);
 
+        //newfangled
+        void                    beginScene(void);
+        void                    endScene(void);
+        void                    enableTransparentGeometry(bool val=true);
+        bool                    isTransparentGeometryEnabled(void) const;
+        void                    renderScene(void);
+
+        Thread*                 getRendererThread(void) const;
+
+        //Overridden from EventObserver
+        virtual void            onObserveEvent(Event* event, EventTarget* target) override;
+
+    public:
+
+
+#ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
+        const SceneStats& getSceneStats(void) const;
+#endif
+
 
     };
 
@@ -138,7 +185,7 @@ namespace elysian {
 
 
     //========== INLINEZ ===========
-
+    inline Thread* RenderSystemBase::getRendererThread(void) const { return _rendererThread; }
 
 
 }

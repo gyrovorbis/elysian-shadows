@@ -10,23 +10,23 @@ bool TileEntry::renderZTran		= false;
 bool TileEntry::renderPlane    = false;
 
 void TileEntry::renderCollider(QPainter *const painter, const elysian::Tile::COLLIDER_TYPE collider) {
-	static const QColor fillColor(0, 0, 255, 80);
-	static const QPointF rTriSE[3] = {
+    /*static*/ const QColor fillColor(0, 0, 255, 80);
+    /*static*/ const QPointF rTriSE[3] = {
 		 QPointF(16.0f, -16.0f),
 		 QPointF(16.0f, 16.0f),
 		 QPointF(-16.0f, 16.0f)
 	 };
-	static const QPointF rTriNE[3] = {
+    /*static*/ const QPointF rTriNE[3] = {
 		 QPointF(-16.0f, -16.0f),
 		 QPointF(16.0f, -16.0f),
 		 QPointF(16.0f, 16.0f)
 	 };
-	static const QPointF rTriNW[3] = {
+    /*static*/ const QPointF rTriNW[3] = {
 		 QPointF(16.0f, -16.0f),
 		 QPointF(-16.0f, -16.0f),
 		 QPointF(-16.0f, 16.0f)
 	 };
-	static const QPointF rTriSW[3] = {
+    /*static*/ const QPointF rTriSW[3] = {
 		 QPointF(-16.0f, -16.0f),
 		 QPointF(-16.0f, 16.0),
 		 QPointF(16.0f, 16.0f)
@@ -121,8 +121,8 @@ void TileEntry::renderCollider(QPainter *const painter, const elysian::Tile::COL
 //====NONSTATIC====
 
 void TileEntry::renderDecoration(QPainter *const painter, const unsigned /*x*/, const unsigned y) const {
-	static const QPen pen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-	static const QRectF rect(-16.0f, -16.0f, 32.99f, 32.99f);
+    /*static*/ const QPen pen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    /*static*/ const QRectF rect(-16.0f, -16.0f, 32.99f, 32.99f);
 
 	painter->setPen(pen);
 	//Tile attrib

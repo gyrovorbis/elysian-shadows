@@ -7,6 +7,7 @@
 #include <vector>
 #include <gyro_timer_api.h>
 #include <gyro_system_api.h>
+#include <cassert>
 
 #define ELYSIAN_PERFORMANCE_MONITOR_TASK_NAME_SIZE 100
 
@@ -32,13 +33,13 @@ namespace elysian {
         }
 
         void stop(void) {
-            GY_ASSERT(_running);
+            assert(_running);
             _running = false;
             _deltaTicks += gyTimerTicks()-_startTicks;
         }
 
         void resume(void) {
-            GY_ASSERT(!_running);
+            assert(!_running);
             _running = true;
             _startTicks = gyTimerTicks();
         }

@@ -119,7 +119,6 @@ private:
     static QTextEdit*           _prompt;
     static QMenu*               _filterMenu;
     static bool                 _pendingError;
-    static unsigned             _stackDepth;
     static bool                 _filterEnabled[SOURCE_MAX][DebugBase::LOG_OFF];
     static QAction*             _filterActions[SOURCE_MAX][DebugBase::LOG_OFF];
     static QVector<QString>     _commandHistory;

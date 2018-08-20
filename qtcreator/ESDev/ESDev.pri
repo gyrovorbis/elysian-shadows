@@ -114,7 +114,7 @@ android {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 }
 
-QMAKE_CXXFLAGS += -std=c++1y
+QMAKE_CXXFLAGS += -std=c++1z
 
 !dreamcast {
 QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions

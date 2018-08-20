@@ -41,7 +41,6 @@ QVBoxLayout*        TkDebug::_vertLayout;
 QTextEdit*          TkDebug::_prompt;
 QWidget*            TkDebug::_centralWidget;
 bool                TkDebug::_pendingError = false;
-unsigned            TkDebug::_stackDepth = 0;
 constexpr char      TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
 constexpr char      TkDebug::_filterList[2][500];
 bool                TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{ true }};
@@ -202,7 +201,6 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
 }
 
 void TkDebug::push(void) {
-    //++_stackDepth;
     _mutex->lock();
     elysian::DebugBase::push();
     if(_prevMsgDiscarded) {

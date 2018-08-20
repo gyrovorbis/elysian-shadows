@@ -7,6 +7,7 @@
 #include <crtp/elysian_level.hpp>
 #include <elysian_timer_system.hpp>
 #include <system/elysian_input_system_base.hpp>
+#include <system/elysian_event_system.hpp>
 
 namespace elysian {
 
@@ -73,9 +74,7 @@ void Camera::clipBoundingRegion(const Camera &cam) {
 void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*/) {
     auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 
-    unsigned width, height;
-
-    gyVidResolution(&width, &height);
+    auto [width, height] = getViewportSize();
 
     int boundTop = (_topBoundary == -1)? -16 : _topBoundary*32-16;
     int boundBottom = (_bottomBoundary == -1)? getCurrentArea()->height*32-16 : _bottomBoundary*32-16;
@@ -507,10 +506,14 @@ void CameraSystemBase::processInput(const Keyboard* input) {
 void CameraSystemBase::update(void) {
     const float deltaTime = getTimerSys()->getDeltaTime();
 
-
     //Update camera resolution
-    getGuiSys()->getResolution(_scrWidth, _scrHeight);
+    unsigned scrW, scrH;
+    gyVidResolution(&scrW, &scrH);
 
+    if(scrW != _viewportSize.first || scrH != _viewportSize.second) {
+        _viewportSize = std::make_pair(scrW, scrH);
+        getEventSys()->broadcastEvent(Event(EVENT_VIEWPORT_SIZE_CHANGED));
+    }
 
     if(_customState) return;
 

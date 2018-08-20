@@ -215,11 +215,6 @@ inline MenuItemView::MenuItemView(ItemModel* model, ItemDelegate* delegate):
     _model(model),
     _delegate(delegate) {}
 
-inline MenuItemView::~MenuItemView(void) {
-    delete _model;
-    delete _delegate;
-}
-
 inline ItemDelegate* MenuItemView::getDelegate(void) const {
     return _delegate;
 }

@@ -88,11 +88,14 @@ static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
     return crashState;
 }
 
-
+#include <tuple>
 static GYAppCbRet Init(int argc, char **argv) {
     QString project;
     QString level;
     QString area;
+
+   // auto loltuple = std::tuple(10, "lolz", true);
+   // auto& [x, y, z] = loltuple;
 
    //
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS

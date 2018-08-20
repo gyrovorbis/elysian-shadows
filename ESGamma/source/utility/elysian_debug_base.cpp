@@ -36,6 +36,7 @@
 #include <gui/elysian_layout.hpp>
 #include <gui/elysian_label_widget.hpp>
 #include <gui/elysian_entity_widget.hpp>
+#include <system/elysian_thread_system.hpp>
 
 namespace elysian {
 
@@ -44,9 +45,11 @@ namespace elysian {
 FILE*                       DebugBase::_dbgFile;
 FILE*                       DebugBase::_luaDbgFile;
 Engine*                     DebugBase::_engine          = nullptr;
-unsigned int                DebugBase::_stackDepth      = 0;
+GYAtomic                    DebugBase::_stackDepth;
 Debug::SEVERITY             DebugBase::_level           = ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT;
 Debug::ADV_LOG_WRAP         DebugBase::_advLogWrap      = Debug::ADV_LOG_LOG_OFF;
+Mutex*                      DebugBase::_logMutex        = nullptr;
+
 const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
     &libGyroPrintf,
     &Debug::push,
@@ -120,7 +123,7 @@ Debug& DebugBase::getInstance(void) {
 }
 
 DbgEvent::DbgEvent(const char*const string, ...) {
-    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
     va_start(argptr,string);
     vsprintf(buffer, string, argptr);
@@ -141,14 +144,15 @@ void DebugBase::luaPrint(const char *string, const SEVERITY lev) { Debug::writeL
 
 // Central endpoint for all debug log calls
 void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERITY level, const char *const str) {
-    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    char buffer[GYRO_PRINTF_BUFFER_SIZE];
 	//only log events that are as important or more important than the current level
 	if(level < _level && source != LUA) return;
 
 	buffer[0] = '\0';
+    const int depth = gyAtomicGet(&_stackDepth);
 
 	//Add tabs for each stack layer
-    /*if(source != LUA)*/ for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
+    /*if(source != LUA)*/ for(unsigned int i = 0; i < depth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
 
 	//Add prefixes for error types
 	switch(level) {
@@ -169,6 +173,8 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 	//Append newline character to the end
 //	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
+
+    if(!_logMutex->acquire()) return;
 
 #if !defined(ANDROID) && GYRO_PLATFORM != GYRO_PLATFORM_iOS
 	fputs(buffer, _dbgFile);
@@ -193,6 +199,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
         default:
             advType = AdventureLog::TEXT_NORMAL;
         }
+
         if(level == LOG_WARNING || level == LOG_ERROR) advType = AdventureLog::TEXT_LOG_ERROR;
 
         //Check to see if this kind of output is being wrapped to the Adventure Log
@@ -205,11 +212,14 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
             if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
         }
     }
+
+    _logMutex->release();
+
 }
 
 // Invoked for non AssetIO Engine logging
 void DebugBase::printf(const Debug::SEVERITY level, const char *const string, ...) {
-    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    char buffer[GYRO_PRINTF_BUFFER_SIZE];
 	va_list argptr;
 	//early-out
 	if(level < _level) return;
@@ -225,6 +235,7 @@ void DebugBase::printf(const Debug::SEVERITY level, const char *const string, ..
 DebugBase::DebugBase(void):
 	_nextFrame(true)
 {
+    gyAtomicSet(&_stackDepth, 0);
 	//Register debug callback with LibGyro
     gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_SEVERITY_DEFAULT, &_gyDbgCallbacks);
 	//Register pointer to asset debug interface with AssetIO
@@ -233,6 +244,8 @@ DebugBase::DebugBase(void):
 	_luaDbgFile = fopen(ELYSIAN_LUA_DEBUG_FILE, "w");
 #endif
     //printf(LOG_VERBOSE, "-----Debug Initialized-----");
+
+    _logMutex = new Mutex;
 }
 
 DebugBase::~DebugBase(void) {
@@ -294,6 +307,19 @@ void DebugBase::processInput(Keyboard*const input) {
 //	static unsigned size = 3;
 //	static unsigned intensity = 200;
     static bool freeCam = false;
+    static int i = 0;
+
+    if(input->isTapped(GY_KEY_B)) {
+        AsyncTask* task = new AsyncTask("BitchTask", [](void* data) {
+            int val = (uintptr_t)data;
+            dbgprintf("TROLOLO!!! %d", val);
+                sleep(2);
+            return -1;
+        });
+        int newI = i + 40;
+        for(; i < newI; ++i)
+            getThreadSystem()->enqueueAsyncTask(task, (void*)i);
+    }
 
 	//Camera zoom
     if(input->isPressed(GY_KEY_W) && !input->isPressed(GY_KEY_LALT)) {

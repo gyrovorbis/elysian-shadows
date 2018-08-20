@@ -34,6 +34,7 @@
 #include <gl/gyro_chromatic_aberration_gl.h>
 #include <system/elysian_compute_system.hpp>
 #include <crtp/elysian_render_system.hpp>
+#include <system/elysian_thread_system.hpp>
 
 namespace elysian {
 
@@ -52,6 +53,7 @@ Engine::Engine(void):
     LuaManager::initialize();
 
     //allocate systems
+    _threadSystem       = new ThreadSystem;
     _eventSystem        = new EventSystem;
     _audioSystem		= new AudioSystem;
     _partySystem		= new PartySystem;
@@ -78,6 +80,7 @@ Engine::Engine(void):
     _renderSystem       = new RenderSystem;
 
     InputSystem::initialize();
+    _threadSystem->initialize();
     _computeSystem->initialize();
     _renderSystem->initialize();
     _behaviorSystem->initialize();
@@ -92,6 +95,7 @@ Engine::Engine(void):
 
     renderMonitor.addChild(&shadowPassMonitor);
     renderMonitor.addChild(&lightPassMonitor);
+    lightPassMonitor.addChild(&getRenderSystem()->renderParticlesMonitor);
     renderMonitor.addChild(&guiRenderMonitor);
     renderMonitor.addChild(&bloomMonitor);
 
@@ -111,6 +115,8 @@ Engine::Engine(void):
     updateMonitor.addChild(&updateDialogMonitor);
     updateMonitor.addChild(&updateCombatMonitor);
     updateMonitor.addChild(&updateLuaMonitor);
+
+    renderMonitor.addChild(&getRenderSystem()->updateHDRExposureMonitor);
 
    // memset(&_platInput, 0, sizeof(GYInput));
 }
@@ -299,7 +305,8 @@ void Engine::processInput(void) {
 }
 
 void Engine::render(void) {
-
+  //_timerSystem->pushTaskMonitor(&_renderMonitor);
+  renderMonitor.start();
     switch(System::_engineState) {
         default:
             _cameraSystem->update();
@@ -362,15 +369,17 @@ void Engine::render(void) {
 
             //Begin rendering overlays
           //  func();
+            guiRenderMonitor.resume();
             _dialogSystem->render();
             _warpSystem->render();
             _guiSystem->renderForeground();
+            guiRenderMonitor.stop();
 
             gyVidSceneEnd();
     }
 
-   // renderMonitor.stop();
-  _timerSystem->popTaskMonitor(&_renderMonitor);
+    renderMonitor.stop();
+  //_timerSystem->popTaskMonitor(&_renderMonitor);
 }
 
 Engine::~Engine(void) {
@@ -392,6 +401,7 @@ Engine::~Engine(void) {
     LuaManager::uninitialize();
     _renderSystem->uninitialize();
     _computeSystem->uninitialize();
+    _threadSystem->uninitialize();
 
     delete _inputSystem;
     delete _combatSystem;
@@ -411,6 +421,7 @@ Engine::~Engine(void) {
     delete _eventSystem;
     delete _computeSystem;
     delete _audioSystem;
+    delete _threadSystem;
 
     dbgpop();
 

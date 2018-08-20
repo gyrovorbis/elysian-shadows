@@ -236,7 +236,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_compute_system.cpp \
     source/ESGamma/tk_render_system.cpp \
     ../../ESGamma/source/system/elysian_render_system_base.cpp \
-    ../../ESGamma/source/gui/elysian_item_delegate.cpp
+    ../../ESGamma/source/gui/elysian_item_delegate.cpp \
+    ../../ESGamma/source/system/elysian_thread_system.cpp
 
 
 !ios: !dreamcast: !android {
@@ -527,7 +528,9 @@ HEADERS += \
     include/ESGamma/tk_render_system.h \
     ../../ESGamma/include/system/elysian_render_system_base.hpp \
     ../../ESGamma/include/gui/elysian_item_model.hpp \
-    ../../ESGamma/include/gui/elysian_item_delegate.hpp
+    ../../ESGamma/include/gui/elysian_item_delegate.hpp \
+    ../../AssetIO/include/level/elysian_scene_object.hpp \
+    ../../ESGamma/include/system/elysian_thread_system.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

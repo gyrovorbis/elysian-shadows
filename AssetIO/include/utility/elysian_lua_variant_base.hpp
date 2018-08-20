@@ -173,11 +173,14 @@ namespace elysian {
         //doesn't do conversions, so type better be known statically
         template<typename T>
         T                           getValue(void) const;
+
+       // template<typename... Args>
+       // std::tuple<Args...>         getValue(void) const;
+
         int                         getRef(void) const;
-
-
-        void                        setNil(void);
         void                        setRef(const int ref);
+        void                        setNil(void);
+
 
         template<typename T>
         void                        setValue(T*const ud);
@@ -684,7 +687,7 @@ public:
     }
 
     inline void LuaVariantBase::_setWeakRef(const bool value) {
-        _type &= ~(0x1 << ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS);
+        _type &= ~(0x1u << ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS);
         _type |= ((uint32_t)(value) << ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS);
     }
 

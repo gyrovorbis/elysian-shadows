@@ -47,7 +47,7 @@ void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
 
 void GLMapSystemCrtp::_bindArrayVbo(int buffer) {
 #ifdef GYRO_GLAL
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+//  /  glBindBuffer(GL_ARRAY_BUFFER, buffer);
 #endif
 }
 

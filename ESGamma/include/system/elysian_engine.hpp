@@ -23,10 +23,10 @@ namespace elysian {
 
        PerformanceMonitor renderMonitor             = PerformanceMonitor("Engine::render");
        PerformanceMonitor shadowPassMonitor         = PerformanceMonitor("Shadow Render Pass");
-       PerformanceMonitor lightPassMonitor          = PerformanceMonitor("Main Render Pass");
+       PerformanceMonitor lightPassMonitor          = PerformanceMonitor("Render Scene");
        PerformanceMonitor guiRenderMonitor          = PerformanceMonitor("Render UI");
        PerformanceMonitor bloomMonitor              = PerformanceMonitor("Bloom Lighting");
-        PerformanceMonitor updateMonitor            = PerformanceMonitor("Engine::update");
+       PerformanceMonitor updateMonitor            = PerformanceMonitor("Engine::update");
 
         PerformanceMonitor updateRigidBodyMonitor   = PerformanceMonitor("RigidBodySystem");
         PerformanceMonitor updateCollisionMonitor   = PerformanceMonitor("CollisionSystem");

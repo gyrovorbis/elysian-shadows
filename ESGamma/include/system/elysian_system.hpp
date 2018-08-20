@@ -32,6 +32,7 @@ namespace elysian {
   class EventSystem;
   class PathfindingSystem;
   class ComputeSystem;
+  class ThreadSystem;
 
   class System: public LevelManager {
   public:
@@ -67,6 +68,7 @@ namespace elysian {
     static PathfindingSystem*   _pathfindingSystem;
     static ComputeSystem*       _computeSystem;
     static RenderSystem*        _renderSystem;
+    static ThreadSystem*        _threadSystem;
 
   public:
     static InputSystem*         getInputSys(void) { return _inputSystem; }
@@ -93,6 +95,7 @@ namespace elysian {
     static PathfindingSystem*   getPathfindingSys(void) { return _pathfindingSystem; }
     static ComputeSystem*       getComputeSystem(void) { return _computeSystem; }
     static RenderSystem*        getRenderSystem(void) { return _renderSystem; }
+    static ThreadSystem*        getThreadSystem(void) { return _threadSystem; }
 
     static bool                 getProcessInput(void) { return _processInput; }
     static void                 setProcessInput(const bool in=true) { _processInput = in; }

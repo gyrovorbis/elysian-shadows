@@ -244,4 +244,9 @@ void MenuItemView::setCurrentIndex(int index) {
     }
 }
 
+MenuItemView::~MenuItemView(void) {
+    delete _model;
+    delete _delegate;
+}
+
 }

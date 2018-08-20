@@ -208,33 +208,34 @@ namespace elysian {
 
                     gyVidDepthTest(true);
         if(!gyVidShadowPass()) {
+            /*
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
             const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
                                                       _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
                                                         GY_ALPHA_FULL : GY_ALPHA_NONE;
             const GY_BLEND_MODE           newBlend = (newAlpha == GY_ALPHA_FULL)? GY_BLEND_ONE_MINUS_SRC_ALPHA : GY_BLEND_ONE;
-
+*/
             //Blending enabled state change
           /*  if(newAlpha != glalAlphaLevel) {
               flushTileBuffer();
              gyVidAlphaLevel(newAlpha);
             }*/
             //Blending mode state change
-            if(entry.renderPass > 1  || newAlpha != GY_ALPHA_NONE) {
+           // if(entry.renderPass > 1  || newAlpha != GY_ALPHA_NONE) {
                 //disableDepthTest();
-            }
+           // }
             //We don't give a fuck about blend modes when blending is off
-            else if(entry.renderPass == 1) {
-               enableDepthTest();
-            }
+          //  else if(entry.renderPass == 1) {
+             //  enableDepthTest();
+          //  }
 
 
-           gyVidDepthTest(newAlpha == GY_ALPHA_NONE? true : false);
+           //gyVidDepthTest(newAlpha == GY_ALPHA_NONE? true : false);
           //  gyVidBlendMode(newBlend);
-            gyVidAlphaLevel(newAlpha);
-            gyVidRectPlaneType(newPlane);
-            gyVidRectTexOrient(newOrient);
+            //gyVidAlphaLevel(newAlpha);
+            //gyVidRectPlaneType(newPlane);
+            //gyVidRectTexOrient(newOrient);
         }
 
 #if 0
@@ -273,7 +274,7 @@ namespace elysian {
            // _curArea->maxIndex = 0;
             _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = 0;
             gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
-                _bindArrayVbo(_curArea->vertexVbo);
+             //   _bindArrayVbo(_curArea->vertexVbo);
             _orphanVbo();
         }
 }
@@ -355,7 +356,7 @@ break;
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
         gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
-        _bindArrayVbo(_curArea->vertexVbo);
+  //      _bindArrayVbo(_curArea->vertexVbo);
          // glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
@@ -600,7 +601,7 @@ break;
     inline void MapSystemCrtp<P, T, E>::staticUninitialize(void) {}
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemCrtp<P, T, E>::isShadowPass(void) const { return gyVidShadowPass(); }
+    inline bool MapSystemCrtp<P, T, E>::isShadowPass(void) const { return false/gyVidShadowPass(); }
 
     template<typename P, typename T, typename E>
     inline bool MapSystemCrtp<P, T, E>::isDepthPrePass(void) const { return _depthPassState == DEPTH_Z_PREPASS; }

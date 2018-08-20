@@ -13,6 +13,7 @@ static elysian::Engine* engine  = NULL;
 static elysian::Debug*  debug   = NULL;
 
 int main(int argc, char* argv[]) {
+
     debug = &elysian::Debug::getInstance();
 
     gySysRegisterAppInit([](int argc, char* argv[]) {
