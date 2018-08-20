@@ -19,7 +19,7 @@ typedef struct GYOgg {
 GYOgg* gyAudOggCreate(const char*const path);
 void gyAudOggDestroy(GYOgg*const ogg);
 
-struct GYAudioSource* gyAudOggStreamCreate(void);
+struct GYAudioSource* gyAudOggStreamCreate(const char* threadName);
 void gyAudOggStreamDestroy(struct GYAudioSource*const src);
 void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg);
 void gyAudOggStreamPause(struct GYAudioSource*src);

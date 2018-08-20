@@ -26,10 +26,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include  "../x86/tinycthread.h"
+#include <gyro_thread_api.h>
 
 #define GYRO_OGG_STREAM_BUFF_SIZE	(4096 * 20)
 #define GYRO_OGG_STREAM_BUFF_COUNT	2
+#define GYRO_OGG_THREAD_PRIORITY    GY_THREAD_PRIORITY_HIGH
 
 typedef struct _GYOggPayload {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
@@ -207,10 +208,10 @@ typedef struct _OggStreamSource {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     ALuint				src;				//polymorphically compatible with GYAudioSource
     GYOgg*				ogg;
-    thrd_t              thread;
+    GYThread*           thread;
     unsigned			stillStreaming;		//boolean for whether we have work or not
-    mtx_t               streamMutex;
-    cnd_t               tryStreamCond;
+    GYMutex*            streamMutex;
+    GYCondition*        tryStreamCond;
     unsigned			killMe;
     unsigned			looping;
 #endif
@@ -221,19 +222,22 @@ static int _gyAudOggStreamUpdate(void* data) {
     _OggStreamSource*const stream = data;
     int processed;
     int done;
+    int success = 1;
+
+    success &= gyThreadPriority(GYRO_OGG_THREAD_PRIORITY);
 
     while(1) {
         done = 0;
 
         //Protect against ANY other stream-related operations while updating
-        mtx_lock(&stream->streamMutex);
+        success &= gyMutexLock(stream->streamMutex);
         while(!stream->stillStreaming) {
-            cnd_wait(&stream->tryStreamCond, &stream->streamMutex); /* wait for master to signal to resume stream */
+            success &= gyConditionWait(stream->tryStreamCond, stream->streamMutex); /* wait for master to signal to resume stream */
         }
 
         //parent wants us dead (cleaning up stream)
         if(stream->killMe) {
-            mtx_unlock(&stream->streamMutex);
+            success &= gyMutexUnlock(stream->streamMutex);
             break; //He had a good run...
         }
 
@@ -259,14 +263,14 @@ static int _gyAudOggStreamUpdate(void* data) {
 
         if(done) stream->stillStreaming = 0;
 
-        mtx_unlock(&stream->streamMutex);
+        success &= gyMutexUnlock(stream->streamMutex);
     }
 
-    return thrd_success;
+    return success;
 #endif
 }
 
-struct GYAudioSource* gyAudOggStreamCreate(void) {
+struct GYAudioSource* gyAudOggStreamCreate(const char* threadName) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource*const stream = malloc(sizeof(_OggStreamSource));
 
@@ -279,11 +283,12 @@ struct GYAudioSource* gyAudOggStreamCreate(void) {
     stream->looping = 1;
 
     /* Initialize thread and synchronization primitives */
-    mtx_init(&stream->streamMutex, mtx_recursive);
-    cnd_init(&stream->tryStreamCond);
+    stream->streamMutex     = gyMutexCreate();
+    stream->tryStreamCond   = gyConditionCreate();
 
     //spawn the thread
-    thrd_create(&stream->thread, &_gyAudOggStreamUpdate, stream);
+    if(!threadName) threadName = "Ogg Decoder Thread";
+    stream->thread          = gyThreadCreate(threadName, &_gyAudOggStreamUpdate, stream);
     return (GYAudioSource*)stream;
 #endif
 }
@@ -294,15 +299,15 @@ void gyAudOggStreamDestroy(struct GYAudioSource*const src) {
 
     //Kill the stream thread
     stream->killMe = 1;							//flag thread to commit suicide
-    mtx_lock(&stream->streamMutex);
-    cnd_signal(&stream->tryStreamCond);
+    gyMutexLock(stream->streamMutex);
+    gyConditionSignal(stream->tryStreamCond);
     stream->stillStreaming = 1;					//wake its bitch ass up
-    mtx_unlock(&stream->streamMutex);
-    thrd_join(stream->thread, NULL);            /* await its death */
+    gyMutexUnlock(stream->streamMutex);
+    gyThreadWait(stream->thread);            /* await its death */
 
     //free threading resources
-    mtx_destroy(&stream->streamMutex);
-    cnd_destroy(&stream->tryStreamCond);
+    gyMutexDestroy(stream->streamMutex);
+    gyConditionDestroy(stream->tryStreamCond);
 
     //kill alSource
     gyAudSourceDestroy(src);
@@ -325,7 +330,7 @@ void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
     if(gyAudSourceIsPlaying(src))
         gyAudOggStreamPause(src);
 
-    mtx_lock(&stream->streamMutex);
+    gyMutexLock(stream->streamMutex);
 
     if(_streamOgg(payload->buffers[0], ogg))
         ++validBuffers;
@@ -343,10 +348,10 @@ void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
         stream->ogg->looping = stream->looping;
 
         stream->stillStreaming = 1;
-        cnd_signal(&stream->tryStreamCond);
+        gyConditionSignal(stream->tryStreamCond);
     }
 
-    mtx_unlock(&stream->streamMutex);
+    gyMutexUnlock(stream->streamMutex);
 #endif
 }
 
@@ -355,7 +360,7 @@ void gyAudOggStreamPause(struct GYAudioSource*src) {
     _OggStreamSource* stream = (void*)src;
     int queued;
 
-    mtx_lock(&stream->streamMutex);
+    gyMutexLock(stream->streamMutex);
 
     alSourceStop(stream->src);
     alGetSourcei(stream->src, AL_BUFFERS_QUEUED, &queued);
@@ -370,7 +375,7 @@ void gyAudOggStreamPause(struct GYAudioSource*src) {
 
     stream->stillStreaming = 0;
 
-    mtx_unlock(&stream->streamMutex);
+    gyMutexUnlock(stream->streamMutex);
 #endif
 }
 
@@ -380,13 +385,13 @@ void gyAudOggStreamStop(struct GYAudioSource*src) {
     if(!stream || !stream->ogg) return;
     GYOggPayload* payload = stream->ogg->_data;
 
-    mtx_lock(&stream->streamMutex);
+    gyMutexLock(stream->streamMutex);
 
     gyAudOggStreamPause(src);
     ov_pcm_seek(&payload->oggStream, 0);
     stream->ogg = NULL;
 
-    mtx_unlock(&stream->streamMutex);
+    gyMutexUnlock(stream->streamMutex);
 #endif
 }
 
@@ -398,14 +403,14 @@ void gyAudOggStreamSync(GYAudioSource*const src1, GYAudioSource*const src2) {
     GYOggPayload* payload2 = stream2->ogg->_data;
 
     double time;
-    mtx_lock(&stream1->streamMutex);
-    mtx_lock(&stream2->streamMutex);
+    gyMutexLock(stream1->streamMutex);
+    gyMutexLock(stream2->streamMutex);
 
     time = ov_time_tell(&payload1->oggStream);
     ov_time_seek_lap(&payload2->oggStream, time);
 
-    mtx_unlock(&stream1->streamMutex);
-    mtx_unlock(&stream2->streamMutex);
+    gyMutexUnlock(stream1->streamMutex);
+    gyMutexUnlock(stream2->streamMutex);
 #endif
 }
 
