@@ -101,6 +101,8 @@ static struct SDLThreadContext {
 #endif
 } _context;
 
+static int _initialized = 0;
+
 static inline const char* gyThreadPriorityString(GY_THREAD_PRIORITY priority) {
     switch(priority) {
     GYRO_SWITCH_CASE_STRING(GY_THREAD_PRIORITY_LOW);
@@ -114,13 +116,16 @@ static inline const char* gyThreadPriorityString(GY_THREAD_PRIORITY priority) {
 }
 
 int gyThreadInit(const GYThreadInitParams *params) {
+    if(_initialized) return 0;
     (void)params;
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_THREAD_API: Initializing SDL Thread Back-End.");
     memset(&_context, 0, sizeof(struct SDLThreadContext));
+    _initialized = 1;
     return 1;
 }
 
 int gyThreadUninit(void) {
+    if(!_initialized) return 0;
     int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_THREAD_API: Uninitializing SDL Thread Back-End.");
     _gyPush();
@@ -146,6 +151,7 @@ int gyThreadUninit(void) {
 #endif
 
     _gyPop(1);
+    _initialized = 0;
     return success;
 }
 
@@ -182,9 +188,13 @@ const char* gyThreadName(GYThread* thread) {
 }
 
 int gyThreadWait(GYThread* thread) {
+    if(!thread) return 0;
+    char thdName[200] = { 0 };
+    strncpy(thdName, gyThreadName(thread), 200);
     //assert(thread); Safely accepts NULL threads
-    int retValue;
+    int retValue = 0;
     SDL_WaitThread((SDL_Thread*)thread, &retValue);
+    _gyLog(GY_DEBUG_VERBOSE, "Thread[%s] joined with return value: [%d]", thdName, retValue);
 #ifdef GY_THREAD_DEBUG
     assert(_context.dbg.activeThreadCount);
     --_context.dbg.activeThreadCount;
@@ -277,7 +287,7 @@ int gyThreadPriority(GY_THREAD_PRIORITY priority) {
         goto end;
     } else {
         param.sched_priority = _pthreadPriority(priority, max_prio_for_policy);
-        _gyLog(GY_DEBUG_VERBOSE, "Assining Thread [%d] Priority: [%d/%d]", sdlId, param.sched_priority, max_prio_for_policy);
+        _gyLog(GY_DEBUG_VERBOSE, "Assigning Thread [%d] Priority: [%d/%d]", sdlId, param.sched_priority, max_prio_for_policy);
     }
 
     if((errorCode = pthread_setschedparam(thId, policy, &param))) {
@@ -452,11 +462,13 @@ GYCondition* gyConditionCreate(void) {
 }
 
 int gyConditionDestroy(GYCondition* cond) {
+    if(!cond) return 0;
     SDL_DestroyCond((SDL_cond*)cond);
 #ifdef GY_THREAD_DEBUG
     assert(_context.dbg.activeConditionCount);
     --_context.dbg.activeConditionCount;
 #endif
+    return 1;
 }
 
 int gyConditionBroadcast(GYCondition* cond) {

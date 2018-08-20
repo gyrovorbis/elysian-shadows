@@ -60,7 +60,7 @@ typedef struct _Buffer {
 } _Buffer;
 
 typedef struct _Event {
-    GYComputeEvent          event;
+    GYComputeEvent          gyEvent;
     cl_event                clEvent;
 } _Event;
 
@@ -1266,22 +1266,22 @@ int gyComputeCommandQueueEnqueueKernel(GYComputeCommandQueue* queue, GYComputeKe
     _CommandQueue* cmd = ((_CommandQueue*)queue);
 
     GY_ASSERT(queue && kernel && workDimensions && globalWorkOffset && globalWorkSize && localWorkSize);
-
+    GY_ASSERT(!eventCount); // fucking REESTED
     if(!kern->kernel) return 0;
 
-    if(GY_CL_CHECK_ERROR(clEnqueueNDRangeKernel(cmd->queue, kern->kernel, workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, eventCount, eventList, event))) return 0;
+    if(GY_CL_CHECK_ERROR(clEnqueueNDRangeKernel(cmd->queue, kern->kernel, workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, eventCount, eventList, event? &((_Event*)event)->clEvent : NULL))) return 0;
     return 1;
 }
 
 int gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue *queue, const GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, const void *data, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffer && data && cb);
-
+    GY_ASSERT(!eventCount); // fucking REESTED
     return !GY_CL_CHECK_ERROR(clEnqueueWriteBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, data, eventCount, (cl_event*)eventList, event? &((_Event*)event)->clEvent : NULL));
 }
 
 int gyComputeCommandQueueEnqueueBufferRead(GYComputeCommandQueue *queue, GYComputeBuffer *buffer, int blocking, size_t offset, size_t cb, void *ptr, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffer && ptr && cb);
-
+    GY_ASSERT(!eventCount); // fucking REESTED
     return !GY_CL_CHECK_ERROR(clEnqueueReadBuffer(((_CommandQueue*)queue)->queue, ((_Buffer*)buffer)->clBuffer, blocking, offset, cb, ptr, eventCount, (cl_event*)eventList, event? &((_Event*)event)->clEvent : NULL));
 }
 
@@ -1295,6 +1295,7 @@ int gyComputeCommandQueueEnqueueAcquireRendererObject(GYComputeCommandQueue *que
 
 int gyComputeCommandQueueEnqueueReleaseRendererObject(GYComputeCommandQueue *queue, unsigned count, const GYComputeBuffer** buffers, unsigned eventCount, const GYComputeEvent* eventList, GYComputeEvent* event) {
     GY_ASSERT(queue && buffers && count > 0 && count < GY_CL_ENQUEUE_ACQUIRE_RENDERER_OBJECTS_MAX);
+        GY_ASSERT(!eventCount); // fucking REESTED
     cl_mem clBuffers[GY_CL_ENQUEUE_ACQUIRE_RENDERER_OBJECTS_MAX];
     for(unsigned i = 0; i < count; ++i) clBuffers[i] = ((_Buffer*)buffers[i])->clBuffer;
 
@@ -1596,9 +1597,9 @@ GYComputeEvent* gyComputeEventCreate(void) {
     _Event* event = malloc(sizeof(_Event));
     memset(event, 0, sizeof(_Event));
 #ifdef GY_COMPUTE_DEBUG
-    ++_debugInfo.activeKernelCount;
+    ++_debugInfo.activeEventCount;
 #endif
-    return &event->event;
+    return &event->gyEvent;
 }
 
 int gyComputeEventDestroy(GYComputeEvent* event) {
@@ -1612,8 +1613,8 @@ int gyComputeEventDestroy(GYComputeEvent* event) {
 
 uint64_t gyComputeEventProfilingCounter(const GYComputeEvent* event, GY_COMPUTE_PROFILING_COUNTER counterType) {
     GY_ASSERT(event && counterType >= 0 && counterType < GY_COMPUTE_PROFILING_COUNTER_MAX);
-    uint64_t counter;
-    if(!GY_CL_CHECK_ERROR(clGetEventProfilingInfo(((_Event*)event), _clProfilingInfoFromGyro(counterType), sizeof(cl_profiling_info), &counter, NULL))) {
+    cl_ulong counter;
+    if(!GY_CL_CHECK_ERROR(clGetEventProfilingInfo(((_Event*)event)->clEvent, _clProfilingInfoFromGyro(counterType), sizeof(cl_ulong), &counter, NULL))) {
         return counter;
     } else {
         _gyLog(GY_DEBUG_ERROR, "[GYRO_COMPUTE_API]: Failed to query cl_event counter for profiling info!");
