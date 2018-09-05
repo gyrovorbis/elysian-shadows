@@ -50,7 +50,8 @@ INCLUDEPATH += ../AssetIO/include \
         ../ESToolkit/ESToolkit/include/ESToolkit \
         ../ESToolkit/ESToolkit/include/QESTkUtils \
 	../libGyro/include \
-	../libGyro/include/kinetic \
+        ../libGyro/api \
+        ../libGyro-Kinetic\api \
 	../ESToolkit/ESToolkit/include/sheet_manager \
 	../ESToolkit/ESToolkit/include/dialog \
 	../ESToolkit/ESToolkit/include/widget \
