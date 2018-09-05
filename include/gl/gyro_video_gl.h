@@ -1,8 +1,8 @@
 #ifndef GYRO_VIDEO_GL_H
 #define GYRO_VIDEO_GL_H
 
-#include <gyro_matrix_api.h>
-#include <gyro_video_api.h>
+#include "../api/gyro_matrix_api.h"
+#include "../api/gyro_video_api.h"
 #include <stdio.h>
 
 #ifdef __cplusplus

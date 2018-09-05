@@ -1,7 +1,7 @@
 #ifndef GYRO_VIDEO_COMMON_H
 #define GYRO_VIDEO_COMMON_H
 
-#include <gyro_matrix_api.h>
+#include "../api/gyro_matrix_api.h"
 #include <math.h>
 
 #ifdef __cplusplus

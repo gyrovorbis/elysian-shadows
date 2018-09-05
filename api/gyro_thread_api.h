@@ -34,20 +34,20 @@ typedef enum GY_THREAD_PRIORITY {
 } GY_THREAD_PRIORITY;
 
 typedef struct GYThread {
-
+    char dummy;
 } GYThread;
 
 typedef struct GYMutex {
-
+    char dummy;
 
 } GYMutex;
 
 typedef struct GYSemaphore {
-
+    char dummy;
 } GYSemaphore;
 
 typedef struct GYCondition {
-
+    char dummy;
 } GYCondition;
 
 #ifdef GY_THREAD_DEBUG

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <gyro_platform.h>
+#include "gyro_platform.h"
 
 #ifdef __cplusplus
 extern "C" {
