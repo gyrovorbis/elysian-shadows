@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_PARTICLE_EMITTER_PROXY_HPP
 #define ELYSIAN_PARTICLE_EMITTER_PROXY_HPP
 
-#include <crtp/elysian_particle_emitter.hpp>
-#include <crtp/elysian_sprite_attrib.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <primitive/elysian_color_base.hpp>
+#include <AssetIO/crtp/elysian_particle_emitter.hpp>
+#include <AssetIO/crtp/elysian_sprite_attrib.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/primitive/elysian_color_base.hpp>
 
 namespace OOLUA {
     typedef elysian::ParticleEmitterAttrib      ParticleEmitterAttrib;

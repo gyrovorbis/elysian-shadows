@@ -1,17 +1,17 @@
 #include <string.h>
-#include <proxy/elysian_area_proxy.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <crtp/elysian_level.hpp>
-#include <crtp/elysian_lua_manager.hpp>
-#include <utility/elysian_generic.hpp>
-#include <crtp/elysian_behavior.hpp>
+#include <AssetIO/proxy/elysian_area_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <AssetIO/crtp/elysian_behavior.hpp>
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
 #include <gl/gyro_gl.h>
 #include <gl/gyro_shaders_gl.h>
 //#include <glal/gyro_video_glal.h>
 #endif
-#include <gyro_file_api.h>
-#include <system/elysian_audio_system.hpp>
+#include <libGyro/gyro_file_api.h>
+#include <ESGamma/system/elysian_audio_system.hpp>
 
 
 using namespace std;

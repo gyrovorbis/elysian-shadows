@@ -1,4 +1,4 @@
-#include <proxy/elysian_bit_mask_proxy.hpp>
+#include <AssetIO/proxy/elysian_bit_mask_proxy.hpp>
 
 
 /*!

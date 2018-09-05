@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_CHARACTER_PROXY_HPP
 #define ELYSIAN_CHARACTER_PROXY_HPP
 
-#include <crtp/elysian_character.hpp>
-#include <proxy/elysian_character_proxy.hpp>
-#include <proxy/elysian_component_proxy.hpp>
+#include <AssetIO/crtp/elysian_character.hpp>
+#include <AssetIO/proxy/elysian_character_proxy.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
 
 namespace OOLUA {
     typedef elysian::Direction      Direction;

@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_BIT_MASK_PROXY_HPP
 #define ELYSIAN_BIT_MASK_PROXY_HPP
 
-#include <utility/elysian_bit_mask.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
 
 namespace OOLUA {
     using BitMask32 = elysian::BitMask32;

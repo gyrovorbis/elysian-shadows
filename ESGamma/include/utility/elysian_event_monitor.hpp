@@ -2,7 +2,7 @@
 #define ELYSIAN_EVENT_MONITOR_HPP
 
 #include <functional>
-#include "elysian_lua_manager.hpp"
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
 
 namespace elysian {
 

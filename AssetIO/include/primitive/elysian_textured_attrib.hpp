@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_TEXTURED_ATTRIB_HPP
 #define ELYSIAN_TEXTURED_ATTRIB_HPP
 
-#include <gyro_texture_api.h>
+#include <libGyro/gyro_texture_api.h>
 #include <string.h>
 #include <cassert>
 

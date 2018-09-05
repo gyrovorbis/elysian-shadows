@@ -1,7 +1,7 @@
-#include <crtp/elysian_dialog_screen.hpp>
-#include <crtp/elysian_dialog.hpp>
+#include <AssetIO/crtp/elysian_dialog_screen.hpp>
+#include <AssetIO/crtp/elysian_dialog.hpp>
 
-#include <proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
 
 namespace elysian {

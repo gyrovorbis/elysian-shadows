@@ -1,5 +1,5 @@
-#include "elysian_behavior_system.hpp"
-#include "elysian_collision_system.hpp"
+#include <ESGamma/system/elysian_behavior_system.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
 
 namespace elysian {
 

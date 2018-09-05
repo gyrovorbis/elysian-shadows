@@ -1,4 +1,4 @@
-#include "elysian_system.hpp"
+#include <ESGamma/system/elysian_system.hpp>
 
 namespace elysian {
 

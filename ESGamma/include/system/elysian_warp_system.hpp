@@ -1,12 +1,12 @@
 #ifndef ELYSIAN_WARP_SYSTEM_HPP
 #define ELYSIAN_WARP_SYSTEM_HPP
 
-#include "elysian_system.hpp"
-#include <crtp/elysian_warp.hpp>
-#include "elysian_sprite.hpp"
-#include "elysian_collision_system.hpp"
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/crtp/elysian_warp.hpp>
+#include <ESGamma/gui/elysian_sprite.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
 
-#include <gyro.h>
+#include <libGyro/gyro.h>
 
 namespace elysian {
 

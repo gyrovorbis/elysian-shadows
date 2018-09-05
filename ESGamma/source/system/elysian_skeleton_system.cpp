@@ -1,8 +1,8 @@
-#include <system/elysian_skeleton_system.hpp>
-#include <crtp/elysian_timer_system.hpp>
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_skeleton.hpp>
-#include <crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_skeleton_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_skeleton.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
 #include <spine/Bone.h>
 
 namespace elysian {

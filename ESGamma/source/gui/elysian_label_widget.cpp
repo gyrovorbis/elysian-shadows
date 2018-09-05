@@ -1,6 +1,6 @@
 #include <cstring>
-#include "gui/elysian_label_widget.hpp"
-#include "gui/elysian_font.hpp"
+#include <ESGamma/gui/elysian_label_widget.hpp>
+#include <ESGamma/gui/elysian_font.hpp>
 
 namespace elysian {
 

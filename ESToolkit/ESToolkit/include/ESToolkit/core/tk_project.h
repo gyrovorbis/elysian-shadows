@@ -7,7 +7,7 @@
 #include <ESToolkit/ui/item/tk_tree_node.h>
 #include <QESTkUtils/model/tk_property_stack_model.h>
 #include <ESToolkit/core/tk_asset_manager.h>
-#include <elysian_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
 #include <QDir>
 
 class TkLevel;

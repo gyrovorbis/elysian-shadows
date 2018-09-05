@@ -3,13 +3,13 @@
 
 #include <map>
 #include <functional>
-#include <gyro_kinetic.h>
-#include <utility/elysian_mem_pool.hpp>
-#include "elysian_system.hpp"
-#include <level/elysian_tile.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <utility/elysian_sort_sweep.hpp>
-#include <elysian_task_monitor.hpp>
+#include <libGyro-Kinetic/gyro_kinetic.h>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/level/elysian_tile.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <ESGamma/utility/elysian_sort_sweep.hpp>
+#include <ESGamma/crtp/elysian_task_monitor.hpp>
 
 #define ELYSIAN_COLLISION_SYSTEM_PROTECTED                      true
 #define ELYSIAN_COLLISION_BROAD_PHASE                           true

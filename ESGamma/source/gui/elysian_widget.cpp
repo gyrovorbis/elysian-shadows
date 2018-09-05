@@ -1,6 +1,6 @@
-#include "gui/elysian_widget.hpp"
-#include "gui/elysian_layout.hpp"
-#include <gyro_matrix_api.h>
+#include <ESGamma/gui/elysian_widget.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <libGyro/gyro_matrix_api.h>
 #include <cfloat>
 
 namespace elysian {

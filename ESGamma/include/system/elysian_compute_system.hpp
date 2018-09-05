@@ -1,23 +1,23 @@
 #ifndef ELYSIAN_COMPUTE_SYSTEM_HPP
 #define ELYSIAN_COMPUTE_SYSTEM_HPP
 
-#include <system/elysian_system.hpp>
-#include <gyro_compute_api.h>
-#include <gyro_platform.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <libGyro/gyro_compute_api.h>
+#include <libGyro/gyro_platform.h>
 #include <cstring>
 #include <cassert>
 #include <initializer_list>
 #include <vector>
 #include <map>
 #include <functional>
-#include <utility/elysian_cstr_map.hpp>
+#include <AssetIO/utility/elysian_cstr_map.hpp>
 
 #ifndef ELYSIAN_COMPUTE_PROFILING_ENABLED
 #   define ELYSIAN_COMPUTE_PROFILING_ENABLED   1
 #endif
 
 #ifdef ELYSIAN_COMPUTE_PROFILING_ENABLED
-#   include <utility/elysian_performance_monitor.hpp>
+#   include <ESGamma/utility/elysian_performance_monitor.hpp>
 #endif
 
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC

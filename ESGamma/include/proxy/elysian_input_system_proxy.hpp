@@ -2,8 +2,8 @@
 #define ELYSIAN_INPUT_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <crtp/elysian_input_system.hpp>
-#include <proxy/elysian_instance_transform_proxy.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
 
 namespace OOLUA {
     typedef elysian::PlayerIODevice             PlayerIODevice;

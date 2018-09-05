@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_OPTIONS_MENU_HPP
 #define ELYSIAN_OPTIONS_MENU_HPP
 
-#include <gui/elysian_menu_widget.hpp>
+#include <ESGamma/gui/elysian_menu_widget.hpp>
 
 namespace elysian {
     class VerticalLayout;

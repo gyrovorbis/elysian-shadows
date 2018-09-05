@@ -2,7 +2,7 @@
 #define ELYSIAN_LIGHT_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_light_system.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
 
 namespace OOLUA {
     typedef elysian::LightSystem    LightSystem;

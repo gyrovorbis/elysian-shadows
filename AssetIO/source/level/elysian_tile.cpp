@@ -1,6 +1,6 @@
-#include <level/elysian_tile.hpp>
-#include <gyro_audio_api.h>
-#include <gyro_wav_api.h>
+#include <AssetIO/level/elysian_tile.hpp>
+#include <libGyro/gyro_audio_api.h>
+#include <libGyro/gyro_wav_api.h>
 /*
  enum COLLIDER_TYPE {
  COLLIDER_NONE, COLLIDER_FULL,

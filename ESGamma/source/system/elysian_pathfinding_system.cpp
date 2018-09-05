@@ -1,7 +1,7 @@
-#include "elysian_pathfinding_system.hpp"
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_level.hpp>
-#include <utility/elysian_ring_buffer.hpp>
+#include <ESGamma/system/elysian_pathfinding_system.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <AssetIO/utility/elysian_ring_buffer.hpp>
 
 namespace elysian {
 

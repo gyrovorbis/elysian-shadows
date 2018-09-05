@@ -7,7 +7,7 @@
 #include <ESToolkit/ui/widget/tk_map_view.h>
 #include <ESToolkit/core/tk_tile_image.h>
 #include <ESToolkit/core/tk_tile_selectable.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 
 class MapViewTileGraphicsItem: public TileGraphicsItem<TileEntry>, public AssetManager {
 protected:

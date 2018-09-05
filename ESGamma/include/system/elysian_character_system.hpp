@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_CHARACTER_SYSTEM_HPP
 #define ELYSIAN_CHARACTER_SYSTEM_HPP
 
-#include "elysian_system.hpp"
-#include "elysian_subprocess_manager.hpp"
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_character.hpp>
-#include <crtp/elysian_rigid_body.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/utility/elysian_subprocess_manager.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_character.hpp>
+#include <AssetIO/crtp/elysian_rigid_body.hpp>
 
 #define ELYSIAN_CHARACTER_SYSTEM_WAYPOINT_INTERP_POOL_SIZE	50
 

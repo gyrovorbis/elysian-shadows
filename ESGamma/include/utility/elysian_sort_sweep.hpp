@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_SORT_SWEEP_HPP
 #define ELYSIAN_SORT_SWEEP_HPP
 
-#include <utility/elysian_mem_pool.hpp>
-#include <utility/elysian_asset_typedefs.hpp>
-#include <elysian_debug.hpp>
-#include <utility/elysian_generic.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
 
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED

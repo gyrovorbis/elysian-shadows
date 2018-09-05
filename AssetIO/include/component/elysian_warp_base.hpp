@@ -2,10 +2,10 @@
 #define ELYSIAN_WARP_BASE_HPP
 
 #include <cstring>
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <primitive/elysian_rect.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/primitive/elysian_rect.hpp>
 
 #define ELYSIAN_WARP_AREA_PATH_MAX_CHARS        200
 #define ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS    200

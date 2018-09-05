@@ -1,5 +1,5 @@
-#include <gui/elysian_entity_widget.hpp>
-#include <crtp/elysian_entity.hpp>
+#include <ESGamma/gui/elysian_entity_widget.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
 
 namespace elysian {
 

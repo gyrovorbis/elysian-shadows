@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_EXAMINABLE_PROXY_HPP
 #define ELYSIAN_EXAMINABLE_PROXY_HPP
 
-#include <proxy/elysian_component_proxy.hpp>
-#include <proxy/elysian_dialog_proxy.hpp>
-#include <crtp/elysian_examinable.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
+#include <AssetIO/proxy/elysian_dialog_proxy.hpp>
+#include <AssetIO/crtp/elysian_examinable.hpp>
 
 namespace OOLUA {
     typedef elysian::Dialog             Dialog;

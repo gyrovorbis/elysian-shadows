@@ -6,14 +6,14 @@
 #include <cstring>
 #include <cstdint>
 #include <limits>
-#include <kinetic/gyro_kinetic_collider.h>
-#include <kinetic/gyro_kinetic_static.h>
-#include <kinetic/gyro_kinetic_contact.h>
-#include <crtp/elysian_component.hpp>
-#include <utility/elysian_sort_sweep.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <utility/elysian_bit_mask.hpp>
+#include <libGyro-Kinetic/gyro_kinetic_collider.h>
+#include <libGyro-Kinetic/gyro_kinetic_static.h>
+#include <libGyro-Kinetic/gyro_kinetic_contact.h>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <ESGamma/utility/elysian_sort_sweep.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
 #include <memory>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1u<<0)

@@ -1,8 +1,8 @@
-#include <crtp/elysian_behavior.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <utility/elysian_generic.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_behavior.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

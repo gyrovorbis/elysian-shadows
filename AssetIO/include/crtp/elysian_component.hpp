@@ -7,7 +7,7 @@ namespace elysian {
     typedef ComponentBase Component;
 }
 #else
-#   include <AssetIO/tk_component.h>
+#   include <ESToolkit/AssetIO/tk_component.h>
 namespace elysian {
     typedef TkComponent Component;
 }

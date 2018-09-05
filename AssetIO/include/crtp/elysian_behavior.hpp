@@ -7,7 +7,7 @@ namespace elysian {
     typedef BehaviorBase Behavior;
 }
 #else
-#   include <AssetIO/tk_behavior.h>
+#   include <ESToolkit/AssetIO/tk_behavior.h>
 namespace elysian {
     typedef TkBehavior Behavior;
 }

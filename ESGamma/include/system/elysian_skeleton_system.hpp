@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_SKELETON_SYSTEM_HPP
 #define ELYSIAN_SKELETON_SYSTEM_HPP
 
-#include <system/elysian_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
 
 struct spAttachment;
 

@@ -1,9 +1,9 @@
-#include <crtp/elysian_particle_system.hpp>
-#include <crtp/elysian_camera_system.hpp>
-#include "elysian_debug.hpp"
-#include "elysian_timer_system.hpp"
-#include "elysian_force_generator.hpp"
-#include <crtp/elysian_area.hpp>
+#include <ESGamma/crtp/elysian_particle_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/utility/elysian_force_generator.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

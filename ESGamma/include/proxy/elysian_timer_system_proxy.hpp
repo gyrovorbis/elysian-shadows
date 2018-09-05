@@ -2,7 +2,7 @@
 #define ELYSIAN_TIMER_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <crtp/elysian_timer_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
 
 namespace OOLUA {
     typedef elysian::TimerSystem    TimerSystem;

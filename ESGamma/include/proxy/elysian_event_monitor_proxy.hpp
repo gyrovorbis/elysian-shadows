@@ -2,7 +2,7 @@
 #define ELYSIAN_EVENT_MONITOR_PROXY_HPP
 
 #include <oolua.h>
-#include <utility/elysian_event_monitor.hpp>
+#include <ESGamma/utility/elysian_event_monitor.hpp>
 
 
 namespace OOLUA {

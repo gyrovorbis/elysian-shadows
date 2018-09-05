@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <queue>
-#include <gyro_thread_api.h>
-#include <system/elysian_system.hpp>
-#include <utility/elysian_performance_monitor.hpp>
+#include <libGyro/gyro_thread_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/utility/elysian_performance_monitor.hpp>
 
 #define ELYSIAN_THREAD_DEFAULT_PRIORITY             GY_THREAD_PRIORITY_HIGH
 #define ELYSIAN_ASYNC_TASK_QUEUE_THREAD_PRIORITY    GY_THREAD_PRIORITY_REALTIME

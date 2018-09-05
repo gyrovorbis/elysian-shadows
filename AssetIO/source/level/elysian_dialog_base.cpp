@@ -1,5 +1,5 @@
-#include <proxy/elysian_entity_proxy.hpp>
-#include <crtp/elysian_dialog.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/crtp/elysian_dialog.hpp>
 #include <cstring>
 
 namespace elysian {

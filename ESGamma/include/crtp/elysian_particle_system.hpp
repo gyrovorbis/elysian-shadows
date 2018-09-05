@@ -7,7 +7,7 @@ namespace elysian {
     using ParticleSystem    = ParticleSystemBase;
 }
 #else
-#   include <ESGamma/tk_particle_system.h>
+#   include <ESToolkit/ESGamma/tk_particle_system.h>
 namespace elysian {
     using ParticleSystem    = TkParticleSystem;
 }

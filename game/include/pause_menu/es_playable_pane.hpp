@@ -1,10 +1,9 @@
 #ifndef ELYSIAN_PLAYABLE_PANE_HPP
 #define ELYSIAN_PLAYABLE_PANE_HPP
 
-#include <gui/elysian_entity_widget.hpp>
-#include <utility/elysian_asset_typedefs.hpp>
-#include <gui/elysian_entity_widget.hpp>
-#include <crtp/elysian_lua_manager.hpp>
+#include <ESGamma/gui/elysian_entity_widget.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
 
 #define ELYSIAN_PLAYABLE_PANE_COMBAT_BEHAV      "/assets/scripts/combat/_player_combat_behav.lua"
 #define ELYSIAN_PLAYABLE_PANE_PORTRAIT_PREFAB   "menu_partyMemberPane_portrait"

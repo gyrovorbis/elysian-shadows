@@ -1,10 +1,10 @@
-#include <gyro_video_api.h>
-#include <gyro_file_api.h>
-#include <gyro_shader_api.h>
-#include "elysian_font.hpp"
-#include "elysian_debug.hpp"
-#include "crtp/elysian_camera_system.hpp"
-#include "elysian_system.hpp"
+#include <libGyro/gyro_video_api.h>
+#include <libGyro/gyro_file_api.h>
+#include <libGyro/gyro_shader_api.h>
+#include <ESGamma/gui/elysian_font.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
 
 namespace elysian {
 

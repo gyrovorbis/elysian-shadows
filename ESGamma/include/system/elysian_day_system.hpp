@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_DAY_SYSTEM_HPP
 #define ELYSIAN_DAY_SYSTEM_HPP
 
-#include <system/elysian_system.hpp>
-#include <system/elysian_event_system.hpp>
-#include <gyro_matrix_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
+#include <libGyro/gyro_matrix_api.h>
 #include <memory>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)

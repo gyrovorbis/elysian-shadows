@@ -2,7 +2,7 @@
 #define ELYSIAN_EVENT_PROXY_HPP
 
 #include <oolua.h>
-#include <level/elysian_event.hpp>
+#include <AssetIO/level/elysian_event.hpp>
 
 namespace OOLUA {
     typedef elysian::Event          Event;

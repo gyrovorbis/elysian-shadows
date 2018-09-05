@@ -1,4 +1,4 @@
-#include <elysian_lua_singleton.hpp>
+#include <ESGamma/lua/elysian_lua_singleton.hpp>
 
 
 namespace elysian {

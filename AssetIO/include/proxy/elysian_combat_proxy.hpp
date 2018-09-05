@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_COMBAT_PROXY_HPP
 #define ELYSIAN_COMBAT_PROXY_HPP
 
-#include <crtp/elysian_combat.hpp>
-#include <proxy/elysian_component_proxy.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
 
 namespace OOLUA {
     typedef elysian::CombatAttrib           CombatAttrib;

@@ -2,7 +2,7 @@
 #define ELYSIAN_LEVEL_PROXY_HPP
 
 #include <oolua.h>
-#include <crtp/elysian_level.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
 
 namespace OOLUA {
     typedef elysian::Tile       Tile;

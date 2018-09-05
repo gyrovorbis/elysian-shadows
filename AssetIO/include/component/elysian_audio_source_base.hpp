@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_AUDIO_SOURCE_BASE_HPP
 #define ELYSIAN_AUDIO_SOURCE_BASE_HPP
 
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <gyro_wav_api.h>
-#include <gyro_audio_api.h>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <libGyro/gyro_wav_api.h>
+#include <libGyro/gyro_audio_api.h>
 
 #define ELYSIAN_AUDIO_SOURCE_DEBUG
 

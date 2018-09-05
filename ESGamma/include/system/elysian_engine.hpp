@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_ENGINE_HPP
 #define ELYSIAN_ENGINE_HPP
 
-#include <system/elysian_system.hpp>
-#include <crtp/elysian_task_monitor.hpp>
-#include <utility/elysian_performance_monitor.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/crtp/elysian_task_monitor.hpp>
+#include <ESGamma/utility/elysian_performance_monitor.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -26,7 +26,7 @@ namespace elysian {
        PerformanceMonitor lightPassMonitor          = PerformanceMonitor("Render Scene");
        PerformanceMonitor guiRenderMonitor          = PerformanceMonitor("Render UI");
        PerformanceMonitor bloomMonitor              = PerformanceMonitor("Bloom Lighting");
-       PerformanceMonitor updateMonitor            = PerformanceMonitor("Engine::update");
+       PerformanceMonitor updateMonitor             = PerformanceMonitor("Engine::update");
 
         PerformanceMonitor updateRigidBodyMonitor   = PerformanceMonitor("RigidBodySystem");
         PerformanceMonitor updateCollisionMonitor   = PerformanceMonitor("CollisionSystem");
@@ -46,7 +46,7 @@ namespace elysian {
         PerformanceMonitor updateLuaMonitor         = PerformanceMonitor("Behavior::onUpdate");
 
 
-        PerformanceMonitor processInputMonitor = PerformanceMonitor("Engine::processInput");
+        PerformanceMonitor processInputMonitor      = PerformanceMonitor("Engine::processInput");
 
                         Engine(void);
                         ~Engine(void);

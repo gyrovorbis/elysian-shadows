@@ -1,5 +1,5 @@
 
-#include <proxy/elysian_level_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_level_system_proxy.hpp>
 
 /*!
     \qmltype LevelSystem

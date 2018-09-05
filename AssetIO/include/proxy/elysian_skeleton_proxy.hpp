@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_SKELETON_PROXY_HPP
 #define ELYSIAN_SKELETON_PROXY_HPP
 
-#include <crtp/elysian_skeleton.hpp>
-#include <utility/elysian_oolua_string_traits.hpp>
+#include <AssetIO/crtp/elysian_skeleton.hpp>
+#include <AssetIO/utility/elysian_oolua_string_traits.hpp>
 
 using namespace std;
 

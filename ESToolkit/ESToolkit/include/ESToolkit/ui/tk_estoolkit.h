@@ -1,13 +1,13 @@
 #ifndef ESTOOLKIT_H
 #define ESTOOLKIT_H
 
-#include <gyro_system_api.h>
 #include <QMainWindow>
 #include <QUndoGroup>
 #include <QDir>
+#include <libGyro/gyro_system_api.h>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
 #include <ESToolkit/core/tk_assets.h>
-#include "elysian_lua_manager.hpp"
-#include <crtp/elysian_lua_variant.hpp>
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
 #define ESTOOLKIT_VERSION_NAME          "\"Redemption\""

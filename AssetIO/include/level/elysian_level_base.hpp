@@ -2,9 +2,9 @@
 #define ELYSIAN_LEVEL_BASE_HPP
 
 #include <vector>
-#include <gyro_texture_api.h>
-#include <level/elysian_tile.hpp>
-#include <utility/elysian_asset_typedefs.hpp>
+#include <libGyro/gyro_texture_api.h>
+#include <AssetIO/level/elysian_tile.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
 
 
 #define ELYSIAN_LEVEL_NAME_SIZE				50
@@ -14,13 +14,13 @@
 #define ELYSIAN_TILESHEET_PATH				"/tile/tilesheet.png"
 #define ELYSIAN_NORMALSHEET_PATH			"/tile/tilesheet_n.png"
 #define ELYSIAN_SPECULARSHEET_PATH			"/tile/tilesheet_e.png"
-#define ELYSIAN_BACKGROUND_TEXTURE_WIDTH	512
-#define ELYSIAN_BACKGROUND_TEXTURE_HEIGHT	512
+#define ELYSIAN_BACKGROUND_TEXTURE_WIDTH                512
+#define ELYSIAN_BACKGROUND_TEXTURE_HEIGHT               512
 #define ELYSIAN_LEVEL_INIT_LUA_PATH			"/level_init.lua"
 #define ELYSIAN_TILESHEET_WIDTH				512
 #define ELYSIAN_TILESHEET_HEIGHT			1024
-#define ELYSIAN_TILESHEET_TILE_WIDTH		16
-#define ELYSIAN_TILESHEET_TILE_HEIGHT		32
+#define ELYSIAN_TILESHEET_TILE_WIDTH                    16
+#define ELYSIAN_TILESHEET_TILE_HEIGHT                   32
 #define ELYSIAN_TILESHEET_TILES				512
 
 ELYSIAN_ASSET_TYPEDEF(Level)

@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QTreeWidget>
-#include <elysian_debug_base.hpp>
-#include <gyro_defines.h>
+#include <ESGamma/utility/elysian_debug_base.hpp>
+#include <libGyro/gyro_defines.h>
 #include <QStack>
 #include <QPoint>
 

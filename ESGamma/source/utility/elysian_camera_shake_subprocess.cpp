@@ -1,5 +1,5 @@
-#include <utility/elysian_camera_shake_subprocess.hpp>
-#include <crtp/elysian_camera_system.hpp>
+#include <ESGamma/utility/elysian_camera_shake_subprocess.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
 
 // ===== STATIC MEMBERS =====
 

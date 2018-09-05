@@ -1,11 +1,11 @@
-#include <gui/elysian_menu_widget.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <gui/elysian_layout.hpp>
-#include <crtp/elysian_input_system.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <proxy/elysian_layout_proxy.hpp>
-#include <proxy/elysian_widget_proxy.hpp>
-#include <gui/elysian_item_delegate.hpp>
+#include <ESGamma/gui/elysian_menu_widget.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/proxy/elysian_layout_proxy.hpp>
+#include <ESGamma/proxy/elysian_widget_proxy.hpp>
+#include <ESGamma/gui/elysian_item_delegate.hpp>
 
 namespace elysian {
 

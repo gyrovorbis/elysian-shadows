@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_SYSTEM_HPP
 #define ELYSIAN_SYSTEM_HPP
 
-#include <level/elysian_level_manager.hpp>
+#include <AssetIO/level/elysian_level_manager.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 ELYSIAN_ASSET_TYPEDEF(TimerSystem)

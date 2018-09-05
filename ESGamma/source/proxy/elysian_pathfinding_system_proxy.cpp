@@ -1,4 +1,4 @@
-#include <proxy/elysian_pathfinding_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_pathfinding_system_proxy.hpp>
 
 OOLUA_EXPORT_FUNCTIONS(PathfindingSystemNode)
 OOLUA_EXPORT_FUNCTIONS_CONST(PathfindingSystemNode, getPredecessor, getDistance)

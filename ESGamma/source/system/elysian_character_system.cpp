@@ -1,8 +1,8 @@
-#include "elysian_character_system.hpp"
-#include <crtp/elysian_character.hpp>
-#include "elysian_debug.hpp"
-#include "elysian_timer_system.hpp"
-#include <crtp/elysian_area.hpp>
+#include <ESGamma/system/elysian_character_system.hpp>
+#include <AssetIO/crtp/elysian_character.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

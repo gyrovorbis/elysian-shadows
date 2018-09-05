@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_CAMERA_SHAKE_SUBPROCESS_HPP
 #define ELYSIAN_CAMERA_SHAKE_SUBPROCESS_HPP
 
-#include <gyro_matrix_api.h>
-#include <utility/elysian_subprocess_manager.hpp>
+#include <libGyro/gyro_matrix_api.h>
+#include <ESGamma/utility/elysian_subprocess_manager.hpp>
 
 namespace elysian {
 

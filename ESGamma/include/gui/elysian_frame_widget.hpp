@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_FRAME_WIDGET_HPP
 #define ELYSIAN_FRAME_WIDGET_HPP
 
-#include <gui/elysian_widget.hpp>
+#include <ESGamma/gui/elysian_widget.hpp>
 
 namespace elysian {
 

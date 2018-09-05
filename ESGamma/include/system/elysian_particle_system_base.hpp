@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_PARTICLE_SYSTEM_BASE_HPP
 #define ELYSIAN_PARTICLE_SYSTEM_BASE_HPP
 
-#include <gyro_video_api.h>
-#include <gyro_math_api.h>
+#include <libGyro/gyro_video_api.h>
+#include <libGyro/gyro_math_api.h>
 #include "elysian_system.hpp"
-#include <crtp/elysian_particle_emitter.hpp>
+#include <AssetIO/crtp/elysian_particle_emitter.hpp>
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_DEFAULT_COUNT		4
 

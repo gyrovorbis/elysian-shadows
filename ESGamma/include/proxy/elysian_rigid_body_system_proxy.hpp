@@ -2,8 +2,8 @@
 #define ELYSIAN_RIGID_BODY_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_rigid_body_system.hpp>
-#include <utility/elysian_force_generator.hpp>
+#include <ESGamma/system/elysian_rigid_body_system.hpp>
+#include <ESGamma/utility/elysian_force_generator.hpp>
 
 namespace OOLUA {
     typedef elysian::ForceGenerator             ForceGenerator;

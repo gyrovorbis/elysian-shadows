@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_FORCE_GENERATOR_HPP
 #define ELYSIAN_FORCE_GENERATOR_HPP
 
-#include <gyro_math_api.h>
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_math_api.h>
+#include <libGyro/gyro_matrix_api.h>
 #include <stdint.h>
-#include <utility/elysian_asset_typedefs.hpp>
-#include <utility/elysian_bit_mask.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 

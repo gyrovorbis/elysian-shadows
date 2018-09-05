@@ -12,11 +12,11 @@
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MIN    0.3f
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MAX    0.7f
 
-#include <system/elysian_system.hpp>
-#include <device/elysian_rumble_device.hpp>
-#include <gyro_input_api.h>
-#include <gyro_visual_memory_api.h>
-#include <system/elysian_event_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/device/elysian_rumble_device.hpp>
+#include <libGyro/gyro_input_api.h>
+#include <libGyro/gyro_visual_memory_api.h>
+#include <ESGamma/system/elysian_event_system.hpp>
 
 struct GYWav;
 

@@ -1,13 +1,13 @@
-#include <pause_menu/es_playable_pane.hpp>
-#include <gui/elysian_layout.hpp>
-#include <gui/elysian_label_widget.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_lua_behavior.hpp>
-#include <crtp/elysian_renderable.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <crtp/elysian_combat.hpp>
-#include <system/elysian_party_system.hpp>
-#include <crtp/elysian_gui_system.hpp>
+#include <game/pause_menu/es_playable_pane.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_lua_behavior.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
 
 namespace ElysianShadows {
 

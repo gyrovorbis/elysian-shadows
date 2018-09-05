@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_LEVEL_SYSTEM_BASE_HPP
 #define ELYSIAN_LEVEL_SYSTEM_BASE_HPP
 
-#include <system/elysian_system.hpp>
-#include <utility/elysian_mem_pool.hpp>
-#include <gyro_defines.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <libGyro/gyro_defines.h>
 
 #include <vector>
 

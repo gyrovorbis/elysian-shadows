@@ -1,10 +1,10 @@
-#include "elysian_timer_system.hpp"
+#include <ESGamma/crtp/elysian_timer_system.hpp>
 
-#include <gyro_timer_api.h>
+#include <libGyro/gyro_timer_api.h>
 #include <cstring>
 #include <cstdio>
 #include <sys/time.h>
-#include <elysian_task_monitor.hpp>
+#include <ESGamma/crtp/elysian_task_monitor.hpp>
 
 #if 0
 /* copied from mpbench */

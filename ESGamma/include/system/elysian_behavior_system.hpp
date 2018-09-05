@@ -1,12 +1,12 @@
 #ifndef ELYSIAN_BEHAVIOR_SYSTEM_HPP
 #define ELYSIAN_BEHAVIOR_SYSTEM_HPP
 
-#include "elysian_system.hpp"
-#include <crtp/elysian_behavior.hpp>
 #include <functional>
-#include "elysian_collision_system.hpp"
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_area.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/crtp/elysian_behavior.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

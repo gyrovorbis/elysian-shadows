@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_EVENT_SYSTEM_HPP
 #define ELYSIAN_EVENT_SYSTEM_HPP
 
-#include <system/elysian_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
 #include <vector>
-#include <utility/elysian_bit_mask.hpp>
-#include <level/elysian_event.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
+#include <AssetIO/level/elysian_event.hpp>
 
 namespace elysian {
 

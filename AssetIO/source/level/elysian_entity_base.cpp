@@ -1,9 +1,9 @@
 #include <algorithm>
-#include <proxy/elysian_primitive_proxy.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <utility/elysian_stl_algorithm.hpp>
-#include <crtp/elysian_area.hpp>
-#include <utility/elysian_generic.hpp>
+#include <AssetIO/proxy/elysian_primitive_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/utility/elysian_stl_algorithm.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
 
 using namespace std;
 

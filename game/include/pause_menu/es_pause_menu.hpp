@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_MENU_HPP
 #define ELYSIAN_MENU_HPP
 
-#include <gui/elysian_menu_widget.hpp>
-#include <gui/elysian_entity_widget.hpp>
-#include <gui/elysian_frame_widget.hpp>
-#include <system/elysian_system.hpp>
-#include <system/elysian_event_system.hpp>
+#include <ESGamma/gui/elysian_menu_widget.hpp>
+#include <ESGamma/gui/elysian_entity_widget.hpp>
+#include <ESGamma/gui/elysian_frame_widget.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
 
 #define ELYSIAN_MENU_OPTIONS_PANE_OPTION_COUNT          10
 #define ELYSIAN_PAUSE_MENU_SFX_OPEN_PATH                "/assets/audio/sfx/UI/menu_select_01.wav"

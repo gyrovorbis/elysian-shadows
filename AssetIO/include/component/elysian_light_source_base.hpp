@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_LIGHT_SOURCE_BASE_HPP
 #define ELYSIAN_LIGHT_SOURCE_BASE_HPP
 
-#include <gyro_shader_api.h>
-#include <gyro_video_api.h>
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_camera_system.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <libGyro/gyro_shader_api.h>
+#include <libGyro/gyro_video_api.h>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPSILON	0.1f
 

@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_GUI_SYSTEM_PROXY_HPP
 #define ELYSIAN_GUI_SYSTEM_PROXY_HPP
 
-#include <crtp/elysian_gui_system.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
 #include <oolua.h>
 
 namespace OOLUA {

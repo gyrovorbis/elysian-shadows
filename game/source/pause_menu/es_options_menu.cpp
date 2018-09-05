@@ -1,6 +1,6 @@
-#include <pause_menu/es_options_menu.hpp>
-#include <gui/elysian_layout.hpp>
-#include <gui/elysian_label_widget.hpp>
+#include <game/pause_menu/es_options_menu.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
 
 using namespace elysian;
 

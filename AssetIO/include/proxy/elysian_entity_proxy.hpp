@@ -1,22 +1,22 @@
 #ifndef ELYSIAN_ENTITY_PROXY_HPP
 #define ELYSIAN_ENTITY_PROXY_HPP
 
-#include <crtp/elysian_entity.hpp>
-#include <proxy/elysian_instance_transform_proxy.hpp>
-#include <proxy/elysian_primitive_proxy.hpp>
-#include <proxy/elysian_collidable_proxy.hpp>
-#include <proxy/elysian_event_monitor_proxy.hpp>
-#include <proxy/elysian_renderable_proxy.hpp>
-#include <proxy/elysian_warp_proxy.hpp>
-#include <proxy/elysian_rigid_body_proxy.hpp>
-#include <proxy/elysian_character_proxy.hpp>
-#include <proxy/elysian_audio_source_proxy.hpp>
-#include <proxy/elysian_light_source_proxy.hpp>
-#include <proxy/elysian_examinable_proxy.hpp>
-#include <proxy/elysian_particle_emitter_proxy.hpp>
-#include <proxy/elysian_combat_proxy.hpp>
-#include <proxy/elysian_skeleton_proxy.hpp>
-#include <proxy/elysian_lua_behavior_proxy.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
+#include <AssetIO/proxy/elysian_primitive_proxy.hpp>
+#include <AssetIO/proxy/elysian_collidable_proxy.hpp>
+#include <ESGamma/proxy/elysian_event_monitor_proxy.hpp>
+#include <AssetIO/proxy/elysian_renderable_proxy.hpp>
+#include <AssetIO/proxy/elysian_warp_proxy.hpp>
+#include <AssetIO/proxy/elysian_rigid_body_proxy.hpp>
+#include <AssetIO/proxy/elysian_character_proxy.hpp>
+#include <AssetIO/proxy/elysian_audio_source_proxy.hpp>
+#include <AssetIO/proxy/elysian_light_source_proxy.hpp>
+#include <AssetIO/proxy/elysian_examinable_proxy.hpp>
+#include <AssetIO/proxy/elysian_particle_emitter_proxy.hpp>
+#include <AssetIO/proxy/elysian_combat_proxy.hpp>
+#include <AssetIO/proxy/elysian_skeleton_proxy.hpp>
+#include <AssetIO/proxy/elysian_lua_behavior_proxy.hpp>
 
 
 namespace OOLUA {

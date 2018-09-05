@@ -7,7 +7,7 @@ namespace elysian {
     typedef CharacterBase Character;
 }
 #else
-#   include <AssetIO/tk_character.h>
+#   include <ESToolkit/AssetIO/tk_character.h>
 namespace elysian {
     typedef TkCharacter Character;
 }

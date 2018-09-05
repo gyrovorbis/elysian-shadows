@@ -2,7 +2,7 @@
 #define ELYSIAN_PATHFINDING_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_pathfinding_system.hpp>
+#include <ESGamma/system/elysian_pathfinding_system.hpp>
 
 namespace OOLUA {
 typedef elysian::PathfindingSystem PathfindingSystem;

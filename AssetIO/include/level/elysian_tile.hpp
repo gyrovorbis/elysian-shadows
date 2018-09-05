@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_TILE_HPP
 #define ELYSIAN_TILE_HPP
 
-#include <gyro_video_api.h>
-#include <kinetic/gyro_kinetic_collider.h>
+#include <libGyro/gyro_video_api.h>
+#include <libGyro-Kinetic/gyro_kinetic_collider.h>
 
 #define ELYSIAN_TILE_WIDTH					32
 #define ELYSIAN_TILE_HEIGHT					32

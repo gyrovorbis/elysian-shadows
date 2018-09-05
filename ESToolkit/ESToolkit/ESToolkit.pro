@@ -72,40 +72,28 @@ DEPENDPATH += 	../../AssetIO/include \
     DEPENDPATH += include
 }
 
-#PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
-INCLUDEPATH += ../../AssetIO/include \
-    ../../ESGamma/include \
-    ../../ESGamma/include/crtp \
-    ../../ESGamma/include/gui \
-    ../../ESGamma/include/lua \
-    ../../ESGamma/include/system \
-    ../../ESGamma/include/utility \
-    ../../libGyro/api
-
-!ios: !dreamcast: !android {
+#!ios: !dreamcast: !android {
     INCLUDEPATH += include
     #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
-}
+#}
 
 vmu_child_app {
     QT += serialport
 
-    INCLUDEPATH += ../../ElysianVMU/app/qt/include \
-                ../../ElysianVMU/evmu-core/include
+#    INCLUDEPATH += ../../ElysianVMU/app/qt/include \
+#                ../../ElysianVMU/evmu-core/include
 
     DEPENDPATH += ../../ElysianVMU/app/qt \
-        ../../ElysianVMU/build/qtcreator/ElysianVMU
+        ../../ElysianVMU/build/qtcreator/ElysianVMU \
+        ../../ElysianVMU/evmu-core
 }
 
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
 INCLUDEPATH += \
-    ../../game/include \
-    ../../libGyro/include \
-    ../../libGyro/include/kinetic \
     ../../Lua5.2/include \
     ../../OOLua/include \
-    ../../ESGamma/lib/include \
-    ../../Spine/include
+    ../../Spine/include \
+    ../../libGyro/include
 
 SOURCES += \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \

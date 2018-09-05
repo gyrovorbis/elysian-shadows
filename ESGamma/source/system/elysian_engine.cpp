@@ -1,40 +1,43 @@
-#include <gyro.h>
 #include <ctime>
 
-#include "elysian_engine.hpp"
-#include <crtp/elysian_level_system.hpp>
-#include "elysian_debug.hpp"
-#include "crtp/elysian_camera_system.hpp"
-#include "elysian_character_system.hpp"
-#include "elysian_party_system.hpp"
-#include "elysian_timer_system_base.hpp"
-#include "elysian_warp_system.hpp"
-#include "elysian_collision_system.hpp"
-#include "elysian_gui_system_base.hpp"
-#include "elysian_audio_system.hpp"
-#include "elysian_lua_singleton.hpp"
-#include "elysian_lua_manager.hpp"
-#include "elysian_behavior_system.hpp"
-#include "elysian_light_system.hpp"
-#include <crtp/elysian_entity.hpp>
-#include "elysian_map_system.hpp"
-#include <crtp/elysian_light_source.hpp>
-#include "elysian_particle_system_base.hpp"
-#include "elysian_day_system.hpp"
-#include "elysian_dialog_system.hpp"
-#include "elysian_examinable_system.hpp"
-#include "elysian_rigid_body_system.hpp"
-#include "elysian_combat_system.hpp"
-#include "elysian_skeleton_system.hpp"
-#include "elysian_pathfinding_system.hpp"
-#include <crtp/elysian_input_system.hpp>
-#include <system/elysian_event_system.hpp>
-#include <utility/elysian_sort_sweep.hpp>
+#include <libGyro/gyro.h>
+
 #include <gl/gyro_radial_blur_gl.h>
 #include <gl/gyro_chromatic_aberration_gl.h>
-#include <system/elysian_compute_system.hpp>
-#include <crtp/elysian_render_system.hpp>
-#include <system/elysian_thread_system.hpp>
+
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/crtp/elysian_level_system.hpp>
+#include <AssetIO/crtp/elysian_light_source.hpp>
+
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/system/elysian_character_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/system/elysian_timer_system_base.hpp>
+#include <ESGamma/system/elysian_warp_system.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <ESGamma/lua/elysian_lua_singleton.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <ESGamma/system/elysian_behavior_system.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>=
+#include <ESGamma/crtp/elysian_map_system.hpp>
+#include <ESGamma/crtp/elysian_particle_system.hpp>
+#include <ESGamma/system/elysian_day_system.hpp>
+#include <ESGamma/system/elysian_dialog_system.hpp>
+#include <ESGamma/system/elysian_examinable_system.hpp>
+#include <ESGamma/system/elysian_rigid_body_system.hpp>
+#include <ESGamma/system/elysian_combat_system.hpp>
+#include <ESGamma/system/elysian_skeleton_system.hpp>
+#include <ESGamma/system/elysian_pathfinding_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
+#include <ESGamma/utility/elysian_sort_sweep.hpp>
+#include <ESGamma/system/elysian_compute_system.hpp>
+#include <ESGamma/crtp/elysian_render_system.hpp>
+#include <ESGamma/system/elysian_thread_system.hpp>
 
 namespace elysian {
 

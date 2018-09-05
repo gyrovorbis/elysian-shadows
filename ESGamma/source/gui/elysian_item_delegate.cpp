@@ -1,6 +1,6 @@
-#include <gui/elysian_item_delegate.hpp>
-#include <gui/elysian_item_model.hpp>
-#include <gui/elysian_label_widget.hpp>
+#include <ESGamma/gui/elysian_item_delegate.hpp>
+#include <ESGamma/gui/elysian_item_model.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
 #include <map>
 
 

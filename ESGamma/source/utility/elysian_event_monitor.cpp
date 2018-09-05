@@ -1,5 +1,5 @@
-#include "elysian_event_monitor.hpp"
-#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <ESGamma/utility/elysian_event_monitor.hpp>
+#include <ESGamma/proxy/elysian_event_monitor_proxy.hpp>
 
 namespace elysian {
 

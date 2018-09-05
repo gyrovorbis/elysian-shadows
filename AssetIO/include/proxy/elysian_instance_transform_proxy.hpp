@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_INSTANCE_TRANSFORM_PROXY_HPP
 #define ELYSIAN_INSTANCE_TRANSFORM_PROXY_HPP
 
-#include <primitive/elysian_instance_transform.hpp>
-#include <gyro_matrix_api.h>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <libGyro/gyro_matrix_api.h>
 
 namespace OOLUA {
     typedef ::GYVector2                 GYVector2;

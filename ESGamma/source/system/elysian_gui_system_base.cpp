@@ -1,22 +1,22 @@
-#include <crtp/elysian_gui_system.hpp>
-#include "elysian_adventure_log.hpp"
-#include "elysian_font.hpp"
-#include "elysian_debug.hpp"
-#include "elysian_timer_system.hpp"
-#include "elysian_party_system.hpp"
-#include "elysian_day_system.hpp"
-#include "elysian_collision_system.hpp"
-#include "elysian_lua_manager.hpp"
-#include "elysian_light_system.hpp"
-#include "elysian_rigid_body_system.hpp"
-#include <crtp/elysian_camera_system.hpp>
-#include <crtp/elysian_rigid_body.hpp>
-#include <crtp/elysian_examinable.hpp>
-#include <crtp/elysian_combat.hpp>
-#include <crtp/elysian_renderable.hpp>
-#include <gui/elysian_label_widget.hpp>
-#include <pause_menu/es_pause_menu.hpp>
-#include <crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <ESGamma/gui/elysian_adventure_log.hpp>
+#include <ESGamma/gui/elysian_font.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/system/elysian_day_system.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
+#include <ESGamma/system/elysian_rigid_body_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_rigid_body.hpp>
+#include <AssetIO/crtp/elysian_examinable.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
+#include <game/pause_menu/es_pause_menu.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
 
 namespace elysian {
 

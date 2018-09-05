@@ -2,8 +2,8 @@
 #define ELYSIAN_EVENT_HPP
 
 #include <stdint.h>
-#include <utility/elysian_cpp_lua_callback.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO//utility/elysian_cpp_lua_callback.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

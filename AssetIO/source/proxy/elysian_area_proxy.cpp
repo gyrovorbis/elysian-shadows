@@ -1,5 +1,5 @@
-#include <proxy/elysian_area_proxy.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_area_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
 
 /*!

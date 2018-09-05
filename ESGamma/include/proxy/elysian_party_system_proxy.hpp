@@ -2,8 +2,7 @@
 #define ELYSIAN_PARTY_SYSTEM_PROXY_LUA
 
 #include <oolua.h>
-#include <system/elysian_party_system.hpp>
-
+#include <ESGamma/system/elysian_party_system.hpp>
 
 namespace OOLUA {
     typedef elysian::PartySystem    PartySystem;

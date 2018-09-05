@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_AREA_PROXY_HPP
 #define ELYSIAN_AREA_PROXY_HPP
 
-#include <crtp/elysian_area.hpp>
-#include <proxy/elysian_instance_transform_proxy.hpp>
-#include <utility/elysian_oolua_string_traits.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
+#include <AssetIO/utility/elysian_oolua_string_traits.hpp>
 
 namespace OOLUA
 {

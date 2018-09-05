@@ -7,7 +7,7 @@ namespace elysian {
     typedef Color4Base Color4;
 }
 #else
-#   include <AssetIO/tk_color.h>
+#   include <ESToolkit/AssetIO/tk_color.h>
 namespace elysian {
     typedef TkColor4 Color4;
 }

@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_INSTANCE_TRANSFORM_HPP
 #define ELYSIAN_INSTANCE_TRANSFORM_HPP
 
-#include <gyro_math_api.h>
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_math_api.h>
+#include <libGyro/gyro_matrix_api.h>
 
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <utility/elysian_generic.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
 
 namespace elysian {
 

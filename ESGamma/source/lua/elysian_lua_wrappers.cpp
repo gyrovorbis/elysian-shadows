@@ -1,37 +1,34 @@
-//#include <crtp/elysian_combat.hpp>
-//#include <crtp/elysian_character.hpp>
-//#include <crtp/elysian_behavior.hpp>
-#include <level/elysian_map_depth_buffer.hpp>
-#include <proxy/elysian_input_system_proxy.hpp>
-#include <gui/elysian_layout.hpp>
-#include <gyro_shader_api.h>
+#include <libGyro/gyro_shader_api.h>
 
-#include <proxy/elysian_entity_proxy.hpp>
-#include <proxy/elysian_widget_proxy.hpp>
-#include <proxy/elysian_layout_proxy.hpp>
-#include <proxy/elysian_level_proxy.hpp>
-#include <proxy/elysian_area_proxy.hpp>
-#include <proxy/elysian_gui_system_proxy.hpp>
-#include <proxy/elysian_level_system_proxy.hpp>
-#include <proxy/elysian_character_system_proxy.hpp>
-#include <proxy/elysian_audio_system_proxy.hpp>
-#include <proxy/elysian_camera_system_proxy.hpp>
-#include <proxy/elysian_combat_system_proxy.hpp>
-#include <proxy/elysian_day_system_proxy.hpp>
-#include <proxy/elysian_dialog_system_proxy.hpp>
-#include <proxy/elysian_light_system_proxy.hpp>
-#include <proxy/elysian_particle_system_proxy.hpp>
-#include <proxy/elysian_party_system_proxy.hpp>
-#include <proxy/elysian_rigid_body_system_proxy.hpp>
-#include <proxy/elysian_timer_system_proxy.hpp>
-#include <proxy/elysian_bit_mask_proxy.hpp>
-#include <proxy/elysian_event_system_proxy.hpp>
-#include <proxy/elysian_event_proxy.hpp>
-#include <proxy/elysian_collision_system_proxy.hpp>
-#include <proxy/elysian_examinable_system_proxy.hpp>
+#include <AssetIO/level/elysian_map_depth_buffer.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_level_proxy.hpp>
+#include <AssetIO/proxy/elysian_area_proxy.hpp>
+#include <AssetIO/proxy/elysian_bit_mask_proxy.hpp>
+#include <AssetIO/proxy/elysian_event_proxy.hpp>
 
-#include <crtp/elysian_lua_manager.hpp>
-#include <lua/elysian_lua_wrappers.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <ESGamma/proxy/elysian_input_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_widget_proxy.hpp>
+#include <ESGamma/proxy/elysian_layout_proxy.hpp>
+#include <ESGamma/proxy/elysian_gui_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_level_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_character_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_audio_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_camera_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_combat_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_day_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_dialog_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_light_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_particle_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_party_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_rigid_body_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_timer_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_event_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_collision_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_examinable_system_proxy.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <ESGamma/lua/elysian_lua_wrappers.hpp>
 
 namespace elysian {
 

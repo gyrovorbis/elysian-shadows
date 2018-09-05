@@ -1,10 +1,10 @@
-#include <crtp/elysian_render_system.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <gyro_video_api.h>
-#include <level/elysian_scene_object.hpp>
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_particle_emitter.hpp>
-#include <crtp/elysian_camera_system.hpp>
+#include <ESGamma/crtp/elysian_render_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <libGyro/gyro_video_api.h>
+#include <AssetIO/level/elysian_scene_object.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_particle_emitter.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
 #include <gl/gyro_video_gl.h>
 #include <gl/gyro_gl.h>
 #include <gl/gyro_shaders_gl.h>

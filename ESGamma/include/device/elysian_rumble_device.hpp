@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_RUMBLE_DEVICE_HPP
 #define ELYSIAN_RUMBLE_DEVICE_HPP
 
-#include <device/elysian_player_io_device.hpp>
-#include <level/elysian_event.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <gyro_rumble_api.h>
+#include <ESGamma/device/elysian_player_io_device.hpp>
+#include <AssetIO/level/elysian_event.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <libGyro/gyro_rumble_api.h>
 
 namespace elysian {
     class RumbleDevice;

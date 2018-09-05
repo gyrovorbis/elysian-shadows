@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_COMBAT_SYSTEM_PROXY_HPP
 #define ELYSIAN_COMBAT_SYSTEM_PROXY_HPP
 
-#include <system/elysian_combat_system.hpp>
+#include <ESGamma/system/elysian_combat_system.hpp>
 
 namespace OOLUA {
 

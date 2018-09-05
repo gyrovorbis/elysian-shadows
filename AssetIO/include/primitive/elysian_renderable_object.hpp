@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_RENDERABLE_OBJECT_HPP
 #define ELYSIAN_RENDERABLE_OBJECT_HPP
 
-#include <primitive/elysian_instance_transform.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
 
 namespace elysian {
 

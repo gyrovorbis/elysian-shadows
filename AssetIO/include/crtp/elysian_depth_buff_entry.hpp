@@ -8,7 +8,7 @@ namespace elysian {
     typedef EntityDepthBuffEntryImplBase    EntityDepthBuffEntryImpl;
 }
 #else
-#   include <AssetIO/tk_depth_buff_entry.h>
+#   include <ESToolkit/AssetIO/tk_depth_buff_entry.h>
 namespace elysian {
     typedef TkMapDepthBuffEntryImpl       MapDepthBuffEntryImpl;
     typedef TkEntityDepthBuffEntryImpl    EntityDepthBuffEntryImpl;

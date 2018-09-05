@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_WIDGET_HPP
 #define ELYSIAN_WIDGET_HPP
 
-#include <primitive/elysian_instance_transform.hpp>
-#include <crtp/elysian_input_system.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
 
 #define ELYSIAN_SIZE_POLICY_GROW_FLAG_POS   0x0
 #define ELYSIAN_SIZE_POLICY_SHRINK_FLAG_POS 0x1

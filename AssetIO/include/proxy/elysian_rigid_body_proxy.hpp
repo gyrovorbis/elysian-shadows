@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_RIGID_BODY_PROXY_HPP
 #define ELYSIAN_RIGID_BODY_PROXY_HPP
 
-#include <crtp/elysian_rigid_body.hpp>
+#include <AssetIO/crtp/elysian_rigid_body.hpp>
 
 
 namespace OOLUA {

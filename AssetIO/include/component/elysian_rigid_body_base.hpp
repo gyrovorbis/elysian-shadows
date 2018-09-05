@@ -2,12 +2,12 @@
 #define ELYSIAN_RIGID_BODY_BASE_HPP
 
 #include <stdint.h>
-#include <kinetic/gyro_kinetic_kinetic.h>
-#include <kinetic/gyro_kinetic_static.h>
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <utility/elysian_bit_mask.hpp>
+#include <libGyro-Kinetic/gyro_kinetic_kinetic.h>
+#include <libGyro-Kinetic/gyro_kinetic_static.h>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
 
 namespace elysian {
 

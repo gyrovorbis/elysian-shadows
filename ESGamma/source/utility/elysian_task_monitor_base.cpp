@@ -1,5 +1,5 @@
-#include <elysian_task_monitor.hpp>
-#include <elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_task_monitor.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
 
 namespace elysian {
 

@@ -1,19 +1,19 @@
-#include <crtp/elysian_level_system.hpp>
-#include <system/elysian_combat_system.hpp>
-#include <crtp/elysian_level.hpp>
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_depth_buff_entry.hpp>
-#include <system/elysian_warp_system.hpp>
-#include "elysian_map_system.hpp"
-#include "elysian_party_system.hpp"
-#include "elysian_behavior_system.hpp"
-#include "elysian_collision_system.hpp"
-#include "elysian_audio_system.hpp"
-#include "elysian_day_system.hpp"
-#include "elysian_debug.hpp"
-#include <crtp/elysian_camera_system.hpp>
-#include <system/elysian_event_system.hpp>
+#include <ESGamma/crtp/elysian_level_system.hpp>
+#include <ESGamma/system/elysian_combat_system.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_depth_buff_entry.hpp>
+#include <ESGamma/system/elysian_warp_system.hpp>
+#include <ESGamma/system/elysian_map_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/system/elysian_behavior_system.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <ESGamma/system/elysian_day_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
 
 namespace elysian {
 

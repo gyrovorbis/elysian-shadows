@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_RENDERABLE_PROXY_HPP
 #define ELYSIAN_RENDERABLE_PROXY_HPP
 
-#include <crtp/elysian_renderable.hpp>
-#include <proxy/elysian_component_proxy.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
 
 namespace OOLUA {
     typedef elysian::Renderable         Renderable;

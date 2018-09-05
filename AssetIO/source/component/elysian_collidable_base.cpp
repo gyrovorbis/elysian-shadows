@@ -1,10 +1,9 @@
-#include <proxy/elysian_entity_proxy.hpp>
-#include <lua/elysian_lua_singleton.hpp>
-#include <elysian_collision_system.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/lua/elysian_lua_singleton.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
 
-#include <utility/elysian_generic.hpp>
-#include "elysian_collision_system.hpp"
-#include <gyro_shader_api.h>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <libGyro/gyro_shader_api.h>
 
 namespace elysian {
 

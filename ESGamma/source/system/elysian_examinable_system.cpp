@@ -1,16 +1,19 @@
-#include "elysian_examinable_system.hpp"
-#include "elysian_dialog_system.hpp"
-#include "elysian_party_system.hpp"
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_examinable.hpp>
-#include <crtp/elysian_character.hpp>
-#include "elysian_behavior_system.hpp"
-#include <crtp/elysian_entity.hpp>
-#include "elysian_gui_system_base.hpp"
-#include <crtp/elysian_input_system.hpp>
-#include <crtp/elysian_camera_system.hpp>
-#include <system/elysian_audio_system.hpp>
-#include <gyro_audio_api.h>
+#include <libGyro/gyro_audio_api.h>
+
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_examinable.hpp>
+#include <AssetIO/crtp/elysian_character.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+
+#include <ESGamma/system/elysian_examinable_system.hpp>
+#include <ESGamma/system/elysian_dialog_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/system/elysian_behavior_system.hpp>
+#include <ESGamma/system/elysian_gui_system_base.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+
 
 namespace elysian {
 

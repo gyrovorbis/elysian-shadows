@@ -2,11 +2,11 @@
 #define ELYSIAN_PARTY_SYSTEM_HPP
 
 #include <vector>
-#include <gyro_matrix_api.h>
-#include <gyro_wav_api.h>
-#include <system/elysian_system.hpp>
-#include <crtp/elysian_character.hpp>
-#include <level/elysian_event.hpp>
+#include <libGyro/gyro_matrix_api.h>
+#include <libGyro/gyro_wav_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/crtp/elysian_character.hpp>
+#include <AssetIO/level/elysian_event.hpp>
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f

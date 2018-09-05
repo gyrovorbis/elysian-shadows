@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_CHARACTER_SYSTEM_PROXY_HPP
 #define ELYSIAN_CHARACTER_SYSTEM_PROXY_HPP
 
-#include <system/elysian_character_system.hpp>
+#include <ESGamma/system/elysian_character_system.hpp>
 
 namespace OOLUA {
     typedef elysian::CharacterSystem    CharacterSystem;

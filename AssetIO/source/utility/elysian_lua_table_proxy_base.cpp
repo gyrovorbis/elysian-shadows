@@ -1,4 +1,4 @@
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

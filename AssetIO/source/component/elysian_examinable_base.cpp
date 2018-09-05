@@ -1,9 +1,9 @@
-#include <crtp/elysian_examinable.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <utility/elysian_generic.hpp>
-#include <crtp/elysian_dialog.hpp>
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_dialog.hpp>
+#include <AssetIO/crtp/elysian_examinable.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <AssetIO/crtp/elysian_dialog.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_dialog.hpp>
 
 namespace elysian {
 

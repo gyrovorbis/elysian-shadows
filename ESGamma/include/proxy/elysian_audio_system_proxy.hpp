@@ -2,7 +2,7 @@
 #define ELYSIAN_AUDIO_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_audio_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
 
 namespace OOLUA {
     typedef elysian::AudioSystem    AudioSystem;

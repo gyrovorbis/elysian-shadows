@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_COLLISION_SYSTEM_PROXY_HPP
 #define ELYSIAN_COLLISION_SYSTEM_PROXY_HPP
 
-#include <system/elysian_collision_system.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
 #include <oolua.h>
 
 namespace OOLUA {

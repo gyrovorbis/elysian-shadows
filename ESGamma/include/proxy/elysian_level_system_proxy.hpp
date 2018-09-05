@@ -2,7 +2,7 @@
 #define ELYSIAN_LEVEL_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <crtp/elysian_level_system.hpp>
+#include <ESGamma/crtp/elysian_level_system.hpp>
 
 namespace OOLUA {
     typedef elysian::LevelSystem    LevelSystem;

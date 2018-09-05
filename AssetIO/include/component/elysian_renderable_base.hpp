@@ -1,12 +1,12 @@
 #ifndef ELYSIAN_RENDERABLE_BASE_HPP
 #define ELYSIAN_RENDERABLE_BASE_HPP
 
-#include <crtp/elysian_component.hpp>
-#include <primitive/elysian_quad_sprite_attrib.hpp>
-#include <primitive/elysian_material.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <gyro_video_api.h>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/primitive/elysian_quad_sprite_attrib.hpp>
+#include <AssetIO/primitive/elysian_material.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <libGyro/gyro_video_api.h>
 #include <memory>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)

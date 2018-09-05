@@ -1,10 +1,10 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
-#include <proxy/elysian_area_proxy.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <AssetIO/tk_area.h>
-#include "elysian_debug.hpp"
+#include <AssetIO/proxy/elysian_area_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <QESTkUtils/model/tk_property_standard_item.h>
 #include <QESTkUtils/tile_engine/tk_source_view.h>
 #include <ESToolkit/ui/item/tk_map_view_depth_buffer_graphics_item.h>
@@ -12,13 +12,13 @@
 #include <QOpenGLContext>
 #include <ESToolkit/ui/widget/tk_engine_gl_scene_widget.h>
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
-#include <ESGamma/tk_camera_system.h>
-#include <ESGamma/tk_lua_wrappers.h>
-#include <system/elysian_party_system.hpp>
+#include <ESToolkit/ESGamma/tk_camera_system.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
+#include <ESGamma/system/elysian_party_system.hpp>
 #include <QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h>
 #include <ESToolkit/core/tk_file_utilities.h>
-#include <system/elysian_audio_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
 #include <QApplication>
 #include <QDateTime>
 

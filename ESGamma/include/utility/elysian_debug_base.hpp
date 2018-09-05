@@ -3,37 +3,37 @@
 
 #include <cstring>
 #include <stdio.h>
-#include <gyro_system_api.h>
-#include <elysian_system.hpp>
-#include <gyro_thread_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <libGyro/gyro_thread_api.h>
 
-#define ASSETS_VROOT						"/assets"
+#define ASSETS_VROOT                            "/assets"
 
-#define ELYSIAN_DEBUG_FILE					"engine_debug.txt"
-#define ELYSIAN_LUA_DEBUG_FILE				"lua_debug.txt"
-#define ELYSIAN_DEBUG_ARG_FILE_NAME         "gamma_args.txt"
-#define ELYSIAN_DEBUG_ARG_FILE				ASSETS_VROOT "/" ELYSIAN_DEBUG_ARG_FILE_NAME
-#define ELYSIAN_GLOBAL_INIT_LUA_PATH		ASSETS_VROOT "/scripts/global_init.lua"
+#define ELYSIAN_DEBUG_FILE                      "engine_debug.txt"
+#define ELYSIAN_LUA_DEBUG_FILE                  "lua_debug.txt"
+#define ELYSIAN_DEBUG_ARG_FILE_NAME             "gamma_args.txt"
+#define ELYSIAN_DEBUG_ARG_FILE                  ASSETS_VROOT "/" ELYSIAN_DEBUG_ARG_FILE_NAME
+#define ELYSIAN_GLOBAL_INIT_LUA_PATH            ASSETS_VROOT "/scripts/global_init.lua"
 #define ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT		Debug::LOG_VERBOSE
-#define ELYSIAN_DEBUG_LIBGYRO_SEVERITY_DEFAULT GY_DEBUG_VERBOSE
-#define ELYSIAN_DEBUG_LEVEL_DEFAULT			ASSETS_VROOT "/level/bullshit/caves_test"
-#define ELYSIAN_DEBUG_AREA_DEFAULT			ELYSIAN_DEBUG_LEVEL_DEFAULT "/area/caves_test01"
-#define ELYSIAN_DEBUG_PREFIX_STACK          "\t"
+#define ELYSIAN_DEBUG_LIBGYRO_SEVERITY_DEFAULT  GY_DEBUG_VERBOSE
+#define ELYSIAN_DEBUG_LEVEL_DEFAULT             ASSETS_VROOT "/level/bullshit/caves_test"
+#define ELYSIAN_DEBUG_AREA_DEFAULT              ELYSIAN_DEBUG_LEVEL_DEFAULT "/area/caves_test01"
+#define ELYSIAN_DEBUG_PREFIX_STACK              "\t"
 #define ELYSIAN_DEBUG_PREFIX_LOG_ERROR          "X - "
-#define ELYSIAN_DEBUG_PREFIX_LOG_WARNING       "! - "
+#define ELYSIAN_DEBUG_PREFIX_LOG_WARNING        "! - "
 
-#define ELYSIAN_DEBUG_LOG_PRINTF(level, ...) do { \
-                                                Debug::printf(Debug::level, __VA_ARGS__); \
-                                            } while(0)
+#define ELYSIAN_DEBUG_LOG_PRINTF(level, ...)    do { \
+                                                    Debug::printf(Debug::level, __VA_ARGS__); \
+                                                } while(0)
 
-#define dbgprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(LOG_VERBOSE,   __VA_ARGS__)
-#define warnprintf(...)                     ELYSIAN_DEBUG_LOG_PRINTF(LOG_WARNING,  __VA_ARGS__)
-#define errprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(LOG_ERROR,     __VA_ARGS__)
+#define dbgprintf(...)                          ELYSIAN_DEBUG_LOG_PRINTF(LOG_VERBOSE,   __VA_ARGS__)
+#define warnprintf(...)                         ELYSIAN_DEBUG_LOG_PRINTF(LOG_WARNING,  __VA_ARGS__)
+#define errprintf(...)                          ELYSIAN_DEBUG_LOG_PRINTF(LOG_ERROR,     __VA_ARGS__)
 
-#define dbgpush()                           Debug::push()
-#define dbgpop()                            Debug::pop()
+#define dbgpush()                               Debug::push()
+#define dbgpop()                                Debug::pop()
 
-#define ELYSIAN_DEBUG_PRINTF_BUFFER_SIZE    GYRO_PRINTF_BUFFER_SIZE
+#define ELYSIAN_DEBUG_PRINTF_BUFFER_SIZE        GYRO_PRINTF_BUFFER_SIZE
 
 using namespace std;
 

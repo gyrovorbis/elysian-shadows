@@ -1,13 +1,13 @@
-#include <crtp/elysian_camera_system.hpp>
-#include <crtp/elysian_entity.hpp>
-#include "elysian_gui_system_base.hpp"
-#include "elysian_debug.hpp"
-#include <crtp/elysian_area.hpp>
-#include <primitive/elysian_rect.hpp>
-#include <crtp/elysian_level.hpp>
-#include <elysian_timer_system.hpp>
-#include <system/elysian_input_system_base.hpp>
-#include <system/elysian_event_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/primitive/elysian_rect.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
 
 namespace elysian {
 

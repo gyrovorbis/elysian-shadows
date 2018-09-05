@@ -2,7 +2,7 @@
 #define ELYSIAN_DAY_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_day_system.hpp>
+#include <ESGamma/system/elysian_day_system.hpp>
 
 namespace OOLUA {
     typedef elysian::DaySystem  DaySystem;

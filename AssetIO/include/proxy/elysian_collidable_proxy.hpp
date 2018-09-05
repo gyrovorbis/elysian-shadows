@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_COLLIDABLE_PROXY_HPP
 #define ELYSIAN_COLLIDABLE_PROXY_HPP
 
-#include <proxy/elysian_component_proxy.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <proxy/elysian_bit_mask_proxy.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/proxy/elysian_bit_mask_proxy.hpp>
 
 namespace OOLUA {
     typedef elysian::CollisionFlags             CollisionFlags;

@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_PATHFINDING_SYSTEM_HPP
 #define ELYSIAN_PATHFINDING_SYSTEM_HPP
 
-#include <elysian_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
 #include <cstdlib>
 
 namespace elysian {

@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_SUBPROCESS_MANAGER_HPP
 #define ELYSIAN_SUBPROCESS_MANAGER_HPP
 
-#include "elysian_event_monitor.hpp"
-#include <utility/elysian_mem_pool.hpp>
+#include <ESGamma/utility/elysian_event_monitor.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
 
 namespace elysian {
 

@@ -2,9 +2,9 @@
 #define ELYSIAN_DIALOG_BASE_HPP
 
 #include <vector>
-#include <utility/elysian_asset_typedefs.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <crtp/elysian_dialog_screen.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_dialog_screen.hpp>
 
 #define ELYSIAN_DIALOG_PROMPT_OPTION_TEXT_BUFFER_SIZE	100
 #define ELYSIAN_DIALOG_PROMPT_MAX_OPTION_COUNT			6

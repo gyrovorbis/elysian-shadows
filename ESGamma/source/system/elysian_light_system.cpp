@@ -1,12 +1,12 @@
-#include "elysian_light_system.hpp"
-#include <crtp/elysian_light_source.hpp>
-#include "crtp/elysian_camera_system.hpp"
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_level.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
+#include <AssetIO/crtp/elysian_light_source.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", <ESGamma/tk_map_system.h>)
-#include "elysian_map_system.hpp"
-#include <gyro_shader_api.h>
+#include <ESGamma/crtp/elysian_map_system.hpp>
+#include <libGyro/gyro_shader_api.h>
 #include <cfloat>
 
 namespace elysian {

@@ -1,14 +1,14 @@
-#include "elysian_combat_system.hpp"
-#include <crtp/elysian_combat.hpp>
-#include <crtp/elysian_area.hpp>
-#include "elysian_collision_system.hpp"
-#include "crtp/elysian_camera_system.hpp"
-#include "elysian_gui_system_base.hpp"
-#include "elysian_behavior_system.hpp"
-#include "elysian_audio_system.hpp"
-#include <system/elysian_party_system.hpp>
-#include <crtp/elysian_particle_system.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/system/elysian_gui_system_base.hpp>
+#include <ESGamma/system/elysian_behavior_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/crtp/elysian_particle_system.hpp>
+#include <ESGamma/system/elysian_combat_system.hpp>
 #include <cmath>
 
 namespace elysian {

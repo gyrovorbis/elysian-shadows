@@ -2,12 +2,12 @@
 #define ELYSIAN_COMBAT_SYSTEM_HPP
 
 #include <oolua.h>
-#include "elysian_system.hpp"
-#include "elysian_lua_manager.hpp"
-#include <utility/elysian_mem_pool.hpp>
-#include "elysian_collision_system.hpp"
-#include "elysian_gui_system_base.hpp"
-#include <crtp/elysian_combat.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Combat)

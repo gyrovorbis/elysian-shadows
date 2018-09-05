@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_LUA_BEHAVIOR_PROXY_HPP
 #define ELYSIAN_LUA_BEHAVIOR_PROXY_HPP
 
-#include <crtp/elysian_lua_behavior.hpp>
-#include <proxy/elysian_component_proxy.hpp>
-#include <proxy/elysian_event_proxy.hpp>
-#include <utility/elysian_oolua_string_traits.hpp>
+#include <AssetIO/crtp/elysian_lua_behavior.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
+#include <AssetIO/proxy/elysian_event_proxy.hpp>
+#include <AssetIO/utility/elysian_oolua_string_traits.hpp>
 
 namespace OOLUA {
     typedef elysian::Behavior       Behavior;

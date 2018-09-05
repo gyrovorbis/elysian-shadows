@@ -7,7 +7,7 @@ namespace elysian {
     typedef LuaBehaviorBase LuaBehavior;
 }
 #else
-#   include <AssetIO/tk_lua_behavior.h>
+#   include <ESToolkit/AssetIO/tk_lua_behavior.h>
 namespace elysian {
     typedef TkLuaBehavior LuaBehavior;
 }

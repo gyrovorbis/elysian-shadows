@@ -5,12 +5,12 @@
 #include <oolua.h>
 #include <functional>
 #include <type_traits>
-#include <utility/elysian_stl_algorithm.hpp>
-#include <elysian_lua_script.hpp>
-#include <utility/elysian_functional.hpp>
-#include <elysian_debug.hpp>
-#include <gyro_defines.h>
-#include <crtp/elysian_task_monitor.hpp>
+#include <AssetIO/utility/elysian_stl_algorithm.hpp>
+#include <ESGamma/lua/elysian_lua_script.hpp>
+#include <AssetIO/utility/elysian_functional.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <libGyro/gyro_defines.h>
+#include <ESGamma/crtp/elysian_task_monitor.hpp>
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	define ELYSIAN_LUA_DEBUG                            true

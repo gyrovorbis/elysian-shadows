@@ -1,4 +1,4 @@
-#include <behavior/elysian_state_machine_behavior.hpp>
+#include <game/behavior/elysian_state_machine_behavior.hpp>
 
 namespace elysian {
 

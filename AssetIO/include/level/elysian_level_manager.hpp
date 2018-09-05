@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_LEVEL_MANAGER_HPP
 #define ELYSIAN_LEVEL_MANAGER_HPP
 
-#include <utility/elysian_asset_typedefs.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Level)
 ELYSIAN_ASSET_TYPEDEF(Area)

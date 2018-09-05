@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_EVENT_SYSTEM_PROXY
 #define ELYSIAN_EVENT_SYSTEM_PROXY
 
-#include <level/elysian_event.hpp>
-#include <system/elysian_event_system.hpp>
-#include <proxy/elysian_event_proxy.hpp>
+#include <AssetIO/level/elysian_event.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
+#include <AssetIO/proxy/elysian_event_proxy.hpp>
 #include <oolua.h>
 
 namespace OOLUA {

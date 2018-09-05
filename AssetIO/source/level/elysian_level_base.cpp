@@ -1,7 +1,7 @@
 #include <string.h>
-#include <gyro_file_api.h>
-#include <crtp/elysian_level.hpp>
-#include <elysian_lua_manager.hpp>
+#include <libGyro/gyro_file_api.h>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
 
 using namespace std;
 

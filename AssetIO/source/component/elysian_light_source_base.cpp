@@ -1,7 +1,7 @@
 #include <cfloat>
-#include <crtp/elysian_light_source.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_light_source.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

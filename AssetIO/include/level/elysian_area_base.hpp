@@ -1,12 +1,12 @@
 #ifndef ELYSIAN_AREA_BASE_HPP
 #define ELYSIAN_AREA_BASE_HPP
 
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 #include <vector>
 #include <stdint.h>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS                 false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA                   true
@@ -24,7 +24,7 @@
 #define ELYSIAN_AREA_PATH_SIZE		200
 #define ELYSIAN_AREA_MAP_PATH		"/map.bin"
 #define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
-#define ELYSIAN_AREA_TABLE_PATH     "/area_table.lua"
+#define ELYSIAN_AREA_TABLE_PATH         "/area_table.lua"
 #define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
 #define ELYSIAN_TILE_ENTRY_ELEV_MAX	31
 #define ELYSIAN_AREA_LAYER_Z_EPSILON    0.001f

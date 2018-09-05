@@ -1,12 +1,12 @@
 #ifndef ELYSIAN_RENDER_SYSTEM_BASE_HPP
 #define ELYSIAN_RENDER_SYSTEM_BASE_HPP
 
-#include <system/elysian_system.hpp>
-#include <system/elysian_compute_system.hpp>
-#include <system/elysian_thread_system.hpp>
-#include <system/elysian_event_system.hpp>
-#include <gyro_matrix_api.h>
-#include <gyro_video_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/system/elysian_compute_system.hpp>
+#include <ESGamma/system/elysian_thread_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
+#include <libGyro/gyro_matrix_api.h>
+#include <libGyro/gyro_video_api.h>
 
 
 #define ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX    10000

@@ -1,5 +1,5 @@
-#include <gui/elysian_frame_widget.hpp>
-#include <gui/elysian_layout.hpp>
+#include <ESGamma/gui/elysian_frame_widget.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
 
 namespace elysian {
 

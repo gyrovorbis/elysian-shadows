@@ -1,9 +1,9 @@
-#include "elysian_adventure_log.hpp"
-#include "elysian_system.hpp"
-#include "elysian_timer_system.hpp"
-#include "elysian_quad_sprite.hpp"
-#include "elysian_font.hpp"
-#include "elysian_gui_system_base.hpp"
+#include <ESGamma/gui/elysian_adventure_log.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/gui/elysian_quad_sprite.hpp>
+#include <ESGamma/gui/elysian_font.hpp>
+#include <ESGamma/system/elysian_gui_system_base.hpp>
 #include <string.h>
 #include <stdint.h>
 

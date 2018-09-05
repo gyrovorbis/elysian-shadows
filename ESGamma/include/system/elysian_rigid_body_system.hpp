@@ -10,10 +10,10 @@
 
 #define ELYSIAN_RIGID_BODY_RESTING_CONTACT_ESCAPE_VELOCITY      100.0f
 
-#include <elysian_system.hpp>
-#include <utility/elysian_mem_pool.hpp>
-#include <elysian_force_generator.hpp>
-#include <crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <ESGamma/utility/elysian_force_generator.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
 
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               100
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME       5.0f

@@ -1,6 +1,6 @@
-#include <proxy/elysian_entity_proxy.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <proxy/elysian_event_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/proxy/elysian_event_proxy.hpp>
 
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \

@@ -1,15 +1,15 @@
-#include <kinetic/gyro_kinetic_physics.h>
-#include <crtp/elysian_particle_emitter.hpp>
-#include <primitive/elysian_material.hpp>
-#include "elysian_debug.hpp"
-#include "elysian_force_generator.hpp"
-#include "crtp/elysian_camera_system.hpp"
-#include <crtp/elysian_entity.hpp>
-#include <level/elysian_map_depth_buffer.hpp>
-#include <crtp/elysian_area.hpp>
-#include <level/elysian_tile.hpp>
-#include <crtp/elysian_timer_system.hpp>
-#include <lua/elysian_lua_singleton.hpp>
+#include <libGyro-Kinetic/gyro_kinetic_physics.h>
+#include <AssetIO/crtp/elysian_particle_emitter.hpp>
+#include <AssetIO/primitive/elysian_material.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/utility/elysian_force_generator.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/level/elysian_map_depth_buffer.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/level/elysian_tile.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/lua/elysian_lua_singleton.hpp>
 
 namespace elysian {
 

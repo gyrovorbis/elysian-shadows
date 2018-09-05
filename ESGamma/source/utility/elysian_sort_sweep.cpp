@@ -1,4 +1,4 @@
-#include "elysian_sort_sweep.hpp"
+#include <ESGamma/utility/elysian_sort_sweep.hpp>
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
 #	ifdef __APPLE__

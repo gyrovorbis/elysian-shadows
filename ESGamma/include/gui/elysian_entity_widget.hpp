@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_ENTITY_WIDGET_HPP
 #define ELYSIAN_ENTITY_WIDGET_HPP
 
-#include <gui/elysian_widget.hpp>
-#include <utility/elysian_asset_typedefs.hpp>
+#include <ESGamma/gui/elysian_widget.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity);
 

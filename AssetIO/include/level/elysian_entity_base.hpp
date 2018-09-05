@@ -6,11 +6,11 @@
 
 #include <oolua.h>
 
-#include <primitive/elysian_renderable_object.hpp>
-#include <utility/elysian_stl_algorithm.hpp>
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <gyro_video_api.h>
+#include <AssetIO/primitive/elysian_renderable_object.hpp>
+#include <AssetIO/utility/elysian_stl_algorithm.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <libGyro/gyro_video_api.h>
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"

@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_EXAMINABLE_BASE_HPP
 #define ELYSIAN_EXAMINABLE_BASE_HPP
 
-#include <crtp/elysian_component.hpp>
-#include <level/elysian_direction.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/level/elysian_direction.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_EXAMINABLE_DESC_LENGTH    50
 

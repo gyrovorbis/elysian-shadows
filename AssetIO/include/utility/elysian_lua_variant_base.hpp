@@ -4,8 +4,8 @@
 #include <initializer_list>
 #include <tuple>
 #include <cstdlib>
-#include <crtp/elysian_lua_manager.hpp>
-#include <utility/elysian_functional.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <AssetIO/utility/elysian_functional.hpp>
 #ifndef ELYSIAN_ENGINE
 #include <QVariant>
 #include <QESTkUtils/tk_lua_qt_utils.h>

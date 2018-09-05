@@ -1,10 +1,10 @@
-#include "elysian_audio_system.hpp"
-#include <crtp/elysian_audio_source.hpp>
-#include "elysian_party_system.hpp"
-#include <crtp/elysian_entity.hpp>
-#include "elysian_timer_system.hpp"
-#include <crtp/elysian_area.hpp>
-#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <AssetIO/crtp/elysian_audio_source.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <ESGamma/proxy/elysian_event_monitor_proxy.hpp>
 
 namespace elysian {
 

@@ -1,20 +1,20 @@
-#include "elysian_party_system.hpp"
-#include "elysian_debug.hpp"
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_character.hpp>
-#include "crtp/elysian_camera_system.hpp"
-#include "elysian_timer_system.hpp"
-#include <crtp/elysian_collidable.hpp>
-#include "elysian_collision_system.hpp"
-#include <crtp/elysian_examinable.hpp>
-#include "elysian_behavior_system.hpp"
-#include <crtp/elysian_particle_system.hpp>
-#include <crtp/elysian_level.hpp>
-#include "elysian_audio_system.hpp"
-#include <crtp/elysian_input_system.hpp>
-#include <crtp/elysian_skeleton.hpp>
-#include <behavior/elysian_playable_behavior.hpp>
-#include <system/elysian_gui_system_base.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_character.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <AssetIO/crtp/elysian_examinable.hpp>
+#include <ESGamma/system/elysian_behavior_system.hpp>
+#include <ESGamma/crtp/elysian_particle_system.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <AssetIO/crtp/elysian_skeleton.hpp>
+#include <game/behavior/elysian_playable_behavior.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
 
 namespace elysian {
 

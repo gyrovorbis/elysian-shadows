@@ -1,4 +1,4 @@
-#include <crtp/elysian_color.hpp>
+#include <AssetIO/crtp/elysian_color.hpp>
 
 namespace elysian {
 

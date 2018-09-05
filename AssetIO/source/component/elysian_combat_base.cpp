@@ -1,10 +1,10 @@
-#include <crtp/elysian_combat.hpp>
-#include <utility/elysian_generic.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_area.hpp>
-#include <system/elysian_system.hpp>
-#include <crtp/elysian_timer_system.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
 
 namespace elysian {
 

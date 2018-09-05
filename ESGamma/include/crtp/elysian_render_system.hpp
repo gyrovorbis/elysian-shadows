@@ -9,7 +9,7 @@ namespace elysian {
 }
 #else
 
-#   include <ESGamma/tk_render_system.h>
+#   include <ESToolkit/ESGamma/tk_render_system.h>
 
 namespace elysian {
     using RendererSystem = TkRenderSystem;

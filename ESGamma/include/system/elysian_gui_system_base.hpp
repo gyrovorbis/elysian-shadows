@@ -1,15 +1,15 @@
 #ifndef ELYSIAN_GUI_SYSTEM_BASE_HPP
 #define ELYSIAN_GUI_SYSTEM_BASE_HPP
 
-#include "elysian_system.hpp"
-#include "elysian_font.hpp"
-#include "elysian_adventure_log.hpp"
-#include <utility/elysian_mem_pool.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <system/elysian_event_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/gui/elysian_font.hpp>
+#include <ESGamma/gui/elysian_adventure_log.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
 #include <memory>
 
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 
 #define ASSETS_VROOT                                "/assets"
 

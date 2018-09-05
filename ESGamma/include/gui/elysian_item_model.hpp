@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_ITEM_MODEL_HPP
 #define ELYSIAN_ITEM_MODEL_HPP
 
-#include <crtp/elysian_lua_variant.hpp>
-#include <gui/elysian_widget.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <ESGamma/gui/elysian_widget.hpp>
 
 #define ELYSIAN_ITEM_MODEL_INDEX_INVALID    -1
 

@@ -1,4 +1,4 @@
-#include <proxy/elysian_event_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_event_system_proxy.hpp>
 
 /*!
     \qmltype EventSystem

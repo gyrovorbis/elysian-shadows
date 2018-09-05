@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_SPRITE_HPP
 #define ELYSIAN_SPRITE_HPP
 
-#include <primitive/elysian_renderable_object.hpp>
-#include <crtp/elysian_sprite_attrib.hpp>
-#include <gyro_video_api.h>
+#include <AssetIO/primitive/elysian_renderable_object.hpp>
+#include <AssetIO/crtp/elysian_sprite_attrib.hpp>
+#include <libGyro/gyro_video_api.h>
 
 namespace elysian {
 #if 0

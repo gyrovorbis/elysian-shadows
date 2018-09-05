@@ -1,15 +1,16 @@
-#include <crtp/elysian_depth_buff_entry.hpp>
-#include <elysian_collision_system.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include "crtp/elysian_camera_system.hpp"
-#include <crtp/elysian_level.hpp>
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_entity.hpp>
-#include "elysian_debug.hpp"
-#include "elysian_timer_system_base.hpp"
-#include <level/elysian_zcoords.hpp>
-#include <crtp/elysian_map_system.hpp>
-#include "elysian_party_system.hpp"
+#include <AssetIO/crtp/elysian_depth_buff_entry.hpp>
+#include <AssetIO/level/elysian_zcoords.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/system/elysian_timer_system_base.hpp>
+#include <ESGamma/crtp/elysian_map_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
 
 /*
     Welcome, motherfuckers, to hell. Where abstract math meets low-level optimization.

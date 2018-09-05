@@ -4,9 +4,9 @@
 #include <map>
 #include <stdint.h>
 #include <cassert>
-#include <crtp/elysian_component.hpp>
-#include <level/elysian_event.hpp>
-#include <utility/elysian_stl_algorithm.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/level/elysian_event.hpp>
+#include <AssetIO/utility/elysian_stl_algorithm.hpp>
 
 #define ELYSIAN_BEHAVIOR_NAME_SIZE 100
 

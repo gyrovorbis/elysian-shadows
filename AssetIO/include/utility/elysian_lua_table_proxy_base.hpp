@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_LUA_TABLE_PROXY_BASE_HPP
 #define ELYSIAN_LUA_TABLE_PROXY_BASE_HPP
 
-#include <elysian_lua_manager.hpp>
-#include <utility/elysian_generic.hpp>
-#include <crtp/elysian_lua_variant.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 //DSL for autogenerating proxy fields
 #define ELYSIAN_LUA_PROXY_FIELDS_BEGIN() \

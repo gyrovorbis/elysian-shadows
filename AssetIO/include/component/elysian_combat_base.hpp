@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_COMBAT_BASE_HPP
 #define ELYSIAN_COMBAT_BASE_HPP
 
-#include <gyro_video_api.h>
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <utility/elysian_bit_mask.hpp>
+#include <libGyro/gyro_video_api.h>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
 #include <queue>
 
 #define ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT      200.0f

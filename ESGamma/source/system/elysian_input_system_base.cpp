@@ -1,8 +1,8 @@
-#include <crtp/elysian_input_system.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <system/elysian_event_system.hpp>
-#include <gyro_file_api.h>
-#include <system/elysian_audio_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
+#include <libGyro/gyro_file_api.h>
+#include <ESGamma/system/elysian_audio_system.hpp>
 
 namespace elysian {
 

@@ -1,6 +1,6 @@
-#include <proxy/elysian_entity_proxy.hpp>
-#include <proxy/elysian_layout_proxy.hpp>
-#include <proxy/elysian_widget_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/proxy/elysian_layout_proxy.hpp>
+#include <ESGamma/proxy/elysian_widget_proxy.hpp>
 
 /*!
     \qmltype Widget

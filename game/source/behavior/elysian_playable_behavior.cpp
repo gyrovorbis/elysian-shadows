@@ -1,16 +1,16 @@
-#include <behavior/elysian_playable_behavior.hpp>
-#include <lua/elysian_lua_singleton.hpp>
-#include <crtp/elysian_timer_system.hpp>
-#include <system/elysian_party_system.hpp>
-#include <crtp/elysian_input_system.hpp>
-#include <crtp/elysian_particle_system.hpp>
-#include <system/elysian_audio_system.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <gyro_input_api.h>
-#include <system/elysian_engine.hpp>
-#include <crtp/elysian_combat.hpp>
-#include <device/elysian_rumble_device.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <game/behavior/elysian_playable_behavior.hpp>
+#include <ESGamma/lua/elysian_lua_singleton.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_particle_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <libGyro/gyro_input_api.h>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <AssetIO/crtp/elysian_combat.hpp>
+#include <ESGamma/device/elysian_rumble_device.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
 namespace elysian {
 

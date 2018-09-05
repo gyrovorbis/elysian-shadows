@@ -1,4 +1,4 @@
-#include "elysian_map_system_base.hpp"
+#include <ESGamma/system/elysian_map_system_base.hpp>
 #include <gl/gyro_gl.h>
 #include <gl/gyro_video_gl.h>
 #include <gl/gyro_shaders_gl.h>

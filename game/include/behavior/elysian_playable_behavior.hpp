@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_PLAYABLE_BEHAVIOR_HPP
 #define ELYSIAN_PLAYABLE_BEHAVIOR_HPP
 
-#include <crtp/elysian_behavior.hpp>
+#include <AssetIO/crtp/elysian_behavior.hpp>
 
 #define ELYSIAN_PLAYABLE_BEHAVIOR_NAME                          "PlayableBehavior"
 #define ELYSIAN_PLAYABLE_BEHAVIOR_DASH_PART_TIME_INTERVAL       0.3f

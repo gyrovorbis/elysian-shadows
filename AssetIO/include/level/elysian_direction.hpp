@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_DIRECTION_HPP
 #define ELYSIAN_DIRECTION_HPP
 
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_matrix_api.h>
 #include <cmath>
 
 namespace elysian {

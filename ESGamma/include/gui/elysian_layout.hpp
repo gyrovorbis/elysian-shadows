@@ -2,7 +2,7 @@
 #define ELYSIAN_LAYOUT_HPP
 
 #include <vector>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 #define ELYSIAN_GUI_LAYOUT_Z_COORD_OFFSET   0.1f
 #define ELYSIAN_GUI_LAYOUT_SIZE_POS_EPSILON 0.1f

@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_DEPTH_BUFF_ENTRY_BASE_HPP
 #define ELYSIAN_DEPTH_BUFF_ENTRY_BASE_HPP
 
-#include <level/elysian_map_depth_buffer.hpp>
+#include <AssetIO/level/elysian_map_depth_buffer.hpp>
 
 namespace elysian {
 

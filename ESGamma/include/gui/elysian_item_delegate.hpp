@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_ITEM_DELEGATE_HPP
 #define ELYSIAN_ITEM_DELEGATE_HPP
 
-#include <crtp/elysian_lua_variant.hpp>
-#include <gui/elysian_item_model.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <ESGamma/gui/elysian_item_model.hpp>
 #include <map>
 
 namespace elysian {

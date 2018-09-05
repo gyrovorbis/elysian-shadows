@@ -7,7 +7,7 @@ namespace elysian {
     typedef ExaminableBase Examinable;
 }
 #else
-#   include <AssetIO/tk_examinable.h>
+#   include <ESToolkit/AssetIO/tk_examinable.h>
 namespace elysian {
     typedef TkExaminable Examinable;
 }

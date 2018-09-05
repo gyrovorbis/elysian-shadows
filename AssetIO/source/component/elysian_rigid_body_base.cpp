@@ -1,8 +1,8 @@
-#include <crtp/elysian_rigid_body.hpp>
-#include <kinetic/gyro_kinetic.h>
-#include <crtp/elysian_collidable.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_rigid_body.hpp>
+#include <libGyro-Kinetic/gyro_kinetic.h>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

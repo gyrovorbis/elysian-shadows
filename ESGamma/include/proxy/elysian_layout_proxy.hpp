@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_LAYOUT_PROXY_HPP
 #define ELYSIAN_LAYOUT_PROXY_HPP
 
-#include <gui/elysian_layout.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
 #include <oolua.h>
 
 namespace OOLUA {

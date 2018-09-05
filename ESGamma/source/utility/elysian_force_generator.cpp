@@ -1,8 +1,8 @@
-#include "elysian_force_generator.hpp"
-#include <crtp/elysian_rigid_body.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <gyro_kinetic.h>
+#include <ESGamma/utility/elysian_force_generator.hpp>
+#include <AssetIO/crtp/elysian_rigid_body.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <libGyro-Kinetic/gyro_kinetic.h>
 
 
 namespace elysian {

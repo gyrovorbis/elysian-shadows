@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_RECT_HPP
 #define ELYSIAN_RECT_HPP
 
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

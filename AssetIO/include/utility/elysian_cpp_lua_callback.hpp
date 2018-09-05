@@ -2,8 +2,8 @@
 #define ELYSIAN_CPP_LUA_CALLBACK_HPP
 
 #include <functional>
-#include <utility/elysian_functional.hpp>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/utility/elysian_functional.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 namespace elysian {
 

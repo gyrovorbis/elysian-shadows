@@ -1,10 +1,9 @@
 #ifndef ELYSIAN_TIMER_SYSTEM_BASE_HPP
 #define ELYSIAN_TIMER_SYSTEM_BASE_HPP
 
-#include <elysian_system.hpp>
-#include <elysian_subprocess_manager.hpp>
-#include <gyro_timer_api.h>
-
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/utility/elysian_subprocess_manager.hpp>
+#include <libGyro/gyro_timer_api.h>
 
 #define DELTA_TIME_CIRC_BUFFER_SIZE                 20
 #define MAX_FRAMERATE                               60.0f

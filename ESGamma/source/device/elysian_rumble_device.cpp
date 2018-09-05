@@ -1,4 +1,4 @@
-#include <device/elysian_rumble_device.hpp>
+#include <ESGamma/device/elysian_rumble_device.hpp>
 
 
 namespace elysian {

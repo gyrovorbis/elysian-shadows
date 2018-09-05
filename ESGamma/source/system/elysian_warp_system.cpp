@@ -1,17 +1,17 @@
-#include "elysian_warp_system.hpp"
-#include "crtp/elysian_camera_system.hpp"
-#include <crtp/elysian_warp.hpp>
-#include "elysian_party_system.hpp"
-#include "elysian_debug.hpp"
-#include <crtp/elysian_collidable.hpp>
-#include "elysian_timer_system.hpp"
-#include <crtp/elysian_level_system.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <crtp/elysian_entity.hpp>
-#include "elysian_collision_system.hpp"
-#include "elysian_gui_system_base.hpp"
-#include <level/elysian_zcoords.hpp>
-#include <crtp/elysian_area.hpp>
+#include <ESGamma/system/elysian_warp_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_warp.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/crtp/elysian_level_system.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_collision_system.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <AssetIO/level/elysian_zcoords.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
 
 namespace elysian {
 

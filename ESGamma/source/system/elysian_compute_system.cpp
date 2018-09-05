@@ -1,8 +1,8 @@
-#include <system/elysian_compute_system.hpp>
-#include <gyro_compute_api.h>
-#include <crtp/elysian_debug.hpp>
+#include <ESGamma/system/elysian_compute_system.hpp>
+#include <libGyro/gyro_compute_api.h>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #ifndef GYRO_COMPUTE_PROFILING_DISABLED
-#include <crtp/elysian_task_monitor.hpp>
+#include <ESGamma/crtp/elysian_task_monitor.hpp>
 #endif
 
 namespace elysian {

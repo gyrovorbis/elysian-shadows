@@ -1,11 +1,11 @@
-#include <pause_menu/es_party_menu.hpp>
-#include <pause_menu/es_pause_menu.hpp>
-#include <pause_menu/es_playable_pane.hpp>
-#include <gui/elysian_label_widget.hpp>
-#include <gui/elysian_layout.hpp>
-#include <system/elysian_audio_system.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_renderable.hpp>
+#include <game/pause_menu/es_party_menu.hpp>
+#include <game/pause_menu/es_pause_menu.hpp>
+#include <game/pause_menu/es_playable_pane.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
 
 namespace ElysianShadows {
 

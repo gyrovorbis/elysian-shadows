@@ -5,8 +5,8 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <vector>
-#include <gyro_performance_api.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_performance_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <cassert>
 
 #define ELYSIAN_PERFORMANCE_MONITOR_TASK_NAME_SIZE  100

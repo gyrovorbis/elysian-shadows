@@ -1,7 +1,7 @@
 #ifndef TEST_AREA
 #define TEST_AREA
 
-#include <tk_area.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 #include <QObject>
 #include <QDebug>
 #include <QtTest>

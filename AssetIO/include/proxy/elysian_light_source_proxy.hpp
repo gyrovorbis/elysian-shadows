@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_LIGHT_SOURCE_PROXY_HPP
 #define ELYSIAN_LIGHT_SOURCE_PROXY_HPP
 
-#include <crtp/elysian_light_source.hpp>
+#include <AssetIO/crtp/elysian_light_source.hpp>
 
 namespace OOLUA {
     typedef elysian::LightAttrib        LightAttrib;

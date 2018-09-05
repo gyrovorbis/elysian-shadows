@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_AUDIO_SOURCE_PROXY_HPP
 #define ELYSIAN_AUDIO_SOURCE_PROXY_HPP
 
-#include <proxy/elysian_component_proxy.hpp>
-#include <crtp/elysian_audio_source.hpp>
+#include <AssetIO/proxy/elysian_component_proxy.hpp>
+#include <AssetIO/crtp/elysian_audio_source.hpp>
 
 namespace OOLUA {
     typedef elysian::AudioSource        AudioSource;

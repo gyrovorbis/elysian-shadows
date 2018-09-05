@@ -1,9 +1,9 @@
 #ifndef ES_PARTY_MENU_HPP
 #define ES_PARTY_MENU_HPP
 
-#include <gui/elysian_menu_widget.hpp>
-#include <system/elysian_system.hpp>
-#include <system/elysian_party_system.hpp>
+#include <ESGamma/gui/elysian_menu_widget.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
 
 struct GYWav;
 

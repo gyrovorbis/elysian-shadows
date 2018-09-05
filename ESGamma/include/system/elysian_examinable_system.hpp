@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_EXAMINABLE_SYSTEM_HPP
 #define ELYSIAN_EXAMINABLE_SYSTEM_HPP
 
-#include <system/elysian_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
 
 #define ELYSIAN_EXAMINABLE_SYSTEM_EXAMINE_SFX "/assets/audio/sfx/UI/examine.wav"
 

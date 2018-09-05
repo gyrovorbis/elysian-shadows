@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_MENU_WIDGET_HPP
 #define ELYSIAN_MENU_WIDGET_HPP
 
-#include <gui/elysian_widget.hpp>
-#include <utility/elysian_associative_aggregate_array.hpp>
-#include <utility/elysian_cpp_lua_callback.hpp>
-#include <system/elysian_event_system.hpp>
-#include <gui/elysian_item_model.hpp>
+#include <ESGamma/gui/elysian_widget.hpp>
+#include <AssetIO/utility/elysian_associative_aggregate_array.hpp>
+#include <AssetIO/utility/elysian_cpp_lua_callback.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
+#include <ESGamma/gui/elysian_item_model.hpp>
 
 #define ELYSIAN_MENU_WIDGET_INPUT_INDEX 0 //holy fuck, fix me!!!
 #define ELYSIAN_MENU_WIDGET_SCROLL_BUTTON_HELD_START_TIME 1.0f//scroll fast after holding dpad for one sec?

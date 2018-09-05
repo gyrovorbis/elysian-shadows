@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_DIALOG_SCREEN_BASE_HPP
 #define ELYSIAN_DIALOG_SCREEN_BASE_HPP
 
-#include <gyro_matrix_api.h>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <utility/elysian_asset_typedefs.hpp>
+#include <libGyro/gyro_matrix_api.h>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
 
 #define ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE			500
 

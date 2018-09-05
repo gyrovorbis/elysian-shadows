@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_LUA_BEHAVIOR_BASE_HPP
 #define ELYSIAN_LUA_BEHAVIOR_BASE_HPP
 
-#include <crtp/elysian_behavior.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_behavior.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
 #define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5

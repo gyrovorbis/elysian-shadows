@@ -1,27 +1,27 @@
-#include <proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
-#include "elysian_debug.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
-#include "elysian_engine.hpp"
-#include "elysian_light_system.hpp"
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
 #include <cmath>
 #include <QAction>
 #include <QMessageBox>
 #include <QMenu>
 #include <QSpacerItem>
-#include <utility/elysian_generic.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
 #include <QGridLayout>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h>
 #include <QESTkUtils/tk_menu_stack.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 #include <QESTkUtils//tk_mime_drop_manager.h>
 #include <QMimeData>
 #include <ESToolkit/ui/dock/asset/tk_asset_dock_widget.h>
 #include <ESToolkit/ui/tk_estoolkit.h>
 #include <ESToolkit/core/tk_file_utilities.h>
 #include <QUrl>
-#include <AssetIO/tk_lua_behavior.h>
+#include <ESToolkit/AssetIO/tk_lua_behavior.h>
 #include <ESToolkit/core/tk_undo_item.h>
 
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100

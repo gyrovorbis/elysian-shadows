@@ -1,18 +1,18 @@
 #ifndef ELYSIAN_CAMERA_SYSTEM_BASE_HPP
 #define ELYSIAN_CAMERA_SYSTEM_BASE_HPP
 
-#include <elysian_system.hpp>
-#include <primitive/elysian_instance_transform.hpp>
-#include <utility/elysian_subprocess_manager.hpp>
-#include <level/elysian_zcoords.hpp>
-#include <utility/elysian_camera_shake_subprocess.hpp>
-#include <primitive/elysian_rect.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <ESGamma/utility/elysian_subprocess_manager.hpp>
+#include <AssetIO/level/elysian_zcoords.hpp>
+#include <ESGamma/utility/elysian_camera_shake_subprocess.hpp>
+#include <AssetIO/primitive/elysian_rect.hpp>
 
 #include <stdlib.h>
 #include <cstdlib>
 #include <vector>
-#include <gyro_matrix_api.h>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_matrix_api.h>
+#include <libGyro/gyro_video_api.h>
 
 #define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE			5
 #define ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE		0.1f

@@ -3,9 +3,9 @@
 
 #include <cassert>
 #include <cstring>
-#include <crtp/elysian_area.hpp>
-#include <level/elysian_zcoords.hpp>
-#include <gyro_shader_api.h>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/level/elysian_zcoords.hpp>
+#include <libGyro/gyro_shader_api.h>
 
 //Maximum elevation height an object can have
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 31

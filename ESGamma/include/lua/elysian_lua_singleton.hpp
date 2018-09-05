@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_LUA_SINGLETON_HPP
 #define ELYSIAN_LUA_SINGLETON_HPP
 
-#include "elysian_system.hpp"
+#include <ESGamma/system/elysian_system.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 

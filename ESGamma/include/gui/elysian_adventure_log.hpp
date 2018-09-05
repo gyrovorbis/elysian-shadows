@@ -2,7 +2,7 @@
 #define ELYSIAN_ADVENTURE_LOG_HPP
 
 #include <cstring>
-#include "elysian_system.hpp"
+#include <ESGamma/system/elysian_system.hpp>
 
 namespace elysian {
 

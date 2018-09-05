@@ -1,6 +1,6 @@
-#include <system/elysian_thread_system.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <gyro_thread_api.h>
+#include <ESGamma/system/elysian_thread_system.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <libGyro/gyro_thread_api.h>
 
 namespace elysian {
 

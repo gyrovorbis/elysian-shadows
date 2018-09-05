@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_COLOR_BASE_HPP
 #define ELYSIAN_COLOR_BASE_HPP
 
-#include <gyro_video_api.h>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <utility/elysian_generic.hpp>
+#include <libGyro/gyro_video_api.h>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Color4)
 

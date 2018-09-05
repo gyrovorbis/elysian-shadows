@@ -4,20 +4,20 @@
 #include <QDebug>
 #include <QTime>
 
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_project.h>
-#include "elysian_debug.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESToolkit/core/tk_tile_sheet_utilities.h>
 #include <ESToolkit/ui/item/tk_sheet_view_tile_graphics_item.h>
 #include <ESToolkit/core/tk_tile_image.h>
-#include <AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 #include <ESToolkit/core/tk_file_utilities.h>
 #include <QESTkUtils/model/tk_property_standard_item.h>
 #include <ESToolkit/ui/item/tk_checkered_alpha_rect_graphics_item.h>
-#include "elysian_engine.hpp"
-#include "elysian_level_system.hpp"
-#include <gyro_texture_api.h>
-#include <crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/crtp/elysian_level_system.hpp>
+#include <libGyro/gyro_texture_api.h>
+#include <AssetIO/crtp/elysian_entity.hpp>
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
 
 //====STATIC====

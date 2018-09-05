@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_CHARACTER_BASE_HPP
 #define ELYSIAN_CHARACTER_BASE_HPP
 
-#include <crtp/elysian_component.hpp>
-#include <level/elysian_direction.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
-#include <crtp/elysian_lua_variant.hpp>
-#include <primitive/elysian_instance_transform.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/level/elysian_direction.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
 
 #define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         28000000.0f
 #define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    10.0f

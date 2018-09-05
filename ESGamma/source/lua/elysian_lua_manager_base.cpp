@@ -1,9 +1,9 @@
-#include <crtp/elysian_lua_manager.hpp>
-#include <lua/elysian_lua_script.hpp>
-#include <crtp/elysian_behavior.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <utility/elysian_lua_variant_base.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <ESGamma/lua/elysian_lua_script.hpp>
+#include <AssetIO/crtp/elysian_behavior.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/utility/elysian_lua_variant_base.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

@@ -1,4 +1,4 @@
-#include <proxy/elysian_input_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_input_system_proxy.hpp>
 
 
 /*!

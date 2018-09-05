@@ -1,13 +1,13 @@
 #ifndef ELYSIAN_AUDIO_SYSTEM_HPP
 #define ELYSIAN_AUDIO_SYSTEM_HPP
 
-#include <gyro_audio_api.h>
-#include <gyro_wav_api.h>
-#include <gyro_ogg_api.h>
-#include <gyro_matrix_api.h>
-#include <system/elysian_system.hpp>
-#include <utility/elysian_subprocess_manager.hpp>
-#include <utility/elysian_lua_variant_base.hpp>
+#include <libGyro/gyro_audio_api.h>
+#include <libGyro/gyro_wav_api.h>
+#include <libGyro/gyro_ogg_api.h>
+#include <libGyro/gyro_matrix_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/utility/elysian_subprocess_manager.hpp>
+#include <AssetIO/utility/elysian_lua_variant_base.hpp>
 
 #define ELYSIAN_AUDIO_CHANNELS              32
 #define ELYSIAN_AUDIO_REFERENCE_DIST        32

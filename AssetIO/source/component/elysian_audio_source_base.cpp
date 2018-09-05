@@ -1,12 +1,12 @@
 #include <vector>
 #include <algorithm>
-#include <crtp/elysian_audio_source.hpp>
-#include <elysian_audio_system.hpp>
-#include <utility/elysian_generic.hpp>
-#include <utility/elysian_asset_typedefs.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_area.hpp>
-#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <AssetIO/crtp/elysian_audio_source.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
+#include <AssetIO/utility/elysian_asset_typedefs.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <ESGamma/proxy/elysian_event_monitor_proxy.hpp>
 
 namespace elysian {
 

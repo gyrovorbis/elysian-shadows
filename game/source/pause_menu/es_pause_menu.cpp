@@ -1,19 +1,19 @@
-#include <pause_menu/es_pause_menu.hpp>
-#include <pause_menu/es_options_menu.hpp>
-#include <pause_menu/es_playable_pane.hpp>
-#include <pause_menu/es_party_menu.hpp>
-#include <gui/elysian_layout.hpp>
-#include <gui/elysian_label_widget.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_renderable.hpp>
-#include <crtp/elysian_sprite_attrib.hpp>
-#include <crtp/elysian_input_system.hpp>
-#include <system/elysian_audio_system.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <crtp/elysian_gui_system.hpp>
-#include <crtp/elysian_sprite_attrib.hpp>
-#include <gyro_input_api.h>
-#include <gui/elysian_item_delegate.hpp>
+#include <game/pause_menu/es_pause_menu.hpp>
+#include <game/pause_menu/es_options_menu.hpp>
+#include <game/pause_menu/es_playable_pane.hpp>
+#include <game/pause_menu/es_party_menu.hpp>
+#include <ESGamma/gui/elysian_layout.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
+#include <AssetIO/crtp/elysian_sprite_attrib.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <AssetIO/crtp/elysian_sprite_attrib.hpp>
+#include <libGyro/gyro_input_api.h>
+#include <ESGamma/gui/elysian_item_delegate.hpp>
 
 namespace ElysianShadows {
 

@@ -1,5 +1,5 @@
-#include <lua/elysian_lua_script.hpp>
-#include <crtp/elysian_lua_behavior.hpp>
+#include <ESGamma/lua/elysian_lua_script.hpp>
+#include <AssetIO/crtp/elysian_lua_behavior.hpp>
 #include <lua/lua.hpp>
 
 OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,

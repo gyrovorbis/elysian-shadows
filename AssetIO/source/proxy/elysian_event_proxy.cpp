@@ -1,4 +1,4 @@
-#include <proxy/elysian_event_proxy.hpp>
+#include <AssetIO/proxy/elysian_event_proxy.hpp>
 
 /*!
     \qmltype EventTarget

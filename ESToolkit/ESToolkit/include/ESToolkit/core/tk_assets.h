@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include <level/elysian_level_manager.hpp>
+#include <AssetIO/level/elysian_level_manager.hpp>
 #include <ESToolkit/core/tk_selectable.h>
 
 namespace elysian {

@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_SKELETON_BASE_HPP
 #define ELYSIAN_SKELETON_BASE_HPP
 
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 #include <spine/Attachment.h>
 #include <spine/AnimationState.h>
 #include <initializer_list>

@@ -5,8 +5,8 @@
 #include <QRect>
 #include <QESTkUtils/tile_engine/tk_dest_view.h>
 #include <ESToolkit/core/tk_asset_manager.h>
-#include <AssetIO/tk_area.h>
-#include <system/elysian_collision_system.hpp>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESGamma/system/elysian_collision_system.hpp>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK	(1u<<31)
 

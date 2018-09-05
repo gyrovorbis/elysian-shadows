@@ -1,11 +1,11 @@
 #ifndef ELYSIAN_LIGHT_SYSTEM_H
 #define ELYSIAN_LIGHT_SYSTEM_H
 
-#include "elysian_system.hpp"
-#include <crtp/elysian_area.hpp>
-#include "elysian_subprocess_manager.hpp"
-#include <crtp/elysian_light_source.hpp>
-#include <gyro_matrix_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <ESGamma/utility/elysian_subprocess_manager.hpp>
+#include <AssetIO/crtp/elysian_light_source.hpp>
+#include <libGyro/gyro_matrix_api.h>
 
 #define ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN		32
 #define ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH			ELYSIAN_AREA_MAP_WIDTH

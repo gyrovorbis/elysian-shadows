@@ -2,7 +2,7 @@
 #define ELYSIAN_DIALOG_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_dialog_system.hpp>
+#include <ESGamma/system/elysian_dialog_system.hpp>
 
 
 namespace OOLUA {

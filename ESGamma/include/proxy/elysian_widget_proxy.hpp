@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_WIDGET_PROXY_HPP
 #define ELYSIAN_WIDGET_PROXY_HPP
 
-#include <gui/elysian_widget.hpp>
-#include <gui/elysian_entity_widget.hpp>
-#include <gui/elysian_label_widget.hpp>
+#include <ESGamma/gui/elysian_widget.hpp>
+#include <ESGamma/gui/elysian_entity_widget.hpp>
+#include <ESGamma/gui/elysian_label_widget.hpp>
 #include <oolua.h>
 
 namespace OOLUA {

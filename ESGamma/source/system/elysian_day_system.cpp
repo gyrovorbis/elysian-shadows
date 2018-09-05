@@ -1,10 +1,10 @@
-#include "elysian_day_system.hpp"
-#include "elysian_timer_system.hpp"
-#include <crtp/elysian_light_source.hpp>
-#include "elysian_debug.hpp"
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <elysian_event_system.hpp>
+#include <ESGamma/system/elysian_day_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <AssetIO/crtp/elysian_light_source.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
 
 namespace elysian {
 

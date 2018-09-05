@@ -1,4 +1,4 @@
-#include <proxy/elysian_collision_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_collision_system_proxy.hpp>
 
 /*!
     \qmltype CollisionSystem

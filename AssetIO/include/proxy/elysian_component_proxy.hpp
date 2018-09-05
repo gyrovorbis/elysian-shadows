@@ -2,8 +2,8 @@
 #define ELYSIAN_COMPONENT_PROXY_HPP
 
 #include <oolua.h>
-#include <crtp/elysian_component.hpp>
-#include <crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_component.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
 
 namespace OOLUA {
 

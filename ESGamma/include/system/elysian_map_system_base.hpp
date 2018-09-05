@@ -1,24 +1,24 @@
 #ifndef ELYSIAN_MAP_SYSTEM_BASE_HPP
 #define ELYSIAN_MAP_SYSTEM_BASE_HPP
 
-#include "elysian_system.hpp"
-#include "crtp/elysian_camera_system.hpp"
-#include <crtp/elysian_depth_buff_entry.hpp>
-#include <level/elysian_map_depth_buffer.hpp>
-#include <level/elysian_zcoords.hpp>
-#include <crtp/elysian_renderable.hpp>
-#include <crtp/elysian_particle_system.hpp>
-#include <utility/elysian_mem_pool.hpp>
-#include <crtp/elysian_entity.hpp>
-#include "elysian_light_system.hpp"
-#include <level/elysian_tile.hpp>
-#include <crtp/elysian_area.hpp>
-#include <crtp/elysian_level.hpp>
-#include <elysian_timer_system.hpp>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_depth_buff_entry.hpp>
+#include <AssetIO/level/elysian_map_depth_buffer.hpp>
+#include <AssetIO/level/elysian_zcoords.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
+#include <ESGamma/crtp/elysian_particle_system.hpp>
+#include <AssetIO/utility/elysian_mem_pool.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
+#include <AssetIO/level/elysian_tile.hpp>
+#include <AssetIO/crtp/elysian_area.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
 
-#include <gyro_math_api.h>
-#include <gyro_matrix_api.h>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_math_api.h>
+#include <libGyro/gyro_matrix_api.h>
+#include <libGyro/gyro_video_api.h>
 #include <gl/gyro_video_gl.h>
 #include <stdint.h>
 

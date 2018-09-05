@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_DIALOG_SYSTEM_HPP
 #define ELYSIAN_DIALOG_SYSTEM_HPP
 
-#include <system/elysian_system.hpp>
-#include <crtp/elysian_dialog.hpp>
-#include <elysian_quad_sprite.hpp>
-#include <gyro_wav_api.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <AssetIO/crtp/elysian_dialog.hpp>
+#include <ESGamma/gui/elysian_quad_sprite.hpp>
+#include <libGyro/gyro_wav_api.h>
 
 #define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME      0.05f
 #define ELYSIAN_DIALOG_SYSTEM_MAX_LINES             3

@@ -1,7 +1,7 @@
 #ifndef ES_INVENTORY_MENU_HPP
 #define ES_INVENTORY_MENU_HPP
 
-#include <pause_menu/es_pause_menu.hpp>
+#include <game/pause_menu/es_pause_menu.hpp>
 
 using namespace elysian;
 

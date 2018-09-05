@@ -1,4 +1,4 @@
-#include <crtp/elysian_renderable.hpp>
+#include <AssetIO/crtp/elysian_renderable.hpp>
 
 namespace elysian {
 

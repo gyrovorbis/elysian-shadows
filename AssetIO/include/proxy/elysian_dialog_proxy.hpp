@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_DIALOG_PROXY_HPP
 #define ELYSIAN_DIALOG_PROXY_HPP
 
-#include <crtp/elysian_dialog.hpp>
-#include <crtp/elysian_entity.hpp>
+#include <AssetIO/crtp/elysian_dialog.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
 
 namespace OOLUA {
     typedef elysian::Entity             Entity;

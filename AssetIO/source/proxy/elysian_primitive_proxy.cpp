@@ -1,4 +1,4 @@
-#include <proxy/elysian_primitive_proxy.hpp>
+#include <AssetIO/proxy/elysian_primitive_proxy.hpp>
 
 OOLUA_EXPORT_FUNCTIONS(GYColor4, setA, setR, setG, setB)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYColor4, getA, getR, getG, getB)

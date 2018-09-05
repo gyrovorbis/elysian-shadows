@@ -1,4 +1,4 @@
-#include <primitive/elysian_quad_sprite_attrib.hpp>
+#include <AssetIO/primitive/elysian_quad_sprite_attrib.hpp>
 
 namespace elysian {
 
