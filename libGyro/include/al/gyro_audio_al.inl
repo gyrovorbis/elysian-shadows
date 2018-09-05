@@ -2,7 +2,7 @@
 #define GYRO_AUDIO_AL_H
 
 #include <al/gyro_al.h>
-#include <gyro_system_api.h>
+#include "../api/gyro_system_api.h"
 
 #define GY_AL_CLEAR_ERROR() \
     (_clearALError(__FILE__, __LINE__, __func__))

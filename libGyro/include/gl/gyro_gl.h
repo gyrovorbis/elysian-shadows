@@ -1,7 +1,7 @@
 #ifndef GYRO_GL_H
 #define GYRO_GL_H
 
-#include <gyro_platform.h>
+#include <../api/gyro_platform.h>
 
 #ifdef __cplusplus
 extern "C" {

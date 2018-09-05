@@ -2,7 +2,7 @@
 #define GYRO_COMPUTE_API_H
 
 #include <stdlib.h>
-#include <gyro_defines.h>
+#include "../api/gyro_defines.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -100,11 +100,11 @@ typedef struct GYComputeDevice {
 } GYComputeDevice;
 
 typedef struct GYComputeContext {
-  //  char fuckoff;
+  char fuckoff;
 } GYComputeContext;
 
 typedef struct GYComputeCommandQueue {
- //   char fuckoff;
+  char fuckoff;
 } GYComputeCommandQueue;
 
 typedef enum GY_COMPUTE_MEMORY_TYPE {
@@ -128,7 +128,7 @@ typedef struct GYComputeProgram {
 } GYComputeProgram;
 
 typedef struct GYComputeProgramBuildOptions {
-  //  char fuckoff;
+  char fuckoff;
 } GYComputeProgramBuildOptions;
 
 

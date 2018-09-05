@@ -1,8 +1,8 @@
 #ifndef GYRO_RUMBLE_API_H
 #define GYRO_RUMBLE_API_H
 
-#include <gyro_platform.h>
-#include <gyro_matrix_api.h>
+#include "gyro_platform.h"
+#include "gyro_matrix_api.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

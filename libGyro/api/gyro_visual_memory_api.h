@@ -2,7 +2,7 @@
 #define GYRO_VISUAL_MEMORY_API_H
 
 #include <stdint.h>
-#include <gyro_net_api.h>
+#include "gyro_net_api.h"
 
 #ifdef __cplusplus
 extern "C" {
