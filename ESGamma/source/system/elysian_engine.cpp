@@ -312,7 +312,6 @@ void Engine::render(void) {
             _cameraSystem->update();
             gyVidSceneBegin();
             gyMatLoadIdentity();
-                       // _renderSystem->forwardPlusCullLights();
             _renderSystem->updateHDRExposure();
 
         /*	unsigned w, h;
@@ -353,7 +352,7 @@ void Engine::render(void) {
              _particleSystem->render();
              _renderSystem->createLuminanceHistogram();
           //  func();
-
+           // _renderSystem->forwardPlusCullLights();
              _lightSystem->removeLightSourcesFromScene();
              //glalVidApplyRadialBlur();
             //glalVidApplyChromaticAberration();

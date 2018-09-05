@@ -39,6 +39,10 @@
 #include <system/elysian_thread_system.hpp>
 #include <system/elysian_compute_system.hpp>
 
+
+#include <ESToolkit/ui/tk_estoolkit.h>
+#include <QESTkUtils/ui/widget/tk_line_chart.h>
+
 namespace elysian {
 
 //======STATIC MEMBERS=====
@@ -318,6 +322,7 @@ void DebugBase::processInput(Keyboard*const input) {
 
     if(input->isTapped(GY_KEY_B)) {
 #if 0
+#if 0
         AsyncTask* task = new AsyncTask("BitchTask", [](void* data) {
             int val = (uintptr_t)data;
             dbgprintf("TROLOLO!!! %d", val);
@@ -330,6 +335,32 @@ void DebugBase::processInput(Keyboard*const input) {
 #endif
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
         PerformanceMonitor::print(getComputeSystem()->getPerfMonitor());
+#endif
+#else
+        auto* line = ESToolkit::getInstance()->getLineChartWidget();
+
+        auto* series = new QESTkUtils::FrameUpdatedValueSeries<elysian::PerformanceMonitor, qreal>(&_engine->bloomMonitor, "Bloom");
+        line->addSeries(series);
+        series = new QESTkUtils::FrameUpdatedValueSeries<elysian::PerformanceMonitor, qreal>(&_engine->updateParticleMonitor, "Particles");
+        line->addSeries(series);
+        series = new QESTkUtils::FrameUpdatedValueSeries<elysian::PerformanceMonitor, qreal>(&_engine->lightPassMonitor, "LightPass");
+        line->addSeries(series);
+        auto diz = [=](void) -> qreal{
+            return _engine->getTimerSys()->getDeltaTime();
+        };
+
+
+        static qreal lol = 0.0f;
+        auto* serz = new QESTkUtils::FrameUpdatedValueSeries<qreal, qreal>(&lol);
+        lol += 100.0f;
+
+        line->addSeries(serz);
+
+    std::function<qreal(void)> funz = diz;
+        //auto* serz = new QESTkUtils::FrameUpdatedValueSeries<decltype(funz), qreal, QESTkUtils::FrameUpdatedValueAdapter<qreal, decltype(funz)>>(funz, "Fucker");
+
+        line->show();
+
 #endif
     }
 

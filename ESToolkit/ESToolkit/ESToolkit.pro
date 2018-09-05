@@ -20,7 +20,7 @@ vmu_child_app {
 }
 
 !ios: !dreamcast: !android {
-    QT += sql gui opengl network help
+    QT += sql gui opengl network help charts
     CONFIG += console
     tests {
         CONFIG += testcase
@@ -238,7 +238,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_render_system_base.cpp \
     ../../ESGamma/source/gui/elysian_item_delegate.cpp \
     ../../ESGamma/source/system/elysian_thread_system.cpp \
-    source/QESTkUtils/ui/widget/tk_pie_chart_widget.cpp
+    source/QESTkUtils/ui/widget/tk_pie_chart_widget.cpp \
+    source/QESTkUtils/ui/widget/tk_line_chart.cpp
 
 
 !ios: !dreamcast: !android {
@@ -531,7 +532,8 @@ HEADERS += \
     ../../ESGamma/include/gui/elysian_item_delegate.hpp \
     ../../AssetIO/include/level/elysian_scene_object.hpp \
     ../../ESGamma/include/system/elysian_thread_system.hpp \
-    include/QESTkUtils/ui/widget/tk_pie_chart_widget.h
+    include/QESTkUtils/ui/widget/tk_pie_chart_widget.h \
+    include/QESTkUtils/ui/widget/tk_line_chart.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

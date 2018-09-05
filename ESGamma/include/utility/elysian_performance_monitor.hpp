@@ -33,6 +33,7 @@ namespace elysian {
         uint64_t     getBestTicks(void) const;
         uint64_t    getAvgTicks(void) const;
         uint64_t    getFrameCount(void) const;
+        uint64_t    getTicks(void) const;
 
         void        start(void);
         void        stop(void);
@@ -54,6 +55,7 @@ namespace elysian {
     inline uint64_t PerformanceMonitor::getFrameCount(void) const { return _frameCount; }
     inline uint64_t PerformanceMonitor::getWorstTicks(void) const { return _worstTicks; }
     inline uint64_t PerformanceMonitor::getBestTicks(void) const { return _bestTicks; }
+    inline uint64_t PerformanceMonitor::getTicks(void) const { return _deltaTicks; }
     inline uint64_t PerformanceMonitor::getAvgTicks(void) const {
         if(!_frameCount) return 0;
         int count = (_frameCount > ELYSIAN_PERFORMANCE_MONITOR_AVG_FRAMES)? ELYSIAN_PERFORMANCE_MONITOR_AVG_FRAMES : (int)_frameCount;

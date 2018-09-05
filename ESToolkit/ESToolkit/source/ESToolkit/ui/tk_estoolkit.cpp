@@ -36,6 +36,7 @@
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
 #include <ESGamma/tk_render_system.h>
+#include <QESTkUtils/ui/widget/tk_line_chart.h>
 #ifdef GYRO_VMU_APP
 #include <gyro_vmu_main_window.hpp>
 #include <ui_gyro_vmu_main_window.h>
@@ -78,6 +79,8 @@ ESToolkit::ESToolkit(QWidget *parent):
     _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
     _gitlabDialog           = new GitlabDialog(/*this*/);
     _helpDockWidget         = new HelpDockWidget(/*this*/);
+    _lineChartWidget        = new QESTkUtils::LineChartView();
+    connect(&_assets,                SIGNAL(engineUpdated()), _lineChartWidget, SLOT(onEngineUpdated()));
     connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
     connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
     connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));

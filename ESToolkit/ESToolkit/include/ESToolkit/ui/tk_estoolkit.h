@@ -56,6 +56,10 @@ namespace Ui {
     class ESToolkit;
 }
 
+namespace QESTkUtils {
+    class LineChartView;
+}
+
 namespace tktest {
     class ESToolkitTest;
 }
@@ -84,6 +88,7 @@ public:
     QDir            getOutputDir(void) const;
     void            setIndexHiddenLevels(const bool val);
     AssetDockWidget* getAssetDockWidget(void) const;
+    auto           getLineChartWidget(void) const -> QESTkUtils::LineChartView*;
     VMUMainWindow*  getVMUMainWindow(void) const;
 
 protected:
@@ -138,6 +143,8 @@ private:
     QDockWidget*            _bottomDockWidget;
     QDockWidget*            _vmuDockWidget = nullptr;
     QTabWidget*             _bottomTabWidget;
+    QESTkUtils::LineChartView*
+                            _lineChartWidget = nullptr;
 
     VMUMainWindow*          _evmuWindow = nullptr;
     EngineDialog*           _engineDialog;
@@ -314,5 +321,6 @@ inline QDir ESToolkit::getOutputDir(void) const { return _outputDir; }
 inline ESToolkit* ESToolkit::getInstance(void) { return _instance; }
 inline AssetDockWidget* ESToolkit::getAssetDockWidget(void) const { return _assetDockWidget; }
 inline VMUMainWindow* ESToolkit::getVMUMainWindow(void) const { return _evmuWindow; }
+inline QESTkUtils::LineChartView* ESToolkit::getLineChartWidget(void) const { return _lineChartWidget; }
 
 #endif // ESTOOLKIT_H

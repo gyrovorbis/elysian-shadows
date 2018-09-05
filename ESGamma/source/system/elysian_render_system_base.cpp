@@ -42,7 +42,7 @@ void RenderSystemBase::_setParticleAccelerationAvailable(bool val) {
 #endif
 
 bool RenderSystemBase::initialize(void) {
-    getEventSys()->addEventObserver(this, EVENT_VIEWPORT_SIZE_CHANGED);
+  //  getEventSys()->addEventObserver(this, EVENT_VIEWPORT_SIZE_CHANGED);
     bool success = true;
 
     dbgprintf("RenderSystem::initialize()");
@@ -110,8 +110,8 @@ bool RenderSystemBase::initialize(void) {
         getComputeSystem()->addComputeTask(_luminanceComputeTask);
         dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
 
-        _lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer,
-                                                            glalLightingUBO);
+        //_lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer,
+          //                                                  glalLightingUBO);
 
     }
 
@@ -402,26 +402,26 @@ LightCullingComputeTask::LightCullingComputeTask(uintptr_t depthBuffTexId,
             //ComputeDeviceCategory::CpuRenderer
         },
         NULL,
-        true)
+        true),
+    _tileSize(ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_TILE_SIZE_DEFAULT)
 {
-    return;
     DbgEvent event("CullLights - Initializing Kernel");
     if(isValid()) {
 
-        uint32_t tileSize = ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_TILE_SIZE_DEFAULT;
        // _tileSizeBuffer     = getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(uint32_t));
       //  _projViewMatBuff    = getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(float)*16);
         _lightingUboBuff    = getContext()->createBufferFromRendererBuffer(lightingUboId,       GY_COMPUTE_MEMORY_TYPE_READ_ONLY);
 
         glGenTextures(1, &_lightMapTexId);
         glBindTexture(GL_TEXTURE_1D, _lightMapTexId);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         unsigned scrWidth, scrHeight;
         gyVidResolution(&scrWidth, &scrHeight);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, scrWidth*scrHeight*ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        int tileCount = scrWidth*scrHeight / (_tileSize*_tileSize);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, tileCount*ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX/4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX/4, 0, GL_RGBA8, GL_UNSIGNED_BYTE, NULL);
 
         _lightMapBuff = getContext()->createBufferFromRendererTexture(_lightMapTexId, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY, GL_TEXTURE_1D);
@@ -438,30 +438,25 @@ LightCullingComputeTask::LightCullingComputeTask(uintptr_t depthBuffTexId,
 }
 
 bool LightCullingComputeTask::updateScreenResolution(unsigned int width, unsigned int height) {
-    return true;
     if(!isValid()) return false;
     glBindTexture(GL_TEXTURE_1D, _lightMapTexId);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, width*height*ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX, 0, GL_RGBA8, GL_UNSIGNED_BYTE, NULL);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, width*height/(_tileSize*_tileSize)*ELYSIAN_RENDER_SYSTEM_LIGHT_CULLING_LIGHTS_PER_TILE_MAX/4, 0, GL_RGBA8, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_1D, 0);
     return true;
 }
 
 
 bool RenderSystemBase::forwardPlusCullLights(void) {
-    return true;
     bool success = true;
     static unsigned prevWidth = 0;
     static unsigned prevHeight = 0;
     unsigned scrWidth, scrHeight;
     gyVidResolution(&scrWidth, &scrHeight);
 
-    if(scrWidth != prevWidth || scrHeight != prevHeight) {
-        _lightCullComputeTask->updateScreenResolution(scrWidth, scrHeight);
-        prevWidth = scrWidth;
-        prevHeight = scrHeight;
-    }
 
     assert(_lightCullComputeTask->isValid());
+    if(!_lightCullComputeTask->isValid()) return false;
+
     size_t globalOffsets[]  = { 0, 0 };
     size_t localWorkSize[]  = {  8, 8 };
     size_t globalWorkSize[] = { scrWidth, scrHeight };
@@ -479,17 +474,19 @@ bool RenderSystemBase::forwardPlusCullLights(void) {
 
 
 
-   // success &= _lightCullComputeTask->getCommandQueue()->enqueueBufferWrite(_lightCullComputeTask->_projViewMatBuff, 0, sizeof(float)*16, getCameraSys()->getCurrentState()->projViewMat, false);
+  // success &= _lightCullComputeTask->getCommandQueue()->enqueueBufferWrite(_lightCullComputeTask->_projViewMatBuff, 0, sizeof(float)*16, getCameraSys()->getCurrentState()->projViewMat, false);
     success &= _lightCullComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(2, buffers);
     success &= _lightCullComputeTask->enqueueKernel(scrWidth*scrHeight);
+    if(!success) errprintf("ALREADY REAESTED!!!");
   /*  success &= _lightCullComputeTask->getCommandQueue()->enqueueKernel(_lightCullComputeTask->getKernel(),
                                                                        2,
                                                                        globalOffsets,
                                                                        globalWorkSize,
                                                                        localWorkSize);*/
- //   success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(2, buffers, nullptr, &_lightCullComputeTask->_completeEvent);
-    gyComputeCommandQueueFinish(_lightCullComputeTask->getCommandQueue()->_gyCmdQueue);
+ //   success &= _lightCullComputeTask->getCommandQueue()->seRendererSharedObject(2, buffers, nullptr, &_lightCullComputeTask->_completeEvent);
+    //gyComputeCommandQueueFinish(_lightCullComputeTask->getCommandQueue()->_gyCmdQueue);
        success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(2, buffers, nullptr, nullptr);
+       _lightCullComputeTask->finish();
     //success &= _lightCullComputeTask->getComm
     // success &= _lightCullComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(1, buffers);
     return success;
