@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "gyro_matrix_api.h"
+#include <libGyro/gyro_matrix_api.h>
 #include "gyro_kinetic_static.h"
 
 struct _GYKinetic;

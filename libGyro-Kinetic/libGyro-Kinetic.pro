@@ -25,7 +25,8 @@ isEmpty(LIBGYRO_PATH) {
     LIBGYRO_PATH = lib/libGyro
 }
 
-INCLUDEPATH += $${LIBGYRO_PATH}/api \
+INCLUDEPATH += $${GLOBAL_INCLUDE_PATH} \
+                include \
                 $${LIBGYRO_PATH}/include
 
 DEPENDPATH += $${LIBGYRO_PATH}
