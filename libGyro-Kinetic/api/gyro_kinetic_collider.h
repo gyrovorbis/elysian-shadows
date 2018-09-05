@@ -1,7 +1,7 @@
 #ifndef GYRO_KINETIC_COLLIDER_H
 #define GYRO_KINETIC_COLLIDER_H
 
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_matrix_api.h>
 
 #ifdef __cplusplus
 extern "C" {

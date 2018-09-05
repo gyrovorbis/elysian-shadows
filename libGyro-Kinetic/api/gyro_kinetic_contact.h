@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "gyro_math_api.h"
+#include <libGyro/gyro_math_api.h>
 
 struct _GYCollider;
 struct _GYStatic;
