@@ -15,6 +15,7 @@ vmu_child_app {
     TEMPLATE = lib
     CONFIG += staticlib
     CONFIG -= app_bundle
+    INCLUDEPATH += $${GLOBAL_INCLUDE_PATH}
 }
 TARGET = ElysianVMU
 QT += gui opengl

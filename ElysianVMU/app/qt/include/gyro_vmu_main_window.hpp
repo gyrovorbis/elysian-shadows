@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QVector>
 #include <stdint.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <functional>
 
 #define VMU_FB_DEFAULT_WIDTH            48
