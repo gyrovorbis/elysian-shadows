@@ -5,6 +5,10 @@
 //extern "C" {
 //#endif
 
+#define _GYRO_STRINGIFY_MACRO(a) #a
+#define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
+#define GYRO_STRINGIFY_VERSION(major, minor, patch) GYRO_STRINGIFY_MACRO(major) "." GYRO_STRINGIFY_MACRO(minor) "." GYRO_STRINGIFY_MACRO(patch)
+
 #define GYRO_PLATFORM_x86		(1<<0)
 #define GYRO_PLATFORM_DC		(1<<1)
 #define GYRO_PLATFORM_PSP		(1<<2)
@@ -19,6 +23,42 @@
 
 #define GYRO_ENDIAN_LITTLE		0x01
 #define GYRO_ENDIAN_BIG			0x02
+
+//Determine compiler information
+#ifndef GYRO_COMPILER_VERSION_STRING
+#   if defined(__clang__)
+#       define GYRO_COMPILER_VERSION_STRING "Clang " GYRO_STRINGIFY_VERSION(__clang_major__, __clang_minor__, __clang_patchlevel__)
+
+#   elif defined(__CC_ARM)
+    #   define GYRO_COMPILER_VERSION STRING "ARM " __ARMCC_VERSION
+
+#   elif defined(__IAR_SYSTEMS_ICC__)
+    #   define GYRO_COMPILER_VERSION STRING "IAR " __VER__
+
+#   elif defined(__ICC)
+#       define GYRO_COMPILER_VERSION_STRING "ICC " __ICC
+
+#   elif defined(__MINGW32_MAJOR_VERSION)
+#       define GYRO_COMPILER_VERSION_STRING "MinGW32 " GYRO_STRINGIFY_VERSION(__MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, "") " : GCC " GYRO_STRINGIFY_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+
+#   elif defined(__MINGW64_MAJOR_VERSION)
+#       define GYRO_COMPILER_VERSION_STRING "MinGW64 " GYRO_STRINGIFY_VERSION(__MINGW64_MAJOR_VERSION, __MINGW64_MINOR_VERSION, "") " : GCC " GYRO_STRINGIFY_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+
+#   elif defined(__ghs__)
+#       define GYRO_COMPILER_VERSION_STRING "Green Hill " GYRO_STRINGIFY_MACRO(__GHS_VERSION_NUMBER__) ": " GYRO_STRINGIFY_MACRO(__GHS_REVISION_DATE)
+
+#   elif defined(__GNUC__)
+#       define GYRO_COMPILER_VERSION_STRING "GCC " GYRO_STRINGIFY_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+
+#   elif defined(_MSC_VER)
+    #   define GYRO_COMPILER_VERSION STRING "MSVC " _MSC_FULL_VER
+
+#   else
+#       define GYRO_COMPILER_VERSION_STRING "Unknown"
+
+#   endif
+#endif
+
 
 #if 0
 #	define GYRO_AUDIO_PLATFORM_INCLUDE

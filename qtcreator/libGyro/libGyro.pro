@@ -38,12 +38,14 @@ macx {
         INCLUDEPATH += ../../lib/osx/MoltenVK.framework/Headers
     }
     SOURCES +=	../../source/x86/turfs_osx.c
+    OBJECTIVE_SOURCES += ../../source/apple/gyro_system_apple.m
 }
 
 linux {
     LIBS += \
      -ldynamic
-    SOURCES +=	../../source/x86/turfs_unix.c
+    SOURCES +=	../../source/x86/turfs_unix.c \
+    ../../source/linux/gyro_system_linux.c
 }
 
 raspberrypi {
@@ -275,9 +277,12 @@ dreamcast {
             ../../source/ios/gyro_video_ios.mm \
             ../../source/ios/GYAppDelegate.mm \
             ../../source/ios/GYView.mm \
-            ../../source/ios/GYViewController.mm
+            ../../source/ios/GYViewController.mm \
+            ../../source/apple/gyro_system_apple.m
     }
 
 
 }
+
+
 

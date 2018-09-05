@@ -11,12 +11,7 @@ extern "C" {
 #define GYRO_LIB_VERSION_MINOR  6
 #define GYRO_LIB_VERSION_PATCH  0
 
-#define _GYRO_STRINGIFY_MACRO(a) #a
-#define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
-
-//#define GYRO_LIB_VERSION GYRO_STRINGIFY_MACRO(GYRO_LIB_VERSION_MAJOR)##"."##GYRO_STRINGIFY_MACRO(GYRO_LIB_VERSION_MINOR)##"."##GYRO_STRINGIFY_MACRO(GYRO_LIB_VERSION_PATCH)
-#define GYRO_LIB_VERSION    "1.6.0"
-
+#define GYRO_LIB_VERSION GYRO_STRINGIFY_VERSION(GYRO_LIB_VERSION_MAJOR, GYRO_LIB_VERSION_MINOR, GYRO_LIB_VERSION_PATCH)
 
 #ifndef GYRO_BUILD_NODE
 #   define GYRO_LOCAL_BUILD
@@ -55,6 +50,7 @@ typedef struct GYSystemPowerInfo {
 
 typedef struct GYSystemInfo {
     char                        platformName[GYRO_SYSTEM_PLATFORM_NAME_SIZE];
+    char                        osInfo[GYRO_SYSTEM_PLATFORM_NAME_SIZE];
     int                         cpuCount;
     int                         cacheLineSize;  //bytes, multi-threaded padding and SSE
     int                         systemRam;      //Megabytes
