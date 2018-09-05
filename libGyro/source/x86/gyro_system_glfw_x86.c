@@ -157,6 +157,10 @@ const GYSystemInfo* gySystemQueryInfo(void) {
     return &_systemInfo;
 }
 
+extern void _gyQueryOperatingSystemInfoString(char* buffer, int buffSize);
+
+
+
 static int _sdlQuerySystemInfo(GYSystemInfo* info) {
     int success = 1;
     int intBuff = 0;
@@ -167,20 +171,25 @@ static int _sdlQuerySystemInfo(GYSystemInfo* info) {
     _gyPush();
 
     strncpy(strBuff, SDL_GetPlatform(), GYRO_SYSTEM_PLATFORM_NAME_SIZE);
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Platform Name",    strBuff);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50s", "Platform Name",    strBuff);
     if(info) strcpy(info->platformName, strBuff);
 
+    _gyQueryOperatingSystemInfoString(_systemInfo.osInfo, GYRO_SYSTEM_PLATFORM_NAME_SIZE);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50s", "Operating System",    _systemInfo.osInfo);
+
     intBuff = SDL_GetCPUCount();
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "CPU Cores",    intBuff);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "CPU Cores",    intBuff);
     if(info) info->cpuCount = intBuff;
 
     intBuff = SDL_GetSystemRAM();
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d MB", "System RAM",    intBuff);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %47d MB", "System RAM",    intBuff);
     if(info) info->systemRam = intBuff;
 
     intBuff = SDL_GetCPUCacheLineSize();
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Cache Line Size",    intBuff);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Cache Line Size",    intBuff);
     if(info) info->cacheLineSize = intBuff;
+
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50s", "Compiler",    GYRO_COMPILER_VERSION_STRING);
     _gyPop(1);
     return success;
 }
