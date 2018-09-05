@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VmuTcpDialog</class>
+ <widget class="QDialog" name="VmuTcpDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>601</width>
+    <height>424</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TCP Connection Manager</string>
+  </property>
+  <property name="toolTip">
+   <string extracomment="Configure Client/Host TCP Connections"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="hostClientLayout">
+     <item>
+      <widget class="QGroupBox" name="hostGroupBox">
+       <property name="title">
+        <string>TCP Host</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="listenPortLabel">
+          <property name="text">
+           <string>Listen on TCP Port</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="listenPortSpinBox">
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="value">
+           <number>1234</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="vmuClientLabel">
+          <property name="text">
+           <string>Allow VMU Clients</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="vmuClientCheckBox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="dcClientLabel">
+          <property name="text">
+           <string>Allow Dreamcast Clients</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QCheckBox" name="dcClientCheckBox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="mostRecentLabel">
+          <property name="text">
+           <string>Use Most Recent Connection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="mostRecentCheckBox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="programStartLabel">
+          <property name="text">
+           <string>Launch Server on Program Start</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QCheckBox" name="programStartCheckBox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="startServerButton">
+          <property name="text">
+           <string>Start TCP Server</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="clientGroupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>TCP Client</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="ipLabel">
+          <property name="text">
+           <string>Remote Hostname</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="ipEdit"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="portLabel">
+          <property name="text">
+           <string>Remote TCP Port</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="portSpinbox">
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="value">
+           <number>1234</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="connectButton">
+          <property name="text">
+           <string>Connect To Server</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="statusGroupBox">
+     <property name="title">
+      <string>Network Status</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="remoteIpLabel">
+        <property name="text">
+         <string>Remote IP Address</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="remoteTypeLabel">
+        <property name="text">
+         <string>Remote Connection Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="connectionStatusLabel">
+        <property name="text">
+         <string>Connection Status</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="remoteTypeText">
+        <property name="text">
+         <string>None</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="connectionStatusText">
+        <property name="text">
+         <string>Not Connected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="remotePortText">
+        <property name="text">
+         <string>None</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="remoteIpText">
+        <property name="text">
+         <string>None</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="remotePortLabel">
+        <property name="text">
+         <string>Remote TCP Port</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>VmuTcpDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>VmuTcpDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
