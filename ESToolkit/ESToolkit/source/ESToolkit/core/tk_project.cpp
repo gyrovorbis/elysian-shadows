@@ -4,13 +4,13 @@
 #include <functional>
 
 #include <ESToolkit/core/tk_project.h>
-#include <AssetIO/tk_level.h>
-#include <AssetIO/tk_area.h>
-#include "elysian_debug.hpp"
+#include <ESToolkit/AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESToolkit/core/tk_file_utilities.h>
-#include "elysian_engine.hpp"
-#include <ESGamma/tk_level_system.h>
-#include <crtp/elysian_entity.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESToolkit/ESGamma/tk_level_system.h>
+#include <AssetIO/crtp/elysian_entity.hpp>
 #include <ESToolkit/ui/item/tk_tree_node.h>
 
 Project::Project(void): _active(false) {}

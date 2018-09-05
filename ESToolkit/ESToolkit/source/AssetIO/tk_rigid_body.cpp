@@ -1,6 +1,6 @@
-#include <AssetIO/tk_rigid_body.h>
+#include <ESToolkit/AssetIO/tk_rigid_body.h>
 #include <QESTkUtils/tk_menu_stack.h>
-#include <AssetIO/tk_entity.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
 
 bool TkRigidBody::validate(QString &str) const {
     bool success = true;

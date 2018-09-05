@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_SCENE_OBJECT_HPP
 #define ELYSIAN_SCENE_OBJECT_HPP
 
-#include <utility/elysian_bit_mask.hpp>
-#include <gyro_matrix_api.h>
-#include <primitive/elysian_instance_transform.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
+#include <libGyro/gyro_matrix_api.h>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
 #include <cfloat>
 
 namespace elysian {

@@ -214,7 +214,6 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_event_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_collision_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_examinable_system_proxy.cpp \
-    source/ESGamma/tk_input_system.cpp \
     ../../ESGamma/source/device/elysian_rumble_device.cpp \
     ../../game/source/pause_menu/es_options_menu.cpp \
     ../../game/source/pause_menu/es_pause_menu.cpp \
@@ -222,13 +221,9 @@ SOURCES += \
     ../../game/source/pause_menu/es_party_menu.cpp \
     ../../game/source/pause_menu/es_inventory_menu.cpp \
     ../../ESGamma/source/system/elysian_compute_system.cpp \
-    source/ESGamma/tk_render_system.cpp \
     ../../ESGamma/source/system/elysian_render_system_base.cpp \
     ../../ESGamma/source/gui/elysian_item_delegate.cpp \
-    ../../ESGamma/source/system/elysian_thread_system.cpp \
-    source/QESTkUtils/ui/widget/tk_pie_chart_widget.cpp \
-    source/QESTkUtils/ui/widget/tk_line_chart.cpp
-
+    ../../ESGamma/source/system/elysian_thread_system.cpp
 
 !ios: !dreamcast: !android {
 
@@ -322,8 +317,11 @@ SOURCES += \
         source/QESTkUtils/ui/widget/tk_2d_vector_widget.cpp \
         source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp \
         source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.cpp
-
+        source/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.cpp \
+        source/QESTkUtils/ui/widget/tk_pie_chart_widget.cpp \
+        source/QESTkUtils/ui/widget/tk_line_chart.cpp \
+        source/ESGamma/tk_input_system.cpp \
+        source/ESGamma/tk_render_system.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -459,7 +457,7 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_camera_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_camera_system.hpp \
     ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp \
-    ../../ESGamma/include/utility/elysian_bit_mask.hpp \
+    ../../AssetIO/include/utility/elysian_bit_mask.hpp \
     ../../AssetIO/include/proxy/elysian_bit_mask_proxy.hpp \
     ../../AssetIO/include/crtp/elysian_sprite_attrib.hpp \
     ../../AssetIO/include/primitive/elysian_sprite_attrib_base.hpp \
@@ -514,46 +512,46 @@ HEADERS += \
     ../../game/include/pause_menu/es_inventory_menu.hpp \
     ../../ESGamma/include/system/elysian_compute_system.hpp \
     ../../ESGamma/include/crtp/elysian_render_system.hpp \
-    include/ESGamma/tk_render_system.h \
     ../../ESGamma/include/system/elysian_render_system_base.hpp \
     ../../ESGamma/include/gui/elysian_item_model.hpp \
     ../../ESGamma/include/gui/elysian_item_delegate.hpp \
     ../../AssetIO/include/level/elysian_scene_object.hpp \
-    ../../ESGamma/include/system/elysian_thread_system.hpp \
-    include/QESTkUtils/ui/widget/tk_pie_chart_widget.h \
-    include/QESTkUtils/ui/widget/tk_line_chart.h
+    ../../ESGamma/include/system/elysian_thread_system.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
-        include/AssetIO/tk_area.h \
+        include/ESToolkit/ESGamma/tk_render_system.h \
+        include/ESToolkit/AssetIO/tk_area.h \
+        include/QESTkUtils/ui/widget/tk_pie_chart_widget.h \
+        include/QESTkUtils/ui/widget/tk_line_chart.h \
         include/ESToolkit/core/tk_asset_manager.h \
         include/ESToolkit/core/tk_assets.h \
-        include/AssetIO/tk_audio_source.h \
-        include/AssetIO/tk_behavior.h \
-        include/AssetIO/tk_character.h \
-        include/AssetIO/tk_collidable.h \
-        include/AssetIO/tk_combat.h \
-        include/AssetIO/tk_component.h \
-        include/AssetIO/tk_elysian_tile_wrapper.h \
-        include/AssetIO/tk_entity.h \
-        include/AssetIO/tk_examinable.h \
-        include/AssetIO/tk_level.h \
-        include/AssetIO/tk_light_source.h \
-        include/AssetIO/tk_lua_table_proxy.h \
-        include/AssetIO/tk_map_entry.h \
-        include/AssetIO/tk_particle_emitter.h \
+        include/ESToolkit/AssetIO/tk_audio_source.h \
+        include/ESToolkit/AssetIO/tk_behavior.h \
+        include/ESToolkit/AssetIO/tk_character.h \
+        include/ESToolkit/AssetIO/tk_collidable.h \
+        include/ESToolkit/AssetIO/tk_combat.h \
+        include/ESToolkit/AssetIO/tk_component.h \
+        include/ESToolkit/AssetIO/tk_elysian_tile_wrapper.h \
+        include/ESToolkit/AssetIO/tk_entity.h \
+        include/ESToolkit/AssetIO/tk_examinable.h \
+        include/ESToolkit/AssetIO/tk_level.h \
+        include/ESToolkit/AssetIO/tk_light_source.h \
+        include/ESToolkit/AssetIO/tk_lua_table_proxy.h \
+        include/ESToolkit/AssetIO/tk_map_entry.h \
+        include/ESToolkit/AssetIO/tk_particle_emitter.h \
         include/ESToolkit/core/tk_project.h \
-        include/AssetIO/tk_renderable.h \
-        include/AssetIO/tk_rigid_body.h \
-        include/AssetIO/tk_skeleton.h \
-        include/AssetIO/tk_warp.h \
-        include/AssetIO/tk_lua_behavior.h \
-        include/AssetIO/tk_depth_buff_entry.h \
-        include/AssetIO/tk_sprite_attrib.h \
-        include/AssetIO/tk_dialog_screen.h \
-        include/AssetIO/tk_dialog.h \
-        include/AssetIO/tk_color.h \
-        include/AssetIO/tk_lua_variant.h \
+        include/ESToolkit/AssetIO/tk_renderable.h \
+        include/ESToolkit/AssetIO/tk_rigid_body.h \
+        include/ESToolkit/AssetIO/tk_skeleton.h \
+        include/ESToolkit/AssetIO/tk_warp.h \
+        include/ESToolkit/AssetIO/tk_lua_behavior.h \
+        include/ESToolkit/AssetIO/tk_depth_buff_entry.h \
+        include/ESToolkit/AssetIO/tk_sprite_attrib.h \
+        include/ESToolkit/AssetIO/tk_dialog_screen.h \
+        include/ESToolkit/AssetIO/tk_dialog.h \
+        include/ESToolkit/AssetIO/tk_color.h \
+        include/ESToolkit/AssetIO/tk_lua_variant.h \
         include/ESToolkit/ui/item/tk_checkered_alpha_rect_graphics_item.h \
         include/ESToolkit/core/tk_debug.h \
         include/ESToolkit/core/tk_file_utilities.h \
@@ -574,9 +572,9 @@ HEADERS += \
         include/ESToolkit/ui/widget/tk_entity_tree_widget.h \
         include/ESToolkit/ui/tk_estoolkit.h \
         include/ESToolkit/ui/dock/tk_layer_dock_widget.h \
-        include/ESGamma/tk_lua_manager.h \
-        include/ESGamma/tk_lua_wrappers.h \
-        include/ESGamma/tk_map_system.h \
+        include/ESToolkit/ESGamma/tk_lua_manager.h \
+        include/ESToolkit/ESGamma/tk_lua_wrappers.h \
+        include/ESToolkit/ESGamma/tk_map_system.h \
         include/ESToolkit/ui/widget/tk_map_view.h \
         include/ESToolkit/ui/item/tk_map_view_depth_buffer_graphics_item.h \
         include/ESToolkit/core/tk_map_view_place_tile_group_undo_item.h \
@@ -614,14 +612,14 @@ HEADERS += \
         include/QESTkUtils/tile_engine/tk_dest_view_impl.h \
         include/QESTkUtils/tk_lua_qt_utils.h \
         include/QESTkUtils/ui/widget/tk_documentation_browser.h \
-        include/ESGamma/tk_task_monitor.h \
+        include/ESToolkit/ESGamma/tk_task_monitor.h \
         include/ESToolkit/ui/dialog/tk_task_monitor_dialog.h \
-        include/ESGamma/tk_timer_system.h \
+        include/ESToolkit/ESGamma/tk_timer_system.h \
         include/QESTkUtils/ui/widget/tk_gitlab_dialog.h \
         include/QESTkUtils//tk_network_access_manager.h \
         include/ESToolkit/ui/dock/tk_camera_dock_widget.h \
-        include/ESGamma/tk_camera_system.h \
-        include/ESGamma/tk_input_system.h \
+        include/ESToolkit/ESGamma/tk_camera_system.h \
+        include/ESToolkit/ESGamma/tk_input_system.h \
         include/QESTkUtils/ui/delegate/tk_property_item_delegate.h \
         include/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h \
         include/QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h \
@@ -631,13 +629,13 @@ HEADERS += \
         include/QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h \
         include/ESToolkit/ui/widget/tk_selection_tree_view.h \
         include/QESTkUtils/tk_lua_mime_drop_manager.h \
-        include/ESGamma/tk_particle_system.h \
+        include/ESToolkit/ESGamma/tk_particle_system.h \
         include/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.h \
         include/QESTkUtils/ui/widget/tk_2d_vector_widget.h \
         include/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h \
         include/ESToolkit/core/tk_lua_table_selectable.h \
-        include/ESGamma/tk_gui_system.h \
-        include/ESGamma/tk_level_system.h \
+        include/ESToolkit/ESGamma/tk_gui_system.h \
+        include/ESToolkit/ESGamma/tk_level_system.h \
         include/QESTkUtils/tk_mime_data.h \
         include/QESTkUtils/tk_mime_drop_manager.h \
         include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h \
@@ -892,8 +890,6 @@ macx {
         -framework OpenCL \
         -framework OpenAL \
         -lz \
-        -F$${PWD}/../../ESGamma/lib/osx \
-        -L$${PWD}/../../ESGamma/lib/osx \
         -F$${LIBGYRO_PATH}/lib/osx \
         -framework SDL2 \
         -framework SDL2_net \

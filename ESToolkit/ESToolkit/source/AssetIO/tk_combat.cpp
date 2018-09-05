@@ -1,8 +1,8 @@
-#include <AssetIO/tk_combat.h>
+#include <ESToolkit/AssetIO/tk_combat.h>
 #include <QESTkUtils/tk_menu_stack.h>
-#include <AssetIO/tk_entity.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
 bool TkCombat::validate(QString& str) const {
     bool success = true;

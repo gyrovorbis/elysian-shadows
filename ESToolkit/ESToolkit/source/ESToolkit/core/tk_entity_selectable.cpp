@@ -1,9 +1,9 @@
 #include <ESToolkit/core/tk_entity_selectable.h>
-#include <AssetIO/tk_entity.h>
-#include "elysian_engine.hpp"
-#include "elysian_behavior_system.hpp"
+#include <ESToolkit/AssetIO/tk_entity.h>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/system/elysian_behavior_system.hpp>
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
 EntitySelectable::EntitySelectable(void) {
     _tableRef = LuaVariant::newTable();

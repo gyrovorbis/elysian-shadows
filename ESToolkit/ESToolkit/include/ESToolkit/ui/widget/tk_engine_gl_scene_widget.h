@@ -7,8 +7,8 @@
 #include <QQuaternion>
 #include <QVector2D>
 #include <QTimer>
-#include <utility/elysian_performance_monitor.hpp>
-#include <ESGamma/tk_task_monitor.h>
+#include <ESGamma/utility/elysian_performance_monitor.hpp>
+#include <ESToolkit/ESGamma/tk_task_monitor.h>
 //#include <QOpenGLFunctions>
 //#include <QGLFunctions>
 

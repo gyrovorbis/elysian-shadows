@@ -1,4 +1,4 @@
-#include <ESGamma/tk_level_system.h>
+#include <ESToolkit/ESGamma/tk_level_system.h>
 
 TkLevelSystem::TkLevelSystem(void) {
     connect(this, SIGNAL(areaChanged(Area*)), getAssets(), SLOT(onAreaChanged(Area*)));

@@ -1,4 +1,4 @@
-#include <ESGamma/tk_camera_system.h>
+#include <ESToolkit/ESGamma/tk_camera_system.h>
 #include <ESToolkit/core/tk_assets.h>
 
 TkCameraSystem::TkCameraSystem(void) {

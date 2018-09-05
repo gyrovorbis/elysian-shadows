@@ -1,5 +1,5 @@
-#include <ESGamma/tk_lua_manager.h>
-#include <crtp/elysian_lua_variant.hpp>
+#include <ESToolkit/ESGamma/tk_lua_manager.h>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 QStringList TkLuaManager::_udTypeNames;
 LuaVariant TkLuaManager::_serializeFunc;

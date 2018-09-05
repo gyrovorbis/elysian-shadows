@@ -1,5 +1,5 @@
-#include <AssetIO/tk_entity.h>
-#include <AssetIO/tk_character.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
+#include <ESToolkit/AssetIO/tk_character.h>
 #include <QESTkUtils/tk_menu_stack.h>
 
 bool TkCharacter::canAddTo(const Entity &entity) const {

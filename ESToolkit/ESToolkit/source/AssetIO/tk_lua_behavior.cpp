@@ -1,6 +1,6 @@
-#include <AssetIO/tk_lua_behavior.h>
+#include <ESToolkit/AssetIO/tk_lua_behavior.h>
 #include <QESTkUtils/tk_menu_stack.h>
-#include <AssetIO/tk_entity.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
 
 bool TkLuaBehavior::validate(QString& str) const {
     bool success = true;

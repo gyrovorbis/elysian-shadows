@@ -2,19 +2,18 @@
 #include <QMessageBox>
 #include <ESToolkit/core/tk_assets.h>
 #include <ESToolkit/core/tk_project.h>
-#include <AssetIO/tk_level.h>
-#include <AssetIO/tk_area.h>
-#include <crtp/elysian_entity.hpp>
-#include "elysian_debug.hpp"
-#include "elysian_engine.hpp"
-#include <crtp/elysian_level_system.hpp>
-#include "elysian_map_system.hpp"
-#include "elysian_map_system.hpp"
+#include <ESToolkit/AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/crtp/elysian_level_system.hpp>
+#include <ESGamma/crtp/elysian_map_system.hpp>
 #include <ESToolkit/core/tk_entity_selectable.h>
-#include "elysian_party_system.hpp"
-#include <AssetIO/tk_behavior.h>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESToolkit/AssetIO/tk_behavior.h>
 #include <ESToolkit/core/tk_file_utilities.h>
-#include <crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
 
 //====STATIC MEMBERS====
 

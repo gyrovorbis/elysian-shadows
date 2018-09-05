@@ -1,5 +1,5 @@
 #include <ESToolkit/ui/item/tk_map_view_tile_graphics_item.h>
-#include <AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 
 MapViewTileGraphicsItem::MapViewTileGraphicsItem(void):
     TileGraphicsItem<TileEntry>::TileGraphicsItem(TileGraphicsItem<TileEntry>::TYPE_DEST),

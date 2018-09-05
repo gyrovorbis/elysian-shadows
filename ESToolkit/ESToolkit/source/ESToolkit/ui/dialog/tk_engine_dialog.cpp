@@ -13,9 +13,9 @@
 #include <ESToolkit/ui/dialog/tk_engine_dialog.h>
 #include <ESToolkit/core/tk_assets.h>
 #include <ESToolkit/core/tk_project.h>
-#include <AssetIO/tk_level.h>
-#include <AssetIO/tk_area.h>
-#include <elysian_debug.hpp>
+#include <ESToolkit/AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESToolkit/core/tk_file_utilities.h>
 
 EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(ENGINE_PC) {

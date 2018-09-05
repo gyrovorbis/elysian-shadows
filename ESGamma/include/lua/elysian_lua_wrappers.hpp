@@ -2,14 +2,14 @@
 #define ELYSIAN_LUA_WRAPPERS_HPP
 
 #include <oolua.h>
-#include <utility/elysian_event_monitor.hpp>
-#include <system/elysian_gui_system_base.hpp>
-#include <lua/elysian_lua_singleton.hpp>
-#include <crtp/elysian_collidable.hpp>
-#include <crtp/elysian_entity.hpp>
-#include <crtp/elysian_debug.hpp>
-#include <level/elysian_tile.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <ESGamma/utility/elysian_event_monitor.hpp>
+#include <ESGamma/crtp/elysian_gui_system.hpp>
+#include <ESGamma/lua/elysian_lua_singleton.hpp>
+#include <AssetIO/crtp/elysian_collidable.hpp>
+#include <AssetIO/crtp/elysian_entity.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <AssetIO/level/elysian_tile.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP

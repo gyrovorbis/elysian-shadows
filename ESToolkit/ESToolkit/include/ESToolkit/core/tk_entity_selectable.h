@@ -4,8 +4,8 @@
 #include <ESToolkit/core/tk_selectable.h>
 //#include <tk_rows_joiner_proxy_model.h>
 #include <ESToolkit/core/tk_asset_manager.h>
-#include <ESGamma/tk_lua_manager.h>
-#include <crtp/elysian_lua_variant.hpp>
+#include <ESToolkit/ESGamma/tk_lua_manager.h>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 #include <QVector>
 
 class TkEntity;

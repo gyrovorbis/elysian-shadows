@@ -1,14 +1,25 @@
-#include <ESToolkit/ui//tk_estoolkit.h>
-#include "ui_tk_estoolkit.h"
-#include "ui_tk_sheet_dock_widget.h"
-
+#include <QStatusBar>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QToolButton>
 
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <ESGamma/crtp/elysian_map_system.hpp>
+#include <ESGamma/system/elysian_party_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+
+#include <QESTkUtils/ui/widget/tk_gitlab_dialog.h>
+#include <QESTkUtils/ui/widget/tk_documentation_browser.h>
+
+#include <ESToolkit/ui/tk_estoolkit.h>
 #include <ESToolkit/core/tk_assets.h>
 #include <ESToolkit/core/tk_project.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_entity_selectable.h>
 #include <ESToolkit/ui/dock/tk_selection_dock_widget.h>
 #include <ESToolkit/ui/dock/tk_sheet_dock_widget.h>
@@ -18,30 +29,22 @@
 #include <ESToolkit/ui/dock/tk_layer_dock_widget.h>
 #include <ESToolkit/ui/dock//tk_entity_dock_widget.h>
 #include <ESToolkit/ui/dock/tk_history_dock_widget.h>
-#include <crtp/elysian_camera_system.hpp>
-#include <system/elysian_engine.hpp>
 #include <ESToolkit/sheet_manager/tk_sheet_manager.h>
 #include <ESToolkit/ui/widget/tk_engine_gl_scene_widget.h>
 #include <ESToolkit/ui/widget/tk_entity_tree_widget.h>
-#include <crtp/elysian_map_system.hpp>
-#include <QESTkUtils/ui/widget/tk_gitlab_dialog.h>
-#include <system/elysian_light_system.hpp>
-#include <system/elysian_audio_system.hpp>
 #include <ESToolkit/ui/dialog/tk_task_monitor_dialog.h>
-#include <system/elysian_party_system.hpp>
 #include <ESToolkit/ui/dock/tk_camera_dock_widget.h>
-#include <crtp/elysian_input_system.hpp>
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
-#include <QESTkUtils/ui/widget/tk_documentation_browser.h>
-#include <proxy/elysian_entity_proxy.hpp>
 #include <ESToolkit/core/tk_file_utilities.h>
-#include <QStatusBar>
-#include <ESGamma/tk_render_system.h>
+#include <ESToolkit/ESGamma/tk_render_system.h>
 
 #ifdef VMU_CHILD_APP
-#include <gyro_vmu_main_window.hpp>
-#include <gyro_vmu_display.h>
+#include <ElysianVMU/gyro_vmu_main_window.hpp>
+#include <evmu-core/gyro_vmu_display.h>
 #endif
+
+#include "ui_tk_estoolkit.h"
+#include "ui_tk_sheet_dock_widget.h"
 
 
 void ESToolkit::on_actionFileQuit_triggered() {

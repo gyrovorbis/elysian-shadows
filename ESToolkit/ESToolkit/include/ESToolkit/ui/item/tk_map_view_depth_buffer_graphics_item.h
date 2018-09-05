@@ -2,7 +2,7 @@
 #define MAP_VIEW_DEPTH_BUFFER_GRAPHICS_ITEM_H
 
 #include <ESToolkit/ui/item/tk_map_view_tile_graphics_item.h>
-#include "elysian_map_system.hpp"
+#include <ESGamma/crtp/elysian_map_system.hpp>
 
 class MapViewDepthBufferGraphicsItem:
         public MapViewTileGraphicsItem,

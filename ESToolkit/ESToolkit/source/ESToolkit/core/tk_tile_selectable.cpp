@@ -3,8 +3,8 @@
 
 #include <ESToolkit/core/tk_tile_selectable.h>
 #include <ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.h>
-#include <AssetIO/tk_area.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_tile_image.h>
 #include <QESTkUtils/model/tk_property_standard_item.h>
 

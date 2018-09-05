@@ -1,8 +1,8 @@
-#include <AssetIO/tk_renderable.h>
+#include <ESToolkit/AssetIO/tk_renderable.h>
 #include <QESTkUtils/tk_menu_stack.h>
 #include <QMenu>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
 bool TkRenderable::validate(QString &str) const {
     bool success = true;

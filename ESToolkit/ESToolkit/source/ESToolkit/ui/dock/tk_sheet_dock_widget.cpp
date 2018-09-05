@@ -3,9 +3,9 @@
 
 #include <ESToolkit/ui/dock/tk_sheet_dock_widget.h>
 #include "ui_tk_sheet_dock_widget.h"
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <QESTkUtils/tile_engine/tk_source_view.h>
-#include <AssetIO/tk_map_entry.h>
+#include <ESToolkit/AssetIO/tk_map_entry.h>
 #include <QSpinBox>
 
 SheetDockWidget::SheetDockWidget(QWidget *parent) :

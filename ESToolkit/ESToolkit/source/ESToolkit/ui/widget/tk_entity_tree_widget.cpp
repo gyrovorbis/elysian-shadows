@@ -1,13 +1,13 @@
 #include <ESToolkit/ui/widget/tk_entity_tree_widget.h>
-#include <AssetIO/tk_area.h>
-#include <AssetIO/tk_entity.h>
-#include "elysian_debug.hpp"
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESToolkit/core/tk_assets.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_entity_selectable.h>
 #include <QMenu>
 #include <QAction>
-#include <AssetIO/tk_renderable.h>
+#include <ESToolkit/AssetIO/tk_renderable.h>
 #include <ESToolkit/core/tk_project.h>
 
 EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {

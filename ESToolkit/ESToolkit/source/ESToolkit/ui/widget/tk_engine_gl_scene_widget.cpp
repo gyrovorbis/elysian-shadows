@@ -1,17 +1,17 @@
-#include <crtp/elysian_camera_system.hpp>
-#include <gyro_video_api.h>
+#include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <libGyro/gyro_video_api.h>
 #include <ESToolkit/ui/widget/tk_engine_gl_scene_widget.h>
 #include <gl/gyro_video_gl.h>
-#include "elysian_engine.hpp"
-#include <elysian_timer_system.hpp>
-#include <system/elysian_light_system.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/system/elysian_light_system.hpp>
 #include <QMessageBox>
 
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
 #include <ESToolkit/ui/tk_estoolkit.h>
 #ifdef VMU_CHILD_APP
-#include <gyro_vmu_main_window.hpp>
+#include <ElysianVMU/gyro_vmu_main_window.hpp>
 #endif
 
 #include <QMouseEvent>

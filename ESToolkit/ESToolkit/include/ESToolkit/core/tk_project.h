@@ -1,5 +1,5 @@
-#ifndef PROJECT_H
-#define PROJECT_H
+#ifndef TK_PROJECT_H
+#define TK_PROJECT_H
 //QT
 #include <QString>
 #include <QVector>

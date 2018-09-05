@@ -1,0 +1,234 @@
+#ifndef TK_LUA_TABLEPROXY_H
+#define TK_LUA_TABLEPROXY_H
+
+#include <AssetIO/utility/elysian_lua_table_proxy_base.hpp>
+#include <QObject>
+#include <QVariant>
+
+#define TK_LUA_TABLE_USERDATA_FIELD_KEY         "__tkUd"
+#define TK_LUA_TABLE_METAMETHODSET_FIELD_KEY    "__metaset"
+#define TK_LUA_TABLE_PROPERTY_TABLE_FIELD_KEY   "__prop"
+#define TK_LUA_TABLE_DELEGATE_FIELD_KEY         "__delegate"
+#define TK_LUA_TABLE_OUTER_DELEGATE_FIELD_KEY   "__outerdelegate"
+#define TK_LUA_TABLE_KEY_MAX_LENGTH             500
+
+
+class TkLuaTableUserdata: public QObject {
+    Q_OBJECT
+
+private:
+    int                 _propRef    = LUA_NOREF;
+    int                 _origRef    = LUA_NOREF;
+
+    static int          _metaRef;
+    static lua_State*   _lvm;
+
+Q_SIGNALS:
+    //Notifies Qt's GUI models to update when Lua table fields change
+    void    fieldChanged(const LuaVariant& key) const;
+    void    fieldAdded(const LuaVariant& key) const;
+
+public:
+            TkLuaTableUserdata(void);
+    virtual ~TkLuaTableUserdata(void);
+    void    emitFieldChanged(const LuaVariant& key) const;
+    void    emitFieldAdded(const LuaVariant& key) const;
+
+    void    setOrigRef(const int ref);
+    int     getOrigRef(void) const;
+
+    void    setPropRef(const int ref);
+    int     getPropRef(void) const;
+
+    //static
+    static TkLuaTableUserdata*  inject(lua_State*const l, const LuaVariant& ref);
+    static void                 staticInitialize(void);
+
+    //static bool                 hasTkUserdata(OOLUA::Lua_table_ref& ref);
+
+private:
+    static void                 _createMetatable(lua_State*const l);
+
+    //metamethods
+    static int                  _gcMetamethod(lua_State*const l);
+    static int                  _indexMetamethod(lua_State*const l);
+    static int                  _newIndexMetamethod(lua_State*const l);
+    static int                  _pairsMetamethod(lua_State*const l);
+    static int                  _ipairsMetamethod(lua_State*const l);
+    static int                  _nextMetamethod(lua_State*const l);
+    static int                  _lengthMetamethod(lua_State*const l);
+    static int                  _metamethodSetMetamethod(lua_State* const l);
+};
+
+
+/*
+ * Had to move QObject signal/slot functionality to a separate class,
+ * because Qt's MOC reests on class templates...
+ */
+class TkLuaTableProxyQObject: public QObject {
+    Q_OBJECT
+Q_SIGNALS:
+    //Notifies Qt's GUI models to update when Lua table fields change
+    void fieldChanged(const LuaVariant& key);
+    void fieldAdded(const LuaVariant& key);
+
+public:
+    void emitFieldChanged(const LuaVariant& key) { Q_EMIT fieldChanged(key); }
+    void emitFieldAdded(const LuaVariant& key) { Q_EMIT fieldAdded(key); }
+};
+
+/* Compile-time override engine's LuaTableProxy implementation
+ * and add signal/slot functionality using the CRTP.
+ *
+ * Proxies Userdata and engine-types as Lua tables for
+ * consistent representation within ESTk models and Lua scripts.
+ * Injects itself into __newIndex metamethod to inform Qt when
+ * internal Lua data changes.
+ */
+template <typename P, typename T=P, class... Bases>
+class TkLuaTableProxy:
+        public elysian::LuaTableProxyBase<P, T, Bases...>,
+        public TkLuaTableProxyQObject
+{
+
+    typedef elysian::LuaTableProxyBase<P, T, Bases...> ParentType;
+    friend ParentType;
+protected:
+    using                       elysian::LuaManager::_mainState;
+
+    //CRTP overridden from engine
+    static void _callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex);
+    static void _addMetamethods(lua_State* l);
+    static void _addVirtualTableMetamethods(lua_State* l);
+
+    //Tk-Specific metamethods
+    static int  _connectSignals(lua_State* l);
+
+public:
+
+                TkLuaTableProxy(void) = default;
+                TkLuaTableProxy(const TkLuaTableProxy<P, T, Bases...>& rhs);
+    virtual     ~TkLuaTableProxy(void);
+
+    static void initializeDelegates(void);
+    static void initializeVirtualTableDelegates(QString property);
+
+    //Might also need copy constructor
+    const TkLuaTableProxy<P, T, Bases...>&    operator=(const TkLuaTableProxy<P, T, Bases...>& rhs);
+};
+
+
+
+
+
+
+
+
+
+
+// ======== INLINEZ ======
+
+inline void TkLuaTableUserdata::setOrigRef(const int ref) { _origRef = ref; }
+inline void TkLuaTableUserdata::setPropRef(const int ref) { _propRef = ref; }
+inline int TkLuaTableUserdata::getOrigRef(void) const { return _origRef; }
+inline int TkLuaTableUserdata::getPropRef(void) const { return _propRef; }
+inline TkLuaTableUserdata::TkLuaTableUserdata(void): QObject(nullptr) {}
+inline void TkLuaTableUserdata::emitFieldAdded(const LuaVariant& key) const { Q_EMIT fieldAdded(key); }
+inline void TkLuaTableUserdata::emitFieldChanged(const LuaVariant& key) const { Q_EMIT fieldChanged(key); }
+
+template <typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::initializeDelegates(void) { }
+
+template <typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::initializeVirtualTableDelegates(QString) { }
+
+template <typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex) {
+    LuaVariant    key;
+    T*          obj;
+
+    if(write) {
+        lua_pushvalue(*_mainState, -3);
+        OOLUA::pull(*_mainState, obj);
+        GY_ASSERT(obj);
+
+        lua_pushvalue(*_mainState, keyIndex);
+        OOLUA::pull(*_mainState, key);
+    } else {
+      obj = nullptr;
+    }
+
+    ParentType::_callPropertyProxyMethod(write, args, retVals, keyIndex);
+
+    if(write) {
+        if(!elysian::LuaTableProxyBase<P, T, Bases...>::_initializing) static_cast<TkLuaTableProxyQObject*>(static_cast<TkLuaTableProxy<P, T, Bases...>*>(obj))->emitFieldChanged(key);
+    }
+}
+
+/* Crazy-ass assignment operator to copy assign all internal object data MINUS inherited QObject data,
+ * because Qt explicitly deleted its assignment operator and will shit itself.
+ */
+
+template<typename P, typename T, class... Bases>
+inline const TkLuaTableProxy<P, T, Bases...>& TkLuaTableProxy<P,T, Bases...>::operator=(const TkLuaTableProxy<P, T, Bases...>& rhs) {
+    *static_cast<ParentType*>(this) = *static_cast<const ParentType*>(&rhs);
+    //*static_cast<T*>(this) = *static_cast<const T*>(&rhs);
+    return *this;
+}
+
+template<typename P, typename T, class... Bases>
+inline TkLuaTableProxy<P, T, Bases...>::TkLuaTableProxy(const TkLuaTableProxy<P, T, Bases...>& rhs) {
+    *this = rhs;
+}
+
+template <typename P, typename T, class... Bases>
+inline TkLuaTableProxy<P, T, Bases...>::~TkLuaTableProxy(void) {
+    if(elysian::LuaTableProxyBase<P, T, Bases...>::_luaRef != LUA_NOREF) {
+        luaL_unref(*_mainState, LUA_REGISTRYINDEX, elysian::LuaTableProxyBase<P, T, Bases...>::_luaRef);
+    }
+}
+
+template <typename P, typename T, class... Bases>
+inline int TkLuaTableProxy<P, T, Bases...>::_connectSignals(lua_State *l) {
+    QObject* tableItem = static_cast<QObject*>(lua_touserdata(*_mainState, -1));
+    GY_ASSERT(tableItem);
+    lua_pop(*_mainState, 1);
+
+    T* thisPtr;
+    OOLUA::pull(l, thisPtr);
+    GY_ASSERT(thisPtr);
+
+    auto* thisQObj = static_cast<QObject*>(static_cast<TkLuaTableProxy<P, T, Bases...>*>(thisPtr));
+    thisQObj->disconnect(tableItem);
+    connect(thisQObj, SIGNAL(fieldChanged(const LuaVariant&)), tableItem, SLOT(onFieldChanged(const LuaVariant&)));
+
+    return 0;
+}
+
+template<typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::_addMetamethods(lua_State *l) {
+    //Push our QObject retrieval function
+    lua_pushcfunction(l, &_connectSignals);
+    lua_setfield(l, -2, "__connectSignals");
+
+    //CRTP polymorph to allow child classes to create and register their own delegates
+    T::initializeDelegates();
+
+    ParentType::_addMetamethods(l);
+
+    LuaManager::_udTypeNames.push_back(OOLUA::Proxy_class<T>::class_name);
+}
+
+template<typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::_addVirtualTableMetamethods(lua_State *l) {
+
+    int proxyIndex = lua_tointeger(l, lua_upvalueindex(elysian::LUA_TABLE_PROXY_UPVALUE_PARENT_INDEX));
+
+    T::initializeVirtualTableDelegates(ParentType::_combinedFields[proxyIndex].key);
+    ParentType::_addVirtualTableMetamethods(l);
+}
+
+
+
+
+#endif // TK_LUA_TABLE_PROXY_H

@@ -1,12 +1,12 @@
-#include <AssetIO/tk_skeleton.h>
+#include <ESToolkit/AssetIO/tk_skeleton.h>
 #include <QESTkUtils/tk_menu_stack.h>
-#include <AssetIO/tk_entity.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
 #include <spine/AnimationState.h>
 #include <spine/Slot.h>
 #include <spine/Skeleton.h>
 
-#include <ESGamma/tk_lua_wrappers.h>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 #include <QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.h>

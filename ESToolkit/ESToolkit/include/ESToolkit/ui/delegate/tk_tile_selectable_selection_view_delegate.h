@@ -2,7 +2,7 @@
 #define TILE_SELECTABLE_SELECTION_VIEW_DELEGATE_H
 
 #include <QStyledItemDelegate>
-#include <AssetIO/tk_elysian_tile_wrapper.h>
+#include <ESToolkit/AssetIO/tk_elysian_tile_wrapper.h>
 
 //Used as a delegate for SelectionView when a TileSelectable is the active model
 class TileSelectableSelectionViewDelegate: public QStyledItemDelegate {

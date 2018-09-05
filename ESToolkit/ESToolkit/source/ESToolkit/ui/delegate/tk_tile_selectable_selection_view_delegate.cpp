@@ -2,8 +2,8 @@
 #include <QCheckBox>
 #include <ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.h>
 #include <ESToolkit/core/tk_assets.h>
-#include <AssetIO/tk_level.h>
-#include <AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 #include <QESTkUtils/model/tk_property_standard_item.h>
 
 //===== STATIC MEMBERS =====

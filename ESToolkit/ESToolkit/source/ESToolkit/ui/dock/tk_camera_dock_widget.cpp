@@ -1,8 +1,8 @@
 #include <ESToolkit/ui/dock/tk_camera_dock_widget.h>
 #include <ui_tk_camera_dock_widget.h>
-#include <system/elysian_engine.hpp>
-#include <ESGamma/tk_camera_system.h>
-#include <system/elysian_light_system.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <ESToolkit/ESGamma/tk_camera_system.h>
+#include <ESGamma/system/elysian_light_system.hpp>
 
 float CameraDockWidget::normValue(const float position, const QSlider* slider) {
     return (float)((float)position/(float) ( ((float)slider->maximum()) -((float)slider->minimum()) )); //TROLOLO

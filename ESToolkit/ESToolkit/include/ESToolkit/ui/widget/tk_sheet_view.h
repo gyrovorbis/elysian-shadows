@@ -3,8 +3,8 @@
 
 #include <QESTkUtils/tile_engine/tk_source_view.h>
 #include <ESToolkit/core/tk_asset_manager.h>
-#include <gyro_video_api.h>
-#include <gyro_texture_api.h>
+#include <libGyro/gyro_video_api.h>
+#include <libGyro/gyro_texture_api.h>
 
 class SheetView : public SourceView, public AssetManager  {
 protected:

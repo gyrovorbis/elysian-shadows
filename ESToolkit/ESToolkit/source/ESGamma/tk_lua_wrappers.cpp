@@ -1,7 +1,7 @@
-#include <ESGamma/tk_lua_wrappers.h>
-#include <ESGamma/tk_lua_manager.h>
-#include <AssetIO/tk_lua_table_proxy.h>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/ESGamma/tk_lua_manager.h>
+#include <ESToolkit/AssetIO/tk_lua_table_proxy.h>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 //#include <model/tk_property_item_delegate.h>
 
 /*!

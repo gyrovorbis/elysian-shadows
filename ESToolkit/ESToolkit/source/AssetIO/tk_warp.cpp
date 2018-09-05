@@ -1,8 +1,8 @@
-#include <AssetIO/tk_warp.h>
-#include <AssetIO/tk_entity.h>
+#include <ESToolkit/AssetIO/tk_warp.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
 #include <QESTkUtils/tk_menu_stack.h>
 #include <QESTkUtils/model/tk_property_standard_item.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
 bool TkWarp::canAddTo(const Entity &entity) const {
     return entity.getCollidable();

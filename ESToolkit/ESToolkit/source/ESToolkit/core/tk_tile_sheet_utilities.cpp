@@ -1,10 +1,10 @@
 #include <ESToolkit/core/tk_tile_sheet_utilities.h>
 #include <ESToolkit/ui/tk_estoolkit.h>
-#include "elysian_debug.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESToolkit/core/tk_tile_image.h>
 #include <QESTkUtils/tile_engine/tk_tile_graphics_item.h>
 
-#include <gyro.h>
+#include <libGyro/gyro.h>
 #include <cassert>
 #include <QImageReader>
 #include <QPainter>

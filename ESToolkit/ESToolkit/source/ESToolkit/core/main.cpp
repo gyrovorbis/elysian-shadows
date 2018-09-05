@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <primitive/elysian_color_base.hpp>
+#include <AssetIO/crtp/elysian_color.hpp>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -12,7 +12,7 @@
 #include <QPainter>
 #include <QTimer>
 #include <QOpenGLContext>
-#include "elysian_debug.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <QDebug>
 #include <QRectF>
 #include <QGLFormat>
@@ -20,9 +20,8 @@
 #include <iostream>
 #include <QOpenGLContext>
 #include <QCommandLineParser>
-#include "elysian_engine.hpp"
-#include "elysian_debug.hpp"
-#include <gyro_file_api.h>
+#include <ESGamma/system/elysian_engine.hpp>
+#include <libGyro/gyro_file_api.h>
 #include <QDir>
 #include <QMessageBox>
 #include <QSpacerItem>
@@ -30,7 +29,7 @@
 #include <QDebug>
 #include <QPushButton>
 #include <memory>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estk.h>

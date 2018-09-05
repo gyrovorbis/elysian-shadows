@@ -1,4 +1,4 @@
-#include <AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 #include <QMenu>
 #include <QActionGroup>
 #include <QToolButton>
@@ -12,13 +12,13 @@
 #include <QPushButton>
 #include <QOpenGLWidget>
 
-#include "elysian_debug.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESToolkit/sheet_manager/tk_sheet_manager.h>
 #include "ui_tk_sheet_manager.h"
 #include <ESToolkit/sheet_manager/tk_sheet_manager_file_dock_widget.h>
 #include <ESToolkit/ui/dock/tk_history_dock_widget.h>
 #include <ESToolkit/core/tk_project.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_tile_sheet_utilities.h>
 #include <ESToolkit/sheet_manager/tk_sheet_manager_source_tile_graphics_item.h>
 #include <ESToolkit/core/tk_tile_image.h>

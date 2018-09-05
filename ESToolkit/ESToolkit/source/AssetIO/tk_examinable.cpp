@@ -1,9 +1,9 @@
-#include <AssetIO/tk_examinable.h>
+#include <ESToolkit/AssetIO/tk_examinable.h>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
-#include <ESGamma/tk_lua_wrappers.h>
-#include <AssetIO/tk_dialog.h>
-#include <system/elysian_dialog_system.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/AssetIO/tk_dialog.h>
+#include <ESGamma/system/elysian_dialog_system.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 #include <QApplication>
 
 void TkExaminable::initializeDelegates(void) {

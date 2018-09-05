@@ -1,6 +1,6 @@
-#include <ESGamma/tk_particle_system.h>
+#include <ESToolkit/ESGamma/tk_particle_system.h>
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
-#include <proxy/elysian_instance_transform_proxy.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
 #include <ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.h>
 #include <QESTkUtils/ui/widget/tk_2d_vector_widget.h>
 #include <ESToolkit/ui//tk_estoolkit.h>

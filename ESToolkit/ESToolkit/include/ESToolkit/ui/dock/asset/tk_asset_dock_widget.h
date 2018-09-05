@@ -4,7 +4,7 @@
 #include <QDockWidget>
 #include <QFileSystemModel>
 #include <ESToolkit/core/tk_asset_manager.h>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 #include <QHash>
 
 #define TK_SPECULARSHEET_ASSET_ICON         ":/assetIcons/images/_0000_specularsheet_icon.png"

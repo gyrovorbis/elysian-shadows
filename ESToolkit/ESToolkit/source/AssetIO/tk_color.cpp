@@ -1,7 +1,7 @@
-#include <AssetIO/tk_color.h>
+#include <ESToolkit/AssetIO/tk_color.h>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
 void TkColor4::initializeDelegates(void) {
     auto* typeDelegate = new QESTkUtils::ColorSwatchPropertyItemDelegate<Color4>();

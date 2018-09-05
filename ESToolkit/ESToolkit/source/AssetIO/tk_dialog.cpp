@@ -1,8 +1,8 @@
-#include <AssetIO/tk_dialog.h>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/AssetIO/tk_dialog.h>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>
 #include <QESTkUtils/tk_menu_stack.h>
-#include <system/elysian_dialog_system.hpp>
+#include <ESGamma/system/elysian_dialog_system.hpp>
 #include <QApplication>
 #include <QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h>
 #include <QMenu>

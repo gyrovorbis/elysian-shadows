@@ -1,9 +1,9 @@
 #include <QCloseEvent>
 #include <QFileSystemModel>
 #include <ESToolkit/ui/dock/asset/tk_asset_dock_widget.h>
-#include <system/elysian_audio_system.hpp>
-#include <AssetIO/tk_area.h>
-#include <AssetIO/tk_level.h>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_file_utilities.h>
 #include <ESToolkit/core/tk_project.h>
 #include "ui_tk_asset_dock_widget.h"
@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QESTkUtils/tk_mime_data.h>
-#include <crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),

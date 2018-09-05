@@ -13,7 +13,7 @@
 #include <iostream>
 #include <QTextEdit>
 #include <QKeyEvent>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <QMutex>
 #include <QQueue>
 #include <QTimer>
@@ -23,8 +23,8 @@
 #include <QClipboard>
 #include <QMenu>
 //ESTK
-#include "elysian_debug.hpp"
-#include "elysian_lua_manager.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
 #include <QDir>
 #include <ESToolkit/ui/tk_estoolkit.h>
 #include <QThread>

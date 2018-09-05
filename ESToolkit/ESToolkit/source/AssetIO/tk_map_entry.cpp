@@ -1,6 +1,6 @@
 #include <QPainter>
-#include <AssetIO/tk_map_entry.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_map_entry.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 
 bool TileEntry::renderIndeces	= false;
 bool TileEntry::renderFlipRot	= false;

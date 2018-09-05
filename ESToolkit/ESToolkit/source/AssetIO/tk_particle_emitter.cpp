@@ -1,13 +1,13 @@
-#include <AssetIO/tk_particle_emitter.h>
+#include <ESToolkit/AssetIO/tk_particle_emitter.h>
 #include <QESTkUtils/tk_menu_stack.h>
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>
-#include <ESGamma/tk_lua_wrappers.h>
-#include <AssetIO/tk_entity.h>
-#include <system/elysian_system.hpp>
-#include <ESGamma/tk_particle_system.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
+#include <ESGamma/system/elysian_system.hpp>
+#include <ESToolkit/ESGamma/tk_particle_system.h>
 #include <QApplication>
 
-#include <proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
 bool TkParticleEmitter::validate(QString& str) const {
     bool success = true;

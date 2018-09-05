@@ -1,5 +1,5 @@
-#include <AssetIO/tk_sprite_attrib.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/AssetIO/tk_sprite_attrib.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
 
 void TkSpriteAttrib::initializeDelegates(void) {

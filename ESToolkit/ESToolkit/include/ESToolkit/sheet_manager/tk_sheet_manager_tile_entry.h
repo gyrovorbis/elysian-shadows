@@ -2,7 +2,7 @@
 #define SHEET_MANAGER_TILE_ENTRY_H
 
 #include <QPixmap>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 
 class QPainter;
 

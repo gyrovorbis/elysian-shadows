@@ -20,25 +20,25 @@
 #include <ESToolkit/ui/dock/tk_history_dock_widget.h>
 #include <ESToolkit/ui/dock/tk_camera_dock_widget.h>
 #include <ESToolkit/ui/dock/tk_selection_dock_widget.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/core/tk_project.h>
-#include <AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 #include <ESToolkit/ui/widget/tk_entity_tree_widget.h>
-#include <system/elysian_engine.hpp>
+#include <ESGamma/system/elysian_engine.hpp>
 #include <ESToolkit/ui/widget/tk_selection_scene.h>
-#include <ESGamma/tk_map_system.h>
+#include <ESToolkit/ESGamma/tk_map_system.h>
 #include <ESToolkit/ui/widget/tk_engine_gl_scene_widget.h>
-#include <ESGamma/tk_input_system.h>
+#include <ESToolkit/ESGamma/tk_input_system.h>
 #include <ESToolkit/core/tk_entity_selectable.h>
 #include <ESToolkit/core/tk_lua_table_selectable.h>
-#include <system/elysian_audio_system.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <proxy/elysian_area_proxy.hpp>
-#include <proxy/elysian_level_proxy.hpp>
-#include <ESGamma/tk_render_system.h>
+#include <ESGamma/system/elysian_audio_system.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_area_proxy.hpp>
+#include <AssetIO/proxy/elysian_level_proxy.hpp>
+#include <ESToolkit/ESGamma/tk_render_system.h>
 #include <QESTkUtils/ui/widget/tk_line_chart.h>
 #ifdef GYRO_VMU_APP
-#include <gyro_vmu_main_window.hpp>
+#include <ElysianVMU/gyro_vmu_main_window.hpp>
 #include <ui_gyro_vmu_main_window.h>
 #endif
 
