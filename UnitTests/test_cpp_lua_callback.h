@@ -1,8 +1,8 @@
 #ifndef TEST_CPP_LUA_CALLBACK_H
 #define TEST_CPP_LUA_CALLBACK_H
 
-#include <utility/elysian_cpp_lua_callback.hpp>
-#include <utility/elysian_generic.hpp>
+#include <AssetIO/utility/elysian_cpp_lua_callback.hpp>
+#include <AssetIO/utility/elysian_generic.hpp>
 #include <QDebug>
 #include <QtTest>
 

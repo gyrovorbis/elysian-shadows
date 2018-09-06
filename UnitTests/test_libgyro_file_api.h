@@ -2,7 +2,7 @@
 #define TEST_LIBGYRO_FILE
 
 #include <QtTest>
-#include <gyro_file_api.h>
+#include <libGyro/gyro_file_api.h>
 #include <test_estk.h>
 #include <QDir>
 

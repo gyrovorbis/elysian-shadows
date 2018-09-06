@@ -2,8 +2,8 @@
 #define TEST_LUA_FIELD_REF_H
 
 #include <QtTest>
-#include <crtp/elysian_lua_variant.hpp>
-#include <proxy/elysian_instance_transform_proxy.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
 #include <QDebug>
 
 namespace tktest {

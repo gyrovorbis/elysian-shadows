@@ -11,54 +11,16 @@ QT       += widgets network opengl sql testlib
 DEFINES+=ELYSIAN_OPENCL_ACCELERATED
 
 
-DEPENDPATH += ../AssetIO/include \
-        ../AssetIO/include/component \
-	../AssetIO/include/crtp \
-	../AssetIO/include/level \
-	../AssetIO/include/primitive \
-	../AssetIO/include/utility \
-        ../ESGamma/include \
-	../ESGamma/include/crtp \
-	../ESGamma/include/gui \
-	../ESGamma/include/lua \
-	../ESGamma/include/system \
-	../ESGamma/include/utility \
-        ../ESToolkit/ESToolkit/include \
-        ../ESToolkit/ESToolkit/include/AssetIO \
-        ../ESToolkit/ESToolkit/include/ESGamma \
-        ../ESToolkit/ESToolkit/include/ESToolkit \
-        ../ESToolkit/ESToolkit/include/QtESTkUtils \
-	../libGyro/include \
-	../libGyro/include/kinetic \
+DEPENDPATH += \
+    ../AssetIO \
+    ../ESGamma \
+    ../ESToolkit \
+    ../libGyro \
+    ../libGyro-Kinetic
+
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
-INCLUDEPATH += ../AssetIO/include \
-        ../AssetIO/include/component \
-	../AssetIO/include/crtp \
-	../AssetIO/include/level \
-	../AssetIO/include/primitive \
-	../AssetIO/include/utility \
-        ../ESGamma/include \
-	../ESGamma/include/crtp \
-	../ESGamma/include/gui \
-	../ESGamma/include/lua \
-	../ESGamma/include/system \
-	../ESGamma/include/utility \
-        ../ESToolkit/ESToolkit/include \
-        ../ESToolkit/ESToolkit/include/ESGamma \
-        ../ESToolkit/ESToolkit/include/AssetIO \
-        ../ESToolkit/ESToolkit/include/ESToolkit \
-        ../ESToolkit/ESToolkit/include/QESTkUtils \
-	../libGyro/include \
-        ../libGyro/api \
-        ../libGyro-Kinetic\api \
-	../ESToolkit/ESToolkit/include/sheet_manager \
-	../ESToolkit/ESToolkit/include/dialog \
-	../ESToolkit/ESToolkit/include/widget \
-	../Lua5.2/include \
-	../OOLua/include \
-	../ESGamma/lib/include \
-	../Spine/include
+INCLUDEPATH +=  $${GLOBAL_INCLUDE_PATH}
 
 win32 {
     INCLUDEPATH += ../libGyro/lib/win32

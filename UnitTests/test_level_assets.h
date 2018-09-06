@@ -2,7 +2,7 @@
 #define TEST_LEVEL_ASSETS_H
 
 
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <QObject>
 #include <test_area_assets.h>
 #include <test_estk.h>

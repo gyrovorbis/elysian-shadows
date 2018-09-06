@@ -2,10 +2,10 @@
 #define TEST_FUNCTIONAL_H
 
 #include <QtTest>
-#include <utility/elysian_functional.hpp>
-#include <crtp/elysian_lua_manager.hpp>
-#include <elysian_instance_transform.hpp>
-#include <proxy/elysian_instance_transform_proxy.hpp>
+#include <AssetIO/utility/elysian_functional.hpp>
+#include <ESGamma/crtp/elysian_lua_manager.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
 #include <QDebug>
 
 namespace tktest {

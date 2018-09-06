@@ -5,7 +5,7 @@
 #include <QtTest>
 #include <ESToolkit/core/tk_asset_manager.h>
 #include <ESToolkit/ui/tk_estoolkit.h>
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <ESToolkit/AssetIO/tk_area.h>
 #include <ESToolkit/core/tk_project.h>
 #include <QTabBar>

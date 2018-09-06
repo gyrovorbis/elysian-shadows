@@ -2,9 +2,9 @@
 #define TEST_INSTANCE_TRANSFORM_H
 
 #include <test_estk.h>
-#include <elysian_instance_transform.hpp>
-#include <crtp/elysian_lua_variant.hpp>
-#include <proxy/elysian_instance_transform_proxy.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
 
 namespace tktest {
 

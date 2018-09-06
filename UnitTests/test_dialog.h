@@ -4,9 +4,9 @@
 #include <QtTest>
 #include <QDebug>
 #include <AssetIO/tk_dialog.h>
-#include <utility/elysian_lua_variant_base.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <proxy/elysian_dialog_proxy.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <AssetIO/proxy/elysian_dialog_proxy.hpp>
 
 namespace tktest {
 

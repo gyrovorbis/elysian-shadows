@@ -3,7 +3,7 @@
 
 #include <QDebug>
 #include <QtTest>
-#include <gyro_compute_api.h>
+#include <libGyro/gyro_compute_api.h>
 
 namespace tktest {
 

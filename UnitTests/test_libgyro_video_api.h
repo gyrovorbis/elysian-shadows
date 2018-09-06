@@ -3,7 +3,7 @@
 
 
 #include <QObject>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 
 
 class TestLibGyroVideoApi: public QObject {

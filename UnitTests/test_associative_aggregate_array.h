@@ -1,7 +1,7 @@
 #ifndef TEST_ASSOCIATIVE_AGGREGATE_ARRAY_H
 #define TEST_ASSOCIATIVE_AGGREGATE_ARRAY_H
 
-#include <utility/elysian_associative_aggregate_array.hpp>
+#include <AssetIO/utility/elysian_associative_aggregate_array.hpp>
 #include <QDebug>
 #include <QtTest>
 

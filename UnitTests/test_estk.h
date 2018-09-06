@@ -7,7 +7,7 @@
 #include <ESToolkit/core/tk_asset_manager.h>
 #include <QList>
 #include <QStack>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <QMutex>
 
 class ESToolkit;
