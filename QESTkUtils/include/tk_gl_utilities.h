@@ -3,7 +3,7 @@
 
 #include <QSurfaceFormat>
 #include <QGLFormat>
-#include "elysian_debug.hpp"
+#include <ESGamma/crtp/elysian_debug.hpp>
 
 struct glUtilities {
 

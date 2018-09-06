@@ -2,11 +2,11 @@
 #define TK_COLOR_SWATCH_PROPERTY_ITEM_DELEGATE_H
 
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>
-#include <utility/elysian_functional.hpp>
+#include <AssetIO/utility/elysian_functional.hpp>
 #include <QPainter>
 #include <QColorDialog>
 #include <QDebug>
-#include <proxy/elysian_primitive_proxy.hpp>
+#include <AssetIO/proxy/elysian_primitive_proxy.hpp>
 
 #define TK_COLOR_SWATCH_ICON_PATH ":/misc/images/color_swatch_icon.png"
 #if 0

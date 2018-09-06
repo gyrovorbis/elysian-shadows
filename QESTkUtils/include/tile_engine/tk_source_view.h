@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QMouseEvent>
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_matrix_api.h>
 
 class SourceView : public QGraphicsView {
 	Q_OBJECT

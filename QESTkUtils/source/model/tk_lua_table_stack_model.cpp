@@ -1,8 +1,8 @@
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
-#include <AssetIO/tk_lua_table_proxy.h>
+#include <ESToolkit/AssetIO/tk_lua_table_proxy.h>
 #include <QVariant>
-#include <AssetIO/tk_area.h>
-#include <ESGamma/tk_lua_wrappers.h>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 #include <QESTkUtils/tk_lua_qt_utils.h>
 
 //======== LuaTableFieldItem ========

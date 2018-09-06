@@ -2,7 +2,7 @@
 #define TILE_GRAPHICS_ITEM_H
 
 #include <QGraphicsRectItem>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 
 class SourceView;
 

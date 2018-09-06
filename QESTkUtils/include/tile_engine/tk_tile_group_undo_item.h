@@ -4,9 +4,8 @@
 #include <QMap>
 #include <QDebug>
 
-#include <gyro.h>
 #include <ESToolkit/core/tk_undo_item.h>
-#include <AssetIO/tk_area.h>
+#include <ESToolkit/AssetIO/tk_area.h>
 
 //Implicitly used as comparator for map of QPoints
 inline bool operator<(const QPoint &p1, const QPoint &p2) {

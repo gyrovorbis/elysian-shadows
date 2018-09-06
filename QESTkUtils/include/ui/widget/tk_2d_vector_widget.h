@@ -2,7 +2,7 @@
 #define TK_2D_VECTOR_WIDGET_H
 
 #include <QWidget>
-#include <primitive/elysian_instance_transform.hpp>
+#include <AssetIO/primitive/elysian_instance_transform.hpp>
 
 //default colors and widths for everything
 //default settings for rendering axes, etc

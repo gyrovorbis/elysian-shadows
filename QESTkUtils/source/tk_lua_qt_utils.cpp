@@ -1,5 +1,5 @@
 #include <QESTkUtils/tk_lua_qt_utils.h>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 namespace OOLUA {
 

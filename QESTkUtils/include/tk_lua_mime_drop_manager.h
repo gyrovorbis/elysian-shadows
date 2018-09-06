@@ -2,7 +2,7 @@
 #define TK_LUA_MIME_DROP_MANAGER_H
 
 #include <QESTkUtils/tk_mime_drop_manager.h>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 #include <QMap>
 
 //Pretty sure this whole fucking thing is pointless and should've been implemented the same way LocalFileSubHandlers were as part of the main MimeDropManager... goddamnit.

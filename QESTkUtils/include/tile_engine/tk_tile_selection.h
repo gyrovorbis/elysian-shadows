@@ -3,8 +3,8 @@
 
 #include <QList>
 #include <QPointF>
-#include <gyro_video_api.h>
-#include "tk_tile_graphics_item.h"
+#include <libGyro/gyro_video_api.h>
+#include <QESTkUtils/tile_engine/tk_tile_graphics_item.h>
 
 class QGraphicsItem;
 

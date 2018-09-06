@@ -5,7 +5,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QDebug>
-#include <elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
 #include <ESToolkit/ui/dock/asset/tk_asset_dock_widget.h>

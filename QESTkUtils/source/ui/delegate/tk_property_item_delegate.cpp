@@ -4,7 +4,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QAction>
-#include <crtp/elysian_lua_variant.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 #include <QESTkUtils/ui/delegate/tk_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h>
@@ -13,8 +13,8 @@
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
 #include <QESTkUtils/tk_menu_stack.h>
 #include <ESToolkit/ui/dock/asset/tk_asset_dock_widget.h>
-#include <AssetIO/tk_area.h>
-#include <proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/AssetIO/tk_area.h>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
 #include <QESTkUtils/tk_lua_mime_drop_manager.h>
 
 

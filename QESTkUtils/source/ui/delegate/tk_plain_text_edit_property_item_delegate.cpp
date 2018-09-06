@@ -3,8 +3,8 @@
 
 #include <QFontMetrics>
 #include <QScrollBar>
-#include <system/elysian_dialog_system.hpp>
-#include <gui/elysian_font.hpp>
+#include <ESGamma/system/elysian_dialog_system.hpp>
+#include <ESGamma/gui/elysian_font.hpp>
 
 using namespace elysian;
 

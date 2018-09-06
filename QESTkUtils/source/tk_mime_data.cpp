@@ -1,7 +1,7 @@
 #include <QESTkUtils/tk_mime_data.h>
-#include <AssetIO/tk_entity.h>
-#include <proxy/elysian_entity_proxy.hpp>
-#include <ESGamma/tk_lua_manager.h>
+#include <ESToolkit/AssetIO/tk_entity.h>
+#include <AssetIO/proxy/elysian_entity_proxy.hpp>
+#include <ESToolkit/ESGamma/tk_lua_manager.h>
 
 const QStringList TkMimeData::_formatsList = {
     "text/plain"

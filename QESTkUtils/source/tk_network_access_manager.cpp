@@ -1,5 +1,5 @@
 #include <QESTkUtils/tk_network_access_manager.h>
-#include <elysian_debug.hpp>
+#include <ESGamma/crtp/elysian_debug.hpp>
 #include <QJsonDocument>
 #include <QNetworkRequest>
 #include <QNetworkReply>

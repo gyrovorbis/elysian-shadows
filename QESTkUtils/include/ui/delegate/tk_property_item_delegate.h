@@ -4,7 +4,7 @@
 #include <QStyledItemDelegate>
 #include <QVector>
 #include <functional>
-#include <ESGamma/tk_lua_manager.h>
+#include <ESToolkit/ESGamma/tk_lua_manager.h>
 #include <ESToolkit/core/tk_asset_manager.h>
 #include <QCompleter>
 

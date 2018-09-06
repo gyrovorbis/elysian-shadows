@@ -1,8 +1,8 @@
 #ifndef TK_LINE_CHART_H
 #define TK_LINE_CHART_H
 
-#include <crtp/elysian_lua_variant.hpp>
-#include <utility/elysian_performance_monitor.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <ESGamma/utility/elysian_performance_monitor.hpp>
 #include <type_traits>
 #include <QtCharts>
 

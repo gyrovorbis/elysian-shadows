@@ -2,8 +2,8 @@
 #define TK_MIME_DATA_H
 
 #include <QMimeData>
-#include <crtp/elysian_lua_variant.hpp>
-#include <utility/elysian_bit_mask.hpp>
+#include <AssetIO/crtp/elysian_lua_variant.hpp>
+#include <AssetIO/utility/elysian_bit_mask.hpp>
 
 /*
  * Future work:
