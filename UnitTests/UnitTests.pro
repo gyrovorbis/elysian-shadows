@@ -20,7 +20,12 @@ DEPENDPATH += \
 
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
-INCLUDEPATH +=  $${GLOBAL_INCLUDE_PATH}
+INCLUDEPATH +=  \
+    $${GLOBAL_INCLUDE_PATH} \
+    ../Lua5.2/include \
+    ../OOLua/include \
+    ../Spine/include \
+    ../libGyro/include
 
 win32 {
     INCLUDEPATH += ../libGyro/lib/win32

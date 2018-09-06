@@ -1,8 +1,7 @@
 #ifndef TEST_AREA_ASSETS_H
 #define TEST_AREA_ASSETS_H
 
-
-#include <AssetIO/tk_level.h>
+#include <ESToolkit/AssetIO/tk_level.h>
 #include <QObject>
 #include <test_area.h>
 #include <test_estk.h>

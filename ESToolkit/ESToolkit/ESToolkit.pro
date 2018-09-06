@@ -256,7 +256,6 @@ SOURCES += \
         source/ESToolkit/core/main.cpp \
         source/ESToolkit/core/tk_debug.cpp \
         source/ESToolkit/core/tk_file_utilities.cpp \
-        source/QESTkUtils/tk_menu_stack.cpp \
         source/ESToolkit/core/tk_tile_sheet_utilities.cpp \
         source/ESToolkit/ui/item/tk_tree_node.cpp \
         source/ESToolkit/core/tk_undo_item.cpp \
@@ -280,9 +279,6 @@ SOURCES += \
         source/ESToolkit/ui/item/tk_sheet_view_tile_graphics_item.cpp \
         source/ESToolkit/core/tk_tile_selectable.cpp \
         source/ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.cpp \
-        source/QESTkUtils/model/tk_lua_table_stack_model.cpp \
-        source/QESTkUtils/model/tk_property_stack_model.cpp \
-        source/QESTkUtils/model/tk_rows_joiner_proxy_model.cpp \
         source/ESToolkit/sheet_manager/tk_sheet_manager.cpp \
         source/ESToolkit/sheet_manager/tk_sheet_manager_asset_manager.cpp \
         source/ESToolkit/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.cpp \
@@ -290,38 +286,42 @@ SOURCES += \
         source/ESToolkit/sheet_manager/tk_sheet_manager_file_dock_widget.cpp \
         source/ESToolkit/sheet_manager/tk_sheet_manager_source_tile_graphics_Item.cpp \
         source/ESToolkit/sheet_manager/tk_sheet_manager_source_view.cpp \
-        source/QESTkUtils/tile_engine/tk_source_view.cpp \
         source/ESToolkit/ui/dock/tk_history_dock_widget.cpp \
-        source/QESTkUtils/ui/widget/tk_documentation_browser.cpp \
         source/ESToolkit/ui/dialog/tk_task_monitor_dialog.cpp \
-        source/QESTkUtils/tk_network_access_manager.cpp \
         source/ESGamma/tk_timer_system.cpp \
-        source/QESTkUtils/ui/widget/tk_gitlab_dialog.cpp \
         source/ESGamma/tk_camera_system.cpp \
-        source/QESTkUtils/tk_lua_qt_utils.cpp \
-        source/QESTkUtils/tk_mime_data.cpp \
-        source/QESTkUtils/tk_mime_drop_manager.cpp \
         source/ESToolkit/ui/tk_estoolkit_menu_bar_slots.cpp \
         source/ESGamma/tk_level_system.cpp \
-        source/QESTkUtils/ui/delegate/tk_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_property_item_proxy_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.cpp \
         source/ESToolkit/ui/widget/tk_selection_tree_view.cpp \
-        source/QESTkUtils/tk_lua_mime_drop_manager.cpp \
         source/ESGamma/tk_particle_system.cpp \
         source/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.cpp \
-        source/QESTkUtils/ui/widget/tk_2d_vector_widget.cpp \
-        source/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp \
-        source/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.cpp \
-        source/QESTkUtils/ui/widget/tk_pie_chart_widget.cpp \
-        source/QESTkUtils/ui/widget/tk_line_chart.cpp \
         source/ESGamma/tk_input_system.cpp \
-        source/ESGamma/tk_render_system.cpp
+        source/ESGamma/tk_render_system.cpp \
+        ../../QESTkUtils/source/model/tk_lua_table_stack_model.cpp \
+        ../../QESTkUtils/source/model/tk_property_stack_model.cpp \
+        ../../QESTkUtils/source/model/tk_rows_joiner_proxy_model.cpp \
+        ../../QESTkUtils/source/tile_engine/tk_source_view.cpp \
+        ../../QESTkUtils/source/ui/widget/tk_documentation_browser.cpp \
+        ../../QESTkUtils/source/tk_network_access_manager.cpp \
+        ../../QESTkUtils/source/ui/widget/tk_gitlab_dialog.cpp \
+        ../../QESTkUtils/source/tk_lua_qt_utils.cpp \
+        ../../QESTkUtils/source/tk_mime_data.cpp \
+        ../../QESTkUtils/source/tk_mime_drop_manager.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_enum_dropdown_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_file_browser_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_spinbox_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_property_item_proxy_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_combobox_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_dynamic_content_property_item_delegate.cpp \
+        ../../QESTkUtils/source/tk_lua_mime_drop_manager.cpp \
+        ../../QESTkUtils/source/tk_menu_stack.cpp \
+        ../../QESTkUtils/source/ui/widget/tk_2d_vector_widget.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_color_swatch_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_plain_text_edit_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/delegate/tk_slider_property_item_delegate.cpp \
+        ../../QESTkUtils/source/ui/widget/tk_pie_chart_widget.cpp \
+        ../../QESTkUtils/source/ui/widget/tk_line_chart.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
