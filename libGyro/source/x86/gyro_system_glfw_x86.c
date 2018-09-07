@@ -19,8 +19,6 @@
 
 #include "../common/gyro_system_callbacks.h"
 
-
-
 #if !(defined(__linux__) && defined(__i386__))
 
 
@@ -205,7 +203,7 @@ int gySysInit(const GYSysInitParams*const params) {
   "MacOS";
 #elif defined(_WIN32)
   "Windows";
-#else
+#elif defined(__linux__)
   "Linux";
 #endif
 
@@ -575,7 +573,7 @@ static void _regSigAction(const int sig, const char* name, struct sigaction*cons
 }
 
 
-#define _GY_SIG(a) a, GYRO_STRINGIFY_MACRO(#a)
+#define _GY_SIGSTR(a) a, GYRO_STRINGIFY_MACRO(#a)
 
 #endif
 
@@ -593,16 +591,16 @@ void gyDebugSigInit(void) {
     sa.sa_flags			= SA_SIGINFO;
 
     /* Register signal handlers */
-    _regSigAction(_GY_SIG(SIGSEGV), &sa);
-    _regSigAction(_GY_SIG(SIGFPE), &sa);
-    _regSigAction(_GY_SIG(SIGTRAP), &sa);
-    _regSigAction(_GY_SIG(SIGBUS), &sa);
-    _regSigAction(_GY_SIG(SIGHUP), &sa);
-    _regSigAction(_GY_SIG(SIGQUIT), &sa);
-    _regSigAction(_GY_SIG(SIGILL), &sa);
-    _regSigAction(_GY_SIG(SIGABRT), &sa);
+    _regSigAction(_GY_SIGSTR(SIGSEGV), &sa);
+    _regSigAction(_GY_SIGSTR(SIGFPE), &sa);
+    _regSigAction(_GY_SIGSTR(SIGTRAP), &sa);
+    _regSigAction(_GY_SIGSTR(SIGBUS), &sa);
+    _regSigAction(_GY_SIGSTR(SIGHUP), &sa);
+    _regSigAction(_GY_SIGSTR(SIGQUIT), &sa);
+    _regSigAction(_GY_SIGSTR(SIGILL), &sa);
+    _regSigAction(_GY_SIGSTR(SIGABRT), &sa);
     //_regSigAction(_GY_SIG(SIGKILL), &sa);
-    _regSigAction(_GY_SIG(SIGTERM), &sa);
+    _regSigAction(_GY_SIGSTR(SIGTERM), &sa);
 
 #elif defined(_WIN32)
     //LoadLibraryA("backtrace.dll");

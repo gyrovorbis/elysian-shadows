@@ -412,6 +412,7 @@ int gySemaphoreDestroy(GYSemaphore* sem) {
 #ifdef GY_THREAD_DEBUG
     --_context.dbg.activeSemaphoreCount;
 #endif
+    return 1;
 }
 int gySemaphorePost(GYSemaphore* sem) {
     if(SDL_SemPost((SDL_sem*)sem)) {
