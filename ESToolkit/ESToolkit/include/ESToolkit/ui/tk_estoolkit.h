@@ -69,7 +69,7 @@ class ESToolkit : public QMainWindow, public elysian::LuaManager {
     Q_OBJECT
 public:
                     ESToolkit(QWidget *parent = nullptr);
-    virtual         ~ESToolkit(void);
+    virtual         ~ESToolkit(void) override;
 
 
     static ESToolkit*   getInstance(void);
@@ -79,6 +79,10 @@ public:
     static void         openDoc(QString page, QString section=QString());
     static void         showStatusBarMessage(QString message);
     static void         showStatusBarMessage(QString message, QColor color);
+    static void         alertprint(QString message);
+    static void         popSelectionView(int index, LuaVariant tableRef);
+    static QString      popInputPrompt(void);
+    static void         graphValue(int index, LuaVariant value);
 
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
