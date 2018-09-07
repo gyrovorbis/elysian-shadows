@@ -310,6 +310,10 @@ end:
 
 int gyThreadCpuAffinity(GYCpuAffinityMask mask) {
     assert(mask);
+
+#ifdef __WIN32
+    int success = 0;
+#else
     int success = 1;
     SDL_threadID sdlId = SDL_ThreadID();
 
@@ -350,6 +354,7 @@ int gyThreadCpuAffinity(GYCpuAffinityMask mask) {
     }
 
    // _gyPop(1);
+#endif
     return success;
 }
 
