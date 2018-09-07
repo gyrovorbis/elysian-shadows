@@ -94,7 +94,6 @@ HEADERS += \
     ../../include/common/gyro_video_common.h \
     ../../source/common/gyro_system_callbacks.h \
     ../../source/common/internal.h \
-    ../../source/x86/tinycthread.h \
     ../../include/gl/gyro_shaders_gl.h \
     ../../include/gl/gyro_video_gl.h \
     ../../include/gl/gyro_gl.h \
@@ -238,7 +237,6 @@ dreamcast {
         ../../source/gl/gyro_video_gl.c \
         ../../source/al/gyro_audio_al.c \
         ../../source/al/gyro_wav_al.c \
-        ../../source/x86/tinycthread.c \
         ../../source/al/gyro_ogg_al.c \
         ../../source/x86/gyro_matrix_x86.c
 
