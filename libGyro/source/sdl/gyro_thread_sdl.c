@@ -220,6 +220,7 @@ static inline int _pthreadPriority(GY_THREAD_PRIORITY gyPriority, int priorityMa
     return priorityMax*scalar;
 }
 
+#   ifdef __APPLE__
 static inline int _macEnableRealtimePriority(void) {
     struct thread_time_constraint_policy ttcpolicy;
     kern_return_t retVal;
@@ -256,12 +257,13 @@ static inline int _macEnableRealtimePriority(void) {
 
     return 1;
 }
-
+#   endif
 #endif
 
 int gyThreadPriority(GY_THREAD_PRIORITY priority) {
+#ifdef __APPLE__
     if(priority == GY_THREAD_PRIORITY_REALTIME) return _macEnableRealtimePriority();
-
+#endif
     int success = 1;
 
 #ifdef GY_THREAD_PTHREADS
