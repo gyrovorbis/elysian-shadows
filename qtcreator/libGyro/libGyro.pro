@@ -3,7 +3,7 @@ TEMPLATE = lib
 QT += opengl
 CONFIG += staticlib console
 CONFIG -= app_bundle
-QMAKE_CFLAGS += -std=c99
+#QMAKE_CFLAGS += -std=c99
 !ios {
     QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
 }

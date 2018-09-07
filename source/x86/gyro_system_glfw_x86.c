@@ -95,7 +95,6 @@ static void _checkCPUCapabilities(void) {
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <signal.h>
-asdf
 #include <execinfo.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -145,8 +144,8 @@ int gySystemPowerQueryInfo(GYSystemPowerInfo* info) {
     case SDL_POWERSTATE_CHARGED:
         info->state = GY_SYSTEM_POWER_STATE_CHARGED;
         break;
-    default:
     case SDL_POWERSTATE_UNKNOWN:
+    default:
         info->state = GY_SYSTEM_POWER_STATE_UNKNOWN;
     }
     return 1;
