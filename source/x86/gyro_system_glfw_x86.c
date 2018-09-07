@@ -95,6 +95,7 @@ static void _checkCPUCapabilities(void) {
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <signal.h>
+asdf
 #include <execinfo.h>
 #include <stdlib.h>
 #include <unistd.h>
