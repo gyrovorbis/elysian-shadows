@@ -500,7 +500,7 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 
 
 
-#if defined(__LINUX__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__)
 static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
     if(sig == SIGFPE)
         switch(sig_code) {
@@ -580,7 +580,7 @@ static void _regSigAction(const int sig, const char* name, struct sigaction*cons
 #endif
 
 void gyDebugSigInit(void) {
-#if defined(__LINUX__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__)
     _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
     //return;
     struct sigaction sa;
