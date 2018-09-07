@@ -1,7 +1,7 @@
 #ifndef GYRO_SDL_H
 #define GYRO_SDL_H
 
-#ifdef WIN32 // :D Mmmmmm
+#ifdef __WIN32 // :D Mmmmmm
 #   include <windows.h>
 #   include <SDL/SDL.h>
 #endif
