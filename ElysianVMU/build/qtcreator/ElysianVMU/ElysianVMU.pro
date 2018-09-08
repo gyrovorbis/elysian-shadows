@@ -15,12 +15,16 @@ vmu_child_app {
     TEMPLATE = lib
     CONFIG += staticlib
     CONFIG -= app_bundle
-    INCLUDEPATH += $${GLOBAL_INCLUDE_PATH}
+    INCLUDEPATH += ../../../app/qt \
+        ../../../app/qt/include/ElysianVMU \
+        ../../../evmu-core/include \
+        ../../../evmu-core/include/evmu-core \
+        $${LIBGYRO_PATH}/api \
+        $${LIBGYRO_PATH}/api/libGyro
 }
+
 TARGET = ElysianVMU
 QT += gui opengl
-
-
 
 !raspberrypi : !ios {
     QT += serialport
@@ -101,46 +105,46 @@ SOURCES += \
 
 
 HEADERS += \
-    $${SOURCE_ROOT}/include/gyro_vmu_main_window.hpp \
-    $${SOURCE_ROOT}/include/gyro_vmu_tcp_dialog.hpp \
+    $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_main_window.hpp \
+    $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_tcp_dialog.hpp \
     $${SOURCE_ROOT}/gif/gif_hash.h \
     $${SOURCE_ROOT}/gif/gif_lib.h \
     $${SOURCE_ROOT}/gif/gif_lib_private.h \
     $${SOURCE_ROOT}/gif/qgifglobal.h \
     $${SOURCE_ROOT}/gif/qgifimage.h \
     $${SOURCE_ROOT}/gif/qgifimage_p.h \
-    $${SOURCE_ROOT}/include/gyro_vmu_buzzer_dialog.hpp \
-    ../../../app/qt/include/gyro_vmu_address_space_model.hpp \
-    ../../../evmu-core/include/gyro_vmu_adapter.h \
-    ../../../evmu-core/include/gyro_vmu_battery.h \
-    ../../../evmu-core/include/gyro_vmu_bios.h \
-    ../../../evmu-core/include/gyro_vmu_buzzer.h \
-    ../../../evmu-core/include/gyro_vmu_cpu.h \
-    ../../../evmu-core/include/gyro_vmu_device.h \
-    ../../../evmu-core/include/gyro_vmu_disassembler.h \
-    ../../../evmu-core/include/gyro_vmu_display.h \
-    ../../../evmu-core/include/gyro_vmu_flash.h \
-    ../../../evmu-core/include/gyro_vmu_gamepad.h \
-    ../../../evmu-core/include/gyro_vmu_instr.h \
-    ../../../evmu-core/include/gyro_vmu_isr.h \
-    ../../../evmu-core/include/gyro_vmu_lcd.h \
-    ../../../evmu-core/include/gyro_vmu_maple.h \
-    ../../../evmu-core/include/gyro_vmu_memory.h \
-    ../../../evmu-core/include/gyro_vmu_osc.h \
-    ../../../evmu-core/include/gyro_vmu_port1.h \
-    ../../../evmu-core/include/gyro_vmu_port7.h \
-    ../../../evmu-core/include/gyro_vmu_serial.h \
-    ../../../evmu-core/include/gyro_vmu_sfr.h \
-    ../../../evmu-core/include/gyro_vmu_tcp.h \
-    ../../../evmu-core/include/gyro_vmu_timers.h \
-    ../../../evmu-core/include/gyro_vmu_util.h \
-    ../../../evmu-core/include/gyro_vmu_version.h \
-    ../../../evmu-core/include/gyro_vmu_vmi.h \
-    ../../../evmu-core/include/gyro_vmu_vms.h
+    $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_buzzer_dialog.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_address_space_model.hpp \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_adapter.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_battery.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_bios.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_buzzer.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_cpu.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_device.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_disassembler.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_display.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_flash.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_gamepad.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_instr.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_isr.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_lcd.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_maple.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_memory.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_osc.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_port1.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_port7.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_serial.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_sfr.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_tcp.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_timers.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_util.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_version.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_vmi.h \
+    ../../../evmu-core/include/evmu-core/gyro_vmu_vms.h
 
 
 !raspberrypi {
-    HEADERS += $${SOURCE_ROOT}/include/gyro_vmu_com_dialog.hpp
+    HEADERS += $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_com_dialog.hpp
 }
 
 INCLUDEPATH += $${LIBGYRO_PATH}/include \
