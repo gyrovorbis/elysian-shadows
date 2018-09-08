@@ -69,6 +69,7 @@ SOURCES += \
     $${SOURCE_ROOT}/gif/gifalloc.c \
     $${SOURCE_ROOT}/gif/quantize.c \
     $${SOURCE_ROOT}/source/gyro_vmu_buzzer_dialog.cpp \
+    $${SOURCE_ROOT}/source/gyro_vmu_address_space_model.cpp \
     ../../../evmu-core/source/gyro_vmu_battery.c \
     ../../../evmu-core/source/gyro_vmu_bios.c \
     ../../../evmu-core/source/gyro_vmu_buzzer.c \
@@ -91,8 +92,7 @@ SOURCES += \
     ../../../evmu-core/source/gyro_vmu_util.c \
     ../../../evmu-core/source/gyro_vmu_version.c \
     ../../../evmu-core/source/gyro_vmu_vmi.c \
-    ../../../evmu-core/source/gyro_vmu_vms.c \
-    ../../../app/qt/source/gyro_vmu_address_space_model.cpp
+    ../../../evmu-core/source/gyro_vmu_vms.c
 
 !vmu_child_app {
     SOURCES += $${SOURCE_ROOT}/source/main.cpp
@@ -249,7 +249,7 @@ raspberrypi {
 
 win32 {
     QMAKE_CFLAGS += -msse -std=c99
-    INCLUDEPATH += $${LIBGYRO_PATH}//lib/win32
+    INCLUDEPATH += $${LIBGYRO_PATH}/lib/win32
     LIBS += -L../../../lib/win32 \
         -L$${LIBGYRO_PATH}/lib/win32 \
         -lDbgHelp \
