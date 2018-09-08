@@ -1,9 +1,9 @@
 #include <math.h>
 
-#include "../api/gyro_kinetic_physics.h"
-#include "../api/gyro_kinetic_contact.h"
-#include "../api/gyro_kinetic_collider.h"
-#include "../api/gyro_kinetic_kinetic.h"
+#include <libGyro-Kinetic/gyro_kinetic_physics.h>
+#include <libGyro-Kinetic/gyro_kinetic_contact.h>
+#include <libGyro-Kinetic/gyro_kinetic_collider.h>
+#include <libGyro-Kinetic/gyro_kinetic_kinetic.h>
 
 static GYVector3 _gravityForce = { 0.0f, 0.0f, 0.0f };
 

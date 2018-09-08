@@ -1,6 +1,6 @@
-#include "../api/gyro_kinetic_collision.h"
-#include "../api/gyro_kinetic_contact.h"
-#include "../api/gyro_kinetic_static.h"
+#include <libGyro-Kinetic/gyro_kinetic_collision.h>
+#include <libGyro-Kinetic/gyro_kinetic_contact.h>
+#include <libGyro-Kinetic/gyro_kinetic_static.h>
 #include <libGyro/gyro_matrix_api.h>
 
 const GYVector4 gyBoxLocalVerts[4] = {
