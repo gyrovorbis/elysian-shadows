@@ -28,10 +28,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#include <gyro_video_api.h>
-#include <gyro_texture_api.h>
-#include <gyro_system_api.h>
-#include <gyro_file_api.h>
+#include <libGyro/gyro_video_api.h>
+#include <libGyro/gyro_texture_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_file_api.h>
 #include <common/gyro_spine_common.h>
 #include <spine/extension.h>
 #include <spine/spine.h>

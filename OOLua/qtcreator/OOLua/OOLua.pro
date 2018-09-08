@@ -16,7 +16,7 @@ macx {
 }
 
 
-INCLUDEPATH += ../../include \
+INCLUDEPATH += ../../include/OOLua \
 	../../../Lua5.2/include
 
 DEPENDPATH += ../../include

@@ -30,7 +30,7 @@
 
 #include <spine/Bone.h>
 #include <spine/extension.h>
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_matrix_api.h>
 
 static int yDown;
 

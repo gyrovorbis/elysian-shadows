@@ -16,7 +16,6 @@ dreamcast {
 
 vmu_child_app {
     DEFINES+=VMU_CHILD_APP
-
 }
 
 !ios: !dreamcast: !android {
@@ -66,34 +65,46 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../ESGamma/include/utility \
     ../../game/include \
     ../../libGyro/include \
-    ../../libGyro/api
+    ../../libGyro/api \
+    ../../libGyro-Kinetic/api
 
-!ios: !dreamcast: !android{
-    DEPENDPATH += include
+!ios: !dreamcast: !android {
+    DEPENDPATH += include \
+        $${LIBGYRO_PATH}/api \
+        $${ESDEV_ROOT}/AssetIO/include \
+        $${ESDEV_ROOT}/ESGamma/include \
+        $${ESDEV_ROOT}/OOLua/include \
+        $${ESDEV_ROOT}/libGyro-Kinetic/api \
+        $${ESDEV_ROOT}/UnitTests/include
 }
 
 #!ios: !dreamcast: !android {
-    INCLUDEPATH += include
     #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 #}
 
 vmu_child_app {
     QT += serialport
 
-#    INCLUDEPATH += ../../ElysianVMU/app/qt/include \
-#                ../../ElysianVMU/evmu-core/include
+    INCLUDEPATH += $${ESDEV_ROOT}/ElysianVMU/app/qt/include \
+                $${ESDEV_ROOT}/ElysianVMU/evmu-core/include
 
-    DEPENDPATH += ../../ElysianVMU/app/qt \
+    DEPENDPATH += ../../ElysianVMU/app/qt/include \
         ../../ElysianVMU/build/qtcreator/ElysianVMU \
         ../../ElysianVMU/evmu-core
 }
 
 #SPLIT UP SO ITS STILL PRIORITIZED!!!
-INCLUDEPATH += \
+INCLUDEPATH += include \
+    ../../AssetIO/include \
+    ../../ESGamma/include \
+    ../../libGyro-Kinetic/api \
+    ../../libGyro/include \
+    ../../libGyro/api \
+    ../../QESTkUtils/include \
+    ../../game/include \
     ../../Lua5.2/include \
-    ../../OOLua/include \
-    ../../Spine/include \
-    ../../libGyro/include
+    ../../OOLua/include/OOLua \
+    ../../Spine/include
 
 SOURCES += \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
@@ -328,202 +339,200 @@ SOURCES += \
 }
 
 HEADERS += \
-    ../../AssetIO/include/component/elysian_audio_source_base.hpp \
-    ../../AssetIO/include/component/elysian_behavior_base.hpp \
-    ../../AssetIO/include/component/elysian_character_base.hpp \
-    ../../AssetIO/include/component/elysian_collidable_base.hpp \
-    ../../AssetIO/include/component/elysian_combat_base.hpp \
-    ../../AssetIO/include/component/elysian_component_base.hpp \
-    ../../AssetIO/include/component/elysian_examinable_base.hpp \
-    ../../AssetIO/include/component/elysian_light_source_base.hpp \
-    ../../AssetIO/include/component/elysian_particle_emitter_base.hpp \
-    ../../AssetIO/include/component/elysian_renderable_base.hpp \
-    ../../AssetIO/include/component/elysian_rigid_body_base.hpp \
-    ../../AssetIO/include/component/elysian_warp_base.hpp \
-    ../../AssetIO/include/crtp/elysian_area.hpp \
-    ../../AssetIO/include/crtp/elysian_collidable.hpp \
-    ../../AssetIO/include/crtp/elysian_component.hpp \
-    ../../AssetIO/include/crtp/elysian_entity.hpp \
-    ../../AssetIO/include/crtp/elysian_level.hpp \
-    ../../AssetIO/include/crtp/elysian_lua_table_proxy.hpp \
-    ../../AssetIO/include/crtp/elysian_renderable.hpp \
-    ../../AssetIO/include/level/elysian_area_base.hpp \
-    ../../AssetIO/include/level/elysian_direction.hpp \
-    ../../AssetIO/include/level/elysian_entity_base.hpp \
-    ../../AssetIO/include/level/elysian_level_base.hpp \
-    ../../AssetIO/include/level/elysian_level_manager.hpp \
-    ../../AssetIO/include/level/elysian_map_depth_buffer.hpp \
-    ../../AssetIO/include/level/elysian_tile.hpp \
-    ../../AssetIO/include/level/elysian_zcoords.hpp \
-    ../../AssetIO/include/primitive/elysian_instance_transform.hpp \
-    ../../AssetIO/include/primitive/elysian_material.hpp \
-    ../../AssetIO/include/primitive/elysian_model_attrib.hpp \
-    ../../AssetIO/include/primitive/elysian_prim_attrib.hpp \
-    ../../AssetIO/include/primitive/elysian_quad_sprite_attrib.hpp \
-    ../../AssetIO/include/primitive/elysian_renderable_object.hpp \
-    ../../AssetIO/include/primitive/elysian_textured_attrib.hpp \
-    ../../AssetIO/include/utility/elysian_asset_typedefs.hpp \
-    ../../AssetIO/include/utility/elysian_cstr_map.hpp \
-    ../../AssetIO/include/utility/elysian_generic.hpp \
-    ../../AssetIO/include/utility/elysian_lua_table_proxy_base.hpp \
-    ../../AssetIO/include/utility/elysian_mem_pool.hpp \
-    ../../AssetIO/include/utility/elysian_stl_algorithm.hpp \
-    ../../AssetIO/include/utility/elysian_ring_buffer.hpp \
-    ../../ESGamma/include/crtp/elysian_debug.hpp \
-    ../../ESGamma/include/crtp/elysian_lua_manager.hpp \
-    ../../ESGamma/include/crtp/elysian_map_system.hpp \
-    ../../ESGamma/include/gui/elysian_adventure_log.hpp \
-    ../../ESGamma/include/gui/elysian_font.hpp \
-    ../../ESGamma/include/lua/elysian_lua_manager_base.hpp \
-    ../../ESGamma/include/lua/elysian_lua_script.hpp \
-    ../../ESGamma/include/lua/elysian_lua_singleton.hpp \
-    ../../ESGamma/include/lua/elysian_lua_wrappers.hpp \
-    ../../ESGamma/include/system/elysian_audio_system.hpp \
-    ../../ESGamma/include/system/elysian_behavior_system.hpp \
-    ../../ESGamma/include/system/elysian_character_system.hpp \
-    ../../ESGamma/include/system/elysian_collision_system.hpp \
-    ../../ESGamma/include/system/elysian_combat_system.hpp \
-    ../../ESGamma/include/system/elysian_day_system.hpp \
-    ../../ESGamma/include/system/elysian_dialog_system.hpp \
-    ../../ESGamma/include/system/elysian_engine.hpp \
-    ../../ESGamma/include/system/elysian_examinable_system.hpp \
-    ../../ESGamma/include/system/elysian_light_system.hpp \
-    ../../ESGamma/include/system/elysian_map_system_base.hpp \
-    ../../ESGamma/include/system/elysian_party_system.hpp \
-    ../../ESGamma/include/system/elysian_rigid_body_system.hpp \
-    ../../ESGamma/include/system/elysian_skeleton_system.hpp \
-    ../../ESGamma/include/system/elysian_system.hpp \
-    ../../ESGamma/include/system/elysian_warp_system.hpp \
-    ../../ESGamma/include/system/elysian_pathfinding_system.hpp \
-    ../../ESGamma/include/utility/elysian_debug_base.hpp \
-    ../../ESGamma/include/utility/elysian_event_monitor.hpp \
-    ../../ESGamma/include/utility/elysian_force_generator.hpp \
-    ../../ESGamma/include/utility/elysian_sort_sweep.hpp \
-    ../../ESGamma/include/utility/elysian_subprocess_manager.hpp \
-    ../../AssetIO/include/crtp/elysian_behavior.hpp \
-    ../../AssetIO/include/crtp/elysian_particle_emitter.hpp \
-    ../../AssetIO/include/crtp/elysian_character.hpp \
-    ../../AssetIO/include/crtp/elysian_rigid_body.hpp \
-    ../../AssetIO/include/crtp/elysian_audio_source.hpp \
-    ../../AssetIO/include/crtp/elysian_combat.hpp \
-    ../../AssetIO/include/crtp/elysian_light_source.hpp \
-    ../../AssetIO/include/crtp/elysian_examinable.hpp \
-    ../../AssetIO/include/component/elysian_skeleton_base.hpp \
-    ../../AssetIO/include/crtp/elysian_skeleton.hpp \
-    ../../AssetIO/include/crtp/elysian_warp.hpp \
-    ../../ESGamma/include/gui/elysian_sprite.hpp \
-    ../../ESGamma/include/gui/elysian_quad_sprite.hpp \
-    ../../ESGamma/include/utility/elysian_task_monitor_base.hpp \
-    ../../ESGamma/include/crtp/elysian_task_monitor.hpp \
-    ../../ESGamma/include/system/elysian_timer_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_timer_system.hpp \
-    ../../AssetIO/include/proxy/elysian_area_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_audio_source_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_character_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_collidable_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_combat_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_component_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_entity_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_examinable_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_instance_transform_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_level_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_light_source_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_lua_behavior_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_particle_emitter_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_primitive_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_renderable_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_rigid_body_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_skeleton_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_warp_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_audio_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_camera_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_character_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_combat_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_day_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_dialog_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_event_monitor_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_gui_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_level_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_light_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_particle_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_party_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_timer_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_pathfinding_system_proxy.hpp \
-    ../../AssetIO/include/component/elysian_lua_behavior_base.hpp \
-    ../../AssetIO/include/crtp/elysian_lua_behavior.hpp \
-    ../../AssetIO/include/level/elysian_depth_buff_entry_base.hpp \
-    ../../AssetIO/include/crtp/elysian_depth_buff_entry.hpp \
-    ../../ESGamma/include/system/elysian_camera_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_camera_system.hpp \
-    ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp \
-    ../../AssetIO/include/utility/elysian_bit_mask.hpp \
-    ../../AssetIO/include/proxy/elysian_bit_mask_proxy.hpp \
-    ../../AssetIO/include/crtp/elysian_sprite_attrib.hpp \
-    ../../AssetIO/include/primitive/elysian_sprite_attrib_base.hpp \
-    ../../AssetIO/include/utility/elysian_lua_table_ref.hpp \
-    ../../AssetIO/include/proxy/elysian_dialog_proxy.hpp \
-    ../../AssetIO/include/level/elysian_dialog_base.hpp \
-    ../../AssetIO/include/crtp/elysian_dialog.hpp \
-    ../../AssetIO/include/crtp/elysian_dialog_screen.hpp \
-    ../../AssetIO/include/level/elysian_dialog_screen_base.hpp \
-    ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
-    ../../AssetIO/include/utility/elysian_lua_variant_base.hpp \
-    ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp \
-    ../../ESGamma/include/system/elysian_input_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_input_system.hpp \
-    ../../game/include/behavior/elysian_playable_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_lua_stack.hpp \
-    ../../AssetIO/include/utility/elysian_functional.hpp \
-    ../../ESGamma/include/crtp/elysian_level_system.hpp \
-    ../../ESGamma/include/system/elysian_level_system_base.hpp \
-    ../../game/include/behavior/elysian_state_machine_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
-    ../../ESGamma/include/system/elysian_gui_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_gui_system.hpp \
-    ../../ESGamma/include/gui/elysian_widget.hpp \
-    ../../ESGamma/include/gui/elysian_layout.hpp \
-    ../../ESGamma/include/gui/elysian_entity_widget.hpp \
-    ../../ESGamma/include/gui/elysian_label_widget.hpp \
-    ../../ESGamma/include/proxy/elysian_widget_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_layout_proxy.hpp \
-    ../../AssetIO/include/utility/elysian_cpp_lua_callback.hpp \
-    ../../ESGamma/include/gui/elysian_menu_widget.hpp \
-    ../../AssetIO/include/utility/elysian_associative_aggregate_array.hpp \
-    ../../ESGamma/include/system/elysian_event_system.hpp \
-    ../../ESGamma/include/utility/elysian_performance_monitor.hpp \
-    ../../AssetIO/include/crtp/elysian_color.hpp \
-    ../../AssetIO/include/primitive/elysian_color_base.hpp \
-    ../../ESGamma/include/system/elysian_particle_system_base.hpp \
-    ../../ESGamma/include/crtp/elysian_particle_system.hpp \
-    ../../AssetIO/include/primitive/elysian_rect.hpp \
-    ../../AssetIO/include/level/elysian_event.hpp \
-    ../../AssetIO/include/proxy/elysian_event_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_event_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_collision_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_examinable_system_proxy.hpp \
-    ../../ESGamma/include/device/elysian_rumble_device.hpp \
-    ../../ESGamma/include/device/elysian_player_io_device.hpp \
-    ../../ESGamma/include/gui/elysian_frame_widget.hpp \
-    ../../game/include/pause_menu/es_options_menu.hpp \
-    ../../game/include/pause_menu/es_pause_menu.hpp \
-    ../../game/include/pause_menu/es_playable_pane.hpp \
-    ../../game/include/pause_menu/es_party_menu.hpp \
-    ../../game/include/pause_menu/es_inventory_menu.hpp \
-    ../../ESGamma/include/system/elysian_compute_system.hpp \
-    ../../ESGamma/include/crtp/elysian_render_system.hpp \
-    ../../ESGamma/include/system/elysian_render_system_base.hpp \
-    ../../ESGamma/include/gui/elysian_item_model.hpp \
-    ../../ESGamma/include/gui/elysian_item_delegate.hpp \
-    ../../AssetIO/include/level/elysian_scene_object.hpp \
-    ../../ESGamma/include/system/elysian_thread_system.hpp
+    ../../AssetIO/include/AssetIO/component/elysian_audio_source_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_behavior_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_character_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_collidable_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_combat_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_component_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_examinable_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_light_source_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_particle_emitter_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_renderable_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_rigid_body_base.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_warp_base.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_area.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_collidable.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_component.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_entity.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_level.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_lua_table_proxy.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_renderable.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_area_base.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_direction.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_entity_base.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_level_base.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_level_manager.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_map_depth_buffer.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_tile.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_zcoords.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_instance_transform.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_material.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_model_attrib.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_prim_attrib.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_quad_sprite_attrib.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_renderable_object.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_textured_attrib.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_asset_typedefs.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_cstr_map.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_generic.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_lua_table_proxy_base.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_mem_pool.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_stl_algorithm.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_ring_buffer.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_behavior.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_particle_emitter.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_character.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_rigid_body.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_audio_source.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_combat.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_light_source.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_examinable.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_skeleton_base.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_skeleton.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_warp.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_area_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_audio_source_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_character_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_collidable_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_combat_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_component_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_entity_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_examinable_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_instance_transform_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_level_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_light_source_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_lua_behavior_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_particle_emitter_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_primitive_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_renderable_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_rigid_body_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_skeleton_proxy.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_warp_proxy.hpp \
+    ../../AssetIO/include/AssetIO/component/elysian_lua_behavior_base.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_lua_behavior.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_depth_buff_entry_base.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_depth_buff_entry.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_bit_mask.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_bit_mask_proxy.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_sprite_attrib.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_sprite_attrib_base.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_lua_table_ref.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_dialog_proxy.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_dialog_base.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_dialog.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_dialog_screen.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_dialog_screen_base.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_lua_variant.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_lua_variant_base.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_lua_stack.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_functional.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_oolua_string_traits.hpp \
+    ../../AssetIO/include/AssetIO/crtp/elysian_color.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_color_base.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_cpp_lua_callback.hpp \
+    ../../AssetIO/include/AssetIO/utility/elysian_associative_aggregate_array.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_rect.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_event.hpp \
+    ../../AssetIO/include/AssetIO/proxy/elysian_event_proxy.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_scene_object.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_sprite.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_debug.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_lua_manager.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_map_system.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_adventure_log.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_font.hpp \
+    ../../ESGamma/include/ESGamma/lua/elysian_lua_manager_base.hpp \
+    ../../ESGamma/include/ESGamma/lua/elysian_lua_script.hpp \
+    ../../ESGamma/include/ESGamma/lua/elysian_lua_singleton.hpp \
+    ../../ESGamma/include/ESGamma/lua/elysian_lua_wrappers.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_audio_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_behavior_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_character_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_collision_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_combat_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_day_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_dialog_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_engine.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_examinable_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_light_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_map_system_base.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_party_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_rigid_body_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_skeleton_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_warp_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_pathfinding_system.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_debug_base.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_event_monitor.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_force_generator.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_sort_sweep.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_subprocess_manager.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_quad_sprite.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_task_monitor_base.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_task_monitor.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_timer_system_base.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_timer_system.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_audio_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_camera_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_character_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_combat_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_day_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_dialog_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_event_monitor_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_gui_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_level_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_light_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_particle_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_party_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_timer_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_rigid_body_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_pathfinding_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_camera_system_base.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_camera_system.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_camera_shake_subprocess.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_input_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_input_system_base.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_input_system.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_level_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_level_system_base.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_gui_system_base.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_gui_system.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_widget.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_layout.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_entity_widget.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_label_widget.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_widget_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_layout_proxy.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_menu_widget.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_event_system.hpp \
+    ../../ESGamma/include/ESGamma/utility/elysian_performance_monitor.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_particle_system_base.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_particle_system.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_event_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_collision_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_examinable_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_rumble_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_player_io_device.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_frame_widget.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_compute_system.hpp \
+    ../../ESGamma/include/ESGamma/crtp/elysian_render_system.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_render_system_base.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_item_model.hpp \
+    ../../ESGamma/include/ESGamma/gui/elysian_item_delegate.hpp \
+    ../../ESGamma/include/ESGamma/system/elysian_thread_system.hpp \
+    ../../game/include/game/pause_menu/es_options_menu.hpp \
+    ../../game/include/game/pause_menu/es_pause_menu.hpp \
+    ../../game/include/game/pause_menu/es_playable_pane.hpp \
+    ../../game/include/game/pause_menu/es_party_menu.hpp \
+    ../../game/include/game/pause_menu/es_inventory_menu.hpp \
+    ../../game/include/game/behavior/elysian_state_machine_behavior.hpp \
+    ../../game/include/game/behavior/elysian_playable_behavior.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
         include/ESToolkit/ESGamma/tk_render_system.h \
         include/ESToolkit/AssetIO/tk_area.h \
-        include/QESTkUtils/ui/widget/tk_pie_chart_widget.h \
-        include/QESTkUtils/ui/widget/tk_line_chart.h \
         include/ESToolkit/core/tk_asset_manager.h \
         include/ESToolkit/core/tk_assets.h \
         include/ESToolkit/AssetIO/tk_audio_source.h \
@@ -555,8 +564,6 @@ HEADERS += \
         include/ESToolkit/ui/item/tk_checkered_alpha_rect_graphics_item.h \
         include/ESToolkit/core/tk_debug.h \
         include/ESToolkit/core/tk_file_utilities.h \
-        include/QESTkUtils/tk_gl_utilities.h \
-        include/QESTkUtils/tk_menu_stack.h \
         include/ESToolkit/core/tk_selectable.h \
         include/ESToolkit/ui/widget/tk_selection_scene.h \
         include/ESToolkit/core/tk_tile_image.h \
@@ -586,11 +593,6 @@ HEADERS += \
         include/ESToolkit/ui/item/tk_sheet_view_tile_graphics_item.h \
         include/ESToolkit/core/tk_tile_selectable.h \
         include/ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.h \
-        include/QESTkUtils/model/tk_lua_table_stack_model.h \
-        include/QESTkUtils/model/tk_property_stack_model.h \
-        include/QESTkUtils/model/tk_property_standard_item.h \
-        include/QESTkUtils/model/tk_rows_joiner_proxy_model.h \
-        include/ESToolkit/sheet_manager/tk_sheet_manager.h \
         include/ESToolkit/sheet_manager/tk_sheet_manager_asset_manager.h \
         include/ESToolkit/sheet_manager/tk_sheet_manager_assets.h \
         include/ESToolkit/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h \
@@ -601,45 +603,54 @@ HEADERS += \
         include/ESToolkit/sheet_manager/tk_sheet_manager_source_view.h \
         include/ESToolkit/sheet_manager/tk_sheet_manager_tile_entry.h \
         include/ESToolkit/sheet_manager/tk_sheet_manager_tile_selection.h \
-        include/QESTkUtils/tile_engine/tk_dest_view.h \
-        include/QESTkUtils/tile_engine/tk_selection_item_group.h \
-        include/QESTkUtils/tile_engine/tk_source_view.h \
-        include/QESTkUtils/tile_engine/tk_tile_graphics_item.h \
-        include/QESTkUtils/tile_engine/tk_tile_group_undo_item.h \
-        include/QESTkUtils/tile_engine/tk_tile_selection.h \
+        include/ESToolkit/sheet_manager/tk_sheet_manager.h \
         include/ESToolkit/ui/dock/tk_history_dock_widget.h \
-        include/QESTkUtils/tile_engine/tk_tile_graphics_item_impl.h \
-        include/QESTkUtils/tile_engine/tk_dest_view_impl.h \
-        include/QESTkUtils/tk_lua_qt_utils.h \
-        include/QESTkUtils/ui/widget/tk_documentation_browser.h \
         include/ESToolkit/ESGamma/tk_task_monitor.h \
         include/ESToolkit/ui/dialog/tk_task_monitor_dialog.h \
         include/ESToolkit/ESGamma/tk_timer_system.h \
-        include/QESTkUtils/ui/widget/tk_gitlab_dialog.h \
-        include/QESTkUtils//tk_network_access_manager.h \
         include/ESToolkit/ui/dock/tk_camera_dock_widget.h \
         include/ESToolkit/ESGamma/tk_camera_system.h \
         include/ESToolkit/ESGamma/tk_input_system.h \
-        include/QESTkUtils/ui/delegate/tk_property_item_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_property_item_proxy_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h \
         include/ESToolkit/ui/widget/tk_selection_tree_view.h \
-        include/QESTkUtils/tk_lua_mime_drop_manager.h \
-        include/ESToolkit/ESGamma/tk_particle_system.h \
-        include/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.h \
-        include/QESTkUtils/ui/widget/tk_2d_vector_widget.h \
-        include/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h \
         include/ESToolkit/core/tk_lua_table_selectable.h \
         include/ESToolkit/ESGamma/tk_gui_system.h \
         include/ESToolkit/ESGamma/tk_level_system.h \
-        include/QESTkUtils/tk_mime_data.h \
-        include/QESTkUtils/tk_mime_drop_manager.h \
-        include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h \
-        include/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h
+        include/ESToolkit/ESGamma/tk_particle_system.h \
+        include/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_dest_view.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_selection_item_group.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_source_view.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_tile_graphics_item.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_tile_group_undo_item.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_tile_selection.h \
+        ../../QESTkUtils/include/QESTkUtils/model/tk_lua_table_stack_model.h \
+        ../../QESTkUtils/include/QESTkUtils/model/tk_property_stack_model.h \
+        ../../QESTkUtils/include/QESTkUtils/model/tk_property_standard_item.h \
+        ../../QESTkUtils/include/QESTkUtils/model/tk_rows_joiner_proxy_model.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_gl_utilities.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_menu_stack.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_tile_graphics_item_impl.h \
+        ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_dest_view_impl.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_lua_qt_utils.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_documentation_browser.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_gitlab_dialog.h \
+        ../../QESTkUtils/include/QESTkUtils//tk_network_access_manager.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_property_item_proxy_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_combobox_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_lua_mime_drop_manager.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_2d_vector_widget.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_mime_data.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_mime_drop_manager.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_pie_chart_widget.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_line_chart.h \
+        ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h
 }
 
 

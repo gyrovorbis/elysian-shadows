@@ -8,24 +8,28 @@
 
 QT       += widgets network opengl sql testlib
 
-DEFINES+=ELYSIAN_OPENCL_ACCELERATED
-
-
 DEPENDPATH += \
     ../AssetIO \
     ../ESGamma \
     ../ESToolkit \
     ../libGyro \
-    ../libGyro-Kinetic
+    ../libGyro-Kinetic \
+    ../QESTkUtils
 
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH +=  \
+    include/UnitTests \
+    ../libGyro/include \
+    ../libGyro/api \
+    ../libGyro-Kinetic/api \
+    ../AssetIO/include \
+    ../ESGamma/include \
+    ../QESTkUtils/include \
     $${GLOBAL_INCLUDE_PATH} \
     ../Lua5.2/include \
-    ../OOLua/include \
+    ../OOLua/include/OOLua \
     ../Spine/include \
-    ../libGyro/include
 
 win32 {
     INCLUDEPATH += ../libGyro/lib/win32
@@ -37,32 +41,32 @@ TEMPLATE = lib
 
 
 SOURCES += \
-    test_estk.cpp
+    source/test_estk.cpp
 
 HEADERS += \
-    test_libgyro_file_api.h \
-    test_libgyro_video_api.h \
-    test_entity.h \
-    test_lua_behavior.h \
-    test_lua_table_proxy.h \
-    test_lua_manager.h \
-    test_level.h \
-    test_area.h \
-    test_light_system.h \
-    test_audio_system.h \
-    test_map_view.h \
-    test_estk.h \
-    test_estoolkit.h \
-    test_init.h \
-    test_project_assets.h \
-    test_level_assets.h \
-    test_area_assets.h \
-    test_lua_variant.h \
-    test_dialog.h \
-    test_instance_transform.h \
-    test_lua_field_ref.h \
-    test_functional.h \
-    test_cpp_lua_callback.h \
-    test_associative_aggregate_array.h \
-    test_libgyro_compute_api.h
+    include/UnitTests/test_libgyro_file_api.h \
+    include/UnitTests/test_libgyro_video_api.h \
+    include/UnitTests/test_entity.h \
+    include/UnitTests/test_lua_behavior.h \
+    include/UnitTests/test_lua_table_proxy.h \
+    include/UnitTests/test_lua_manager.h \
+    include/UnitTests/test_level.h \
+    include/UnitTests/test_area.h \
+    include/UnitTests/test_light_system.h \
+    include/UnitTests/test_audio_system.h \
+    include/UnitTests/test_map_view.h \
+    include/UnitTests/test_estk.h \
+    include/UnitTests/test_estoolkit.h \
+    include/UnitTests/test_init.h \
+    include/UnitTests/test_project_assets.h \
+    include/UnitTests/test_level_assets.h \
+    include/UnitTests/test_area_assets.h \
+    include/UnitTests/test_lua_variant.h \
+    include/UnitTests/test_dialog.h \
+    include/UnitTests/test_instance_transform.h \
+    include/UnitTests/test_lua_field_ref.h \
+    include/UnitTests/test_functional.h \
+    include/UnitTests/test_cpp_lua_callback.h \
+    include/UnitTests/test_associative_aggregate_array.h \
+    include/UnitTests/test_libgyro_compute_api.h
 

@@ -30,8 +30,8 @@
 
 #include <spine/RegionAttachment.h>
 #include <spine/extension.h>
-#include <gyro_matrix_api.h>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_matrix_api.h>
+#include <libGyro/gyro_video_api.h>
 #include <gl/gyro_video_gl.h>
 
 void _spRegionAttachment_dispose (spAttachment* attachment) {
