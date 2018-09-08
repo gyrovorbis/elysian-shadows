@@ -30,9 +30,10 @@
 #ifdef GY_THREAD_PTHREADS
 #   include <pthread.h>
 
-
+#if defined(__linux__)
+#   include <sched.h>
 //Manually provide the pthread functionality MacOS is missing from the POSIX standard
-#ifdef __APPLE__
+#elif defined(__APPLE__)
 #   include <mach/mach.h>
 #   include <sys/sysctl.h>
 #   include <mach/mach_time.h>
