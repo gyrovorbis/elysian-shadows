@@ -58,18 +58,18 @@ macx {
 ICON = $${SOURCE_ROOT}/resource/images/vmu_icon.icns
 
 SOURCES += \
-    $${SOURCE_ROOT}/source/gyro_vmu_main_window.cpp \
-    $${SOURCE_ROOT}/source/gyro_vmu_tcp_dialog.cpp \
-    $${SOURCE_ROOT}/gif/qgifimage.cpp \
-    $${SOURCE_ROOT}/gif/dgif_lib.c \
-    $${SOURCE_ROOT}/gif/egif_lib.c \
-    $${SOURCE_ROOT}/gif/gif_err.c \
-    $${SOURCE_ROOT}/gif/gif_font.c \
-    $${SOURCE_ROOT}/gif/gif_hash.c \
-    $${SOURCE_ROOT}/gif/gifalloc.c \
-    $${SOURCE_ROOT}/gif/quantize.c \
-    $${SOURCE_ROOT}/source/gyro_vmu_buzzer_dialog.cpp \
-    $${SOURCE_ROOT}/source/gyro_vmu_address_space_model.cpp \
+    ../../../app/qt/source/gyro_vmu_main_window.cpp \
+    ../../../app/qt/source/gyro_vmu_tcp_dialog.cpp \
+    ../../../app/qt/source/gyro_vmu_buzzer_dialog.cpp \
+    ../../../app/qt/source/gyro_vmu_address_space_model.cpp \
+    ../../../app/qt/gif/qgifimage.cpp \
+    ../../../app/qt/gif/dgif_lib.c \
+    ../../../app/qt/gif/egif_lib.c \
+    ../../../app/qt/gif/gif_err.c \
+    ../../../app/qt/gif/gif_font.c \
+    ../../../app/qt/gif/gif_hash.c \
+    ../../../app/qt/gif/gifalloc.c \
+    ../../../app/qt/gif/quantize.c \
     ../../../evmu-core/source/gyro_vmu_battery.c \
     ../../../evmu-core/source/gyro_vmu_bios.c \
     ../../../evmu-core/source/gyro_vmu_buzzer.c \
@@ -96,11 +96,12 @@ SOURCES += \
 
 !vmu_child_app {
     SOURCES += $${SOURCE_ROOT}/source/main.cpp
+
 }
 
 
 !raspberrypi {
-    SOURCES += $${SOURCE_ROOT}/source/gyro_vmu_com_dialog.cpp
+    SOURCES += ../../../app/qt/source/gyro_vmu_com_dialog.cpp
 }
 
 
@@ -144,7 +145,9 @@ HEADERS += \
 
 
 !raspberrypi {
+
     HEADERS += $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_com_dialog.hpp
+
 }
 
 INCLUDEPATH += $${LIBGYRO_PATH}/include \
