@@ -1,7 +1,7 @@
-#include <gyro_platform.h>
+#include <libGyro/gyro_platform.h>
 #include <sdl/gyro_sdl_input.h>
-#include <gyro_system_api.h>
-#include <gyro_input_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_input_api.h>
 
 #define GYRO_CONTROLLER_SDL_X86_GUID_SIZE    1024
 

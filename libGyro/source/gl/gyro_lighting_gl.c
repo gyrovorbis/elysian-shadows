@@ -1,10 +1,10 @@
-#include <gyro_video_api.h>
-#include <gyro_shader_api.h>
-#include <gyro_defines.h>
+#include <libGyro/gyro_video_api.h>
+#include <libGyro/gyro_shader_api.h>
+#include <libGyro/gyro_defines.h>
 #include <gl/gyro_shaders_gl.h>
 #include <gl/gyro_gl_utils.h>
 #include <gl/gyro_video_gl.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <stdio.h>
 #include <stdlib.h>
 

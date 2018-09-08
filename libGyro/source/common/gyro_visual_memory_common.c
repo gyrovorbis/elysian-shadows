@@ -1,6 +1,6 @@
-#include <gyro_visual_memory_api.h>
-#include <gyro_system_api.h>
-#include <gyro_net_api.h>
+#include <libGyro/gyro_visual_memory_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_net_api.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>

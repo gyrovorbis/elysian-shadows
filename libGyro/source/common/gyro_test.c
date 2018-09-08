@@ -1,4 +1,4 @@
-#include <gyro_test_api.h>
+#include <libGyro/gyro_test_api.h>
 
 typedef struct GYTestQueue {
     GYTest*     stack[GYRO_TEST_QUEUE_DEPTH_MAX];

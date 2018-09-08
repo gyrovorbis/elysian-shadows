@@ -1,4 +1,4 @@
-#include "../api/gyro_platform.h"
+#include <libGyro/gyro_platform.h>
 #ifndef GYRO_MATH_NOASM
 #   include <xmmintrin.h>
 #endif

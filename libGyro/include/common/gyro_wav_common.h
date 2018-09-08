@@ -1,7 +1,7 @@
 #ifndef GYRO_WAV_SHARED_H
 #define GYRO_WAV_SHARED_H
 
-#include "../api/gyro_defines.h"
+#include <libGyro/gyro_defines.h>
 
 #ifdef __cplusplus
 extern "C" {

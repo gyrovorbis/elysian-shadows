@@ -1,4 +1,4 @@
-#include <gyro_platform.h>
+#include <libGyro/gyro_platform.h>
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
@@ -19,14 +19,13 @@
 #endif
 #endif
 
-#include <gyro_audio_api.h>
-#include <gyro_file_api.h>
-#include <gyro_ogg_api.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_audio_api.h>
+#include <libGyro/gyro_file_api.h>
+#include <libGyro/gyro_ogg_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_thread_api.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <gyro_thread_api.h>
 
 #define GYRO_OGG_STREAM_BUFF_SIZE	(4096 * 20)
 #define GYRO_OGG_STREAM_BUFF_COUNT	2

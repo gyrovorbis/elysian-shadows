@@ -1,4 +1,4 @@
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <gl/gyro_gl.h>
 #include <gl/gyro_video_gl.h>
 #include <gl/gyro_bloom_gl.h>

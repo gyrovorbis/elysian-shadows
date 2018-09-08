@@ -1,6 +1,6 @@
-#include <gyro_shader_api.h>
+#include <libGyro/gyro_shader_api.h>
 #include "gyro_asset_bank.h"
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 #include <string.h>
 #include <stdlib.h>
 

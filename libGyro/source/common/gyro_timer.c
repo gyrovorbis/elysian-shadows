@@ -1,4 +1,4 @@
-#include <gyro_timer_api.h>
+#include <libGyro/gyro_timer_api.h>
 #include <time.h>
 #include <sys/time.h>
 

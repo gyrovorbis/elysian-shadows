@@ -1,4 +1,4 @@
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_matrix_api.h>
 
 GYMatrix4 _matStack[GYRO_MATH_MATRIX_STACK_DEPTH];
 unsigned int _curStackFr = 0;

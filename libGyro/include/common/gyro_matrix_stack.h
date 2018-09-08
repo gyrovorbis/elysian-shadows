@@ -1,8 +1,8 @@
 #ifndef GYRO_MATRIX_STACK_H
 #define GYRO_MATRIX_STACK_H
 
-#include "../api/gyro_math_api.h"
-#include "../api/gyro_matrix_api.h"
+#include <libGyro/gyro_math_api.h>
+#include <libGyro/gyro_matrix_api.h>
 #include <assert.h>
 
 #ifdef __cplusplus

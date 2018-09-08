@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
 #include <common/turfs.h>
-#include <gyro_defines.h>
-#include <gyro_file_api.h>
+#include <libGyro/gyro_defines.h>
+#include <libGyro/gyro_file_api.h>
 #include <stdarg.h>
 
 int gyFileQuit(void)

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 
 #ifdef __APPLE__
 #include "CoreFoundation/CoreFoundation.h"

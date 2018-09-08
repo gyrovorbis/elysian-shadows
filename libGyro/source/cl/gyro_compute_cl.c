@@ -1,10 +1,10 @@
 #include <cl/gyro_cl.h>
-#include <gyro_system_api.h>
-#include <gyro_compute_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_compute_api.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <gyro_file_api.h>
+#include <libGyro/gyro_file_api.h>
 
 #define GY_CL_BUILD_FLAGS                           "-cl-kernel-arg-info"
 #define GY_CL_ENQUEUE_ACQUIRE_RENDERER_OBJECTS_MAX  10

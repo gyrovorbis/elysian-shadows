@@ -1,5 +1,5 @@
 #include <gl/gyro_chromatic_aberration_gl.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <gl/gyro_gl.h>
 #include <gl/gyro_gl_utils.h>
 #include <gl/gyro_video_gl.h>

@@ -1,8 +1,8 @@
 #include <QDebug>
 #include <stdio.h>
 #include <stdarg.h>
-#include <gyro_system_api.h>
-#include <gyro_defines.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_defines.h>
 
 static QTextStream* _stream = nullptr;
 

@@ -1,6 +1,6 @@
-#include <gyro_rumble_api.h>
+#include <libGyro/gyro_rumble_api.h>
 #include <sdl/gyro_sdl_input.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <sdl/gyro_sdl.inl>
 #include <assert.h>
 

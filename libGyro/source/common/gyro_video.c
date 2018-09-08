@@ -1,5 +1,5 @@
 #include <spine/Attachment.h>
-#include <gyro_video_api.h>
+#include <libGyro/gyro_video_api.h>
 
 static void (*_attachmentCbs[SP_ATTACHMENT_COUNT])(struct spAttachment*) = { NULL };
 
