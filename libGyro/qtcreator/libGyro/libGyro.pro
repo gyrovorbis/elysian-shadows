@@ -4,6 +4,11 @@ QT += opengl
 CONFIG += staticlib console
 CONFIG -= app_bundle
 #QMAKE_CFLAGS += -std=c99
+isEmpty(ESDEV_ROOT) {
+    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
+    DEFINES += GYRO_NO_SPINE
+}
+
 !ios {
     QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
 }
