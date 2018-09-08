@@ -3,9 +3,9 @@
 #include <QCommandLineParser>
 #include <QDebug>
 #include "gyro_vmu_main_window.hpp"
-#include "../lib/source/gyro_vmu_instr.h"
-#include "../lib/source/gyro_vmu_version.h"
-#include "../lib/source/gyro_vmu_disassembler.h"
+#include "gyro_vmu_instr.h"
+#include "gyro_vmu_version.h"
+#include "gyro_vmu_disassembler.h"
 #include <vulkan/gyro_video_vulkan.h>
 
 int main(int argc, char* argv[]) {

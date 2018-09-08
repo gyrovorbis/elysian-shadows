@@ -5,6 +5,7 @@
 #}
 
 isEmpty(LIBGYRO_PATH) {
+    include(../ElysianVMU/ElysianVMU.pri)
     LIBGYRO_PATH = ../../../evmu-core/libGyro
     LIBGYRO_BUILD_PATH  = $${LIBGYRO_PATH}/qtcreator/libGyro
 }
@@ -125,6 +126,23 @@ FORMS += \
     $${SOURCE_ROOT}/ui/gyro_vmu_buzzer_dialog.ui
 
 
+EVMU_CORE_PATH      = ../../../evmu-core
+EVMU_CORE_BUILD_PATH = $${EVMU_CORE_PATH}/build/qtcreator/EVMU-Core
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/release/ -levmu-core
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/debug/ -levmu-core
+else:unix:!vmu_child_app: LIBS += -L$$OUT_PWD/$${EVMU_CORE_BUILD_PATH} -levmu-core
+
+INCLUDEPATH += $$PWD/$${EVMU_CORE_PATH}
+DEPENDPATH += $$PWD/$${EVMU_CORE_PATH}
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/release/libevmu-core.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/debug/libevmu-core.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/release/evmu-core.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/debug/evmu-core.lib
+else:unix:!vmu_child_app: PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/libevmu-core.a
+
+
 LIBGYRO_BUILD_PATH = $${LIBGYRO_PATH}
 
 win32:CONFIG(release, debug|release): LIBS += -L$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/ -llibGyro
@@ -148,8 +166,6 @@ macx {
         -framework OpenGL \
         -framework OpenAL \
         -lz \
-        -F../../../ESGamma/lib/osx \
-        -L../../../ESGamma/lib/osx \
         -F$${LIBGYRO_PATH}/lib/osx \
         -framework SDL2 \
         -framework SDL2_net
@@ -165,7 +181,6 @@ vulkan {
         -lvorbis \
         -lvorbisenc \
         -lvorbisfile \
-        -L../../../ESGamma/lib/osx
 }
 
 
