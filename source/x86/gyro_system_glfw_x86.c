@@ -158,6 +158,11 @@ const GYSystemInfo* gySystemQueryInfo(void) {
 extern void _gyQueryOperatingSystemInfoString(char* buffer, int buffSize);
 
 
+#ifdef __WIN32
+void _gyQueryOperatingSystemInfoString(char* buffer, int buffSize) {
+   strncpy(buffer, "UNIMPLEMENTED ON WINDOWS!!!", buffSize);
+}
+#endif
 
 static int _sdlQuerySystemInfo(GYSystemInfo* info) {
     int success = 1;
