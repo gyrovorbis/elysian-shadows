@@ -1,7 +1,7 @@
 #include(../../../qtcreator/ESDev/ESDev.pri)
 
 !isEmpty(CMD_LINE_ARGS_PRI_FILE) {
-    include(CMD_LINE_ARGS_PRI_FILE)
+    include($${CMD_LINE_ARGS_PRI_FILE})
 }
 
 isEmpty(LIBGYRO_PATH) {
