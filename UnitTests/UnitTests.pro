@@ -8,6 +8,8 @@
 
 QT       += widgets network opengl sql testlib
 
+DEFINES += ELYSIAN_OPENCL_ACCELERATED
+
 DEPENDPATH += \
     ../AssetIO \
     ../ESGamma \

@@ -693,12 +693,6 @@ macx {
     #}
 }
 
-opencl {
-    LIBS += -framework OpenCL
-    QMAKE_CXXFLAGS += -DELYSIAN_OPENCL_ACCELERATED
-
-}
-
 RESOURCES += resource/resource.qrc
 
 vmu_child_app {
