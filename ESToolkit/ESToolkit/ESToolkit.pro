@@ -762,18 +762,39 @@ linux {
 
 vmu_child_app {
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/release/ -lElysianVMU
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/debug/ -lElysianVMU
-    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU -lElysianVMU
+    EVMU_PATH = ../../ElysianVMU
 
-    INCLUDEPATH += $$PWD/../../ElysianVMU/build/qtcreator/ElysianVMU
-    DEPENDPATH += $$PWD/../../ElysianVMU/build/qtcreator/ElysianVMU
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/release/ -lElysianVMU
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/debug/ -lElysianVMU
+    else:unix: LIBS += -L$$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App -lElysianVMU
 
-    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/release/libElysianVMU.a
-    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/debug/libElysianVMU.a
-    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/release/ElysianVMU.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/debug/ElysianVMU.lib
-    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/ElysianVMU/libElysianVMU.a
+    INCLUDEPATH += $$PWD/../../ElysianVMU/build/qtcreator/EVMU-App
+    DEPENDPATH += $$PWD/../../ElysianVMU/build/qtcreator/EVMU-App
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/release/libElysianVMU.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/debug/libElysianVMU.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/release/ElysianVMU.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/debug/ElysianVMU.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../ElysianVMU/build/qtcreator/EVMU-App/libElysianVMU.a
+
+
+    EVMU_CORE_PATH      = $${EVMU_PATH}/evmu-core
+    EVMU_CORE_BUILD_PATH = $${EVMU_CORE_PATH}/build/qtcreator/EVMU-Core
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/release/ -levmu-core
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/debug/ -levmu-core
+    else:unix: LIBS += -L$$OUT_PWD/$${EVMU_CORE_BUILD_PATH} -levmu-core
+
+    INCLUDEPATH += $$PWD/$${EVMU_CORE_PATH}
+    DEPENDPATH += $$PWD/$${EVMU_CORE_PATH}
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/release/libevmu-core.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/debug/libevmu-core.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/release/evmu-core.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/debug/evmu-core.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/$${EVMU_CORE_BUILD_PATH}/libevmu-core.a
+
+
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro-Kinetic/release/ -llibGyroKinetic
