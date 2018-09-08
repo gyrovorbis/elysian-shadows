@@ -106,7 +106,7 @@ INCLUDEPATH += include \
     ../../QESTkUtils/include \
     ../../game/include \
     ../../Lua5.2/include \
-    ../../OOLua/include/OOLua \
+    ../../OOLua/include/oolua \
     ../../Spine/include
 
 SOURCES += \
