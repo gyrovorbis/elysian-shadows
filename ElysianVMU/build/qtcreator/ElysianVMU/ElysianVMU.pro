@@ -1,13 +1,16 @@
 #include(../../../qtcreator/ESDev/ESDev.pri)
 
-!isEmpty(CMD_LINE_ARGS_PRI_FILE) {
-    include($${CMD_LINE_ARGS_PRI_FILE})
-}
+#!isEmpty(CMD_LINE_ARGS_PRI_FILE) {
+ #   include($${CMD_LINE_ARGS_PRI_FILE})
+#}
 
 isEmpty(LIBGYRO_PATH) {
     LIBGYRO_PATH = ../../evmu-core/libGyro
     LIBGYRO_BUILD_PATH  = $${LIBGYRO_PATH}/qtcreator/libGyro
 }
+
+LIBGYRO_PATH        = $$relative_path($$LIBGYRO_PATH)
+LIBGYRO_BUILD_PATH  = $$relative_path($$LIBGYRO_BUILD_PATH)
 
 CONFIG += app_bundle
 #TEMPLATE = subdirs
@@ -43,8 +46,6 @@ QT += gui opengl
         DESTDIR = ../../../executable
     }
 }
-
-QMAKE_CFLAGS += -std=c99
 
 SOURCE_ROOT = ../../../app/qt
 
@@ -98,7 +99,7 @@ SOURCES += \
     ../../../evmu-core/source/gyro_vmu_vms.c
 
 !vmu_child_app {
-    SOURCES += $${SOURCE_ROOT}/source/main.cpp
+    SOURCES += ../../../app/source/main.cpp
 
 }
 
@@ -173,7 +174,7 @@ FORMS += \
     $${SOURCE_ROOT}/ui/gyro_vmu_buzzer_dialog.ui
 
 
-LIBGYRO_BUILD_PATH = -L$${LIBGYRO_PATH}
+LIBGYRO_BUILD_PATH = $${LIBGYRO_PATH}
 
 win32:CONFIG(release, debug|release): LIBS += -L$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/ -llibGyro
@@ -185,7 +186,7 @@ DEPENDPATH += $${LIBGYRO_BUILD_PATH}/libGyro/qtcreator/libGyro
 win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/liblibGyro.a
 else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/liblibGyro.a
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/release/libGyro.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/libGyro.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS +=$${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/debug/libGyro.lib
 else:unix:!vmu_child_app: PRE_TARGETDEPS += $${LIBGYRO_BUILD_PATH}/qtcreator/libGyro/liblibGyro.a
 
 !vmu_child_app {
