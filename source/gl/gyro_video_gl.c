@@ -9,7 +9,9 @@
 #include <gl/gyro_bloom_gl.h>
 #include <gl/gyro_gl_utils.h>
 #include <common/gyro_spine_common.h>
-#include <spine/spine.h>
+#ifndef GYRO_NO_SPINE
+#   include <spine/spine.h>
+#endif
 
 #include <assert.h>
 #include <stdio.h>
@@ -942,7 +944,8 @@ void gyVidRect(const int frame) {
 //We aren't taking normalMapZ into account here!!!
 static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 //Spine interop
-void gyVidSkeleton(const spSkeleton*const skeleton) {
+void gyVidSkeleton(const struct spSkeleton*const skeleton) {
+#ifndef GYRO_NO_SPINE
     spSlot*                     slot                = NULL;
     spAttachment*               attachment          = NULL;
     GYTexture*                  texture             = NULL;
@@ -1220,6 +1223,6 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
     gyVidVertexBatchEnd();
     _glPrimitiveType = GL_TRIANGLE_STRIP;
-
+#endif
    // target.draw(*vertexArray, states);
 }
