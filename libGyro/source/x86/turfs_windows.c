@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gyro_platform.h>
+#include <libGyro/gyro_platform.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
