@@ -30,7 +30,7 @@
 #include <QThread>
 
 #ifdef ESTK_UNIT_TESTS
-#include <test_estk.h>
+#include <UnitTests/test_estk.h>
 #endif
 
 TkDebug*            TkDebug::_window = nullptr;

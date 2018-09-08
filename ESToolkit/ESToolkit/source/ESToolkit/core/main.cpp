@@ -32,7 +32,7 @@
 #include <AssetIO/crtp/elysian_lua_variant.hpp>
 
 #ifdef ESTK_UNIT_TESTS
-#include <test_estk.h>
+#include <UnitTests/test_estk.h>
 #endif
 
 enum TK_CRASH_STATE {

@@ -22,6 +22,9 @@ vmu_child_app {
     QT += sql gui opengl network help charts
     CONFIG += console
     tests {
+        DEFINES += ESTK_UNIT_TESTS
+        INCLUDEPATH += ../../UnitTests/include
+        DEPENDPATH += ../../UnitTests/include
         CONFIG += testcase
         QT += testlib
     }
