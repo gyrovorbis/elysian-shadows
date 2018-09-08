@@ -1,5 +1,5 @@
-#include <gyro_performance_api.h>
-#include <gyro_platform.h>
+#include <libGyro/gyro_performance_api.h>
+#include <libGyro/gyro_platform.h>
 #if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
 #include <SDL2/SDL_timer.h>
 

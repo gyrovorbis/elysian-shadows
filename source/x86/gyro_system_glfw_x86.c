@@ -1,5 +1,5 @@
-#include <gyro_system_api.h>
-#include "gyro_defines.h"
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_defines.h>
 #include <gl/gyro_video_gl.h>
 #include <gl/gyro_gl.h>
 #include <stdio.h>

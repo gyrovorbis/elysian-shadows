@@ -1,9 +1,9 @@
 #ifndef GYRO_CL_H
 #define GYRO_CL_H
 
-#include <gyro_platform.h>
-#include <gyro_system_api.h>
-#include <gyro_compute_api.h>
+#include <libGyro/gyro_platform.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_compute_api.h>
 
 #ifdef __cplusplus
 extern "C" {

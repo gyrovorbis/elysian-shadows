@@ -1,7 +1,7 @@
 #ifndef GYRO_SYSTEM_CALLBACKS_H
 #define GYRO_SYSTEM_CALLBACKS_H
 
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 
 extern GYAppInitCb gy_appInitCb;
 extern GYAppUpdateCb gy_appUpdateCb;

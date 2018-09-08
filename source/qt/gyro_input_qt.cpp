@@ -1,8 +1,8 @@
-#include <gyro_input_api.h>
+#include <libGyro/gyro_input_api.h>
 #include <QApplication>
 #include <QKeyEvent>
 #include <QGraphicsView>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 
 extern "C" int  _sdlControllerInit(const struct GYInputInitParams*const  params);
 extern "C" int  _sdlControllerUninit(void);

@@ -2,7 +2,7 @@
 #define GYRO_COMPUTE_API_H
 
 #include <stdlib.h>
-#include "../api/gyro_defines.h"
+#include <libGyro/gyro_defines.h>
 #include <stdint.h>
 
 #ifdef __cplusplus

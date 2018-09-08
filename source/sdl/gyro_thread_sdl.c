@@ -1,7 +1,7 @@
-#include <gyro_thread_api.h>
-#include <gyro_platform.h>
-#include <gyro_system_api.h>
-#include <gyro_defines.h>
+#include <libGyro/gyro_thread_api.h>
+#include <libGyro/gyro_platform.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_defines.h>
 #include <assert.h>
 
 #ifndef __WIN32

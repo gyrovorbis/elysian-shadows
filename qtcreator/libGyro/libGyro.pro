@@ -111,30 +111,30 @@ HEADERS += \
     ../../include/gl/gyro_gl.h \
     ../../include/gl/gyro_shaders_gl.h \
     ../../include/gl/gyro_video_gl.h \
-    ../../api/gyro.h \
-    ../../api/gyro_audio_api.h \
-    ../../api/gyro_compute_api.h \
-    ../../api/gyro_defines.h \
-    ../../api/gyro_file_api.h \
-    ../../api/gyro_input_api.h \
-    ../../api/gyro_math_api.h \
-    ../../api/gyro_matrix_api.h \
-    ../../api/gyro_motion_api.h \
-    ../../api/gyro_net_api.h \
-    ../../api/gyro_ogg_api.h \
-    ../../api/gyro_performance_api.h \
-    ../../api/gyro_platform.h \
-    ../../api/gyro_rumble_api.h \
-    ../../api/gyro_shader_api.h \
-    ../../api/gyro_system_api.h \
-    ../../api/gyro_test_api.h \
-    ../../api/gyro_texture_api.h \
-    ../../api/gyro_thread_api.h \
-    ../../api/gyro_timer_api.h \
-    ../../api/gyro_version.h \
-    ../../api/gyro_video_api.h \
-    ../../api/gyro_visual_memory_api.h \
-    ../../api/gyro_wav_api.h
+    ../../api/libGyro/gyro.h \
+    ../../api/libGyro/gyro_audio_api.h \
+    ../../api/libGyro/gyro_compute_api.h \
+    ../../api/libGyro/gyro_defines.h \
+    ../../api/libGyro/gyro_file_api.h \
+    ../../api/libGyro/gyro_input_api.h \
+    ../../api/libGyro/gyro_math_api.h \
+    ../../api/libGyro/gyro_matrix_api.h \
+    ../../api/libGyro/gyro_motion_api.h \
+    ../../api/libGyro/gyro_net_api.h \
+    ../../api/libGyro/gyro_ogg_api.h \
+    ../../api/libGyro/gyro_performance_api.h \
+    ../../api/libGyro/gyro_platform.h \
+    ../../api/libGyro/gyro_rumble_api.h \
+    ../../api/libGyro/gyro_shader_api.h \
+    ../../api/libGyro/gyro_system_api.h \
+    ../../api/libGyro/gyro_test_api.h \
+    ../../api/libGyro/gyro_texture_api.h \
+    ../../api/libGyro/gyro_thread_api.h \
+    ../../api/libGyro/gyro_timer_api.h \
+    ../../api/libGyro/gyro_version.h \
+    ../../api/libGyro/gyro_video_api.h \
+    ../../api/libGyro/gyro_visual_memory_api.h \
+    ../../api/libGyro/gyro_wav_api.h
 
 vulkan {
     HEADERS += \

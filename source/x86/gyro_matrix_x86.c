@@ -1,6 +1,6 @@
-#include <gyro_platform.h>
+#include <libGyro/gyro_platform.h>
 
-#include <gyro_matrix_api.h>
+#include <libGyro/gyro_matrix_api.h>
 #include "stdio.h"
 #include "string.h"
 

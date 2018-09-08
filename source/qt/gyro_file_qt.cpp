@@ -1,7 +1,7 @@
 #include <QDir>
 #include <common/turfs.h>
-#include <gyro_file_api.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_file_api.h>
+#include <libGyro/gyro_system_api.h>
 
 
 extern "C" int gyFileInit(const GYFileInitParams*const params) {

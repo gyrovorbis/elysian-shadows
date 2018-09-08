@@ -1,7 +1,7 @@
-#include <gyro_video_api.h>
-#include <gyro_texture_api.h>
-#include <gyro_system_api.h>
-#include <gyro_shader_api.h>
+#include <libGyro/gyro_video_api.h>
+#include <libGyro/gyro_texture_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_shader_api.h>
 #include <gl/gyro_video_gl.h>
 #include <gl/gyro_shaders_gl.h>
 #include <gl/gyro_radial_blur_gl.h>

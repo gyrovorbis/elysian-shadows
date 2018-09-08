@@ -1,8 +1,8 @@
 #include <al/gyro_al.h>
-#include <gyro_audio_api.h>
-#include <gyro_file_api.h>
-#include <gyro_wav_api.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_audio_api.h>
+#include <libGyro/gyro_file_api.h>
+#include <libGyro/gyro_wav_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

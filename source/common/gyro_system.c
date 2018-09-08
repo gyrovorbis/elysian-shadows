@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdarg.h>
-#include <gyro_defines.h>
+#include <libGyro/gyro_defines.h>
 #include <string.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include "gyro_system_callbacks.h"
 
 static GYDebugCallbacks _dbgCallbacks = {

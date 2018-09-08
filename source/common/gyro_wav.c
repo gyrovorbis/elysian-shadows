@@ -1,8 +1,8 @@
 #include <string.h>
 #include <stdlib.h>
-#include <gyro_wav_api.h>
-#include <gyro_system_api.h>
-#include <gyro_audio_api.h>
+#include <libGyro/gyro_wav_api.h>
+#include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_audio_api.h>
 #include "../common/gyro_asset_bank.h"
 
 static int _WavComparator(const void *const payload, const void *const data) {

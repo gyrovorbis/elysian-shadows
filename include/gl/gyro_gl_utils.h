@@ -6,7 +6,7 @@
 #endif
 
 #include <gl/gyro_gl.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_system_api.h>
 #include <stdio.h>
 
 #define GY_GL_CHECK_ERROR() \

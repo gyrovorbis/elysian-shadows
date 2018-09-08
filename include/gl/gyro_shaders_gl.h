@@ -1,7 +1,7 @@
 #ifndef GYRO_SHADERS_GL_H
 #define GYRO_SHADERS_GL_H
 
-#include "../api/gyro_shader_api.h"
+#include <libGyro/gyro_shader_api.h>
 #include <gl/gyro_gl.h>
 
 #define GLAL_SHADOW_MAP_SIZE        1024

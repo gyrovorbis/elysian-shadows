@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <gyro_audio_api.h>
-#include <gyro_wav_api.h>
-#include <gyro_matrix_api.h>
-#include <gyro_system_api.h>
+#include <libGyro/gyro_audio_api.h>
+#include <libGyro/gyro_wav_api.h>
+#include <libGyro/gyro_matrix_api.h>
+#include <libGyro/gyro_system_api.h>
 
 static float		_zScale		= 1.0f;
 static int			_refDist	= 1;
