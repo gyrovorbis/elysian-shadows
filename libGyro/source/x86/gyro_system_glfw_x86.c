@@ -497,8 +497,10 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 #endif
 
 
-
-#if defined(__linux__) || defined(__APPLE__)
+/* Intentionally using wrong preprocessor directive, should be __linux__.
+ * This code was never actually compiling correctly for Linux, but it's standard POSIX so
+ * this needs to be fuckin' fixed! */
+#if defined(__LINUX__) || defined(__APPLE__)
 static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
     if(sig == SIGFPE)
         switch(sig_code) {
@@ -578,7 +580,8 @@ static void _regSigAction(const int sig, const char* name, struct sigaction*cons
 #endif
 
 void gyDebugSigInit(void) {
-#if defined(__linux__) || defined(__APPLE__)
+// __LINUX__ => __linux__ change me when this is dereested!!!
+#if defined(__LINUX__) || defined(__APPLE__)
     _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
     //return;
     struct sigaction sa;
