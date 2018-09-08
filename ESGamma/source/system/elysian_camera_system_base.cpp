@@ -74,7 +74,8 @@ void Camera::clipBoundingRegion(const Camera &cam) {
 void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*/) {
     auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 
-    auto [width, height] = getViewportSize();
+    unsigned width, height;
+    std::tie(width, height) = getViewportSize();
 
     int boundTop = (_topBoundary == -1)? -16 : _topBoundary*32-16;
     int boundBottom = (_bottomBoundary == -1)? getCurrentArea()->height*32-16 : _bottomBoundary*32-16;

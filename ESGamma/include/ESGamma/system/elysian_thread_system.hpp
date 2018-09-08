@@ -74,7 +74,7 @@ namespace elysian {
 
         static int          _gyThreadFunc(void* argData);
 
-        inline constexpr static const GYCpuAffinityMask _defaultCpuAffinityMask = {
+        constexpr static const GYCpuAffinityMask _defaultCpuAffinityMask = {
             0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff
         };
 

@@ -12,7 +12,7 @@
     #endif
 
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
-#include <glal/gyro_gl.h>
+#include <gl/gyro_gl.h>
 //#       include <GL/glx.h>
 #       include <GL/glext.h>
 #		include <CL/cl.h>

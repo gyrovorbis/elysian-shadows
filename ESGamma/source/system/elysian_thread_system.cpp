@@ -1,6 +1,7 @@
 #include <ESGamma/system/elysian_thread_system.hpp>
 #include <ESGamma/crtp/elysian_debug.hpp>
 #include <libGyro/gyro_thread_api.h>
+#include <climits>
 
 namespace elysian {
 
@@ -71,7 +72,7 @@ bool ThreadSystem::uninitialize(void) {
 }
 
 unsigned ThreadSystem::findLeastBusyTaskQueueThread(void) const {
-    size_t  smallestLoad    = SIZE_T_MAX;
+    size_t  smallestLoad    = std::numeric_limits<size_t>::max();
     int     smallestIndex   = -1;
     for(int t = 0; t < (int)getCpuCoreCount(); ++t) {
         auto size = getTaskQueueThread(t).getQueueSize();

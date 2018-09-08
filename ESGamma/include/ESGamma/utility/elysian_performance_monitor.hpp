@@ -8,6 +8,8 @@
 #include <libGyro/gyro_performance_api.h>
 #include <libGyro/gyro_system_api.h>
 #include <cassert>
+#include <cstring>
+#include <functional>
 
 #define ELYSIAN_PERFORMANCE_MONITOR_TASK_NAME_SIZE  100
 #define ELYSIAN_PERFORMANCE_MONITOR_AVG_FRAMES      10
@@ -29,8 +31,8 @@ namespace elysian {
 
                     PerformanceMonitor(const char* name);
 
-        uint64_t     getWorstTicks(void) const;
-        uint64_t     getBestTicks(void) const;
+        uint64_t    getWorstTicks(void) const;
+        uint64_t    getBestTicks(void) const;
         uint64_t    getAvgTicks(void) const;
         uint64_t    getFrameCount(void) const;
         uint64_t    getTicks(void) const;

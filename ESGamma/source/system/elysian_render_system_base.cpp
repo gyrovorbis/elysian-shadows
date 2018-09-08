@@ -245,7 +245,8 @@ bool RenderSystemBase::renderParticles(void) {
 
 void RenderSystemBase::createLuminanceHistogram(void) {
     bool success = true;
-    auto [width, height] = getCameraSys()->getViewportSize();
+    unsigned width, height;
+    std::tie(width, height) = getCameraSys()->getViewportSize();
 
     if(_luminanceComputeTask->isAccelerated()) {
         success &= _luminanceComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(1, &_luminanceComputeTask->_fboBuffer);
@@ -529,7 +530,8 @@ void RenderSystemBase::onObserveEvent(Event* event, EventTarget*) {
     }
 }
 void RenderSystemBase::_onViewportSizeChange() {
-    auto [scrWidth, scrHeight] = getCameraSys()->getViewportSize();
+    unsigned scrWidth, scrHeight;
+    std::tie(scrWidth, scrHeight) = getCameraSys()->getViewportSize();
     _lightCullComputeTask->updateScreenResolution(scrWidth, scrHeight);
 }
 
