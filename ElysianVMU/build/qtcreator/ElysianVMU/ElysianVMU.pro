@@ -1,5 +1,9 @@
 #include(../../../qtcreator/ESDev/ESDev.pri)
 
+!isEmpty(CMD_LINE_ARGS_PRI_FILE) {
+    include(CMD_LINE_ARGS_PRI_FILE)
+}
+
 isEmpty(LIBGYRO_PATH) {
     LIBGYRO_PATH = ../../evmu-core/libGyro
     LIBGYRO_BUILD_PATH  = $${LIBGYRO_PATH}/qtcreator/libGyro
@@ -8,7 +12,6 @@ isEmpty(LIBGYRO_PATH) {
 CONFIG += app_bundle
 #TEMPLATE = subdirs
 #SUBDIRS +=  $${LIBGYRO_BUILD_PATH}
-
 
 vmu_child_app {
     DEFINES+=VMU_CHILD_APP
