@@ -1,3 +1,7 @@
+#ifndef __WIN32
+#   define GY_THREAD_PTHREADS
+#endif
+
 #ifdef GY_THREAD_PTHREADS
 #   if defined(__linux__)
     /*Linux is fucking retarded and needs this defined
@@ -13,10 +17,6 @@
 #include <libGyro/gyro_system_api.h>
 #include <libGyro/gyro_defines.h>
 #include <assert.h>
-
-#ifndef __WIN32
-#   define GY_THREAD_PTHREADS
-#endif
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
 #   include <SDL2/SDL_thread.h>
@@ -324,7 +324,7 @@ int gyThreadCpuAffinity(GYCpuAffinityMask mask) {
 
 #ifdef __WIN32
     int success = 0;
-#else
+#elif defined(GY_THREAD_PTHREADS)
     int success = 1;
     SDL_threadID sdlId = SDL_ThreadID();
 
@@ -365,6 +365,8 @@ int gyThreadCpuAffinity(GYCpuAffinityMask mask) {
     }
 
    // _gyPop(1);
+#else
+    int success = 0;
 #endif
     return success;
 }
