@@ -31,6 +31,7 @@
 #   include <pthread.h>
 
 #if defined(__linux__)
+#   define _GNU_SOURCE
 #   include <sched.h>
 //Manually provide the pthread functionality MacOS is missing from the POSIX standard
 #elif defined(__APPLE__)
