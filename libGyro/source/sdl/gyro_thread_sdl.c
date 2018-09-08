@@ -1,3 +1,13 @@
+#ifdef GY_THREAD_PTHREADS
+#   if defined(__linux__)
+    /*Linux is fucking retarded and needs this defined
+     * before any system headers if you want sched.h to
+     * do its fucking job and actually work...
+     */
+#   define _GNU_SOURCE
+#   endif
+#endif
+
 #include <libGyro/gyro_thread_api.h>
 #include <libGyro/gyro_platform.h>
 #include <libGyro/gyro_system_api.h>
@@ -31,7 +41,6 @@
 #   include <pthread.h>
 
 #if defined(__linux__)
-#   define _GNU_SOURCE
 #   include <sched.h>
 //Manually provide the pthread functionality MacOS is missing from the POSIX standard
 #elif defined(__APPLE__)
