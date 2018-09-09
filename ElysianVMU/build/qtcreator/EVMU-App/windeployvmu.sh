@@ -1,7 +1,10 @@
-cd ../../../executable
+LIBGYRO_PATH = $1
+
+cd ../executable
 rm -rf *.dll
 windeployqt --release --compiler-runtime ElysianVMU.exe
-cd ../libGyro/lib/win32
-cp SDL2.dll ../../../executable
-cp OpenAL32.dll ../../../executable
-cp SDL2_net.dll ../../../executable
+#cd ../libGyro/lib/win32
+
+cp $LIBGYRO_PATH/lib/win32/SDL2.dll ./
+cp $LIBGYRO_PATH/lib/win32/OpenAL32.dll ./
+cp $LIBGYRO_PATH/lib/win32/SDL2_net.dll ./
