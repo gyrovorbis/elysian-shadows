@@ -1,6 +1,5 @@
 exists( EVMUCommandLineArgs.pri ) {
-    message("Including EVMUCommandLineArgs.pri in project file $${PWD}")
-    include( ESDevCommandLineArgs.pri )
+    include( EVMUCommandLineArgs.pri )
 }
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
