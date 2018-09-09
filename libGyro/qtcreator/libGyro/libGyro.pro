@@ -65,8 +65,13 @@ ios {
 
 dreamcast {
     INCLUDEPATH += ../../lib/dc/shlib
-
 }
+
+!iphoneos:!dreamcast:!android:!raspberrypi:!iphonesimulator {
+    QMAKE_CFLAGS += -msse
+    QMAKE_CXXFLAGS += -msse
+}
+
 
 #==========/PLATFORM-SPECIFIC BULLSHIT==========
 
