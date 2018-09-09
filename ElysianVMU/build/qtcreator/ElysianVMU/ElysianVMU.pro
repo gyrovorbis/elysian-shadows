@@ -7,8 +7,6 @@ isEmpty(LIBGYRO_PATH) {
     include(ElysianVMU.pri)
     LIBGYRO_PATH = ../../../evmu-core/libGyro
     LIBGYRO_BUILD_PATH  = $${LIBGYRO_PATH}/qtcreator/libGyro
-
-
 }
 
 !vmu_child_app {
