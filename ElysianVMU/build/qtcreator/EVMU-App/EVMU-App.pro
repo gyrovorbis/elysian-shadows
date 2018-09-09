@@ -59,7 +59,7 @@ macx {
 }
 }
 
-asdfdsf
+
 
 ICON = $${SOURCE_ROOT}/resource/images/vmu_icon.icns
 
