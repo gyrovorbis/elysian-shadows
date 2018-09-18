@@ -115,7 +115,7 @@ android {
 }
 
 QMAKE_CXXFLAGS += -std=c++1z
-QMAKE_CFLAGS += -std=c11
+#QMAKE_CFLAGS += -std=c11
 
 !dreamcast {
 QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
