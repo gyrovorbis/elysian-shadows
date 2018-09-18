@@ -46,15 +46,32 @@ typedef enum _GY_RECT_PLANE_TYPE {
 } GY_RECT_PLANE_TYPE;
 
 typedef enum GY_BLEND_MODE {
-    GY_BLEND_ONE_MINUS_SRC_ALPHA,
+    GY_BLEND_ZERO,
     GY_BLEND_ONE,
-    GY_BLEND_ADDITIVE
+    GY_BLEND_SRC_COLOR,
+    GY_BLEND_ONE_MINUS_SRC_COLOR,
+    GY_BLEND_DST_COLOR,
+    GY_BLEND_ONE_MINUS_DST_COLOR,
+    GY_BLEND_SRC_ALPHA,
+    GY_BLEND_ONE_MINUS_SRC_ALPHA,
+    GY_BLEND_DST_ALPHA,
+    GY_BLEND_ONE_MINUS_DST_ALPHA,
+    GY_BLEND_CONSTANT_COLOR,
+    GY_BLEND_ONE_MINUS_CONSTANT_COLOR,
+    GY_BLEND_CONSTANT_ALPHA,
+    GY_BLEND_ONE_MINUS_CONSTANT_ALPHA,
+    GY_BLEND_SRC_ALPHA_SATURATE,
+    GY_BLEND_SRC1_COLOR,
+    GY_BLEND_ONE_MINUS_SRC1_COLOR,
+    GY_BLEND_SRC1_ALPHA,
+    GY_BLEND_ONE_MINUS_SRC1_ALPHA,
+    GY_BLEND_UNKNOWN
 } GY_BLEND_MODE;
 
 //Internal state
 void gyVidTexBind(const struct GYTexture *const tex);
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
-void gyVidBlendMode(const GY_BLEND_MODE mode);
+void gyVidBlendMode(const GY_BLEND_MODE src, const GY_BLEND_MODE dst);
 void gyVidDepthTest(const int enable);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
 void gyVidClearColor(const GYColor4 color);
@@ -71,7 +88,9 @@ int         gyVidInit(const struct GYVidInitParams *const params); //MUST SET PR
 int         gyVidUninit(void);
 void        gyVidSceneBegin(void);
 void        gyVidSceneEnd(void);
-const GYVidFrameStats* gyVidFrameStatistics(void);
+const GYVidFrameStats*
+            gyVidFrameStatistics(void);
+void        gyVidScissor(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);
