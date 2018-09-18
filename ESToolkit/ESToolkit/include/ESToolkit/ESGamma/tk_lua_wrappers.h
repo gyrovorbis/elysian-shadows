@@ -1,10 +1,11 @@
 #ifndef TK_LUAWRAPPERS_H
 #define TK_LUAWRAPPERS_H
 
-#include <QESTkUtils/ui/delegate/tk_property_item_delegate.h>
 #include <oolua.h>
-#include <ESToolkit/ui/tk_estoolkit.h>
+#include <QMessageBox>
+#include <AssetIO/crtp/elysian_color.hpp>
 #include <ESGamma/lua/elysian_lua_singleton.hpp>
+#include <ESToolkit/ui/tk_estoolkit.h>
 #include <ESToolkit/AssetIO/tk_area.h>
 #include <QESTkUtils/ui/delegate/tk_file_browser_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h>
@@ -14,8 +15,7 @@
 #include <QESTkUtils/ui/delegate/tk_color_swatch_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_plain_text_edit_property_item_delegate.h>
 #include <QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h>
-#include <AssetIO/crtp/elysian_color.hpp>
-
+#include <QESTkUtils/ui/delegate/tk_property_item_delegate.h>
 
 namespace OOLUA
 {
@@ -79,6 +79,8 @@ OOLUA_PROXY_END
 static inline void luaRegisterTkEnumsConstants(OOLUA::Script */*s*/) {
 
 }
+
+
 
 
 

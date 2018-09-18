@@ -237,7 +237,9 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_compute_system.cpp \
     ../../ESGamma/source/system/elysian_render_system_base.cpp \
     ../../ESGamma/source/gui/elysian_item_delegate.cpp \
-    ../../ESGamma/source/system/elysian_thread_system.cpp
+    ../../ESGamma/source/system/elysian_thread_system.cpp \
+    ../../AssetIO/source/primitive/elysian_blend_mode_base.cpp \
+    source/AssetIO/tk_blend_mode.cpp
 
 !ios: !dreamcast: !android {
 
@@ -530,7 +532,10 @@ HEADERS += \
     ../../game/include/game/pause_menu/es_party_menu.hpp \
     ../../game/include/game/pause_menu/es_inventory_menu.hpp \
     ../../game/include/game/behavior/elysian_state_machine_behavior.hpp \
-    ../../game/include/game/behavior/elysian_playable_behavior.hpp
+    ../../game/include/game/behavior/elysian_playable_behavior.hpp \
+    include/ESToolkit/AssetIO/tk_blend_mode.h \
+    ../../AssetIO/include/AssetIO/crtp/elysian_blend_mode.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_blend_mode_base.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

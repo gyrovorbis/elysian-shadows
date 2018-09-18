@@ -226,7 +226,7 @@ bool RenderSystemBase::renderParticles(void) {
             gyVidMaterialBind(nullptr);
 
             gyVidAlphaLevel(GY_ALPHA_FULL);
-            gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
             glBindVertexArray(_glParticleVao);
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, _glParticleIndirectBuff);

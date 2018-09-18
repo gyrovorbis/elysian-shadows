@@ -460,7 +460,7 @@ break;
         // glDepthFunc(GL_LEQUAL);
          gyVidAlphaLevel(GY_ALPHA_NONE);
         //glDisable(GL_POLYGON_OFFSET_FILL);
-        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
       //  _blendPass = false;
     }
 

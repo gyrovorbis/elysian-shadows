@@ -7,6 +7,7 @@
 #include <AssetIO/primitive/elysian_quad_sprite_attrib.hpp>
 #include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
 #include <AssetIO/primitive/elysian_rect.hpp>
+#include <AssetIO/crtp/elysian_blend_mode.hpp>
 
 namespace OOLUA {
     typedef elysian::Color4             Color4;
@@ -15,6 +16,7 @@ namespace OOLUA {
     typedef elysian::QuadSpriteAttrib   QuadSpriteAttrib;
     typedef elysian::Material           Material;
     typedef elysian::Recti              Recti;
+    typedef elysian::BlendMode          BlendMode;
 
     //template<>                          class Proxy_class<SpriteAttrib>;
     //template<>                          class Proxy_class<QuadSpriteAttrib>;
@@ -56,6 +58,15 @@ OOLUA_PROXY(Material)
     OOLUA_MEM_FUNC(Vector4, getSpecular)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(BlendMode)
+    OOLUA_MFUNC(getConstColor)
+    OOLUA_MFUNC(setConstColor)
+    OOLUA_MFUNC_CONST(getSrcFactor)
+    OOLUA_MFUNC(setSrcFactor)
+    OOLUA_MFUNC_CONST(getDstFactor)
+    OOLUA_MFUNC(setDstFactor)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(PrimAttrib)
     OOLUA_TAGS (Abstract)
 OOLUA_PROXY_END
@@ -80,6 +91,8 @@ OOLUA_PROXY(SpriteAttrib, PrimAttrib)
     OOLUA_MEM_FUNC_CONST(const char*, getSpecularMapPath)
     OOLUA_MEM_FUNC(void, setNormalMapPath, const char*)
     OOLUA_MEM_FUNC(void, setSpecularMapPath, const char*)
+    OOLUA_MEM_FUNC(BlendMode&, getBlendMode)
+    OOLUA_MEM_FUNC(void, setBlendMode, const BlendMode&)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
@@ -99,6 +112,10 @@ OOLUA_PROXY(Recti)
     OOLUA_MFUNC_CONST(getLeft)
     OOLUA_MFUNC_CONST(getRight)
 OOLUA_PROXY_END
+
+
+
+
 
 
 

@@ -126,6 +126,7 @@ namespace elysian {
         static void                 luaPrint(const char*const string, const Debug::SEVERITY severity = Debug::LOG_OFF);
         static bool                 genericIterate(const int index, std::function<void(void)> lambda);
 
+        static const char*          getVariadicStringFromStack(void);
         static bool                 getMetatable(const int index);
         static void                 pushGlobalField(const char*const key);
         static LuaVariant           getGlobalsTable(void);

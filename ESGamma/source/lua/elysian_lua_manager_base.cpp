@@ -38,6 +38,42 @@ void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY s
 }
 
 
+const char* LuaManagerBase::getVariadicStringFromStack(void) {
+    static char string[GYRO_PRINTF_BUFFER_SIZE] = {0};
+    unsigned n = lua_gettop(*_mainState);
+    const char *curString;
+
+    string[0] = 0;
+    for(unsigned i = 1; i <= n; ++i) {
+
+        int t = lua_type(*_mainState, i);
+
+        switch(t) {
+            case LUA_TSTRING:
+            case LUA_TNUMBER:
+            //case LUA_TBOOLEAN:
+                curString = lua_tostring(*_mainState, i);
+                strcat(string, curString);
+                break;
+            case LUA_TBOOLEAN:
+                curString = (lua_toboolean(*_mainState, i))? "true" : "false";
+                strcat(string, curString);
+                break;
+            default: {
+                elysian::LuaVariant v = elysian::LuaVariant::fromStack(i, false);
+                //curString = lua_typename(l, t);
+                strcat(string, v.asString().getValue<const char*>());
+            }
+        }
+
+        strcat(string, " ");
+
+    }
+
+    return string;
+
+}
+
 //Dumps to debug log and LUA_LOG_ERROR_FILE
 void LuaManagerBase::_errorprintf(const char *const string, ...) {
     static char buffer[GYRO_PRINTF_BUFFER_SIZE];

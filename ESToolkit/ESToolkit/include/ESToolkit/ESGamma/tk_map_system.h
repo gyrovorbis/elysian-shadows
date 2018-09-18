@@ -185,7 +185,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidNormalMapBind(nullptr);
         gyVidSpecularMapBind(nullptr);
         gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
         gyVidDepthTest(false);
         gyVidDepthTest(false);
         gyVidMaterialBind(&_selMat[drawStyle]);

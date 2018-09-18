@@ -236,7 +236,7 @@ void ParticleEmitterInternals::render(void) {
         gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 
-        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
         //loop unroll my bitch ass
 
@@ -279,7 +279,7 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
             gyVidMaterialBind(_attrib->_material);
             gyVidAlphaLevel(GY_ALPHA_FULL);
 
-            gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
            // initialized = true;
 
         //}

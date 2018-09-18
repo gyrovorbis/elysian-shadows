@@ -1307,6 +1307,39 @@ void ESToolkit::onParticleAccelerationAvailableChanged(bool val) {
     _ui->actionParticles->setEnabled(val);
 }
 
+QString ESToolkit::messageBoxQuestion(QString message, LuaVariant buttons, QString informativeText) {
+    QMessageBox msgBox;
+    QList<QAbstractButton*> buttonList;
+    msgBox.setText(message);
+    if(!informativeText.isEmpty()) msgBox.setInformativeText(informativeText);
+    if(buttons.getType() == LUA_TTABLE) {
+        for(int i = 1; i <= buttons.getLength(); ++i) {
+            buttonList.push_back(msgBox.addButton(buttons[i].getVariant().asString().getValue<const char*>(), QMessageBox::AcceptRole));
+        }
+    }
+
+    msgBox.exec();
+
+    if(buttons.getType() == LUA_TTABLE) {
+        for(int i = 0; i < buttons.getLength(); ++i) {
+            if(buttonList[i] == msgBox.clickedButton()) {
+                return buttons[i+1].getVariant().asString().getValue<const char*>();
+            }
+        }
+    }
+
+    return QString();
+}
+
+LuaVariant ESToolkit::messageBoxTextPrompt(QString message) {
+    LuaVariant value;
+    QString string = QInputDialog::getText(nullptr, "Input Prompt", Q_CSTR(message));
+    if(!string.isEmpty()) {
+        OOLUA::push(*_mainState, string);
+        OOLUA::pull(*_mainState, value);
+    }
+    return value;
+}
 
 
 

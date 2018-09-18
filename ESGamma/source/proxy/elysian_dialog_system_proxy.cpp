@@ -16,8 +16,7 @@
     dialogSys = Engine.getDialogSys()
     \endcode
 
-    \section2 Starting a Dialog
-    \section2 Starting a Dialog through ESTk
+    \section2 Prompting for User Input with Lua
     In general, \l{Dialog} is created through the ESTk GUI and is attached to an \l{Entity}
     through its \l{Examinable} \l{Component}. Upon inspection, the dialog starts
     automatically. For the full summary of configuring Dialog through ESTk, see the

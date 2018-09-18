@@ -65,57 +65,38 @@ static inline int dbgPush(lua_State* const /*l*/) {
     return 0;
 }
 
-static inline int dbgPop(lua_State* const /*l*/) {
-    elysian::Debug::pop();
+static inline int dbgPop(lua_State* const l) {
+    int count = 1;
+    LuaVariant arg = LuaVariant::fromStack(-1);
+
+    if(arg.getType() == LUA_TNUMBER) {
+        const auto val = arg.getValue<int>();
+        if(val >= 0) {
+            count = val;
+        }
+    }
+
+    elysian::Debug::pop(count);
     return 0;
 }
 
-static inline const char* luaGetVariableString(lua_State* const l) {
-    static char string[GYRO_PRINTF_BUFFER_SIZE] = {0};
-    unsigned n = lua_gettop(l);
-    const char *curString;
-
-    string[0] = 0;
-    for(unsigned i = 1; i <= n; ++i) {
-
-        int t = lua_type(l, i);
-
-        switch(t) {
-            case LUA_TSTRING:
-            case LUA_TNUMBER:
-            //case LUA_TBOOLEAN:
-                curString = lua_tostring(l, i);
-                strcat(string, curString);
-                break;
-            case LUA_TBOOLEAN:
-                curString = (lua_toboolean(l, i))? "true" : "false";
-                strcat(string, curString);
-                break;
-            default: {
-                elysian::LuaVariant v = elysian::LuaVariant::fromStack(i, false);
-                //curString = lua_typename(l, t);
-                strcat(string, v.asString().getValue<const char*>());
-            }
-        }
-
-        strcat(string, " ");
-
-    }
-
-    return string;
-
+static inline int print(lua_State* const l) {
+    elysian::LuaManager::luaPrint(elysian::LuaManager::getVariadicStringFromStack());
+    return 0;
 }
 
-static inline int print(lua_State* const l) {
+static inline int warnprint(lua_State* const l) {
+    elysian::Debug::luaPrint(elysian::LuaManager::getVariadicStringFromStack(), elysian::Debug::LOG_WARNING);
+    return 0;
+}
 
-
-    elysian::LuaManager::luaPrint(luaGetVariableString(l));
-
+static inline int errprint(lua_State* const l) {
+    elysian::Debug::luaPrint(elysian::LuaManager::getVariadicStringFromStack(), elysian::Debug::LOG_ERROR);
     return 0;
 }
 
 static inline int printAdvLog(lua_State* const l) {
-    elysian::Singletons::getGuiSys()->adventureLog.addLine(elysian::AdventureLog::TEXT_NORMAL, luaGetVariableString(l));
+    elysian::Singletons::getGuiSys()->adventureLog.addLine(elysian::AdventureLog::TEXT_NORMAL, elysian::LuaManager::getVariadicStringFromStack());
     return 0;
 }
 

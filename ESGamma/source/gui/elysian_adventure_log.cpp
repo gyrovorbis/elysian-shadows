@@ -143,7 +143,7 @@ void AdventureLog::render(void) {
   if(_exitState == EXIT_DISABLED) return;
     char curLine[ELYSIAN_ADV_LOG_CHARS_PER_LINE];
 
-    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidAlphaLevel(GY_ALPHA_FULL);
 
   static QuadSprite quad;

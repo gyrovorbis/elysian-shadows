@@ -114,7 +114,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
 
     \e{NOTE: All texture assets for use within ESTk should be saved in the PNG format!}
 
-    \sa Renderable
+    \sa Renderable, QuadSpriteAttrib, BlendMode, Color4
 */
 /*!
 \qmlproperty string SpriteAttrib::texture
@@ -154,6 +154,13 @@ left to right and top to bottom, starting at frame 0 and increasing. If no textu
 present, frame is ignored. If a texture is present, and frame is equal to -1,
 the sprite is rendered using custom texture coordinates.
 \sa getFrame(), setFrame(), setTexCoord()
+*/
+/*!
+\qmlproperty BlendMode SpriteAttrib::blendMode
+
+Blend state used by renderer to blend into framebuffer when using a non-opaque
+alpha value.
+\sa getBlendMode(), setBlendMode()
 */
 /*!
  * \qmlmethod string SpriteAttrib::getTexPath()
@@ -203,6 +210,18 @@ the sprite is rendered using custom texture coordinates.
  * Sets the value of the \l{material} property to \a{mat}.
  * Ownership of \a{mat} is transferred from Lua to the engine.
  * \sa material, getMaterial()
+ */
+/*!
+ * \qmlmethod BlendMode SpriteAttrib::getBlendMode()
+ *
+ * Returns the value of the \l{blendMode} property.
+ * \sa blendMode, setBlendMode()
+ */
+/*!
+ * \qmlmethod void SpriteAttrib::setBlendMode(BlendMode mode)
+ *
+ * Sets the value of the \l{blendMode} property to \a{mode}.
+ * \sa blendMode, getBlendMode()
  */
 /*!
  * \qmlmethod Color4 SpriteAttrib::getColor4()
@@ -274,7 +293,9 @@ OOLUA_EXPORT_FUNCTIONS(SpriteAttrib,
                         setTexPath,
                         setSpecularMapPath,
                         setNormalMapPath,
-                        setMaterial)
+                        setMaterial,
+                        getBlendMode,
+                        setBlendMode)
 OOLUA_EXPORT_FUNCTIONS_CONST(SpriteAttrib,
                             getAlpha,
                             getTexPath,
@@ -451,6 +472,208 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Material,
                              getShininess)
 
 
+
+/*!
+    \qmltype BlendMode
+    \since 1.6.1
+    \inmodule Engine
+    \brief Encapsulates a cross-platform Blend Mode state
+
+    A BlendMode object encapsulates the cross-platform blend mode state
+    used by libGyro when rendering a primitive. The blend mode identifiers and naming
+    conventions are based on the OpenGL blend-modes. Please reference the
+    \l{https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml}{OpenGL 4 Reference Pages}
+    for more info.
+
+    \section2 Blending Equations
+    To determine the blended RGBA values of a pixel, the system uses the following equations:
+    \table
+        \header
+            \li Component
+            \li Formula
+        \row
+            \li R\sub d
+            \li min(k\sub R, R\sub{s}s\sub R + R\sub{d}d\sub{R})
+        \row
+            \li G\sub d
+            \li min(k\sub G, G\sub{s}s\sub G + G\sub{d}d\sub{G})
+        \row
+            \li B\sub d
+            \li min(k\sub B, B\sub{s}s\sub B + B\sub{d}d\sub{B})
+        \row
+            \li A\sub d
+            \li min(k\sub A, A\sub{s}s\sub A + A\sub{d}d\sub{A})
+    \endtable
+
+    \table
+        \header
+            \li Symbol
+            \li Property
+            \li Details
+        \row
+            \li s\sub <RGBA>
+            \li srcFactor
+            \li Coefficient which gets multiplied by the source pixel colors (current values sampled from framebuffer)
+        \row
+            \li d\sub <RGBA>
+            \li dstFactor
+            \li Coefficient which gets multiplied by the destination pixel colors (values of fragment being written to framebuffer)
+        \row
+            \li k\sub <RGBA>
+            \li constColor
+            \li Optional Constant color which an be specified as a minimum or additional factor
+    \endtable
+
+    \section2 BLEND_FACTOR
+    The \l{srcFactor} and \l{dstFactor} blend factors may be one of the following constant enumeration values:
+    \table
+        \header
+            \li Constant
+            \li GL Enumeration
+            \li Details
+        \row
+            \li BLEND_ZERO
+            \li GL_ZERO
+            \li (0, 0, 0, 0)
+        \row
+            \li BLEND_ONE
+            \li GL_ONE
+            \li (1, 1, 1, 1)
+        \row
+            \li BLEND_SRC_COLOR
+            \li GL_SRC_COLOR
+            \li (R\sub{s0}/k\sub R, G\sub{s0}/k\sub G, B\sub{s0}/k\sub B, A\sub{s0}/k\sub A)
+        \row
+            \li BLEND_ONE_MINUS_SRC_COLOR
+            \li GL_ONE_MINUS_SRC_COLOR
+            \li (1, 1, 1, 1) − (R\sub{s0}/k\sub R, G\sub{s0}/k\sub G, B\sub{s0}/k\sub B, A\sub{s0}/k\sub A)
+        \row
+            \li BLEND_DST_COLOR
+            \li GL_DST_COLOR
+            \li (R\sub{d}/k\sub R, G\sub{d}/k\sub G, B\sub{d}/k\sub B, A\sub{d}/k\sub A)
+        \row
+            \li BLEND_ONE_MINUS_DST_COLOR
+            \li GL_ONE_MINUS_DST_COLOR
+            \li (1, 1, 1, 1) −( R\sub{d}/k\sub R, G\sub{d}/k\sub G, B\sub{d}/k\sub B, A\sub{d}/k\sub A)
+        \row
+            \li BLEND_SRC_ALPHA
+            \li GL_SRC_ALPHA
+            \li (A\sub{s0}/k\sub A, A\sub{s0}/k\sub A, A\sub{s0}/kA, A\sub{s0}/k\sub A)
+        \row
+            \li BLEND_ONE_MINUS_SRC_ALPHA
+            \li GL_ONE_MINUS_SRC_ALPHA
+            \li (1, 1, 1, 1) − (A\sub{s0}/k\sub A, A\sub{s0}/k\sub A, A\sub{s0}/k\sub A, A\sub{s0}/k\sub A)
+        \row
+            \li BLEND_DST_ALPHA
+            \li GL_DST_ALPHA
+            \li (A\sub{d}/k\sub A, A\sub{d}/k\sub A, A\sub{d}/k\sub A, A\sub{d}/k\sub A)
+        \row
+            \li BLEND_ONE_MINUS_DST_ALPHA
+            \li GL_ONE_MINUS_DST_ALPHA
+            \li (1, 1, 1, 1) − (A\sub{d}/k\sub A, A\sub{d}/k\sub A, A\sub{d}/k\sub A, A\sub{d}/k\sub A)
+        \row
+            \li BLEND_CONSTANT_COLOR
+            \li GL_CONSTANT_COLOR
+            \li (R\sub c, G\sub c, B\sub c, A\sub c)
+        \row
+            \li BLEND_ONE_MINUS_CONSTANT_COLOR
+            \li GL_ONE_MINUS_CONSTANT_COLOR
+            \li (1, 1, 1, 1) − (R\sub c, G\sub c, B\sub c, A\sub c)
+        \row
+            \li BLEND_CONSTANT_ALPHA
+            \li GL_CONSTANT_ALPHA
+            \li (A\sub c, A\sub c, A\sub c, A\sub c)
+        \row
+            \li BLEND_ONE_MINUS_CONSTANT_ALPHA
+            \li GL_ONE_MINUS_CONSTANT_ALPHA
+            \li (1, 1, 1, 1) − (A\sub c, A\sub c, A\sub c, A\sub c)
+        \row
+            \li BLEND_SRC_ALPHA_SATURATE
+            \li GL_SRC_ALPHA_SATURATE
+            \li (i, i, i, 1)
+        \row
+            \li BLEND_SRC1_COLOR
+            \li GL_SRC1_COLOR
+            \li (R\sub{s1}/k\sub R, G\sub{s1}/k\sub G, B\sub{s1}/k\sub B, A\sub{s1}/k\sub A)
+        \row
+            \li BLEND_ONE_MINUS_SRC1_COLOR
+            \li GL_ONE_MINUS_SRC1_COLOR
+            \li (1, 1, 1, 1) − (R\sub{s1}/k\sub R, G\sub{s1}/k\sub G, B\sub{s1}/k\sub B, A\sub{s1}/k\sub A)
+        \row
+            \li BLEND_SRC1_ALPHA
+            \li GL_SRC1_ALPHA
+            \li (A\sub{s1}/k\sub A, A\sub{s1}/k\sub A, A\sub{s1}/k\sub A, A\sub{s1}/k\sub A)
+        \row
+            \li BLEND_ONE_MINUS_SRC1_ALPHA
+            \li GL_ONE_MINUS_SRC1_ALPHA
+            \li (1, 1, 1, 1) − (A\sub{s1}/k\sub A, A\sub{s1}/k\sub A, A\sub{s1}/k\sub A, A\sub{s1}/k\sub A)
+    \endtable
+
+
+    \sa Renderable, Color4, SpriteAttrib
+*/
+/*!
+\qmlproperty BLEND_FACTOR BlendMode::srcFactor
+Coefficient/factor multiplied by the source color sampled from the framebuffer when applying the blend equation.
+\sa getSrcFactor(), setSrcFactor()
+*/
+/*!
+\qmlproperty BLEND_FACTOR BlendMode::dstFactor
+Coefficient/factor multiplied by the destination color being written to the framebuffer.
+\sa getSrcFactor(), setSrcFactor()
+*/
+/*!
+\qmlproperty Color4 BlendMode::constColor
+Optional constant color to be used in blend equation.
+\sa getConstColor(), setConstColor()
+*/
+/*!
+ * \qmlmethod BLEND_FACTOR BlendMode::getSrcFactor()
+ *
+ * Returns the value of the \l{srcFactor} property.
+ * \sa srcFactor, setSrcFactor()
+ */
+/*!
+ * \qmlmethod void BlendMode::setSrcFactor(BLEND_FACTOR factor)
+ *
+ * Sets the value of the \l{srcFactor} property to \a{factor}.
+ * \sa srcFactor, getSrcFactor()
+ */
+/*!
+ * \qmlmethod BLEND_FACTOR BlendMode::getDstFactor()
+ *
+ * Returns the value of the \l{dstFactor} property.
+ * \sa dstFactor, setDstFactor()
+ */
+/*!
+ * \qmlmethod void BlendMode::setDstFactor(BLEND_FACTOR factor)
+ *
+ * Sets the value of the \l{dstFactor} property to \a{factor}.
+ * \sa dstFactor, getDstFactor()
+ */
+/*!
+ * \qmlmethod Color4 BlendMode::getConstColor()
+ *
+ * Returns the value of the \l{constColor} property.
+ * \sa constColor, setConstColor()
+ */
+/*!
+ * \qmlmethod void BlendMode::setConstColor(Color4 color)
+ *
+ * Sets the value of the \l{constColor} property to \a{color}.
+ * \sa constColor, getConstColor()
+ */
+
+OOLUA_EXPORT_FUNCTIONS(BlendMode,
+                       setSrcFactor,
+                       setDstFactor,
+                       setConstColor,
+                       getConstColor)
+OOLUA_EXPORT_FUNCTIONS_CONST(BlendMode,
+                       getSrcFactor,
+                       getDstFactor)
+
+
 OOLUA_EXPORT_FUNCTIONS(Recti,
                        setTop,
                        setBottom,
@@ -462,3 +685,4 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Recti,
                        getBottom,
                        getLeft,
                        getRight)
+

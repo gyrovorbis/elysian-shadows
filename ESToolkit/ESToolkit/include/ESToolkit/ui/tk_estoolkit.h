@@ -79,7 +79,9 @@ public:
     static void         openDoc(QString page, QString section=QString());
     static void         showStatusBarMessage(QString message);
     static void         showStatusBarMessage(QString message, QColor color);
-    static void         alertprint(QString message);
+    static QString      messageBoxQuestion(QString message, LuaVariant buttons=LuaVariant(), QString informativeText=QString());
+    static LuaVariant   messageBoxTextPrompt(QString message);
+
     static void         popSelectionView(int index, LuaVariant tableRef);
     static QString      popInputPrompt(void);
     static void         graphValue(int index, LuaVariant value);

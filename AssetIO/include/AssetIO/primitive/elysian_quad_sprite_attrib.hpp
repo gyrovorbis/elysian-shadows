@@ -79,7 +79,7 @@ namespace elysian {
             GY_ASSERT((char *)&_vertColor == ((char*)&_color+4));
             gyVidTexBind(_tex);
             gyVidAlphaLevel(GY_ALPHA_FULL);
-            gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
             gyVidQuadListBegin(&_color);
             gyVidColorArray(&_color);
             gyVidQuad((verts)? verts :_verts, _frame);

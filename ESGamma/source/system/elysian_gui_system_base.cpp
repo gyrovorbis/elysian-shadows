@@ -172,7 +172,7 @@ void GuiSystem::renderBackground(void) {
 void GuiSystem::renderForeground(void) {
 
     gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidDepthTest(false);
     _renderExamineEntity();
     _renderDebugOverlay();
@@ -279,7 +279,7 @@ void GuiSystem::_renderCombatText(void) {
 
 void GuiSystem::render(void) {
     gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidDepthTest(false);
 
     _renderCombatText();

@@ -4,6 +4,7 @@
 #include <AssetIO/primitive/elysian_prim_attrib.hpp>
 #include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 #include <AssetIO/crtp/elysian_color.hpp>
+#include <AssetIO/crtp/elysian_blend_mode.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Renderable)
 ELYSIAN_ASSET_TYPEDEF(SpriteAttrib)
@@ -21,6 +22,7 @@ namespace elysian {
         friend class RenderableBase;
 	protected:
         GYTexCoord2	_texCoords[4];
+        BlendMode   _blendMode      = BlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA); //"additive" by default
         GYTexture*	_tex			= nullptr;
         GYTexture*	_normalMap		= nullptr;
         GYTexture*	_specularMap	= nullptr;
@@ -32,12 +34,13 @@ namespace elysian {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(texture,        getTexPath, setTexPath)
+            ELYSIAN_LUA_PROXY_FIELD(texture,        getTexPath,         setTexPath)
             ELYSIAN_LUA_PROXY_FIELD(normalMap,      getNormalMapPath,   setNormalMapPath)
             ELYSIAN_LUA_PROXY_FIELD(specularMap,    getSpecularMapPath, setSpecularMapPath)
             ELYSIAN_LUA_PROXY_FIELD(material,       getMaterial,        setMaterial)
-            ELYSIAN_LUA_PROXY_FIELD(color,          getColor4, setColor4)
-            ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame, setFrame)
+            ELYSIAN_LUA_PROXY_FIELD(color,          getColor4,          setColor4)
+            ELYSIAN_LUA_PROXY_FIELD(blendMode,      getBlendMode,       setBlendMode)
+            ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame,           setFrame)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         void                setSpecularMapPath(const char*const path);
@@ -79,6 +82,10 @@ namespace elysian {
         unsigned char getAlpha(void) const;
 
         PrimAttrib::TYPE getType(void) const;
+
+        const BlendMode&    getBlendMode(void) const;
+        BlendMode&          getBlendMode(void);
+        void                setBlendMode(const BlendMode& mode);
 
 		//Gonna shit their pants if there is no texture allocated yet...
         void getSheetSize(unsigned& sheetWidth, unsigned& sheetHeight) const;
@@ -134,6 +141,9 @@ namespace elysian {
     inline GYTexture* SpriteAttribBase::getSpecularMap(void) const { return _specularMap; }
     inline GYTexture* SpriteAttribBase::getNormalMap(void) const { return _normalMap; }
     inline GYTexture* SpriteAttribBase::getTexture(void) const { return _tex; }
+    inline const BlendMode& SpriteAttribBase::getBlendMode(void) const { return _blendMode; }
+    inline BlendMode& SpriteAttribBase::getBlendMode(void) { return _blendMode; }
+    inline void SpriteAttribBase::setBlendMode(const BlendMode& mode) { _blendMode = mode; }
 
     inline SpriteAttribBase::~SpriteAttribBase(void) {
         gyVidTexDestroy(_tex);
@@ -144,7 +154,7 @@ namespace elysian {
     inline void SpriteAttribBase::submitHeader(void) {
         if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
         else gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        gyVidBlendMode(_blendMode.getSrcFactor(), _blendMode.getDstFactor());
         //gyVidMaterialBind(nullptr);
         gyVidTexBind(_tex);
         gyVidQuadListBegin(&_color);

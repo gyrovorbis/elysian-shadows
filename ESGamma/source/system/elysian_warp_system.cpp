@@ -28,7 +28,7 @@ void WarpSystem::initialize(void) {
 }
 
 void WarpSystem::render(void) {
-    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 	_screenRect.render(); 
 

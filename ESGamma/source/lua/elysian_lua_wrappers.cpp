@@ -63,6 +63,28 @@ namespace elysian {
         s->register_class_static<gyro>("RECT_PLANE_LEFT_SLOPE_45", GY_RECT_PLANE_LEFT_SLOPE_45);
         s->register_class_static<gyro>("RECT_PLANE_RIGHT_SLOPE_45", GY_RECT_PLANE_RIGHT_SLOPE_45);
 
+        //BlendMode
+        typedef elysian::BlendMode BlendMode;
+        s->register_class_static<BlendMode>("BLEND_ZERO",                       GY_BLEND_ZERO);
+        s->register_class_static<BlendMode>("BLEND_ONE",                        GY_BLEND_ONE);
+        s->register_class_static<BlendMode>("BLEND_SRC_COLOR",                  GY_BLEND_SRC_COLOR);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_SRC_COLOR",        GY_BLEND_ONE_MINUS_SRC_COLOR);
+        s->register_class_static<BlendMode>("BLEND_DST_COLOR",                  GY_BLEND_DST_COLOR);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_DST_COLOR",        GY_BLEND_ONE_MINUS_DST_COLOR);
+        s->register_class_static<BlendMode>("BLEND_SRC_ALPHA",                  GY_BLEND_SRC_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_SRC_ALPHA",        GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_DST_ALPHA",                  GY_BLEND_DST_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_DST_ALPHA",        GY_BLEND_ONE_MINUS_DST_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_CONSTANT_COLOR",             GY_BLEND_CONSTANT_COLOR);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_CONSTANT_COLOR",   GY_BLEND_ONE_MINUS_CONSTANT_COLOR);
+        s->register_class_static<BlendMode>("BLEND_CONSTANT_ALPHA",             GY_BLEND_CONSTANT_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_CONSTANT_ALPHA",   GY_BLEND_ONE_MINUS_CONSTANT_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_SRC_ALPHA_SATURATE",         GY_BLEND_SRC_ALPHA_SATURATE);
+        s->register_class_static<BlendMode>("BLEND_SRC1_COLOR",                 GY_BLEND_SRC1_COLOR);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_SRC1_COLOR",       GY_BLEND_ONE_MINUS_SRC1_COLOR);
+        s->register_class_static<BlendMode>("BLEND_SRC1_ALPHA",                 GY_BLEND_SRC1_ALPHA);
+        s->register_class_static<BlendMode>("BLEND_ONE_MINUS_SRC1_ALPHA",       GY_BLEND_ONE_MINUS_SRC1_ALPHA);
+
         //Entity::DEPTH_TYPE
     //	typedef OOLUA::Entity Entity;
         s->register_class_static<OOLUA::Entity>("NORMAL_FLAT", elysian::NORMAL_FLAT);
@@ -382,6 +404,8 @@ namespace elysian {
         InstanceTransform::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<Entity>(*_mainState);
         Entity::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<BlendMode>();
+        BlendMode::registerProxyMetaTable(*_mainState);
         _mainState->register_class<SpriteAttrib>();
         SpriteAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<QuadSpriteAttrib>();
@@ -510,6 +534,8 @@ namespace elysian {
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
+        lua_register(*_mainState, "warnprint", &warnprint);
+        lua_register(*_mainState, "errprint", &errprint);
         lua_register(*_mainState, "printAdvLog", &printAdvLog);
         lua_register(*_mainState, "dbgPush", &dbgPush);
         lua_register(*_mainState, "dbgPop", &dbgPop);
@@ -849,3 +875,142 @@ The different collider primitives are:
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(gyro)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(gyro)
+
+
+
+/*!
+    \qmltype _G
+    \since 1.6.1
+    \inmodule Engine
+    \brief Global Lua Environment Table
+
+    _G is the global environment table for all scripts, behaviors, modules and
+    executable Lua code within the Engine (including ESTk's Lua terminal/console).
+    The pairs within this table represent global variable names and their values,
+    all Lua contexts have at least read-only access to this table, with or without
+    explicitly referencing the variable through _G (you can just leave it off).
+    Scripts do not implicitly inherit write-access to this table, so writing to a
+    global variable must be done explicitly through the _G.* accessor.
+
+    _G houses built-in Lua functions, and some custom overrides supplied by the engine,
+    as well as some utility functions, and the actual userdata metatables for \e every
+    C++ object that has been proxied/wrapped to Lua.
+
+
+    \sa Engine, Toolkit
+*/
+
+/*!
+ * \qmlmethod void _G::print(string msg, ...)
+ *  Custom variadic print routine form the Engine, overriding the built-in print function.
+ *  It works the exact same way (any number of any argument), but it does a much
+ *  better job of converting data types to strings for displaying them, and is
+ *  also Lua proxy/userdata type-aware. The default severity level for anything
+ *  printed with this function is "verbose," meaning it's simply for debugging and logging
+ *  purposes, and these messages do not represent errors or warnings. In the Toolkit's terminal
+ *  window, output from this function is displayed as a light blue/teal color
+ *
+ *  \e {NOTE: Due to the nature of Lua string concatenation, it's advisable to
+ *      pass multiple values as a comma separated (',') list (there will automatically
+ *      be spaces appended between them) rather than concatenating everything into a single
+ *      string by conjoining with the '..' operator. This will make a lot of tiny temporary
+ *      allocations on the heap for each substring and is slower and wasteful. Passing a list
+ *      of entries allows the Engine to do the heavy lifting. }
+ *
+ * \e {NOTE: For warning and error severities, see the other variations of this function.}
+ *
+ * \sa warnprint, errprint, alertprint, rPrint, dbgpush, dbgpop
+ */
+/*!
+ * \qmlmethod void _G::rPrint(LuaTable table, int maxDepth, string stringName)
+ *  Custom "Recursive Print" routine, especially useful for printing Lua table or userdata values,
+ *  allowing you to inspect deeply embedded tables and objects. The given \a{table} is traversed,
+ *  recursively, including all of its nested subtables, until the \a{maxDepth} limit has been reached.
+ *  \a{stringName} provides a display name for the top-level table.
+ *
+ * \e {NOTE: The default \a{maxDepth} value is 100, and the default \a{stringName} is just
+ *  an empty string, so these two arguments are optional}
+ *
+ * \sa print, serialize
+ */
+/*!
+ * \qmlmethod void _G::warnprint(string msg, ...)
+ * Custom logging method, similar to \l{print}, only with the Toolkit logging severity set to warning,
+ * meaning the message denotes a non-fatal issue or something that may potentially be something the
+ * user may want to look into.
+ *
+ * Warnings are displayed in dark yellow within the ESTk terminal/log.
+ * \sa print, errprint, alertprint
+ */
+/*!
+ * \qmlmethod void _G::errprint(string msg, ...)
+ * Custom logging method, similar to \l{print} and \l{warnprint}, only with the Toolkit logging severity set to error,
+ * meaning the message contains some sort of important, potentially fatal error message, and the user should fix it.
+ *
+ * Errors are displayed in dark red within the ESTk terminal/log.
+ * \sa print, warnprint, alertprint
+ */
+/*!
+ * \qmlmethod void _G::alertprint(string msg, ...)
+ * Custom logging method similar to \l{print}, \l{warnprint}, and \l{errprint}, except the output is displayed as a modal
+ * alert box widget with an 'Ok' button.
+ *
+ * \e { NOTE: This method requires ESTk and depends on the \l{Toolkit} class, meaning you should only be using the  method
+ *      in Toolkit-specific triggers or control flow. }
+ * \sa print, warnprint, errprint
+ */
+/*!
+ * \qmlmethod void _G::printAdvLog(string msg, ...)
+ * Custom logging method similar to \l{print}, only the output is added to the \l{AdventureLog} instead of being logged.
+ *
+ * \e {NOTE: \a{msg} may contain special \l {Font} mark-up for highlighting keywords and/or more customizing the text's appearance}
+ *
+ * \sa print, warnprint, errprint, alertprint
+ */
+/*!
+ * \qmlmethod void _G::dbgpush()
+ * Utility function used to increase the depth of the debug log stack, meaning all following print/warnprint/errprint
+ * log messages are considered children of the previous message. This is recommended at the top of a function with
+ * complex, multi-layer/aggregate debug output, so that it can be grouped together, formatted and tabbed prettily,
+ * and can be collapsed/expanded within the debug output window in ESTk.
+ *
+ * \sa dbgpop, print
+ */
+/*!
+ * \qmlmethod void _G::dbgpop(int count=1)
+ * Utility function used to decrease the depth of the debug log stack (by \a{count}) meaning the following log messages are no longer
+ * children of the previous parent, and are instead children to the parent that was active before the last \a{count} pushes. A corresponding
+ * dbgpop() is recommended to go at the end of a complex/aggregate function with multiple layers of logging where dbgpush() was
+ * previously used.
+ *
+ * \e {NOTE: \a{count} defaults to 1, which means it will do the exact opposite of the dbgpush function when it's not passed an arguments.
+ *      Under certain circumstances you may have nested multilayer logic requiring multiple calls to dbgpush() before calling a dbgpop(),
+ *      The two dbgpop() calls can be combined into a single call, with the \a{count} argument set to 2... This can make the code cleaner
+ *      (and faster) by allowing you to combine multiple back-to-back dbgpop calls. }
+ *
+ * \e {NOTE: It is VERY important that for every call to dbgpush at the beginning of a block of logic, there is a corresponding dbgpop(),
+ *      otherwise the stack can become incorrect, as all later debug messages will no longer have the correct parent, screwing up the entire
+ *      grouping. Also note that poping more to the stack than you push is invalid, and may cause the program to crash. }
+ * \sa dbgpush, print
+ */
+/*!
+ * \qmlmethod string _G::serialize(LuaTable ref)
+ * Utility function provided by the Engine for converting any arbirary Lua table, userdata, or value (given by \a{ref}) into a single executable string of Lua code
+ * in the form of a simple table/object declaration, which may then be written to a file and directly executed later to fully recover the state of the data.
+ * The format of this serialized string data is being tenderly named "LSON" as it is the exact Lua equivalent of the "JSON" format... (copyright Falco Girgis)
+ *
+ * The function is very complex and is the basis for all LSON asset files within ESTk. There are some general considerations to keep in mind when using it:
+ * \list
+ * \li \b {Userdata} - The values saved for C/++ userdata types are the PROPERTIES that have been wrapped to Lua. A userdata type without properties cannot be
+ *      serialized properly, and will just have a placeholder "userdata" string.
+ * \li \b {Recursive tables} - If table A contains a reference to table B which then contains a reference to table A, this is considered a recursively
+ *      referenced Lua table and cannot be totally represented as serial data. The function will store an error message string rather than a reference back
+ *      to the parent once recursion has been detected
+ * \li \b {Prefabs} - When a table has been instantiated from a prefab value, the serialize function should attempt to honor this association, by instantiating
+ *      the object with the prefab as the parent data, rather than creating an entirely new object
+ * \li \b {Data Sharing} - ESTk tries to be as optimal as possible with not bloating save files. It does this by NOT duplicating data that is already present with a
+ *      parent prefab table. It also attempts to skip writing out read-only values as well as values which have not been changed from their defaults.
+ * \endlist
+ *
+ * \sa rPrint
+ */
