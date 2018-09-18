@@ -402,7 +402,7 @@ void gyVidApplyBloom(void) {
 #if 1
     gyVidAlphaLevel(GY_ALPHA_FULL);
         GYColor4 color2 = { 255, 255, 255, 255 };
-gyVidBlendMode(GY_BLEND_ONE);
+gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);    
 

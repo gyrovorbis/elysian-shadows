@@ -212,6 +212,34 @@ GLuint                      _glalGlowTex                = 0;
 GLuint                      _glalDepthBuffer            = 0;
 
 
+
+static inline int _glBlendModeFromGyroBlendMode(GY_BLEND_MODE gyMode) {
+    switch(gyMode) {
+    case GY_BLEND_ZERO:                         return GL_ZERO;
+    case GY_BLEND_ONE:                          return GL_ONE;
+    case GY_BLEND_SRC_COLOR:                    return GL_SRC_COLOR;
+    case GY_BLEND_ONE_MINUS_SRC_COLOR:          return GL_ONE_MINUS_SRC_COLOR;
+    case GY_BLEND_DST_COLOR:                    return GL_DST_COLOR;
+    case GY_BLEND_ONE_MINUS_DST_COLOR:          return GL_ONE_MINUS_DST_COLOR;
+    case GY_BLEND_SRC_ALPHA:                    return GL_SRC_ALPHA;
+    case GY_BLEND_ONE_MINUS_SRC_ALPHA:          return GL_ONE_MINUS_SRC_ALPHA;
+    case GY_BLEND_DST_ALPHA:                    return GL_DST_ALPHA;
+    case GY_BLEND_ONE_MINUS_DST_ALPHA:          return GL_ONE_MINUS_DST_ALPHA;
+    case GY_BLEND_CONSTANT_COLOR:               return GL_CONSTANT_COLOR;
+    case GY_BLEND_ONE_MINUS_CONSTANT_COLOR:     return GL_ONE_MINUS_CONSTANT_COLOR;
+    case GY_BLEND_CONSTANT_ALPHA:               return GL_CONSTANT_ALPHA;
+    case GY_BLEND_ONE_MINUS_CONSTANT_ALPHA:     return GL_ONE_MINUS_CONSTANT_ALPHA;
+    case GY_BLEND_SRC_ALPHA_SATURATE:           return GL_SRC_ALPHA_SATURATE;
+    case GY_BLEND_SRC1_COLOR:                   return GL_SRC1_COLOR;
+    case GY_BLEND_ONE_MINUS_SRC1_COLOR:         return GL_ONE_MINUS_SRC1_COLOR;
+    case GY_BLEND_SRC1_ALPHA:                   return GL_SRC1_ALPHA;
+    case GY_BLEND_ONE_MINUS_SRC1_ALPHA:         return GL_ONE_MINUS_SRC1_ALPHA;
+    case GY_BLEND_UNKNOWN:
+    default:                                    return GL_ONE;
+    }
+}
+
+
 const GYVidFrameStats* gyVidFrameStatistics(void) {
     return &glalFrameStats;
 }
@@ -731,20 +759,29 @@ void gyVidTexBind(const GYTexture *const tex) {
     wasShadow = gyVidShadowPass();
 }
 
-void gyVidBlendMode(const GY_BLEND_MODE mode) {
+#if 0
+switch(mode) {
+case GY_BLEND_ONE_MINUS_SRC_ALPHA:
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    break;
+case GY_BLEND_ONE:
+    glBlendFunc(GL_ONE, GL_ONE);
+    break;
+case GY_BLEND_ADDITIVE:
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+}
+#endif
+
+
+
+
+void gyVidBlendMode(const GY_BLEND_MODE src, const GY_BLEND_MODE dst) {
+    int glSrcMode = _glBlendModeFromGyroBlendMode(src);
+    int glDstMode = _glBlendModeFromGyroBlendMode(dst);
     //if(gyVidShadowPass()) return;
     //if(mode != glalBlendMode) {
         gyVidVertexBatchFlush();
-        switch(mode) {
-        case GY_BLEND_ONE_MINUS_SRC_ALPHA:
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            break;
-        case GY_BLEND_ONE:
-            glBlendFunc(GL_ONE, GL_ONE);
-            break;
-        case GY_BLEND_ADDITIVE:
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        }
+       glBlendFunc(glSrcMode, glDstMode);
       //  glalBlendMode = mode;
   //  }
 }
@@ -1178,9 +1215,9 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
 
            // if(slot->data->additiveBlending != lastAdditive) {
             if(slot->data->blendMode == SP_BLEND_MODE_ADDITIVE) {
-                gyVidBlendMode(GY_BLEND_ONE);
+                gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
             } else {
-                gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+                gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
             }
 
             gyVidTexBind(texture);
