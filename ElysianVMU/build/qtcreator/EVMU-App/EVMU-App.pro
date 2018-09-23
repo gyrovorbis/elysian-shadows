@@ -41,11 +41,11 @@ QT += gui opengl
 
 !vmu_child_app {
     win32 {
-        DESTDIR = ../../../executable
+        DESTDIR = ../executable
     }
 
     linux {
-        DESTDIR = ../../../executable
+        DESTDIR = ../executable
     }
 }
 
@@ -55,7 +55,7 @@ SOURCE_ROOT = ../../../app/qt
 macx {
     #DESTDIR = ../../executable
     #    CONFIG(release, debug|release):
-    release: QMAKE_POST_LINK = "sh $${SOURCE_ROOT}/macdeployvmu.sh"
+    release: QMAKE_POST_LINK = "sh ./macdeployvmu.sh $${LIBGYRO_PATH}"
 }
 }
 
