@@ -11,7 +11,6 @@
 #include <AssetIO/level/elysian_tile.hpp>
 #include <AssetIO/proxy/elysian_entity_proxy.hpp>
 
-
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
  *

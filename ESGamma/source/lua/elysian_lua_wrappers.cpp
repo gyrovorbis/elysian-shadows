@@ -30,6 +30,10 @@
 #include <ESGamma/crtp/elysian_lua_manager.hpp>
 #include <ESGamma/lua/elysian_lua_wrappers.hpp>
 
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+#   include <ESGamma/device/elysian_sensor_device.hpp>
+#endif
+
 namespace elysian {
 
 
@@ -535,6 +539,14 @@ namespace elysian {
         _mainState->register_class<RumbleDevice>();
         _mainState->register_class<VisualMemoryUnit>();
         _mainState->register_class<Keyboard>();
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+        _mainState->register_class<Accelerometer>();
+        _mainState->register_class<Gyroscope>();
+        _mainState->register_class<Magnetometer>();
+        _mainState->register_class<Altimeter>();
+        _mainState->register_class<Pedometer>();
+        _mainState->register_class<Scale>();
+#endif
         _mainState->register_class<InputSystem>();
 		_mainState->register_class<CombatSystem>();
 		_mainState->register_class<CameraSystem>();

@@ -1068,12 +1068,87 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Controller,
     \brief Class representing cross platform touchscreens and other touch-sensitive input devices.
 
     TouchDevice is a cross-platform abstraction for any type of 2D spatial input device that is sensitive to touch
-    such as tablets or touch screens.
+    such as tablets and touch screens. They can also be other, more limited devices, such as the touch-sensitive
+    button region in the center of the PS4 controller.
 */
 
 OOLUA_EXPORT_FUNCTIONS(TouchDevice)
 OOLUA_EXPORT_FUNCTIONS_CONST(TouchDevice)
 
+/*!
+    \qmltype PowerSupply
+    \since 1.6.1
+    \inmodule Engine
+    \brief Power supply and Battery state of target platform.
+
+    The PowerSupply class represents the device powering the current platform
+    the engine is running on. It allows you to query whether it's battery or
+    wall-powered, and in the case of it being battery-powered, allows you to
+    query info such as how charged it is or how much longer it'll last.
+
+    \sa InputSystem
+*/
+/*!
+\qmlproperty enumeration PowerSupply::POWER_STATE
+
+Enumerated type dictating the nature of the platform's PowerSupply.
+The following is a table of the different states and their descriptions.
+\table
+    \header
+        \li \b{Constant}
+        \li \b{Description}
+    \row
+        \li POWER_STATE_UNKNOWN
+        \li Could not retrieve power information. Any additonal values queried are either invalid or unreliable.
+    \row
+        \li POWER_STATE_BATTERY
+        \li The device is currently being fully battery powered.
+    \row
+        \li POWER_STATE_AC
+        \li The device has no battery, so battery-specific values will be invalid.
+    \row
+        \li POWER_STATE_CHARGING
+        \li The device has a battery, but it's currently plugged in and is charging.
+    \row
+        \li POWER_STATE_CHARGED
+        \li The device has a battery, and it's currently plugged in, but it's fully charged.
+\endtable
+*/
+/*!
+ * \qmlmethod float PowerSupply::getBatteryLevel()
+  Returns a normalized float representing the Power Supply's battery level, where 0.0 is completely dead,
+ * and 1.0 is completely charged.
+ *
+ * \e {NOTE: This value is obviously not valid if the device does not have a battery..}
+  \sa getBatteryRemainingSecs, isBattery
+*/
+/*!
+  \qmlmethod float PowerSupply::getBatteryRemainingSecs()
+
+  Returns a float represening the estimated amount of time left before the battery completely dies, in seconds.
+
+  \e {NOTE: This value is obviously not valid if the device does not have a battery.}
+  \sa getBatteryLevel, isBattery
+ */
+/*!
+ * \qmlmethod POWER_STATE PowerSupply::getPowerState()
+ *
+ * Returns the current state of the platform's PowerSupply.
+ * \sa isBattery
+ */
+/*!
+ * \qmlmethod bool PowerSupply::isBattery()
+ *
+ * Returns true if the platform's power supply is a battery or false if it's wall-powered.
+ * \sa getPowerState
+ */
+
+OOLUA_EXPORT_FUNCTIONS(PowerSupply)
+OOLUA_EXPORT_FUNCTIONS_CONST(PowerSupply,
+                             getBatteryLevel,
+                             getBatteryRemainingSecs,
+                             getPowerState,
+                             isBattery)
 /*!
     \qmltype InputSystem
     \since 1.6.0
@@ -1088,14 +1163,30 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TouchDevice)
     \section2 Supported Devices
     \list
     \li 4 \l{Controller}s/Joysticks
-    \li 1 \l{Keyboard}
-    \li 1 \l{Mouse}
-    \li 1 \e {Touch Screen}
+    \li 4 \l{Keyboard}
+    \li 4 \l{Mouse}
+    \li 4 \l{TouchDevice}s
     \li 4 \l{VisualMemoryUnit}s
     \li 4 \l{RumbleDevice}s
+    \li 1 \l{PowerSupply}
     \endlist
 
-    \sa {Controller}, {Keyboard}, {Mouse}, {RumbleDevice}, {VisualMemoryUnit}, {PlayerIODevice}, {Input Devices}
+\if defined(ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED)
+    \section2 Supported Sensors
+    The Engine also has support for taking readings from various sensors which can be used for motion controls or other sorts of
+    user-interaction, typically seen with smartphones or motion-aware devices.
+    \list
+    \li 4 \l{Accelerometer}s
+    \li 4 \l{Gyroscope}s
+    \li 1 \l{Magnetometer}
+    \li 1 \l{Altimeter}
+    \li 4 \l{Pedometer}s
+    \li 1 \l{Scale}
+    \endlist
+\endif
+
+
+    \sa {Controller}, {Keyboard}, {Mouse}, {TouchDevice}, {RumbleDevice}, {VisualMemoryUnit}, {PlayerIODevice}, {Input Devices}
 */
 
 /*!
@@ -1126,7 +1217,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TouchDevice)
  * isn't one.
  * \sa VisualMemoryUnit
  */
-
 /*!
  * \qmlmethod RumbleDevice* InputSystem::getRumbleDevice(int port)
  *
@@ -1134,7 +1224,44 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TouchDevice)
  * isn't one.
  * \sa RumbleDevice
  */
-
+/*!
+ * \qmlmethod PowerSupply* InputSystem::getPowerSupply()
+ *
+ * Returns the PowerSupply device object reponsible for powering the current platform.
+ * \sa PowerSupply
+ */
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+/*!
+ * \qmlmethod Accelerometer* InputSystem::getAccelerometer(unsigned port)
+ *
+ * Returns the Accelerometer Device currently associated with the given \a{port}.
+ * \sa Accelerometer
+ */
+/*!
+ * \qmlmethod Gyroscope* InputSystem::getGyroscope(unsigned port)
+ *
+ * Returns the Gyroscope Device currently associated with the given \a{port}.
+ * \sa Gyroscope
+ */
+/*!
+ * \qmlmethod Magnetometer* InputSystem::getMagnetometer(unsigned port)
+ *
+ * Returns the Magnetometer Device currently associated with the given \a{port}.
+ * \sa Magnetometer
+ */
+/*!
+ * \qmlmethod Pedometer* InputSystem::getPedometer(unsigned port)
+ *
+ * Returns the Pedometer Device currently associated with the given \a{port}.
+ * \sa Pedometer
+ */
+/*!
+ * \qmlmethod Scale* InputSystem::getScale(unsigned port)
+ *
+ * Returns the Scale Device currently associated with the given \a{port}.
+ * \sa Scale
+ */
+#endif
 
 /*!
 \qmlproperty enumeration InputSystem::BUT_STATE
@@ -1161,7 +1288,16 @@ OOLUA_EXPORT_FUNCTIONS_CONST(InputSystem,
                              getMouse,
                              getRumbleDevice,
                              getVMU,
-                             getController)
+                             getController
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+                            ,getAccelerometer,
+                             getGyroscope,
+                             getMagnetometer,
+                             getAltimeter,
+                             getPedometer,
+                             getScale
+#endif
+                             )
 
 /*!
     \qmltype InputEvent
@@ -1533,7 +1669,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(MouseEvent,
                              isDoubleClicked)
 OOLUA_EXPORT_FUNCTIONS(MouseEvent)
 
-
 /*!
 \qmltype MouseWheelEvent
 \since 1.6.1
@@ -1563,3 +1698,147 @@ List of \l{Event::TYPE}s that are represented by subclasses of MouseBaseEvent:
 OOLUA_EXPORT_FUNCTIONS_CONST(MouseWheelEvent,
                              getScrollWheel)
 OOLUA_EXPORT_FUNCTIONS(MouseWheelEvent)
+
+
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+
+/*!
+\qmltype Accelerometer
+\since 1.6.1
+\inmodule Engine
+\inherits PlayerIODevice
+\brief Motion Sensor Device for linear acceleration
+
+Accelerometer is an abstraction for a motion sensor device that simply senses linear acceleration.
+This could be usual kind of sensor on a smartphone, or it could be something like
+a motion sensor built into a controller, a Wiimote, or a Dreamcast fishing rod on other platforms.
+
+\sa Gyroscope, Magnetometer, Altimeter, Pedometer, Scale, InputSystem
+ */
+/*!
+ * \qmlmethod Vector3 Accelerometer::getAcceleration()
+ *
+ * Returns the vector representing the current direction and magnitude of acceleration in meters per second being applied to the device.
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Accelerometer,
+                             getAcceleration)
+OOLUA_EXPORT_FUNCTIONS(Accelerometer)
+
+/*!
+\qmltype Gyroscope
+\since 1.6.1
+\inmodule Engine
+\inherits PlayerIODevice
+\brief Motion Sensor Device for Angular Velocity
+
+Gyroscope is an abstraction for a motion sensor device that senses rate of rotation,
+or angular velocity. It's typically found in smartphones and tablets on mobile devices,
+but could also represent something like the motion sensing on a PS3 controller, Wiimote,
+or Dreamcast fishing rod or Samba De Amigo maracas.
+
+\sa Accelerometer, Magnetometer, Altimeter, Pedometer, Scale, InputSystem
+ */
+/*!
+ * \qmlmethod Vector3 Gyroscope::getAngularVelocity()
+ *
+ * Returns the device's rate of rotation (angular velocity) in radians.
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Gyroscope,
+                             getAngularVelocity)
+OOLUA_EXPORT_FUNCTIONS(Gyroscope)
+
+/*!
+\qmltype Magnetometer
+\since 1.6.1
+\inmodule Engine
+\inherits PlayerIODevice
+\brief Sensor Device used to measure magnetic fields (compass)
+
+Magnetometer is an abstraction for a sensor Device that measures the
+surrounding magnetic field. Provided it's not near any other magnetic source,
+this is typically the Earth's magnetic field and is used as a compass.
+
+\sa Gyroscope, Accelerometer, Altimeter, Pedometer, Scale, InputSystem
+ */
+/*!
+ * \qmlmethod Vector3 Magnetometer::getMagneticField()
+ * Returns a Vector3 representing the direction and magnitude of the surrounding magnetic field in
+ * units of Microtesla (uT).
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Magnetometer,
+                             getMagneticField)
+OOLUA_EXPORT_FUNCTIONS(Magnetometer)
+
+
+/*!
+\qmltype Altimeter
+\since 1.6.1
+\inmodule Engine
+\inherits PlayerIODevice
+\brief Sensor Device used to measure pressure (altitude)
+
+Altimeter is an abstraction for a Device that measures the pressure of the
+surrounding air. Provided you aren't underwater or submerged in some sort of
+foreign material or gas, this corresponds to altitude.
+
+\sa Gyroscope, Magnetometer, Accelerometer, Pedometer, Scale, InputSystem
+ */
+/*!
+ * \qmlmethod float Altitude::getAltitude()
+ * Returns a float representing the current altitude in meters of the device, relative to sea-level.
+ * \e {NOTE: Positive values are above sea-level, negative are below, and 0 is exactly at sea-level.}
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Altimeter,
+                             getAltitude)
+OOLUA_EXPORT_FUNCTIONS(Altimeter)
+
+/*!
+\qmltype Pedometer
+\since 1.6.1
+\inmodule Engine
+\inherits PlayerIODevice
+\brief Motion sensor Device used to measure footstep
+
+Pedometer is a relatively primitive device simply used to measure steps and
+maintain a counter of the number of steps taken since some epoch. This kind of
+thing was commonly used in tiny little Tomagotchi-sized devicse like the Poke'walker
+where walking aroudn made events happen or made your monsters level up... Only
+you can totally cheat by shaking it or tying it to a ceiling fan, because it's
+not particularly accurate.
+
+\sa Gyroscope, Magnetometer, Altimeter, Accelerometer, Scale, InputSystem
+ */
+/*!
+ * \qmlmethod uint64_t Pedometer::getSteps()
+ * Returns the number of steps taken since measurements began.
+ */
+OOLUA_EXPORT_FUNCTIONS_CONST(Pedometer,
+                             getSteps)
+OOLUA_EXPORT_FUNCTIONS(Pedometer)
+
+/*!
+\qmltype Scale
+\since 1.6.1
+\inmodule Engine
+\inherits PlayerIODevice
+\brief Sensor Device used to measure weight
+
+Scale is a sensor Device used for obtaining weight measurements. So far the only
+real example of this applying to gaming is the Wii Fit Scale, which can also be
+used with PC or smartphones as a generic scale over bluetooth.
+
+\sa Gyroscope, Magnetometer, Altimeter, Pedometer, Accelerometer, InputSystem
+ */
+/*!
+ * \qmlmethod float Scale::getWeight()
+ * Returns the weight measured by the scale in lbs.
+ */
+OOLUA_EXPORT_FUNCTIONS_CONST(Scale,
+                             getWeight)
+OOLUA_EXPORT_FUNCTIONS(Scale)
+
+#endif

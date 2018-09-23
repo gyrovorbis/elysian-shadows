@@ -26,7 +26,7 @@ namespace elysian {
         bool                    pollDevice(void);
 
         float                   getBatteryLevel(void) const; //normalized
-        unsigned                getBatterySecondsRemaining(void) const;
+        unsigned                getBatteryRemainingSecs(void) const;
         GY_SYSTEM_POWER_STATE   getPowerState(void) const;
         bool                    isBattery(void) const;
     };
@@ -44,7 +44,7 @@ namespace elysian {
         return (float)_gyPowerInfo.batteryPercentageRemaining/100.0f;
     }
 
-    inline unsigned PowerSupply::getBatterySecondsRemaining(void) const {
+    inline unsigned PowerSupply::getBatteryRemainingSecs(void) const {
         return _gyPowerInfo.batterySecondsRemaining;
     }
 

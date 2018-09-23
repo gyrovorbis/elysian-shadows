@@ -1,6 +1,8 @@
 #include <libGyro/gyro_file_api.h>
 #include <libGyro/gyro_visual_memory_api.h>
+#include <libGyro/gyro_sensor_api.h>
 #include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/crtp/elysian_timer_system.hpp>
 #include <ESGamma/crtp/elysian_debug.hpp>
 #include <ESGamma/system/elysian_audio_system.hpp>
 #include <ESGamma/device/elysian_keyboard_device.hpp>
@@ -10,6 +12,9 @@
 #include <ESGamma/device/elysian_visual_memory_device.hpp>
 #include <ESGamma/device/elysian_rumble_device.hpp>
 #include <ESGamma/device/elysian_power_supply_device.hpp>
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+#   include <ESGamma/device/elysian_sensor_device.hpp>
+#endif
 
 namespace elysian {
 
@@ -46,6 +51,10 @@ void KeyEventObserver::onKeyReleaseEvent(KeyEvent*) {}
 bool InputSystemBase::_initialized          = false;
 bool InputSystemBase::_managedExternally    = false;
 const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
+const constexpr GYRumbleInitParams InputSystemBase::_defaultRumbleInitParams;
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+const constexpr GYSensorInitParams InputSystemBase::_defaultSensorInitParams;
+#endif
 
 InputSystemBase::InputSystemBase(void) {
 
@@ -91,6 +100,38 @@ InputSystemBase::InputSystemBase(void) {
         _vmus[v].setPlayerIndex(v);
     }
 
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+    _accelerometers = new Accelerometer[ELYSIAN_INPUT_ACCELEROMETERS_MAX];
+    for(int a = 0; a < ELYSIAN_INPUT_ACCELEROMETERS_MAX; ++a) {
+        _accelerometers[a].setPlayerIndex(a);
+    }
+
+    _gyroscopes = new Gyroscope[ELYSIAN_INPUT_GYROSCOPES_MAX];
+    for(int g = 0; g < ELYSIAN_INPUT_GYROSCOPES_MAX; ++g) {
+        _gyroscopes[g].setPlayerIndex(g);
+    }
+
+    _magnetometers = new Magnetometer[ELYSIAN_INPUT_MAGNETOMETERS_MAX];
+    for(int m = 0; m < ELYSIAN_INPUT_MAGNETOMETERS_MAX; ++m) {
+        _magnetometers[m].setPlayerIndex(m);
+    }
+
+    _altimeters = new Altimeter[ELYSIAN_INPUT_ALTIMETERS_MAX];
+    for(int a = 0; a < ELYSIAN_INPUT_ALTIMETERS_MAX; ++a) {
+        _altimeters[a].setPlayerIndex(a);
+    }
+
+    _pedometers = new Pedometer[ELYSIAN_INPUT_PEDOMETERS_MAX];
+    for(int p = 0; p < ELYSIAN_INPUT_PEDOMETERS_MAX; ++p) {
+        _pedometers[p].setPlayerIndex(p);
+    }
+
+    _scales = new Scale[ELYSIAN_INPUT_SCALES_MAX];
+    for(int s = 0; s < ELYSIAN_INPUT_SCALES_MAX; ++s) {
+        _scales[s].setPlayerIndex(s);
+    }
+#endif
+
     _deviceAttachedSfx = gyAudWavCreate(ELYSIAN_INPUT_DEVICE_ATTACHED_SFX);
     _deviceRemovedSfx = gyAudWavCreate(ELYSIAN_INPUT_DEVICE_REMOVED_SFX);
     //Initial input poll, to initialize controller/mouse/keyboard handles
@@ -119,10 +160,19 @@ bool InputSystemBase::initialize(const GYInputInitParams*const params) {
         success &= gyInputInit(params? params : &_defaultInitParams);
         if(params != &_defaultInitParams) _managedExternally = true;
 
-        GYRumbleInitParams rumbleInitParams = {
-            ELYSIAN_INPUT_RUMBLE_DEVICES_MAX
-        };
-        gyRumbleInit(&rumbleInitParams);
+        success &= gyRumbleInit(&_defaultRumbleInitParams);
+
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+        success &= gySensorInit(&_defaultSensorInitParams);
+
+        auto sensors = gySensorSupportQuery();
+        Accelerometer::setSupported(sensors & GY_SENSOR_DEVICE_SUPPORT_ACCELEROMETER);
+        Gyroscope::setSupported(sensors & GY_SENSOR_DEVICE_SUPPORT_GYROSCOPE);
+        Magnetometer::setSupported(sensors & GY_SENSOR_DEVICE_SUPPORT_MAGNETOMETER);
+        Altimeter::setSupported(sensors & GY_SENSOR_DEVICE_SUPPORT_ALTIMETER);
+        Pedometer::setSupported(sensors & GY_SENSOR_DEVICE_SUPPORT_PEDOMETER);
+        Scale::setSupported(sensors & GY_SENSOR_DEVICE_SUPPORT_SCALE);
+#endif
         _initialized = true;
     }
 
@@ -134,20 +184,31 @@ bool InputSystemBase::uninitialize(void) {
 
     bool success = true;
 
-    success &= gyInputUninit();
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+    success &= gySensorUninit();
+#endif
     success &= gyRumbleUninit();
+    success &= gyInputUninit();
 
     _initialized = false;
     return success;
 }
 
-Controller* InputSystemBase::getController(const unsigned port) const { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); return &_controllers[port]; }
-Keyboard* InputSystemBase::getKeyboard(const unsigned port) const { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); return &_keyboards[port]; }
-Mouse* InputSystemBase::getMouse(const unsigned port) const { assert(port < ELYSIAN_INPUT_MICE_MAX); return &_mice[port]; }
-VisualMemoryUnit* InputSystemBase::getVMU(unsigned port) const { assert(port < ELYSIAN_INPUT_VMUS_MAX); return &_vmus[port]; }
-RumbleDevice* InputSystemBase::getRumbleDevice(const unsigned port) const { assert(port < ELYSIAN_INPUT_RUMBLE_DEVICES_MAX); return &_rumbleDevices[port]; }
-TouchDevice* InputSystemBase::getTouchDevice(const unsigned port) const { assert(port < ELYSIAN_INPUT_TOUCH_DEVICES_MAX); return &_touchDevices[port]; }
-PowerSupply* InputSystemBase::getPowerSupply(void) const { return _powerSupply; }
+Controller*         InputSystemBase::getController(const unsigned port) const { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); return &_controllers[port]; }
+Keyboard*           InputSystemBase::getKeyboard(const unsigned port) const { assert(port < ELYSIAN_INPUT_CONTROLLERS_MAX); return &_keyboards[port]; }
+Mouse*              InputSystemBase::getMouse(const unsigned port) const { assert(port < ELYSIAN_INPUT_MICE_MAX); return &_mice[port]; }
+VisualMemoryUnit*   InputSystemBase::getVMU(unsigned port) const { assert(port < ELYSIAN_INPUT_VMUS_MAX); return &_vmus[port]; }
+RumbleDevice*       InputSystemBase::getRumbleDevice(const unsigned port) const { assert(port < ELYSIAN_INPUT_RUMBLE_DEVICES_MAX); return &_rumbleDevices[port]; }
+TouchDevice*        InputSystemBase::getTouchDevice(const unsigned port) const { assert(port < ELYSIAN_INPUT_TOUCH_DEVICES_MAX); return &_touchDevices[port]; }
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+Accelerometer*      InputSystemBase::getAccelerometer(const unsigned port) const { assert(port < ELYSIAN_INPUT_ACCELEROMETERS_MAX); return &_accelerometers[port]; }
+Gyroscope*          InputSystemBase::getGyroscope(const unsigned port) const { assert(port < ELYSIAN_INPUT_GYROSCOPES_MAX); return &_gyroscopes[port]; }
+Magnetometer*       InputSystemBase::getMagnetometer(const unsigned port) const { assert(port < ELYSIAN_INPUT_MAGNETOMETERS_MAX); return &_magnetometers[port]; }
+Altimeter*          InputSystemBase::getAltimeter(const unsigned port) const { assert(port < ELYSIAN_INPUT_ALTIMETERS_MAX); return &_altimeters[port]; }
+Pedometer*          InputSystemBase::getPedometer(const unsigned port) const { assert(port < ELYSIAN_INPUT_PEDOMETERS_MAX); return &_pedometers[port]; }
+Scale*              InputSystemBase::getScale(const unsigned port) const { assert(port < ELYSIAN_INPUT_SCALES_MAX); return &_scales[port]; }
+#endif
+PowerSupply*        InputSystemBase::getPowerSupply(void) const { return _powerSupply; }
 
 void InputSystemBase::_onControllerAttached(const unsigned slot) {
     dbgprintf("InputSystem: Controller Attached! [Port: %d]", slot);
@@ -223,9 +284,34 @@ void InputSystemBase::_onRumbleDeviceRemoved(unsigned slot) {
     dbgprintf("InputSystem: RumbleDevice Removed! [Port: %d]", slot);
 }
 
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+#define ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(EVENT, MEMBER, STR) \
+void InputSystemBase::_on##STR##Removed(const unsigned slot) {      \
+    dbgprintf("InputSystem: " #STR " Removed! [Port: %d]", slot);   \
+    getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_##EVENT##_REMOVED, MEMBER[slot].getPlayerIndex(), InputDeviceEvent::REMOVED)); \
+} \
+void InputSystemBase::_on##STR##Attached(const unsigned slot) { \
+    dbgprintf("InputSystem: " #STR "Attached! [Port: %d]", slot);   \
+    getEventSys()->broadcastEvent(InputDeviceEvent(EVENT_##EVENT##_ATTACHED, MEMBER[slot].getPlayerIndex(), InputDeviceEvent::ATTACHED)); \
+}
+
+ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(ACCELEROMETER,    _accelerometers,    Accelerometer)
+ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(GYROSCOPE,        _gyroscopes,        Gyroscope)
+ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(MAGNETOMETER,     _magnetometers,     Magnetometer)
+ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(ALTIMETER,        _altimeters,        Altimeter)
+ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(PEDOMETER,        _pedometers,        Pedometer)
+ELYSIAN_INPUT_SYSTEM_SENSOR_EVENT_GENERIC(SCALE,            _scales,            Scale)
+
+
+#endif
+
 void InputSystemBase::_onPowerStateChanged(void) {
     dbgprintf("InputSystem: PowerSupply State Changed! [%s]", gySystemPowerStateString(_powerSupply->getPowerState()));
 }
+
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+
+#endif
 
 
 
@@ -234,22 +320,26 @@ void InputSystemBase::dumpStats(void) {
 }
 
 void InputSystemBase::update(void) {
+#define INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(MEMBER, METHOD, COUNT)    \
+    for(unsigned d = 0; d < COUNT; ++d) {                                   \
+        bool wasAttached   = MEMBER[d].isAttached();                        \
+        bool isAttached    = MEMBER[d].pollInput();                         \
+        if(isAttached && !wasAttached)                                      \
+            static_cast<InputSystem*>(this)->_on##METHOD##Attached(d);      \
+        else if(!isAttached && wasAttached)                                 \
+            static_cast<InputSystem*>(this)->_on##METHOD##Removed(d);       \
+    }
+
     //Update all events
     gyInputPollEvents();
 
     //Update Keyboards
-    for(unsigned k = 0; k < ELYSIAN_INPUT_KEYBOARDS_MAX; ++k) {
-        bool wasAttached   = _keyboards[k].isAttached();
-        bool isAttached    = _keyboards[k].pollInput();
-
-        if(isAttached && !wasAttached)      static_cast<InputSystem*>(this)->_onKeyboardAttached(k);
-        else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onKeyboardRemoved(k);
-    }
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_keyboards, Keyboard, ELYSIAN_INPUT_KEYBOARDS_MAX)
 
     //Update Mice
     for(unsigned m = 0; m < ELYSIAN_INPUT_MICE_MAX; ++m) {
         bool wasAttached = _mice[m].isAttached();
-        bool isAttached = _mice[m].pollInput();
+        bool isAttached = _mice[m].pollInput(getTimerSys()->getTotalTicks());
 
         if(isAttached && !wasAttached)      _onMouseAttached(m);
         else if(!isAttached && wasAttached) _onMouseRemoved(m);
@@ -300,7 +390,6 @@ void InputSystemBase::update(void) {
             static_cast<InputSystem*>(this)->_onRumbleDeviceRemoved(r);
             getEventSys()->broadcastEvent(RumbleDeviceEvent(EVENT_RUMBLE_DEVICE_REMOVED, &_rumbleDevices[r]));
         }
-
     }
 
     //update VMUs
@@ -325,6 +414,18 @@ void InputSystemBase::update(void) {
             _onPowerStateChanged();
         }
     }
+
+    //update Sensors
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_accelerometers, Accelerometer,  ELYSIAN_INPUT_ACCELEROMETERS_MAX)
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_gyroscopes,     Gyroscope,      ELYSIAN_INPUT_GYROSCOPES_MAX)
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_magnetometers,  Magnetometer,   ELYSIAN_INPUT_MAGNETOMETERS_MAX)
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_altimeters,     Altimeter,      ELYSIAN_INPUT_ALTIMETERS_MAX)
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_pedometers,     Pedometer,      ELYSIAN_INPUT_PEDOMETERS_MAX)
+    INPUT_SYSTEM_UPDATE_DEVICE_GENERIC(_scales,         Scale,          ELYSIAN_INPUT_SCALES_MAX)
+#endif
+
+#undef INPUT_SYSTEM_UPDATE_GENERIC_DEVICE_UPDATE
 
 }
 

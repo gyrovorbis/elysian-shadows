@@ -74,6 +74,7 @@ namespace elysian {
                         ~TimerSystemBase(void);
         void            update(void);
 
+
         unsigned long   getTotalTicks(void) const;
         unsigned long   getPreviousFrameTicks(void) const;
         unsigned long   getCurrentFrameTicks(void) const;
@@ -91,6 +92,9 @@ namespace elysian {
         bool            pushTaskMonitor(TaskMonitor*const task);
         void            popTaskMonitor(TaskMonitor*const task);
         void            printTaskStats(void);
+
+
+        static float    ticksToSecs(uint64_t ticks);
 
 	};
 

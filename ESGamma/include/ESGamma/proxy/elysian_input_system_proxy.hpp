@@ -10,6 +10,10 @@
 #include <ESGamma/device/elysian_keyboard_device.hpp>
 #include <ESGamma/device/elysian_mouse_device.hpp>
 #include <ESGamma/device/elysian_touch_device.hpp>
+#include <ESGamma/device/elysian_power_supply_device.hpp>
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+#   include<ESGamma/device/elysian_sensor_device.hpp>
+#endif
 
 namespace OOLUA {
     typedef elysian::PlayerIODevice             PlayerIODevice;
@@ -19,6 +23,15 @@ namespace OOLUA {
     typedef elysian::TouchDevice                TouchDevice;
     typedef elysian::RumbleDevice               RumbleDevice;
     typedef elysian::VisualMemoryUnit           VisualMemoryUnit;
+    typedef elysian::PowerSupply                PowerSupply;
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+    typedef elysian::Accelerometer              Accelerometer;
+    typedef elysian::Gyroscope                  Gyroscope;
+    typedef elysian::Magnetometer               Magnetometer;
+    typedef elysian::Altimeter                  Altimeter;
+    typedef elysian::Pedometer                  Pedometer;
+    typedef elysian::Scale                      Scale;
+#endif
 
     typedef elysian::RumbleEffect               RumbleEffect;
     typedef elysian::DirectionalRumbleEffect    DirectionalRumbleEffect;
@@ -106,6 +119,16 @@ OOLUA_PROXY(TouchDevice, PlayerIODevice)
     )
 OOLUA_PROXY_END
 
+OOLUA_PROXY(PowerSupply)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getBatteryLevel)
+    OOLUA_MFUNC_CONST(getBatteryRemainingSecs)
+    OOLUA_MFUNC_CONST(getPowerState)
+    OOLUA_MFUNC_CONST(isBattery)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(InputEvent)
     OOLUA_TAGS (
@@ -277,6 +300,58 @@ OOLUA_PROXY(VisualMemoryUnit, PlayerIODevice)
     OOLUA_MFUNC(frameBufferWritePixel)
 OOLUA_PROXY_END
 
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+
+OOLUA_PROXY(Accelerometer, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getAcceleration)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Gyroscope, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getAngularVelocity)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Magnetometer, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getMagneticField)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Altimeter, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getAltitude)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Pedometer, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getSteps)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Scale, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getWeight)
+OOLUA_PROXY_END
+
+#endif
+
 OOLUA_PROXY(InputSystem)
     OOLUA_TAGS (
         No_public_constructors,
@@ -288,6 +363,15 @@ OOLUA_PROXY(InputSystem)
     OOLUA_MFUNC_CONST(getVMU)
     OOLUA_MFUNC_CONST(getRumbleDevice)
     OOLUA_MFUNC_CONST(getTouchDevice)
+    OOLUA_MFUNC_CONST(getPowerSupply)
+#ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
+    OOLUA_MFUNC_CONST(getAccelerometer)
+    OOLUA_MFUNC_CONST(getGyroscope)
+    OOLUA_MFUNC_CONST(getMagnetometer)
+    OOLUA_MFUNC_CONST(getAltimeter)
+    OOLUA_MFUNC_CONST(getPedometer)
+    OOLUA_MFUNC_CONST(getScale)
+#endif
     OOLUA_MFUNC(setDefaultVMUIcon)
     OOLUA_MFUNC(broadcastVMUIcon)
     OOLUA_MFUNC(broadcastVMUBeep)

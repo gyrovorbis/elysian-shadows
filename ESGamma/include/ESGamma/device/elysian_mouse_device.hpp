@@ -4,6 +4,8 @@
 #include <ESGamma/device/elysian_player_io_device.hpp>
 #include <libGyro/gyro_input_api.h>
 
+#define ELYSIAN_MOUSE_BUTTON_DOUBLE_CLICK_TIMEOUT_INTERVAL_SECS    0.1f
+
 namespace elysian {
     class Mouse;
 
@@ -51,9 +53,15 @@ namespace elysian {
 
     class Mouse: public PlayerIODevice {
     private:
-        GYMouse*            _gyHandle = nullptr;
+        static float        _doubleClickTimeoutIntervalSecs;
+        uint64_t            _lastTapTicks[GY_MOUSE_BUT_COUNT]           = { 0 };
+        bool                _buttonsDoubleClicked[GY_MOUSE_BUT_COUNT]   = { false };
+        GYMouse*            _gyHandle                                   = nullptr;
+
+        void                _updateDerivedData(uint64_t ticks);
 
     public:
+
         GY_BUTTON_STATE     getButtonState(const GY_MOUSE_BUTTON button) const;
         const GYVector2&    getScreenPos(void) const;
         const GYVector2&    getScrollWheel(void) const;
@@ -64,8 +72,10 @@ namespace elysian {
         //IMPLEMENT ME, BITCHES!!!
         bool                isDoubleClicked(const GY_MOUSE_BUTTON button) const;
 
-        bool                pollInput(void);
+        bool                pollInput(uint64_t ticks);
 
+        static void         setDoubleClickTimeoutIntervalSecs(float secs);
+        static float        getDoubleClickTimeoutIntervalSecs(void);
     };
 
 
@@ -94,17 +104,19 @@ namespace elysian {
         MouseBaseEvent(eventType, mouse) {}
     inline const GYVector2& MouseWheelEvent::getScrollWheel(void) const { return _mouse->getScrollWheel(); }
 
-    inline bool Mouse::isPressed(const GY_MOUSE_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
-    inline bool Mouse::wasPressed(const GY_MOUSE_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_WAS_PRESSED); }
-    inline bool Mouse::isTapped(const GY_MOUSE_BUTTON button) const { return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
-    inline GY_BUTTON_STATE Mouse::getButtonState(const GY_MOUSE_BUTTON button) const { return (GY_BUTTON_STATE)_gyHandle->buttons[button]; }
+    inline bool Mouse::isPressed(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
+    inline bool Mouse::wasPressed(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return (_gyHandle->buttons[button] & GY_BUT_FLAGS_WAS_PRESSED); }
+    inline bool Mouse::isTapped(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
+    inline GY_BUTTON_STATE Mouse::getButtonState(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return (GY_BUTTON_STATE)_gyHandle->buttons[button]; }
     inline const GYVector2& Mouse::getScrollWheel(void) const { return _gyHandle->scrollWheel; }
     inline const GYVector2& Mouse::getScreenPos(void) const { return _gyHandle->screenPos; }
+    inline bool Mouse::isDoubleClicked(GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return _buttonsDoubleClicked[button]; }
     inline void Mouse::setPressed(const GY_MOUSE_BUTTON button, const bool pressed) const {
         _gyHandle->buttons[button] &= (unsigned)~GY_BUT_FLAGS_IS_PRESSED;
         _gyHandle->buttons[button] |= (unsigned)pressed;
     }
-
+    inline void Mouse::setDoubleClickTimeoutIntervalSecs(float secs) { _doubleClickTimeoutIntervalSecs = secs; }
+    inline float Mouse::getDoubleClickTimeoutIntervalSecs(void) { return _doubleClickTimeoutIntervalSecs; }
 }
 
 #endif // ELYSIAN_MOUSE_DEVICE_HPP

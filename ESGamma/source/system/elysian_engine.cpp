@@ -56,6 +56,7 @@ Engine::Engine(void):
     LuaManager::initialize();
 
     //allocate systems
+    _timerSystem		= new TimerSystem;
     _threadSystem       = new ThreadSystem;
     _eventSystem        = new EventSystem;
     _audioSystem		= new AudioSystem;
@@ -65,7 +66,6 @@ Engine::Engine(void):
     _mapSystem			= new MapSystem;
     _cameraSystem		= new CameraSystem;
     _characterSystem	= new CharacterSystem;
-    _timerSystem		= new TimerSystem;
     _warpSystem			= new WarpSystem;
     _collisionSystem	= new CollisionSystem;
     _rigidBodySystem	= new RigidBodySystem;

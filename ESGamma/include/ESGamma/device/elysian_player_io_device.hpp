@@ -32,12 +32,12 @@ namespace elysian {
     class PlayerIODevice    {
     protected:
         bool        _attached       = false;
-        unsigned    _playerIndex;
+        int         _playerIndex    = -1;
 
     public:
         bool        isAttached(void) const;
-        unsigned    getPlayerIndex(void) const;
-        void        setPlayerIndex(unsigned index);
+        int         getPlayerIndex(void) const;
+        void        setPlayerIndex(int index);
 
     };
 
@@ -56,8 +56,8 @@ namespace elysian {
 
     //PlayerIODevice
     inline bool PlayerIODevice::isAttached(void) const { return _attached; }
-    inline void PlayerIODevice::setPlayerIndex(unsigned index) { _playerIndex = index; }
-    inline unsigned PlayerIODevice::getPlayerIndex(void) const { return _playerIndex; }
+    inline void PlayerIODevice::setPlayerIndex(int index) { _playerIndex = index; }
+    inline int PlayerIODevice::getPlayerIndex(void) const { return _playerIndex; }
 
 
 }

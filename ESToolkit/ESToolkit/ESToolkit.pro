@@ -243,7 +243,8 @@ SOURCES += \
     ../../ESGamma/source/device/elysian_controller_device.cpp \
     ../../ESGamma/source/device/elysian_keyboard_device.cpp \
     ../../ESGamma/source/device/elysian_mouse_device.cpp \
-    ../../ESGamma/source/device/elysian_visual_memory_device.cpp
+    ../../ESGamma/source/device/elysian_visual_memory_device.cpp \
+    ../../ESGamma/source/device/elysian_sensor_device.cpp
 
 !ios: !dreamcast: !android {
 
@@ -545,7 +546,8 @@ HEADERS += \
     ../../ESGamma/include/ESGamma/device/elysian_mouse_device.hpp \
     ../../ESGamma/include/ESGamma/device/elysian_visual_memory_device.hpp \
     ../../ESGamma/include/ESGamma/device/elysian_touch_device.hpp \
-    ../../ESGamma/include/ESGamma/device/elysian_power_supply_device.hpp
+    ../../ESGamma/include/ESGamma/device/elysian_power_supply_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_sensor_device.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

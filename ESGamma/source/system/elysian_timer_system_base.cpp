@@ -17,6 +17,11 @@ struct timeval tv1,tv2;
 
 namespace elysian {
 
+float TimerSystemBase::ticksToSecs(uint64_t ticks) {
+    return ((float)ticks/1000000000.0f);
+}
+
+//INSTANCE
 void TimerSystemBase::startTimerEvent(const float duration, EventMonitor *monitor) {
     auto& proc = get<SUBPROC_TIMER_EVENT_POOL> ( static_cast<SubProcessManager<TimerSystem,
                                               TimerEventPool>& >(*this));
@@ -144,8 +149,9 @@ void TimerSystemBase::printTaskStats(void) {
         _topLevelTask->sortChildrenBySlowest();
         _topLevelTask->print();
     }
-
 }
+
+
 
 
 }
