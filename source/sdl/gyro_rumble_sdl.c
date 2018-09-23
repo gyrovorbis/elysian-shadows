@@ -177,7 +177,7 @@ int gyRumbleDeviceQuery(GYRumble* dev) {
     return success;
 }
 
-int gyRumbleInit(struct GYRumbleInitParams* params) {
+int gyRumbleInit(const struct GYRumbleInitParams* params) {
     int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "[GYRO_RUMBLE_API]: Initializing SDL_Haptic");
     _gyPush();
