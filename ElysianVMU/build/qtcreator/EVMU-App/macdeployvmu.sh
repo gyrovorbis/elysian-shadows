@@ -1,4 +1,4 @@
-LIBGYRO_PATH = $1
+LIBGYRO_PATH=$1
 
 rm -rf ElysianVMU.app/Contents/Frameworks/SDL2.framework
 rm -rf ElysianVMU.app/Contents/Frameworks/SDL2_net.framework

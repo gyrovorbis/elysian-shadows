@@ -1,4 +1,4 @@
-LIBGYRO_PATH = $1
+LIBGYRO_PATH=$1
 
 cd ../executable
 rm -rf *.dll
