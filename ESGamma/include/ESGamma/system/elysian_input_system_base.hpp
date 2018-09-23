@@ -15,6 +15,7 @@
 #include <ESGamma/system/elysian_system.hpp>
 #include <libGyro/gyro_input_api.h>
 #include <libGyro/gyro_defines.h>
+#include <stdint.h>
 
 struct GYWav;
 
