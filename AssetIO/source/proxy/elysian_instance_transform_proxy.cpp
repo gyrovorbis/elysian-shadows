@@ -640,13 +640,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Vector2,
  * \qmlmethod float Vector3::dotProduct(Vector3 other)
  *
  * Returns the dot (or scalar) product between the current vector and the \a {other} vector.
- * \sa scalarCrossProduct(), vectorCrossProduct()
+ * \sa crossProduct()
  */
 /*!
- * \qmlmethod Vector3 Vector3::cossProduct(Vector3 other)
+ * \qmlmethod Vector3 Vector3::crossProduct(Vector3 other)
  *
  * Returns the cross product between the current vector and \a other vector in the form of a vector.
- * \sa {2D Cross Products}, scalarCrossProduct(), dotProduct()
+ * \sa dotProduct()
  */
 /*!
  * \qmlmethod Vector3 Vector3::getUnitVector()

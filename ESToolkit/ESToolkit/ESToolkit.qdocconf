@@ -69,9 +69,9 @@ sourcedirs += source \
         source/AssetIO \
         source/ESGamma \
         source/ESToolkit \
-        source/QESTkUtils \
-	../../AssetIO/source \
-	../../AssetIO/source/component \
+        ../../QESTkUtils/source \
+		../../AssetIO/source \
+		../../AssetIO/source/component \
         ../../AssetIO/source/level \
         ../../AssetIO/source/primitive \
         ../../AssetIO/source/utility \

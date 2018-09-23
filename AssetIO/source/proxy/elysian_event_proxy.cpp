@@ -168,21 +168,45 @@ OOLUA_EXPORT_NO_FUNCTIONS(EventObserver)
             \li Event
             \li Existing Controller device has been removed
         \row
-            \li Event.KEYBOARD_KEY
-            \li Event
-            \li State of one of a Keyboard's keys has changed
+            \li Event.CONTROLLER_BUTTON_PRESSED
+            \li \l ControllerButtonEvent
+            \li State of one of the buttons on a controller changed from being up to down.
         \row
-            \li Event.MOUSE_MOVE
-            \li Event
+            \li Event.CONTROLLER_BUTTON_RELEASED
+            \li \l ControllerButtonEvent
+            \li State of one of the buttons on a controller changed from being down to up.
+        \row
+            \li Event.CONTROLLER_ANALOG_MOVED
+            \li \l ControllerAnalogEvent
+            \li The position of one of a Controller's analog sticks has moved.
+        \row
+            \li Event.CONTROLLER_TRIGGER_MOVED
+            \li \l ControllerTriggerEvent
+            \li Amount of pressure being applied to a Controller's trigger has changed.
+        \row
+            \li Event.KEYBOARD_KEY_PRESSED
+            \li \l KeyEvent
+            \li State of one of a Keyboard's keys changed from being up to down.
+        \row
+            \li Event.KEYBOARD_KEY_RELEASED
+            \li \l KeyEvent
+            \li State of one of a Keyboard's keys changed from being down to up.
+        \row
+            \li Event.MOUSE_MOVED
+            \li \l MouseEvent
             \li Mouse's cursor position has changed
         \row
-            \li Event.MOUSE_BUTTON
-            \li Event
-            \li State of one of the mouse buttons has changed
+            \li Event.MOUSE_BUTTON_PRESSED
+            \li \l MouseEvent
+            \li State of one of the mouse buttons changed from being up to down
         \row
-            \li Event.MOUSE_WHEEL
-            \li Event
-            \li Mouse's scroll wheel has changed
+            \li Event.MOUSE_BUTTON_RELEASED
+            \li \l MouseEvent
+            \li State of one of the mouse buttons changed from being down to up
+        \row
+            \li Event.MOUSE_SCROLLED
+            \li \l MouseWheelEvent
+            \li Mouse's scroll wheel has been moved
         \row
             \li Event.COLLISION_ENTER
             \li Event

@@ -15,6 +15,7 @@
 #include <QDesktopServices>
 #include <QESTkUtils/tk_mime_data.h>
 #include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/device/elysian_visual_memory_device.hpp>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -204,7 +205,7 @@ void AssetFileSystemModel::_onFileAdded(const QString filename) {
         }
 
     } else {
-        warnprintf("AssetFileSystem[%s] - Indexing neither file nor directory, ignoring.");
+        warnprintf("AssetFileSystem[%s] - Indexing neither file nor directory, ignoring.", Q_CSTR(filename));
     }
 }
 

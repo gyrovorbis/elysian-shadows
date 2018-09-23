@@ -235,7 +235,7 @@ void DebugBase::printf(const Debug::SEVERITY level, const char *const string, ..
 	if(level < _level) return;
 
 	va_start(argptr,string);
-	vsprintf(buffer, string, argptr);
+    vsnprintf(buffer, GYRO_PRINTF_BUFFER_SIZE, string, argptr);
 	va_end(argptr);
     Debug::writeLog(ENGINE, level, buffer);
 }

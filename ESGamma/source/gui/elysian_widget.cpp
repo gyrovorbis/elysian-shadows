@@ -12,12 +12,12 @@ namespace elysian {
     void Widget::setMouseTracking(bool enabled) {
         if(_mouseTracking && !enabled) {
             System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_BUTTON);
-            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_MOVE);
-            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_WHEEL);
+            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_MOVED);
+            System::getEventSys()->removeEventObserver(this, EVENT_MOUSE_SCROLLED);
         } else if(!_mouseTracking && enabled) {
             System::getEventSys()->addEventObserver(this, EVENT_MOUSE_BUTTON);
-            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_MOVE);
-            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_WHEEL);
+            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_MOVED);
+            System::getEventSys()->addEventObserver(this, EVENT_MOUSE_SCROLLED);
         }
         _mouseTracking = enabled;
     }
@@ -36,6 +36,7 @@ namespace elysian {
 
     void Widget::render(void) const {
         if(_layout) {
+           // if(_scissorRect) gyVidScissorRect(..)!!!
             _layout->render();
         }
     }
@@ -242,23 +243,26 @@ void Widget::onReceiveEvent(Event* event) {
 }
 
 void Widget::onObserveEvent(Event* event, EventTarget* target) {
+#if 0
     if(!target) {
+
         auto* mouseEvent = static_cast<MouseEvent*>(event);
         switch(event->getEventType()) {
 
         case EVENT_MOUSE_BUTTON:
             onMouseButtonEvent(*mouseEvent->getMouse());
             break;
-        case EVENT_MOUSE_MOVE:
+        case EVENT_MOUSE_MOVED:
             onMouseMoveEvent(*mouseEvent->getMouse());
             break;
-        case EVENT_MOUSE_WHEEL:
+        case EVENT_MOUSE_SCROLLED:
             onMouseWheelEvent(*mouseEvent->getMouse());
             break;
         }
     } else {
-        KeyboardEventObserver::onObserveEvent(event, target);
+        KeyEventObserver::onObserveEvent(event, target);
     }
+#endif
 }
 
 void Widget::onMouseButtonEvent(const Mouse &mouse) {

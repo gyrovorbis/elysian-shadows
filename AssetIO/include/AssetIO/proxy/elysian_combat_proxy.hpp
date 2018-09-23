@@ -61,10 +61,6 @@ OOLUA_PROXY(Combat, Component)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, setSelfTable, Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setActionTable, Lua_table_ref)
-    OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
-    OOLUA_MEM_FUNC(Lua_table_ref&, getActionTable)
     OOLUA_MEM_FUNC(void, setAttrib, std::shared_ptr<CombatAttrib>)
     OOLUA_MEM_FUNC(void, setDmgType, Combat::DMG_TYPE)
     OOLUA_MEM_FUNC(void, setDmgActive, bool)

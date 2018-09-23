@@ -171,9 +171,6 @@ namespace elysian {
 
     private:
         AggroManager                    _aggroMgr;
-        OOLUA::Lua_table_ref            _selfTable;
-        OOLUA::Lua_table_ref            _actionTable;
-
         CombatStatus                    _status;
         std::shared_ptr<CombatAttrib>	_attrib;
         DMG_TYPE                        _dmgType            = DMG_NONE;
@@ -200,12 +197,7 @@ namespace elysian {
 		//reimplemented from component
         static constexpr const  Component::TYPE componentType = Component::COMBAT;
 
-		void					setSelfTable(OOLUA::Lua_table_ref self);
-		OOLUA::Lua_table_ref&	getSelfTable(void);
-		void					setActionTable(OOLUA::Lua_table_ref self);
-		OOLUA::Lua_table_ref&	getActionTable(void);
         AggroManager&           getAggroManager(void);
-
 		DMG_TYPE				getDmgType(void) const;
 		void					setDmgType(const DMG_TYPE type);
         auto        			getAttrib(void) const -> std::shared_ptr<CombatAttrib>;
@@ -287,11 +279,6 @@ namespace elysian {
         setSourceEntity(src);
         setEmnity(emnity);
     }
-
-    inline void	CombatBase::setSelfTable(OOLUA::Lua_table_ref self) { _selfTable = self; }
-    inline OOLUA::Lua_table_ref& CombatBase::getSelfTable(void) { return _selfTable; }
-    inline void	CombatBase::setActionTable(OOLUA::Lua_table_ref self) { _actionTable = self; }
-    inline OOLUA::Lua_table_ref& CombatBase::getActionTable(void) { return _actionTable; }
 
     inline CombatBase::CombatBase(Entity &entity, CombatBase*const prefab):
         Component(entity),

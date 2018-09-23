@@ -101,6 +101,18 @@ namespace elysian {
         //ESTk triggers
         virtual void        onTkSelect(void) override;
         virtual void        onTkUnselect(void) override;
+
+        //CRTP overriding from EventSink
+        virtual void onKeyPressEvent(KeyEvent* keyEvent);
+        virtual void onKeyReleaseEvent(KeyEvent* keyEvent);
+        virtual void onMousePressEvent(MouseEvent* mouseEvent);
+        virtual void onMouseReleaseEvent(MouseEvent* mouseEvent);
+        virtual void onMouseMoveEvent(MouseEvent* mouseEvent);
+        virtual void onMouseWheelEvent(MouseWheelEvent* mouseEvent);
+        virtual void onControllerButtonPressEvent(ControllerButtonEvent* event);
+        virtual void onControllerButtonReleaseEvent(ControllerButtonEvent* event);
+        virtual void onControllerAnalogEvent(ControllerAnalogEvent* event);
+        virtual void onControllerTriggerEvent(ControllerTriggerEvent* event);
 		
 
         void                setBehavName(const char*const path);

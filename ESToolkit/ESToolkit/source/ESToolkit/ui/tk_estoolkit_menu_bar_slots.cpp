@@ -12,6 +12,7 @@
 #include <ESGamma/crtp/elysian_map_system.hpp>
 #include <ESGamma/system/elysian_party_system.hpp>
 #include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/device/elysian_visual_memory_device.hpp>
 
 #include <QESTkUtils/ui/widget/tk_gitlab_dialog.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>

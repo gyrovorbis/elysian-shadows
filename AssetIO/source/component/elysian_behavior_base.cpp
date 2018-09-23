@@ -191,5 +191,15 @@ void BehaviorBase::removeTrigger(TRIGGER flag) {
 	}
 }
 
+void BehaviorBase::onKeyPressEvent(KeyEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onKeyPressEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onKeyReleaseEvent(KeyEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onKeyReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onMousePressEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMousePressEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onMouseReleaseEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onMouseMoveEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseMOveEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onMouseWheelEvent(MouseWheelEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseWheelEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onControllerButtonPressEvent(ControllerButtonEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControlerButtonPressEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onControllerButtonReleaseEvent(ControllerButtonEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerButtonReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onControllerAnalogEvent(ControllerAnalogEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerAnalogEvent() - Unimplemented for '%s'.", getBehavName());}
+void BehaviorBase::onControllerTriggerEvent(ControllerTriggerEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerTriggerEvent() - Unimplemented for '%s'.", getBehavName());}
 
 }

@@ -23,7 +23,18 @@
 	\li \b {Lua Debug Console} - dynamically executes code for debugging and testing purposes
 	\endlist
 
+	\section1 Logging and Error Handling
+
 	\section1 Debugging Scripts
+
+	\section1 Toolkit-Specific Features and Utilities
+
+	\section1 Example Lua Scripts
+	Several Demo areas have been bundled within ESTk to provide examples of how to interact with the various Engine
+	features and functionality via the Lua API. For the full list of these levels, please visit the 
+	\l {Example Areas} page of the ESToolkit Documentation.
+
+
 
 	\section1 External Lua Documentation
 	\list
@@ -31,8 +42,6 @@
 	\li OOLua Documentation
 	\endlist
 
-	\section1 Lua Wrappers
-	\generatelist qmlclass
 
 */
 

@@ -70,8 +70,8 @@ PauseMenu::PauseMenu(void):
     System::getEventSys()->addEventObserver(this, EVENT_WIDGET_MENU_CANCEL,     _partyMenu);
 #if 1 //TESTING
     System::getEventSys()->addEventObserver(this, EVENT_MOUSE_BUTTON);
-    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_MOVE);
-    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_WHEEL);
+    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_MOVED);
+    System::getEventSys()->addEventObserver(this, EVENT_MOUSE_SCROLLED);
 #endif
 
 
@@ -221,11 +221,16 @@ void PauseMenu::controllerEvent(const Controller& cont) {
     EntityWidget::controllerEvent(cont);
 }
 
-void PauseMenu::onKeyboardEvent(const Keyboard& keybd) {
-    if(keybd.isTapped(GY_KEY_RETURN)) {
+void PauseMenu::onKeyPressEvent(KeyEvent* keyEvent) {
+    if(keyEvent->getKey() == GY_KEY_RETURN) {
 
         //quit
     }
+
+}
+
+void PauseMenu::onKeyReleaseEvent(KeyEvent* /*keyEvent*/) {
+
 
 }
 

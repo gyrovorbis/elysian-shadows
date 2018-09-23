@@ -3,6 +3,7 @@
 
 #include <AssetIO/primitive/elysian_instance_transform.hpp>
 #include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/system/elysian_event_system.hpp>
 
 #define ELYSIAN_SIZE_POLICY_GROW_FLAG_POS   0x0
 #define ELYSIAN_SIZE_POLICY_SHRINK_FLAG_POS 0x1
@@ -21,7 +22,7 @@ namespace elysian {
     class TableLayout;
 
     //maybe want alpha values/states so all menu shit can fade out?
-    class Widget: public EventTarget, public KeyboardEventObserver {
+    class Widget: public EventTarget, public EventObserver {
     public:
 
         static const constexpr uint16_t growFlag   = (1u<<ELYSIAN_SIZE_POLICY_GROW_FLAG_POS);
@@ -52,6 +53,7 @@ namespace elysian {
         bool            _enabled                = true;
         bool            _focus                  = false;
         bool            _mouseTracking          = false;
+        bool            _scissorRect            = true;
 
 
     public:

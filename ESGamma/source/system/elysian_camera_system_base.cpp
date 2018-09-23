@@ -8,6 +8,7 @@
 #include <ESGamma/crtp/elysian_timer_system.hpp>
 #include <ESGamma/crtp/elysian_input_system.hpp>
 #include <ESGamma/system/elysian_event_system.hpp>
+#include <ESGamma/device/elysian_keyboard_device.hpp>
 
 namespace elysian {
 

@@ -239,7 +239,11 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_item_delegate.cpp \
     ../../ESGamma/source/system/elysian_thread_system.cpp \
     ../../AssetIO/source/primitive/elysian_blend_mode_base.cpp \
-    source/AssetIO/tk_blend_mode.cpp
+    source/AssetIO/tk_blend_mode.cpp \
+    ../../ESGamma/source/device/elysian_controller_device.cpp \
+    ../../ESGamma/source/device/elysian_keyboard_device.cpp \
+    ../../ESGamma/source/device/elysian_mouse_device.cpp \
+    ../../ESGamma/source/device/elysian_visual_memory_device.cpp
 
 !ios: !dreamcast: !android {
 
@@ -535,7 +539,13 @@ HEADERS += \
     ../../game/include/game/behavior/elysian_playable_behavior.hpp \
     include/ESToolkit/AssetIO/tk_blend_mode.h \
     ../../AssetIO/include/AssetIO/crtp/elysian_blend_mode.hpp \
-    ../../AssetIO/include/AssetIO/primitive/elysian_blend_mode_base.hpp
+    ../../AssetIO/include/AssetIO/primitive/elysian_blend_mode_base.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_controller_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_keyboard_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_mouse_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_visual_memory_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_touch_device.hpp \
+    ../../ESGamma/include/ESGamma/device/elysian_power_supply_device.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

@@ -4,22 +4,42 @@
 #include <oolua.h>
 #include <ESGamma/crtp/elysian_input_system.hpp>
 #include <AssetIO/proxy/elysian_instance_transform_proxy.hpp>
+#include <ESGamma/device/elysian_rumble_device.hpp>
+#include <ESGamma/device/elysian_controller_device.hpp>
+#include <ESGamma/device/elysian_visual_memory_device.hpp>
+#include <ESGamma/device/elysian_keyboard_device.hpp>
+#include <ESGamma/device/elysian_mouse_device.hpp>
+#include <ESGamma/device/elysian_touch_device.hpp>
 
 namespace OOLUA {
     typedef elysian::PlayerIODevice             PlayerIODevice;
     typedef elysian::Keyboard                   Keyboard;
     typedef elysian::Mouse                      Mouse;
-    typedef elysian::VirtualDPad                VirtualDPad;
     typedef elysian::Controller                 Controller;
+    typedef elysian::TouchDevice                TouchDevice;
+    typedef elysian::RumbleDevice               RumbleDevice;
+    typedef elysian::VisualMemoryUnit           VisualMemoryUnit;
+
     typedef elysian::RumbleEffect               RumbleEffect;
     typedef elysian::DirectionalRumbleEffect    DirectionalRumbleEffect;
     typedef elysian::LeftRightRumbleEffect      LeftRightRumbleEffect;
     typedef elysian::ConstantRumbleEffect       ConstantRumbleEffect;
     typedef elysian::RampRumbleEffect           RampRumbleEffect;
     typedef elysian::PeriodicRumbleEffect       PeriodicRumbleEffect;
-    typedef elysian::RumbleDevice               RumbleDevice;
-    typedef elysian::VisualMemoryUnit           VisualMemoryUnit;
+
+    typedef elysian::VirtualDPad                VirtualDPad;
+
     typedef elysian::InputSystem                InputSystem;
+
+    typedef elysian::InputEvent                 InputEvent;
+    typedef elysian::ControllerEvent            ControllerEvent;
+    typedef elysian::ControllerButtonEvent      ControllerButtonEvent;
+    typedef elysian::ControllerAnalogEvent      ControllerAnalogEvent;
+    typedef elysian::ControllerTriggerEvent     ControllerTriggerEvent;
+    typedef elysian::KeyEvent                   KeyEvent;
+    typedef elysian::MouseBaseEvent             MouseBaseEvent;
+    typedef elysian::MouseEvent                 MouseEvent;
+    typedef elysian::MouseWheelEvent            MouseWheelEvent;
 }
 
 OOLUA_PROXY(PlayerIODevice)
@@ -51,6 +71,7 @@ OOLUA_PROXY(Mouse, PlayerIODevice)
     OOLUA_MFUNC_CONST(getScreenPos)
     OOLUA_MFUNC_CONST(isPressed)
     OOLUA_MFUNC_CONST(isTapped)
+    OOLUA_MFUNC_CONST(isDoubleClicked)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(VirtualDPad)
@@ -75,7 +96,110 @@ OOLUA_PROXY(Controller, PlayerIODevice)
     OOLUA_MEM_FUNC_CONST(bool, isPressed, const GY_CONTROLLER_BUTTON)
     OOLUA_MEM_FUNC_CONST(bool, isTapped, const GY_CONTROLLER_BUTTON)
     OOLUA_MEM_FUNC_CONST(const VirtualDPad&, getVirtualDPad, GY_CONTROLLER_ANALOG)
+    OOLUA_MEM_FUNC_CONST(float, getTriggerPressure, const GY_CONTROLLER_TRIGGER)
 OOLUA_PROXY_END
+
+OOLUA_PROXY(TouchDevice, PlayerIODevice)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+OOLUA_PROXY_END
+
+
+OOLUA_PROXY(InputEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor,
+        Abstract
+    )
+    OOLUA_MFUNC_CONST(getPlayerIndex)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ControllerEvent, InputEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor,
+        Abstract
+    )
+    OOLUA_MFUNC_CONST(getController)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ControllerButtonEvent, ControllerEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getButton)
+    OOLUA_MFUNC_CONST(getButtonState)
+    OOLUA_MFUNC_CONST(isPressed)
+    OOLUA_MFUNC_CONST(isTapped)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ControllerAnalogEvent, ControllerEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getAnalogStickType)
+    OOLUA_MFUNC_CONST(getAnalogStick)
+    OOLUA_MFUNC_CONST(getAnalogDir)
+    OOLUA_MFUNC_CONST(getAnalogMag)
+    OOLUA_MFUNC_CONST(getVirtualDPad)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ControllerTriggerEvent, ControllerEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getTrigger)
+    OOLUA_MFUNC_CONST(getTriggerPressure)
+OOLUA_PROXY_END
+
+
+OOLUA_PROXY(KeyEvent, InputEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getKeyboard)
+    OOLUA_MFUNC_CONST(isPressed)
+    OOLUA_MFUNC_CONST(isTapped)
+    OOLUA_MFUNC_CONST(getState)
+    OOLUA_MFUNC_CONST(getKey)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(MouseBaseEvent, InputEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor,
+        Abstract
+    )
+    OOLUA_MFUNC_CONST(getMouse)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(MouseEvent, MouseBaseEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getScreenPos)
+    OOLUA_MFUNC_CONST(getButton)
+    OOLUA_MFUNC_CONST(getButtonState)
+    OOLUA_MFUNC_CONST(isPressed)
+    OOLUA_MFUNC_CONST(isTapped)
+    OOLUA_MFUNC_CONST(isDoubleClicked)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(MouseWheelEvent, MouseBaseEvent)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC_CONST(getScrollWheel)
+OOLUA_PROXY_END
+
 
 OOLUA_PROXY(RumbleEffect)
     OOLUA_TAGS (
@@ -158,11 +282,12 @@ OOLUA_PROXY(InputSystem)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(Controller*, getController, const unsigned)
-    OOLUA_MEM_FUNC(Keyboard*, getKeyboard, const unsigned)
-    OOLUA_MFUNC(getMouse)
-    OOLUA_MFUNC(getVMU)
-    OOLUA_MFUNC(getRumbleDevice)
+    OOLUA_MEM_FUNC_CONST(Controller*, getController, const unsigned)
+    OOLUA_MEM_FUNC_CONST(Keyboard*, getKeyboard, const unsigned)
+    OOLUA_MFUNC_CONST(getMouse)
+    OOLUA_MFUNC_CONST(getVMU)
+    OOLUA_MFUNC_CONST(getRumbleDevice)
+    OOLUA_MFUNC_CONST(getTouchDevice)
     OOLUA_MFUNC(setDefaultVMUIcon)
     OOLUA_MFUNC(broadcastVMUIcon)
     OOLUA_MFUNC(broadcastVMUBeep)

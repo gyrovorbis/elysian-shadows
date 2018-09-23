@@ -4,6 +4,48 @@
 #include <stdint.h>
 #include <AssetIO//utility/elysian_cpp_lua_callback.hpp>
 #include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <type_traits>
+
+
+
+#define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
+#define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
+
+#define ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(_1, _2, _3, NAME, ...) NAME
+#define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
+
+#define ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(f) { #f, nullptr, nullptr, nullptr, LuaTableFieldProxy::FLAG_VTABLE_BEGIN },
+#define ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END() { nullptr, nullptr, nullptr, nullptr, LuaTableFieldProxy::FLAG_VTABLE_END },
+
+#define ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_WRITE(f, g, s, c) { #f, #g, #s, #c, LuaTableFieldProxy::FLAG_ARRAY },
+#define ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_ONLY(f, g, c) { #f, #g, nullptr, #c, LuaTableFieldProxy::FLAG_ARRAY },
+
+#define ELYSIAN_LUA_PROXY_ARRAY_FIELD_GET_MACRO(_1, _2, _3, _4, NAME, ...) NAME
+#define ELYSIAN_LUA_PROXY_ARRAY_FIELD(...) ELYSIAN_LUA_PROXY_ARRAY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_ONLY)(__VA_ARGS__)
+
+
+#define ELYSIAN_EVENT_HANDLER_DECL_BEGIN(...)
+
+
+#define ELYSIAN_EVENT_HANDLER_LIST_BEGIN(NAME)                      \
+    using OUTER_CLASS = NAME;                                       \
+    template<typename P>                                            \
+    struct Sink {                                                   \
+         bool _onEventObserve(Event* event) {                       \
+            switch(event->getEventType()) {
+
+#define ELYSIAN_EVENT_HANDLER(EVENT_TYPE, EVENT_HANDLER)            \
+            case EVENT_TYPE:                                        \
+                static_cast<P*>(this)->                             \
+                    EVENT_HANDLER(static_cast<OUTER_CLASS*>(event));\
+                return true;
+
+#define ELYSIAN_EVENT_HANDLER_LIST_END                             \
+            default: return false;                                 \
+            }                                                      \
+        }                                                          \
+    };
+
 
 namespace elysian {
 
@@ -31,11 +73,17 @@ namespace elysian {
         EVENT_VMU_REMOVED,
         EVENT_CONTROLLER_ATTACHED,
         EVENT_CONTROLLER_REMOVED,
-        EVENT_MOUSE_MOVE,
+        EVENT_CONTROLLER_BUTTON_PRESSED,
+        EVENT_CONTROLLER_BUTTON_RELEASED,
+        EVENT_CONTROLLER_ANALOG_MOVED,
+        EVENT_CONTROLLER_TRIGGER_MOVED,
+        EVENT_MOUSE_MOVED,
         EVENT_MOUSE_BUTTON,
         EVENT_MOUSE_BUTTON_PRESSED,
         EVENT_MOUSE_BUTTON_RELEASED,
-        EVENT_MOUSE_WHEEL,
+        EVENT_MOUSE_SCROLLED,
+        EVENT_TOUCH_DEVICE_ATTACHED,
+        EVENT_TOUCH_DEVICE_REMOVED,
         EVENT_POWER_SUPPLY_STATE_CHANGED,
         EVENT_COLLISION_ENTER,
         EVENT_COLLISION_EXIT,
@@ -123,8 +171,6 @@ namespace elysian {
     };
 
 
-
-
     class EventObserver {
         friend class EventSystem;
     protected:
@@ -134,8 +180,52 @@ namespace elysian {
                         ~EventObserver(void) = default; //remove any references from EventSystem!
         virtual void    onObserveEvent(Event* event, EventTarget* target);
 
-
     };
+
+    template<class CRTP_Derived, class... Events> class EventSinkBase;
+
+    template<class CRTP_Derived,
+             class First_Event,
+             class... Other_Events>
+    class EventSinkBase<CRTP_Derived, First_Event, Other_Events...>:
+            public First_Event::template Sink<CRTP_Derived>,
+            public EventSinkBase<CRTP_Derived, Other_Events...>
+    {
+    protected:
+
+        bool _onEventObserve(Event* event) {
+            if(!First_Event::template Sink<CRTP_Derived>::_onEventObserve(event)) {
+                return EventSinkBase<CRTP_Derived, Other_Events...>::_onEventObserve(event);
+            }
+            return true;
+        }
+    };
+
+    template<class CRTP_Derived, class First_Event>
+    class EventSinkBase<CRTP_Derived, First_Event>:
+        public First_Event::template Sink<CRTP_Derived>
+    {
+    protected:
+        bool _onEventObserve(Event* event) {
+            return First_Event::template Sink<CRTP_Derived>::_onEventObserve(event);
+        }
+    };
+
+
+    template<typename CRTP_Derived,
+             typename First_Event,
+             typename... Other_Events>
+    class EventSink:
+            public EventSinkBase<CRTP_Derived, First_Event, Other_Events...>,
+            public EventObserver
+    {
+    public:
+
+        virtual void onObserveEvent(Event* event, EventTarget* target) override {
+            if(!target) EventSinkBase<CRTP_Derived, First_Event, Other_Events...>::_onEventObserve(event);
+        }
+    };
+
 
 
 

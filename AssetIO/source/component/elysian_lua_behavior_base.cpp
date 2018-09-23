@@ -217,14 +217,6 @@ void LuaBehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const contac
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX, *_ooSelfTableRef, contact, collidable, modifier));
 }
 
-void LuaBehaviorBase::onReceiveEvent(Event* event) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_RECEIVE_EVENT_INDEX, *_ooSelfTableRef, event));
-}
-
-void LuaBehaviorBase::onObserveEvent(Event *event, EventTarget* target) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_OBSERVE_EVENT_INDEX, *_ooSelfTableRef, event, LuaVariant(target)));
-}
-
 /*
 void LuaBehaviorBase::onButtonPress(const GameInput::BUTTON button) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_BUTTON_PRESS_INDEX, _ooSelfTableRef, button));
@@ -241,5 +233,27 @@ void LuaBehaviorBase::onTkSelect(void) {
 void LuaBehaviorBase::onTkUnselect(void) {
     _PROTECTED(_callTriggerByName<void>("onTkUnselect", *_ooSelfTableRef));
 }
+
+
+//EventSystem Events
+void LuaBehaviorBase::onReceiveEvent(Event* event) {
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_RECEIVE_EVENT_INDEX, *_ooSelfTableRef, event));
+}
+
+void LuaBehaviorBase::onObserveEvent(Event *event, EventTarget* target) {
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_OBSERVE_EVENT_INDEX, *_ooSelfTableRef, event, LuaVariant(target)));
+}
+
+void LuaBehaviorBase::onKeyPressEvent(KeyEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onKeyPressEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onKeyReleaseEvent(KeyEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onKeyReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onMousePressEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMousePressEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onMouseReleaseEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onMouseMoveEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseMOveEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onMouseWheelEvent(MouseWheelEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseWheelEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onControllerButtonPressEvent(ControllerButtonEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControlerButtonPressEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onControllerButtonReleaseEvent(ControllerButtonEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerButtonReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onControllerAnalogEvent(ControllerAnalogEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerAnalogEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onControllerTriggerEvent(ControllerTriggerEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerTriggerEvent() - Unimplemented for '%s'.", getBehavName());}
+
 
 }

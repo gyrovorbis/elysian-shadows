@@ -37,7 +37,7 @@ void PlayableBehavior::onUpdate(void) {
 }
 
 void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
-    auto angle = cont->getAnalogAngle(GY_CONTROLLER_ANALOG_LEFT);
+    auto angle = Vector2(cont->getAnalogDir(GY_CONTROLLER_ANALOG_LEFT)).toAngle();
     auto mag = cont->getAnalogMag(GY_CONTROLLER_ANALOG_LEFT);
 
     _tapTimer += partySys->getTimerSys()->getDeltaTime();

@@ -49,7 +49,7 @@
 	\li \l {Warps}
 	\li \l {Dialog Trees}
 	\li \l {Cutscenes}
-	\li \l {Demo and Example Areas}
+	\li \l {Example Areas}
 	\endlist
 
 */
@@ -878,6 +878,62 @@
 	The Lua Behavior script containing the cutscene is located at \l {file:/assets/level/Examples/area/CutsceneDemo/cutscene_demo_behav.lua}.
 	The Lua Behavior has been attached to the SavePoint entity within area_table.lua.
 	Press the "C" Key or "X" Button to begin the cutscene.
+
+	\sa CameraSystem
+*/
+
+
+/*!
+	\page example_areas.html
+	\previouspage Cutscenes
+	\contentspage {ESToolkit User Manual} {Contents}
+	\ingroup estk
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Example Areas
+	Many different example levels and areas have been packaged with ESTk to demonstrate driving the various
+	features of the Engine using the \l{Lua Wrapper API}. Some fo these example areas can also be used as built-in tests 
+	for testing Input Devices and other Engine functionality.
+
+	The root folder containing these examples is {file:/assets/level/Examples}. The following example
+	areas are available:
+
+	\table
+		\header
+			\li \b Topic
+			\li \b Location
+			\li \b Details
+		\row 
+			\li Cutscenes & Camera Manipulation
+			\li \l {file:/assets/level/Examples/area/CutsceneDemo}
+			\li Features a fully documented LuaBehavior that triggers a cutscene and assumes manual control over 
+				the camera, applying various panning, zoom, and special effects and keyframes.
+		\row 
+			\li Dialog
+			\li \l {file:/assets/level/Examples/area/DialogEventDemo}
+			\li Area contains an Entity with a Dialog component and a full, complex Dialog tree along with a 
+				fully documented LuaBehavior for interacting with the Dialog programmatically.
+		\row 
+			\li Evens and EventSystem 
+			\li \l {file:/assets/level/Examples/area/EventDemo}
+			\li Simple level with two Entities and two LuaBehaviors, demonstarting sending, receiving, and observing
+				events and passing custom events as messages between the two.
+		\row 
+			\li Particle Emitter Demo
+			\li \l {file:/assets/level/Examples/area/ParticleEmitterDemo}
+			\li Area contains a single Entity with a ParticleEmitter component and allows you to modify 
+				ParticleEmitterAttrib values via SelectionView and preview the effects of the different properties.
+		\row 
+			\li Rumble Devices and Force Feedback
+			\li \l {file:/assets/level/Examples/area/RumbleTest}
+			\li Features a fully documented LuaBehavior, serving as both an example of driving
+				RumbleDevices and also as a test application for verifying any RumbleEffect on actual hardware. 
+				The LuaBehavior is written in the style of a console app and is driven via the Lua Terminal.
+	\endtable
+
+	\sa {Lua Wrapper API}
 
 */
 

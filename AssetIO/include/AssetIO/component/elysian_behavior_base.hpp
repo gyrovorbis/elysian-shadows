@@ -7,6 +7,10 @@
 #include <AssetIO/crtp/elysian_component.hpp>
 #include <AssetIO/level/elysian_event.hpp>
 #include <AssetIO/utility/elysian_stl_algorithm.hpp>
+#include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/device/elysian_keyboard_device.hpp>
+#include <ESGamma/device/elysian_controller_device.hpp>
+#include <ESGamma/device/elysian_mouse_device.hpp>
 
 #define ELYSIAN_BEHAVIOR_NAME_SIZE 100
 
@@ -22,7 +26,7 @@ namespace elysian {
     class BehaviorBase:
             public Component,
             public EventTarget,
-            public EventObserver
+            public EventSink<Behavior, KeyEvent, ControllerButtonEvent, ControllerAnalogEvent, ControllerTriggerEvent, MouseEvent, MouseWheelEvent>
     {
         friend class BaseEntity;
 
@@ -169,6 +173,18 @@ namespace elysian {
         //virtual void onButtonRelease(const GameInput::BUTTON button);
         virtual void onCombatReceiveStatusModifier(CombatStatus*const modifier);
         virtual void onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
+
+        //CRTP overriding from EventSink
+        virtual void onKeyPressEvent(KeyEvent* keyEvent);
+        virtual void onKeyReleaseEvent(KeyEvent* keyEvent);
+        virtual void onMousePressEvent(MouseEvent* mouseEvent);
+        virtual void onMouseReleaseEvent(MouseEvent* mouseEvent);
+        virtual void onMouseMoveEvent(MouseEvent* mouseEvent);
+        virtual void onMouseWheelEvent(MouseWheelEvent* mouseEvent);
+        virtual void onControllerButtonPressEvent(ControllerButtonEvent* event);
+        virtual void onControllerButtonReleaseEvent(ControllerButtonEvent* event);
+        virtual void onControllerAnalogEvent(ControllerAnalogEvent* event);
+        virtual void onControllerTriggerEvent(ControllerTriggerEvent* event);
 
         //Reimplemented from EventTarget/Observer
         virtual void onReceiveEvent(Event* event);

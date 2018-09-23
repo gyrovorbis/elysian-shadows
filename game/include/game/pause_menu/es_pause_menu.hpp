@@ -26,6 +26,7 @@ namespace elysian {
     class LabelWidget;
     class GroupWidget;
     class MenuSelection;
+    class KeyEvent;
 }
 
 namespace ElysianShadows {
@@ -122,7 +123,8 @@ namespace ElysianShadows {
     virtual void        activate(void) override;
     virtual void        deactivate(void) override;
     virtual void        controllerEvent(const elysian::Controller& cont) override;
-    virtual void        onKeyboardEvent(const elysian::Keyboard& keybd) override;
+    virtual void        onKeyPressEvent(elysian::KeyEvent* keyEvent);
+    virtual void        onKeyReleaseEvent(elysian::KeyEvent* keyEvent);
 
     //overridden from EventMonitor
     virtual void        onObserveEvent(elysian::Event* event, elysian::EventTarget* receiver);

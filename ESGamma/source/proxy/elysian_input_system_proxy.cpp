@@ -77,7 +77,15 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PlayerIODevice,
  *
  *  Returns true if the given \a{button} has just been pressed down this frame, and will return false every subsequent frame
  *  until it has been released and pressed again.
- * \sa isPressed, getButtonState
+ * \sa isPressed, isDoubleClicked, getButtonState
+ */
+/*!
+ * \qmlmethod bool Mouse::isDoubleClicked(Mouse::BUT_TYPE button)
+ *
+ *  Returns true if the given \a{button} was double-clicked, and the event ended this frame.
+ * \e {NOTE: This operation is equivalent to two consecutive \l{isTapped} operations occuring
+ * within some short interval of one another.}
+ * \sa isTapped, isPressed, getButtonState
  */
 /*!
  * \qmlmethod Vector2 Mouse::getScrollWheel()
@@ -971,27 +979,57 @@ The button can be one of:
 \li Controller.BUT_COUNT
 \endlist
 */
+
+/*!
+\qmlproperty enumeration Controller::TRIGGER_TYPE
+
+Represents the different triggers on a controller.
+
+The button can be one of:
+\list
+\li Controller.TRIGGER_LEFT
+\li Controller.TRIGGER_RIGHT
+\endlist
+*/
+
+/*!
+\qmlproperty enumeration Controller::ANALOG_TYPE
+
+Represents the different analog sticks on a controller.
+
+The button can be one of:
+\list
+\li Controller.ANALOG_LEFT
+\li Controller.ANALOG_RIGHT
+\endlist
+*/
 /*!
  * \qmlmethod InputSystem::BUT_STATE Controller::getButtonState(Controller::BUT_TYPE button)
  *
  * Returns the state of the given \a button.
  * \sa InputSystem::BUT_STATE
  */
-
 /*!
- * \qmlmethod Vector2 Controller::getAnalogStick(int stick)
+ * \qmlmethod Vector2 Controller::getAnalogStick(Controller::ANALOG_TYPE stick)
  *
  * Returns a vector in the range of <0.0, 0.0> to <1.0, 1.0> for the analog stick specified by \a stick where 0 is the left analog stick and 1 is the right analog stick.
  */
 /*!
- * \qmlmethod Vector2 Controller::getAnalogDir(int stick)
+ * \qmlmethod Vector2 Controller::getAnalogDir(Controller::ANALOG_TYPE stick)
  *
  * Returns a normalized unit vector representing the direction of the analog stick specified by \a stick where 0 is the left analog stick and 1 is the right analog stick.
+ * \sa getAnalogMag
  */
 /*!
- * \qmlmethod float Controller::getAnalogMag(int stick)
+ * \qmlmethod float Controller::getAnalogMag(Controller::ANALOG_TYPE stick)
  *
  * Returns the floating point magnitude of the analog stick specified by \a stick where 0 is the left analog stick and 1 is the right analog stick.
+ * \sa getAnalogDir
+ */
+/*!
+ * \qmlmethod float Controller::getTriggerPressure(Controller::TRIGGER_TYPE trigger)
+ *
+ * Returns the floating point magnitude representing how far the given \a{trigger} is being held down.
  */
 /*!
  * \qmlmethod bool Controller::isPressed(Controller::BUT_TYPE button)
@@ -1005,7 +1043,7 @@ The button can be one of:
  * \sa isPressed
  */
 /*!
- * \qmlmethod VirtualDPad* Controller::getVirtualDPad(int analogStick)
+ * \qmlmethod VirtualDPad* Controller::getVirtualDPad(Controller::ANALOG_TYPE stick)
  *
  * Returns a VirtualDPad object mapping the analog stick given by \a analogStick to a set of directional pad buttons. 0 specifies the left analog stick, and 1 specifies the right analog stick.
  * \sa isPressed
@@ -1016,11 +1054,25 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Controller,
                              getAnalogStick,
                              getAnalogDir,
                              getAnalogMag,
+                             getTriggerPressure,
                              getButtonState,
                              isPressed,
                              isTapped,
                              getVirtualDPad)
 
+/*!
+    \qmltype TouchDevice
+    \since 1.6.1
+    \inmodule Engine
+    \inherits PlayerIODevice
+    \brief Class representing cross platform touchscreens and other touch-sensitive input devices.
+
+    TouchDevice is a cross-platform abstraction for any type of 2D spatial input device that is sensitive to touch
+    such as tablets or touch screens.
+*/
+
+OOLUA_EXPORT_FUNCTIONS(TouchDevice)
+OOLUA_EXPORT_FUNCTIONS_CONST(TouchDevice)
 
 /*!
     \qmltype InputSystem
@@ -1101,13 +1153,413 @@ The button can be one of:
 
 
 OOLUA_EXPORT_FUNCTIONS(InputSystem,
-                       getController,
-                       getKeyboard,
-                       getMouse,
-                       getRumbleDevice,
-                       getVMU,
                        setDefaultVMUIcon,
                        broadcastVMUIcon,
                        broadcastVMUBeep)
-OOLUA_EXPORT_FUNCTIONS_CONST(InputSystem)
+OOLUA_EXPORT_FUNCTIONS_CONST(InputSystem,
+                             getKeyboard,
+                             getMouse,
+                             getRumbleDevice,
+                             getVMU,
+                             getController)
 
+/*!
+    \qmltype InputEvent
+    \since 1.6.1
+    \inmodule Engine
+    \inherits Event
+    \brief Base class for all player input device events
+
+    Common parent class inherited by any user event fired from an input device such
+    as Controllers, Mice, keyboards, Touch Screens, etc.
+
+    \sa {KeyEvent}, {MouseBaseEvent}, {ControllerEvent}
+*/
+/*!
+ * \qmlmethod int InputEvent::getPlayerIndex()
+ *
+ * Returns the player ID associated with the device that fired the event.
+ */
+OOLUA_EXPORT_FUNCTIONS(InputEvent)
+OOLUA_EXPORT_FUNCTIONS_CONST(InputEvent,
+                             getPlayerIndex)
+
+/*!
+    \qmltype KeyEvent
+    \since 1.6.1
+    \inmodule Engine
+    \inherits InputEvent
+    \brief Event for keyboard key state changes.
+
+    KeyEvents are fired whenever the player presses or releases any key
+    associated with their corresponding \l{Keyboard} device.
+
+    \sa {Keyboard}, {InputEvent}, {MouseBaseEvent}, {ControllerEvent}
+*/
+/*!
+ * \qmlmethod Keyboard* KeyEvent::getKeyboard()
+ *
+ * Returns the Keyboard object from which the associated event was fired.
+ */
+/*!
+ * \qmlmethod bool KeyEvent::isPressed()
+ *
+ * Returns whether the KeyEvent is currently being pressed or not.
+ * \sa isTapped, Keyboard::isPressed
+ */
+/*!
+ * \qmlmethod bool KeyEvent::isTapped()
+ *
+ * Returns true if this is the first frame the key in question has swapped from being released to pressed.
+ * \sa isPressed, Keyboard::isTapped
+ */
+/*!
+ * \qmlmethod InputSystem::BUT_STATE KeyEvent::getState()
+ *
+ * Returns the current state of the key in question.
+ * \sa getKey, Keyboard::getButtonState
+ */
+/*!
+ * \qmlmethod Keyboard::KEY_TYPE KeyEvent::getKey()
+ *
+ * Returns the key whose state change triggered this event.
+ * \sa getState
+ */
+
+OOLUA_EXPORT_FUNCTIONS(KeyEvent)
+OOLUA_EXPORT_FUNCTIONS_CONST(KeyEvent,
+                             getKeyboard,
+                             isPressed,
+                             isTapped,
+                             getState,
+                             getKey)
+
+/*!
+\qmltype ControllerEvent
+\since 1.6.1
+\inmodule Engine
+\inherits InputEvent
+\brief Base Event for all Controller device events.
+
+ControllerEvent is the base parent class from which all controller-related
+input events are derived. They each contain the members and data within
+this class.
+
+List of \l{Event::TYPE}s that are represented by subclasses of ControllerEvent.
+\list
+    \li Event::CONTROLLER_BUTTON_PRESSED
+    \li Event::CONTROLLER_BUTTON_RELEASED
+    \li Event::CONTROLLER_ANALOG_MOVED
+    \li Event::CONTROLLER_TRIGGER_MOVED
+\endlist
+
+\sa {ControllerButtonEvent}, {ControllerAnalogEvent}, {ControllerTriggerEvent}, {InputEvent}
+*/
+/*!
+ * \qmlmethod Controller* ControllerEvent::getController()
+ *
+ * Returns the \l{Controller} device that fired this event.
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(ControllerEvent,
+                             getController)
+OOLUA_EXPORT_FUNCTIONS(ControllerEvent)
+
+/*!
+\qmltype ControllerButtonEvent
+\since 1.6.1
+\inmodule Engine
+\inherits ControllerEvent
+\brief Event corresponding to a Controller button being pressed or released.
+
+ControllerButtonEvent represents the state change of a button on a \l{Controller} device.
+It encapsulates a \l{Controller}, and the corresponding \l{Controller::BUT_TYPE} that was
+pressed or released by the user. The methods are provided as convenience functions so that
+you don't have to query the state of the button yourself directly through the Controller object.
+
+List of \l{Event::TYPE}s that are represented by ControllerButtonEvent.
+\list
+    \li Event::CONTROLLER_BUTTON_PRESSED
+    \li Event::CONTROLLER_BUTTON_RELEASED
+\endlist
+
+\sa {Controller}, {ControllerEvent}, {ControllerAnalogEvent}, {ControllerTriggerEvent}
+*/
+/*!
+ * \qmlmethod Controller::BUT_TYPE ControllerButtonEvent::getButton()
+ *
+ * Returns the button whose state change caused this even tot be fired.
+ * \sa getButtonState
+ */
+/*!
+ * \qmlmethod InputSystem::BUT_STATE ControllerButtonEvent::getButtonState()
+ *
+ * Returns the current state of the Controller button corresponding to this event.
+ * \sa getButton, Controller::getButtonState
+ */
+/*!
+ * \qmlmethod bool ControllerButtonEvent::isPressed()
+ *
+ * Returns the current state of the Controller button corresponding to this event.
+ * \sa isTapped, Controller::isPressed
+ */
+/*!
+ * \qmlmethod bool ControllerButtonEvent::isTapped()
+ *
+ * Returns the current state of the Controller button corresponding to this event.
+ * \sa isPressed, Controller::isTapped
+ */
+OOLUA_EXPORT_FUNCTIONS_CONST(ControllerButtonEvent,
+                             getButton,
+                             getButtonState,
+                             isPressed,
+                             isTapped)
+OOLUA_EXPORT_FUNCTIONS(ControllerButtonEvent)
+
+
+/*!
+\qmltype ControllerAnalogEvent
+\since 1.6.1
+\inmodule Engine
+\inherits ControllerEvent
+\brief Event corresponding to Controller's analog stick being moved.
+
+ControllerAnalogEvent represents a change in the state of one of a \l{Controller}'s
+analog sticks. It encapsulates both a \l{Controller} device object and a \l{Controller::ANALOG_TYPE}
+representing the analog stick whose state changed.
+
+List of \l{Event::TYPE}s that are represented by ControllerAnalogEvent.
+\list
+    \li Event::CONTROLLER_ANALOG_MOVED
+\endlist
+
+\sa {Controller}, {ControllerButtonEvent}, {ControllerAnalogEvent}, {ControllerTriggerEvent}
+*/
+/*!
+ * \qmlmethod Controller::getAnalogStickType ControllerAnalogEvent::getAnalogStickType()
+ *
+ * Returns the analog stick whose state change caused this even tot be fired.
+ */
+/*!
+ * \qmlmethod Vector2 ControllerAnalogEvent::getAnalogStick()
+ *
+ * Returns the Vector2 representing the position of the analog stick in question.
+ * \sa Controller::getAnalogStick
+ */
+/*!
+ * \qmlmethod Vector2 ControllerAnalogEvent::getAnalogDir()
+ *
+ * Returns the normalized direction/unit Vector2 of the analog stick in question.
+ * \sa Controller::getAnalogDir
+ */
+/*!
+ * \qmlmethod float ControllerAnalogEvent::getAnalogMag()
+ *
+ * Returns the magnitude of the position/offset of the analog stick in question.
+ * \sa Controller::getAnalogMag
+ */
+/*!
+ * \qmlmethod VirtualDPad ControllerAnalogEvent::getVirtualDPad()
+ *
+ * Returns the VirtualDPad object representing the analog stick in question being mapped to a 4-direction D-pad.
+ * \sa Controller::getVirtualDPad
+ */
+OOLUA_EXPORT_FUNCTIONS_CONST(ControllerAnalogEvent,
+                             getAnalogStickType,
+                             getAnalogStick,
+                             getAnalogDir,
+                             getAnalogMag,
+                             getVirtualDPad)
+OOLUA_EXPORT_FUNCTIONS(ControllerAnalogEvent)
+
+
+/*!
+\qmltype ControllerTriggerEvent
+\since 1.6.1
+\inmodule Engine
+\inherits ControllerEvent
+\brief Event corresponding to the pressure applied to a Controller's trigger changing.
+
+A ControllerTriggerEvent is fired when the pressure applied to one of the triggers on a Controller
+changes. It encapsulates the type of trigger button in question.
+
+List of \l{Event::TYPE}s that are represented by ControllerTriggerEvent:
+\list
+    \li Event::CONTROLLER_TRIGGER_MOVED
+\endlist
+
+\sa {Controller}, {ControllerEvent}, {ControllerButtonEvent}, {ControllerTriggerEvent}
+*/
+/*!
+ * \qmlmethod Controller::TRIGGER_TYPE ControllerTriggerEvent::getTrigger()
+ *
+ * Returns the type of trigger whose state change is represented by this event.
+ * \sa getTriggerPressure
+ */
+/*!
+ * \qmlmethod float ControllerTriggerEvent::getTriggerPressure()
+ *
+ * Returns the normalized scalar magnitude represening how far down the trigger is currently being held.
+ * \sa Controller::getTriggerPressure, getTrigger
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(ControllerTriggerEvent,
+                             getTrigger,
+                             getTriggerPressure)
+OOLUA_EXPORT_FUNCTIONS(ControllerTriggerEvent)
+
+/*!
+\qmltype MouseBaseEvent
+\since 1.6.1
+\inmodule Engine
+\inherits InputEvent
+\brief Base class of every type of Mouse state change.
+
+MouseBaseEvent is the base parent class from which all types of \l Mouse
+\l Event objects inherit. It simply encapsulates a particular \l Mouse
+device.
+
+List of \l{Event::TYPE}s that are represented by subclasses of MouseBaseEvent:
+\list
+    \li Event::MOUSE_BUTTON_PRESSED
+    \li Event::MOUSE_BUTTON_RELEASED
+    \li Event::MOUSE_MOVED
+    \li Event::MOUSE_SCROLLED
+\endlist
+
+\sa {Mouse}, {MouseEvent}, {MouseWheelEvent}
+*/
+/*!
+ * \qmlmethod Mouse* MouseBaseEvent::getMouse()
+ *
+ * Returns the \l Mouse device which this event originated from.
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(MouseBaseEvent,
+                            getMouse)
+OOLUA_EXPORT_FUNCTIONS(MouseBaseEvent)
+
+/*!
+\qmltype MouseEvent
+\since 1.6.1
+\inmodule Engine
+\inherits MouseBaseEvent
+\brief Event corresponding to a Mouse position or button changing states.
+
+A \l MouseEvent is fired upon one of the following state changes:
+\table
+    \header
+        \li \l {Event::TYPE}
+        \li \b {Cause}
+    \row
+        \li Event::MOUSE_MOVED
+        \li Position change
+    \row
+        \li Event::MOUSE_BUTTON_PRESSED
+        \li Button changes from up to down state
+    \row
+        \li Event::MOUSE_BUTTON_RELEASED
+        \li Button changes from down to up state
+\endtable
+
+It encapsulates a \l{Mouse} device handle, its position, and the button in question (if a button caused the event).
+
+\sa {Mouse}, {MouseBaseEvent}, {MouseWheelEvent}
+*/
+/*!
+ * \qmlmethod Vector2 MouseEvent::getScreenPos()
+ *
+ * Returns the absolute screen position of the mouse in view coordinates.
+ * \sa Mouse::getScreenPos
+ */
+/*!
+ * \qmlmethod Mouse::BUT_TYPE MouseEvent::getButton()
+ *
+ * Returns the button whose state change caused this even to fire.
+ *
+ * \e {NOTE: in the case of Mouse movement causing this event to fire,
+ *  the button returned will be Mouse::BUT_NONE}.
+ */
+/*!
+ * \qmlmethod InputSystem::BUT_STATE MouseEvent::getButtonState()
+ *
+ * Returns the state of the button corresponding to this event.
+ *
+ * \e {NOTE: in the case of Mouse movement causing this event to fire,
+ *  there is no button corresponding to this event, and this function will
+ *  NOT be returning valid data. }
+ *
+ * \sa Mouse::getButtonState, isPressed, isTapped
+ */
+/*!
+ * \qmlmethod bool MouseEvent::isPressed()
+ *
+ * Returns whether the button in question is currently being pressed.
+ *
+ * \e {NOTE: in the case of Mouse movement causing this event to fire,
+ *  there is no button corresponding to this event, and this function will
+ *  NOT be returning valid data. }
+ *
+ * \sa Mouse::isPressed, getButtonState, isTapped
+ */
+/*!
+ * \qmlmethod bool MouseEvent::isTapped()
+ *
+ * Returns whether the button in question changed from being released to pressed this exact frame.
+ *
+ * \e {NOTE: in the case of Mouse movement causing this event to fire,
+ *  there is no button corresponding to this event, and this function will
+ *  NOT be returning valid data. }
+ *
+ * \sa Mouse::isTapped, getButtonState, isPressed
+ */
+/*!
+ * \qmlmethod bool MouseEvent::isDoubleClicked()
+ *
+ * Returns whether the button in question was double-clicked, and the event was completed exactly this frame.
+ *
+ * \e {NOTE: in the case of Mouse movement causing this event to fire,
+ *  there is no button corresponding to this event, and this function will
+ *  NOT be returning valid data. }
+ *
+ * \sa Mouse::isDoubleClicked, getButtonState, isTapped
+ */
+OOLUA_EXPORT_FUNCTIONS_CONST(MouseEvent,
+                             getScreenPos,
+                             getButton,
+                             getButtonState,
+                             isPressed,
+                             isTapped,
+                             isDoubleClicked)
+OOLUA_EXPORT_FUNCTIONS(MouseEvent)
+
+
+/*!
+\qmltype MouseWheelEvent
+\since 1.6.1
+\inmodule Engine
+\inherits MouseBaseEvent
+\brief Event corresponding to a Mouse scroll wheel state change.
+
+A MouseWheelEvent is emitted when a player uses the scroll wheel
+associated with a \l {Mouse} device, and encapsulates the wheel's
+position.
+
+List of \l{Event::TYPE}s that are represented by subclasses of MouseBaseEvent:
+\list
+    \li Event::MOUSE_SCROLLED
+\endlist
+
+\sa {Mouse}, {MouseBaseEvent}, {MouseEvent}
+*/
+/*!
+ * \qmlmethod Vector2 MouseWheelEvent::getScrollWheel()
+ *
+ * Returns the state of the scroll wheel responsible for this Event
+ * being emitted.
+ * \sa Mouse::getScrollWheel
+ */
+
+OOLUA_EXPORT_FUNCTIONS_CONST(MouseWheelEvent,
+                             getScrollWheel)
+OOLUA_EXPORT_FUNCTIONS(MouseWheelEvent)

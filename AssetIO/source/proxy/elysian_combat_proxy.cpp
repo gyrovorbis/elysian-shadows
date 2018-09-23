@@ -329,7 +329,40 @@ OOLUA_EXPORT_FUNCTIONS(AggroManager,
     damage.
 
     \section2 Configuring an Entity for Combat
+    There are a few things that need to be taken into account to give the \l CombatSystem enough
+    information to manage combat between two entities.
 
+    The following properties need to configured properly on each combatant:
+    \table
+        \header
+            \li \b {Property}
+            \li \b {Description}
+        \row
+            \li Combat::dmgType
+            \li Combatants capable of giving collision-based damage should be a form of a SOURCE, while
+                combatants capable of sending collision-based damage should be a form of a TARGET.
+       \row
+            \li Combat::targetType
+            \li Category of combatant falls under. At very least one Entity will need to be a Combat::TARGET_ENEMY while the
+                other either Combat::TARGET_PARTY or Combat::TARGET_FRIENDLY to give the CombatSystem something to fight with.
+       \row
+            \li Combat::aggroDist
+            \li If you intend for combat to be initiated automatically through "aggro," you must at least set the \l aggroDist of
+                the enemy combatant.
+       \row
+            \li Combat::status
+            \li For the CombatSystem to do its thing wth any combatant, they must have at least 1 HP left to be considered alive.
+       \row
+            \li Combat::attrib
+            \li At VERY LEAST, the CombatAttrib::type and CombatAttrib::typeAgainst flags must be configured properly when expecting
+                damage to be dealt as a result of collisions. These work the exact same awy as CollisionFlags with Collidables. Upon
+                collision, the CombatSystem will bitwise AND the CombatAttrib::type of one combatant with the CombatAttrib::typeAgainst
+                of the other to determine whether they form a valid damage-dealing collision.
+    \endtable
+
+    \e {NOTE: Each combatant needs to have its dmgActive flag set to true for the two to be able to damage each other.
+              They will still be able to "engage" in combat as valid combatants in the CombatSystem, but they will not
+              be able to harm each other (imagine some temporary invincibility spell for example). }
     \sa CombatStatus, CombatSystem, CombatAttrib, AggroManager
 */
 /*!
@@ -343,15 +376,181 @@ The following is a list o the different collision damage types:
 \li Combat.DMG_SOURCE           - Can deal collision damage to another combatant
 \li Combat.DMG_TARGET           - Can receive collision damage from another combatant
 \li Combat.DMG_SOURCE_TARGET    - Deals AND receives collision damage
-\li Keyboard.KEY_D
 \endlist
 */
+/*!
+\qmlproperty enumeration Combat::TARGET_TYPE
+
+Represents the different categories of Combatants, from the player's perspective.
+This value is used when determining who to deal damage to and from (ie preventing
+friendly-fire from player-on-player or enemy-on-enemy.
+
+The following is a list of the valid values for Combat::TARGET_TYPE.
+\table
+    \header
+        \li \b{Constant}
+        \li \b{Description}
+     \row
+        \li TARGET_NONE
+        \li Combatant will not participate in combat.
+    \row
+        \li TARGET_PARTY
+        \li Combatant is a playable party member controlled by a human or party AI.
+    \row
+        \li TARGET_FRIENDLY
+        \li Combatant is a non-party AI-drven NPC/animal/pet helping the party.
+    \row
+        \li TARGET_ENEMY
+        \li Combatant is fighting against party members and friendly AI combatants.
+\endtable
+*/
+
+/*!
+ * \qmlproperty Combat::DMG_TYPE Combat::dmgType
+ *
+ * The Combat::DMG_TYPE associated with this combatant.
+ * \sa getDmgType, setDmgType
+ */
+/*!
+ * \qmlproperty float Combat::aggroDist
+ *
+ * World-space radius designating the aggro region of a combatant. Entering
+ * this radius causes them to aggro.
+ * \sa getAggroDist, setAggroDist
+ */
+/*!
+ * \qmlproperty float Combat::deaggroDist
+ *
+ * World-space radius designating the region beyond which a combatant becomes
+ * deaggroed. When another combatant exits this radius, the combatant associated
+ * with this Combat Componenet will no longer be aggroed.
+ * \sa getDeaggroDist, setDeaggroDist, aggroDist
+ */
+/*!
+ * \qmlproperty Combat::TARGET_TYPE Combat::targetType
+ * The Combat::TARGET_TYPE associated with this combatant.
+ * \sa getTargetType, setTargetType
+ */
+/*!
+ * \qmlproperty bool Combat::inCombat
+ * Read-Only property that corresponds to whether the combatant is currently
+ * engaged in combat or not.
+ * \sa isInCombat
+ */
+/*!
+ * \qmlproperty CombatStatus Combat::status
+ * CombatStatus object representing the engine-relevant attributes and stats
+ * of the current combatant, such as HP and MP.
+ * \sa getStatus, setStatus
+ */
+/*!
+ * \qmlproperty CombatAttrib* Combat::attrib
+ * CombatAttrib object associated with the combatant.
+ * \sa getAttrib, setAttrib
+ */
 /*!
  * \qmlmethod AggroManager* Combat::getAggroManager()
  *
  * Returns the AggroManager object for the associated combatant.
  * \sa AggroManager
  */
+/*!
+ * \qmlmethod Combat::DMG_TYPE Combat::getDmgType()
+ *
+ * Returns the Combat::DMG_TYPE associated with this combatant.
+ * \sa dmgType, setDmgType
+ */
+/*!
+ * \qmlmethod void Combat::setDmgType(Combat::DMG_TYPE dmgType)
+ *
+ * Sets the Combat::DMG_TYPE associated with this combatant to \a dmgType.
+ * \sa dmgType, getDmgType
+ */
+/*!
+ * \qmlmethod float Combat::getAggroDist()
+ *
+ * Returns the value of the aggroDist property.
+ * \sa aggroDist, setAggroDist
+ */
+/*!
+ * \qmlmethod void Combat::setAggroDist(float value)
+ *
+ * Sets the value of the aggroDist property to \a value.
+ * \sa aggroDist, getAggroDist
+ */
+/*!
+ * \qmlmethod float Combat::getDeaggroDist()
+ *
+ * Returns the value of the deaggroDist property.
+ * \sa deaggroDist, setDeaggroDist
+ */
+/*!
+ * \qmlmethod void Combat::setDeaggroDist(float value)
+ *
+ * Sets the value of the deaggroDist property to \a value.
+ * \sa deaggroDist, getDeaggroDist
+ */
+/*!
+ * \qmlmethod bool Combat::isInCombat()
+ *
+ * Returns the value of the inCombatProperty
+ * \sa inCombat
+ */
+/*!
+ * \qmlmethod Combat::TARGET_TYPE Combat::getTargetType()
+ *
+ * Returns the value of the targetType property.
+ * \sa targetType, setTargetType
+ */
+/*!
+ * \qmlmethod void Combat::setTargetType(Combat::TARGET_TYPE value)
+ *
+ * Sets the value of the targetType property to \a value.
+ * \sa targetType, getTargetType
+ */
+/*!
+ * \qmlmethod CobmatAttrib* Combat::getAttrib()
+ *
+ * Returns the value of the \l attrib property.
+ * \sa attrib, setAttrib
+ */
+/*!
+ * \qmlmethod void Combat::setAttrib(CombatAttrib* value)
+ *
+ * Sets the value of the attrib property to \a value.
+ * \sa attrib, getAttrib
+ */
+/*!
+ * \qmlmethod CombatStatus Combat::getStatus()
+ *
+ * Returns the value of the \l status property.
+ * \sa status, setStatus
+ */
+/*!
+ * \qmlmethod CombatStatus Combat::setStatus(CombatStatus value)
+ *
+ * Sets the value of the \l status property to \a value.
+ * \sa status, getStatus
+ */
+/*!
+ * \qmlmethod bool Combat::getDmgActive()
+ *
+ * Returns true if the combatant is currently able to send and receive damage,
+ * for example, this would be falso for a second or so for temporary invulnerability
+ * after taking damage.
+ * \sa setDmgActive
+ */
+/*!
+ * \qmlmethod void Combat::setDmgActive(bool value)
+ *
+ * Sets whether the combatant is current able to deal or take damage.
+ * \sa getDmgActive
+ */
+
+
+
+
+
 OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
                              getAttrib,
                              getTargetType,
@@ -361,10 +560,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
                              getDeaggroDist,
                              isInCombat)
 OOLUA_EXPORT_FUNCTIONS(Combat,
-                       setSelfTable,
-                       setActionTable,
-                       getSelfTable,
-                       getActionTable,
                        setAttrib,
                        setDmgType,
                        setDmgActive,

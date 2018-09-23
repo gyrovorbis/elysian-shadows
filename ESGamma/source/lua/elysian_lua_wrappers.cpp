@@ -281,6 +281,12 @@ namespace elysian {
         s->register_class_static<Controller>("BUT_TRIANGLE", GY_CONTROLLER_BUT_TRIANGLE);
         s->register_class_static<Controller>("BUT_COUNT", GY_CONTROLLER_BUT_COUNT);
 
+        s->register_class_static<Controller>("ANALOG_LEFT", GY_CONTROLLER_ANALOG_LEFT);
+        s->register_class_static<Controller>("ANALOG_RIGHT", GY_CONTROLLER_ANALOG_RIGHT);
+
+        s->register_class_static<Controller>("TRIGGER_LEFT", GY_CONTROLLER_TRIGGER_LEFT);
+        s->register_class_static<Controller>("TRIGGER_RIGHT", GY_CONTROLLER_TRIGGER_RIGHT);
+
         typedef elysian::Mouse Mouse;
         s->register_class_static<Mouse>("BUT_NONE", GY_MOUSE_BUT_NONE);
         s->register_class_static<Mouse>("BUT_LEFT", GY_MOUSE_BUT_LEFT);
@@ -354,16 +360,22 @@ namespace elysian {
         s->register_class_static<Event>("ENTITY_DEACTIVATE",        EVENT_ENTITY_DEACTIVATE);
         s->register_class_static<Event>("KEYBOARD_ATTACHED",        EVENT_KEYBOARD_ATTACHED);
         s->register_class_static<Event>("KEYBOARD_REMOVED",         EVENT_KEYBOARD_REMOVED);
-        s->register_class_static<Event>("MOUSE_ATTACHED",           EVENT_MOUSE_ATTACHED);
-        s->register_class_static<Event>("MOUSE_REMOVED",            EVENT_MOUSE_REMOVED);
         s->register_class_static<Event>("RUMBLE_DEVICE_ATTACHED",   EVENT_RUMBLE_DEVICE_ATTACHED);
         s->register_class_static<Event>("RUMBLE_DEVICE_REMOVED",    EVENT_RUMBLE_DEVICE_REMOVED);
         s->register_class_static<Event>("VMU_ATTACHED",             EVENT_VMU_ATTACHED);
         s->register_class_static<Event>("VMU_REMOVED",              EVENT_VMU_REMOVED);
         s->register_class_static<Event>("CONTROLLER_ATTACHED",      EVENT_CONTROLLER_ATTACHED);
         s->register_class_static<Event>("CONTROLLER_REMOVED",       EVENT_CONTROLLER_REMOVED);
-        s->register_class_static<Event>("MOUSE_MOVE",               EVENT_MOUSE_MOVE);
-        s->register_class_static<Event>("MOUSE_WHEEL",              EVENT_MOUSE_WHEEL);
+        s->register_class_static<Event>("CONTROLLER_BUTTON_PRESSED",EVENT_CONTROLLER_BUTTON_PRESSED);
+        s->register_class_static<Event>("CONTROLLER_BUTTON_RELEASED",EVENT_CONTROLLER_BUTTON_RELEASED);
+        s->register_class_static<Event>("CONTROLLER_ANALOG_MOVED",  EVENT_CONTROLLER_ANALOG_MOVED);
+        s->register_class_static<Event>("CONTROLLER_TRIGGER_MOVED", EVENT_CONTROLLER_TRIGGER_MOVED);
+        s->register_class_static<Event>("MOUSE_ATTACHED",           EVENT_MOUSE_ATTACHED);
+        s->register_class_static<Event>("MOUSE_REMOVED",            EVENT_MOUSE_REMOVED);
+        s->register_class_static<Event>("MOUSE_MOVED",              EVENT_MOUSE_MOVED);
+        s->register_class_static<Event>("MOUSE_BUTTON_PRESSED",     EVENT_MOUSE_BUTTON_PRESSED);
+        s->register_class_static<Event>("MOUSE_BUTTON_RELASED",     EVENT_MOUSE_BUTTON_RELEASED);
+        s->register_class_static<Event>("MOUSE_SCROLLED",           EVENT_MOUSE_SCROLLED);
         s->register_class_static<Event>("COLLISION_ENTER",          EVENT_COLLISION_ENTER);
         s->register_class_static<Event>("COLLISION_EXIT",           EVENT_COLLISION_EXIT);
         s->register_class_static<Event>("AREA_ENTER",               EVENT_AREA_ENTER);
@@ -462,6 +474,14 @@ namespace elysian {
        // Event::registerProxyMetaTable(*_mainState);
         _mainState->register_class<LuaEvent>();
        // LuaEvent::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<KeyEvent>();
+        _mainState->register_class<ControllerEvent>();
+        _mainState->register_class<ControllerButtonEvent>();
+        _mainState->register_class<ControllerAnalogEvent>();
+        _mainState->register_class<ControllerTriggerEvent>();
+        _mainState->register_class<MouseBaseEvent>();
+        _mainState->register_class<MouseEvent>();
+        _mainState->register_class<MouseWheelEvent>();
 
         _mainState->register_class<EventTarget>();
         _mainState->register_class<EventObserver>();
@@ -505,6 +525,7 @@ namespace elysian {
 		_mainState->register_class<LevelSystem>();
         _mainState->register_class<Controller>();
         _mainState->register_class<Mouse>();
+        _mainState->register_class<TouchDevice>();
         _mainState->register_class<RumbleEffect>();
         _mainState->register_class<DirectionalRumbleEffect>();
         _mainState->register_class<LeftRightRumbleEffect>();
@@ -622,7 +643,7 @@ namespace elysian {
             \li Music and SFX playback
         \row
             \li \l{CameraSystem}
-            \li \l{Camera}
+            \li \l{CameraKeyFrame}
             \li Camera properties, cutscenes, boundaries, viewport
         \row
             \li \l{CharacterSystem}

@@ -23,7 +23,7 @@
     \section2 Color and Size
     Color and size are both linearly interpolated for each particle, so they can change colors, shrink,
     or grow, as they age. The exact size and color of the particle for a frame fades from its start
-    value to its end value over the lifetime of the particle, which is given by \l{maxLife}. If you
+    value to its end value over the lifetime of the particle, which is given by \l{maxLifeTime}. If you
     want either of these fields to stay constant, simply set the same value as the start and end properties.
 
     The start and end values for both properties are as follows:
@@ -217,7 +217,7 @@ pool size, when they need to be recycled and reemitted later.
  * \sa maxLifeTime, setMaxLifeTime()
  */
 /*!
- * \qmlmethod void ParticleEmitterAttrib::setMaxLife(float secs)
+ * \qmlmethod void ParticleEmitterAttrib::setMaxLifeTime(float secs)
  *
  * Sets the value of the \l{maxLifeTime} property to \a{secs}.
  * \sa maxLifeTime, getMaxLifeTime()

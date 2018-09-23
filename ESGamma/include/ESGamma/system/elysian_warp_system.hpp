@@ -31,6 +31,7 @@ namespace elysian {
 		void Enable(void);
 
         STATE   getState(void) const;
+        void    setState(STATE state);
         Warp& getCurrentWarp(void);
 
 
@@ -57,6 +58,7 @@ namespace elysian {
 //======= INLINEZ =======
 
     inline auto WarpSystem::getState(void) const -> STATE { return _state; }
+    inline void WarpSystem::setState(STATE state) { _state = state; }
 
     inline Warp& WarpSystem::getCurrentWarp(void) { return _currentWarp; }
 

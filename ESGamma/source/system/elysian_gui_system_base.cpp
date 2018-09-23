@@ -17,6 +17,8 @@
 #include <ESGamma/gui/elysian_label_widget.hpp>
 #include <game/pause_menu/es_pause_menu.hpp>
 #include <ESGamma/crtp/elysian_input_system.hpp>
+#include <ESGamma/device/elysian_controller_device.hpp>
+#include <ESGamma/device/elysian_keyboard_device.hpp>
 
 namespace elysian {
 

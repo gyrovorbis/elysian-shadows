@@ -183,7 +183,7 @@ The animation states are:
  * \sa Direction::DIR4_TYPE, getFaceDirVec()
  */
 /*!
- * \qmlmethod Vector2 Character::getFaceDir()
+ * \qmlmethod Vector2 Character::getFaceDirVec()
  *
  * Returns a normalized 2D vector in the direction the Entity is facing.
  * \sa getFaceDir(), setFaceDir()

@@ -164,8 +164,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
     Because of this, array-style table storage and indexing should be favored over the hash-style indexing scheme
     when table access performance is critical.
 
-    \sa LuaBehaviorScript, LuaBehavior, \l{https://www.lua.org/manual/5.2/}{Lua 5.2 Reference Manual},
-       \l{http://oolua.org/}{OOLua C++ and Lua Binding Library}
+    \sa LuaBehaviorScript, LuaBehavior, {https://www.lua.org/manual/5.2/}{Lua 5.2 Reference Manual},
+       {http://oolua.org/}{OOLua C++ and Lua Binding Library}
 
 */
 /*!
