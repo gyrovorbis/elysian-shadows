@@ -129,7 +129,6 @@ HEADERS += \
     ../../api/libGyro/gyro_input_api.h \
     ../../api/libGyro/gyro_math_api.h \
     ../../api/libGyro/gyro_matrix_api.h \
-    ../../api/libGyro/gyro_motion_api.h \
     ../../api/libGyro/gyro_net_api.h \
     ../../api/libGyro/gyro_ogg_api.h \
     ../../api/libGyro/gyro_performance_api.h \
@@ -144,7 +143,8 @@ HEADERS += \
     ../../api/libGyro/gyro_version.h \
     ../../api/libGyro/gyro_video_api.h \
     ../../api/libGyro/gyro_visual_memory_api.h \
-    ../../api/libGyro/gyro_wav_api.h
+    ../../api/libGyro/gyro_wav_api.h \
+    ../../api/libGyro/gyro_sensor_api.h
 
 vulkan {
     HEADERS += \
@@ -210,7 +210,8 @@ SOURCES += \
     ../../source/sdl/gyro_rumble_sdl.c \
     ../../source/gl/gyro_bloom_gl.c \
     ../../source/gl/gyro_gl_utils.c \
-    ../../source/sdl/gyro_thread_sdl.c
+    ../../source/sdl/gyro_thread_sdl.c \
+    ../../source/qt/gyro_sensor_qt.cpp
 
 vulkan {
     SOURCES += \

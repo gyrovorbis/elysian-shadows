@@ -113,7 +113,7 @@ typedef struct GYRumble {
 
 
 
-int                             gyRumbleInit(struct GYRumbleInitParams* params);
+int                             gyRumbleInit(const struct GYRumbleInitParams* params);
 int                             gyRumbleUninit(void);
 
 int                             gyRumblePoll(unsigned slot, GYRumble** dev);
