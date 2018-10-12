@@ -2,7 +2,7 @@
 
 namespace elysian {
     bool Keyboard::pollInput(void) {
-        _attached = gyKeyboardPoll(&_gyHandle);
+        _attached = gyKeyboardPoll((unsigned)getPlayerIndex(), &_gyHandle);
         if(_attached && _gyHandle->changed) {
             for(unsigned k = 0; k < GY_KEY_COUNT; ++k) {
                 const GY_KEY key = static_cast<GY_KEY>(k);

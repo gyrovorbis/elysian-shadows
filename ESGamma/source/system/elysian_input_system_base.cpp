@@ -338,11 +338,13 @@ void InputSystemBase::update(void) {
 
     //Update Mice
     for(unsigned m = 0; m < ELYSIAN_INPUT_MICE_MAX; ++m) {
-        bool wasAttached = _mice[m].isAttached();
-        bool isAttached = _mice[m].pollInput(getTimerSys()->getTotalTicks());
+        auto& mouse = *getMouse((int)m);
+        bool wasAttached = mouse.isAttached();
+        bool isAttached = mouse.pollInput(getTimerSys()->getTotalTicks());
 
         if(isAttached && !wasAttached)      _onMouseAttached(m);
         else if(!isAttached && wasAttached) _onMouseRemoved(m);
+
     }
 
     //Update TouchDevices
@@ -350,9 +352,9 @@ void InputSystemBase::update(void) {
         bool wasAttached = _touchDevices[t].isAttached();
         bool isAttached = _touchDevices[t].pollInput();
 
-        if(_portMappings[t].isTouchDeviceMappedToMouse())
+        if(getPortMappings(t)->isTouchDeviceMappedToMouse())
             _mapTouchDeviceToMouse(t);
-        if(_portMappings[t].isMouseMappedToTouchDevice())
+        if(getPortMappings(t)->isMouseMappedToTouchDevice())
             _mapMouseToTouchDevice(t);
 
         if(isAttached && !wasAttached)      _onTouchDeviceAttached(t);
@@ -360,22 +362,54 @@ void InputSystemBase::update(void) {
     }
 
     //Update Controllers
-    for(unsigned c = 0; c < ELYSIAN_INPUT_CONTROLLERS_MAX; ++c) {
-        const auto wasAttached  = _controllers[c].isAttached();
-        const auto isAttached   = _controllers[c].pollInput();
+    for(int c = 0; c < ELYSIAN_INPUT_CONTROLLERS_MAX; ++c) {
+        auto& cont = *getController((unsigned)c);
+        const auto wasAttached  = cont.isAttached();
+        const auto isAttached   = cont.pollInput();
 
-         if(_portMappings[c].isKeyboardMappedToController())
+         if(getPortMappings(c)->isKeyboardMappedToController())
              _mapKeyboardToController(c);
 
-        _controllers[c].updateDerivedValues();
+        cont.updateDerivedValues();
 
-        if(_portMappings[c].isControllerMappedToMouse())
+        if(getPortMappings(c)->isControllerMappedToMouse())
             _mapControllerToMouse(c);
-        if(_portMappings[c].isControllerMappedToTouchDevice())
+        if(getPortMappings(c)->isControllerMappedToTouchDevice())
             _mapControllerToTouchDevice(c);
 
         if(isAttached && !wasAttached)      static_cast<InputSystem*>(this)->_onControllerAttached(c);
         else if(!isAttached && wasAttached) static_cast<InputSystem*>(this)->_onControllerRemoved(c);
+
+        //Check for input events!
+        if(isAttached) {
+            if(cont.didAnyButtonChange()) {
+                for(int b = 0; b < GY_CONTROLLER_BUT_COUNT; ++b) {
+                    GY_CONTROLLER_BUTTON button = static_cast<GY_CONTROLLER_BUTTON>(b);
+                    bool pressed = cont.isPressed(button);
+                    if(pressed != cont.wasPressed(button)) {
+                        getEventSys()->broadcastEvent(
+                                    ControllerButtonEvent(pressed? EVENT_CONTROLLER_BUTTON_PRESSED :
+                                                                   EVENT_CONTROLLER_BUTTON_RELEASED, &cont, button));
+                    }
+                }
+            }
+
+            for(int a = 0; a < GY_CONTROLLER_ANALOG_COUNT; ++a) {
+                GY_CONTROLLER_ANALOG alog = static_cast<GY_CONTROLLER_ANALOG>(a);
+                if(cont.didAnalogChange(alog)) {
+                    getEventSys()->broadcastEvent(
+                                ControllerAnalogEvent(EVENT_CONTROLLER_ANALOG_MOVED, &cont, alog));
+                }
+            }
+
+            for(int t = 0; t < GY_CONTROLLER_TRIGGER_COUNT; ++t) {
+                GY_CONTROLLER_TRIGGER trig = static_cast<GY_CONTROLLER_TRIGGER>(t);
+                if(cont.didTriggerChange(trig)) {
+                    getEventSys()->broadcastEvent(
+                                ControllerTriggerEvent(EVENT_CONTROLLER_TRIGGER_MOVED, &cont, trig));
+                }
+            }
+        }
     }
 
     //update Rumble Devices

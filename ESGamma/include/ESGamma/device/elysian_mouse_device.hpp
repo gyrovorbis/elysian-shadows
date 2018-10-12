@@ -47,7 +47,7 @@ namespace elysian {
 
     public:
                             MouseWheelEvent(EventType eventType, const Mouse* mouse);
-        const GYVector2&    getScrollWheel(void) const;
+        const GYVector2&    getScrollWheelAngleDelta(void) const;
 
     };
 
@@ -64,7 +64,7 @@ namespace elysian {
 
         GY_BUTTON_STATE     getButtonState(const GY_MOUSE_BUTTON button) const;
         const GYVector2&    getScreenPos(void) const;
-        const GYVector2&    getScrollWheel(void) const;
+        const GYVector2&    getScrollWheelAngleDelta(void) const;
         bool                isPressed(const GY_MOUSE_BUTTON button) const;
         bool                wasPressed(const GY_MOUSE_BUTTON button) const;
         void                setPressed(const GY_MOUSE_BUTTON button, const bool pressed) const;
@@ -102,13 +102,13 @@ namespace elysian {
 
     inline MouseWheelEvent::MouseWheelEvent(EventType eventType, const Mouse* mouse):
         MouseBaseEvent(eventType, mouse) {}
-    inline const GYVector2& MouseWheelEvent::getScrollWheel(void) const { return _mouse->getScrollWheel(); }
+    inline const GYVector2& MouseWheelEvent::getScrollWheelAngleDelta(void) const { return _mouse->getScrollWheelAngleDelta(); }
 
     inline bool Mouse::isPressed(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
     inline bool Mouse::wasPressed(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return (_gyHandle->buttons[button] & GY_BUT_FLAGS_WAS_PRESSED); }
     inline bool Mouse::isTapped(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
     inline GY_BUTTON_STATE Mouse::getButtonState(const GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return (GY_BUTTON_STATE)_gyHandle->buttons[button]; }
-    inline const GYVector2& Mouse::getScrollWheel(void) const { return _gyHandle->scrollWheel; }
+    inline const GYVector2& Mouse::getScrollWheelAngleDelta(void) const { return _gyHandle->scrollWheel; }
     inline const GYVector2& Mouse::getScreenPos(void) const { return _gyHandle->screenPos; }
     inline bool Mouse::isDoubleClicked(GY_MOUSE_BUTTON button) const { assert(button < GY_MOUSE_BUT_COUNT); return _buttonsDoubleClicked[button]; }
     inline void Mouse::setPressed(const GY_MOUSE_BUTTON button, const bool pressed) const {

@@ -853,6 +853,7 @@ public:
                 lua_pop(*_mainState, 2);
                 return name;
             } else {
+                 lua_pop(*_mainState, 2);
                 return lua_typename(*_mainState, luaType);
             }
         }

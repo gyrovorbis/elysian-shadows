@@ -17,6 +17,9 @@ namespace OOLUA
 }
 
 OOLUA_PROXY(TileEntry)
+    OOLUA_CTORS(
+        OOLUA_CTOR(uint32_t)
+    )
     OOLUA_MEM_FUNC_CONST(uint16_t, getIndex)
     OOLUA_MEM_FUNC(void, setIndex, uint16_t)
     OOLUA_MEM_FUNC(void, setNormal, bool)

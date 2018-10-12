@@ -99,6 +99,7 @@ namespace elysian {
         unsigned int                _projWidth;
         unsigned int                _projHeight;
 
+        std::vector<Widget*>        _widgets;
         Widget*                     _bgWidget               = nullptr;
         Widget*                     _fgWidget               = nullptr;
         const Entity*               _examineEntity          = nullptr;
@@ -140,12 +141,18 @@ namespace elysian {
         void            setDebugOverlayPage(const int page);
         int             getDebugOverlayPage(void) const;
         void            nextDebugOverlayPage(void);
+
+        bool            addWidget(Widget* widget);
+        bool            removeWidget(Widget* widget);
+        bool            hasWidget(const Widget* widget) const;
+
         void            setFgWidget(Widget* widget);
         void            setBgWidget(Widget* widget);
         Widget*         getFgWidget(void) const;
         Widget*         getBgWidget(void) const;
         void            clearBgWidget(void);
         void            clearFgWidget(void);
+
         void            setExamineEntity(const Entity* const entity);
         const Entity*   getExamineEntity(void) const;
         AdventureLog&   getAdvLog(void);
@@ -244,7 +251,28 @@ namespace elysian {
 
     inline AdventureLog& GuiSystem::getAdvLog(void) { return adventureLog; }
 
+    inline bool GuiSystem::hasWidget(const Widget* widget) const {
+        for(auto&& it: _widgets) {
+            if(it == widget) return true;
+        }
+        return false;
+    }
 
+    inline bool GuiSystem::addWidget(Widget* widget) {
+        if(hasWidget(widget)) return false;
+        _widgets.push_back(widget);
+        return true;
+    }
+
+    inline bool GuiSystem::removeWidget(Widget* widget) {
+        for(auto it = _widgets.begin(); it != _widgets.end(); ++it) {
+            if(*it == widget) {
+                _widgets.erase(it);
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 }

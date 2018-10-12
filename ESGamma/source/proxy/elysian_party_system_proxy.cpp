@@ -15,7 +15,7 @@
     during a warp results in them persisting into the next \l{Area}.
 
     \section2 Retrieving the PartySystem
-    The ParticleSyste object can be retrieved through the static \l{Engine} class:
+    The PartySystem object can be retrieved through the static \l{Engine} class:
     \code
     partySys = Engine.getPartySys()
     \endcode

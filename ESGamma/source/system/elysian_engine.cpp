@@ -22,7 +22,7 @@
 #include <ESGamma/lua/elysian_lua_singleton.hpp>
 #include <ESGamma/crtp/elysian_lua_manager.hpp>
 #include <ESGamma/system/elysian_behavior_system.hpp>
-#include <ESGamma/system/elysian_light_system.hpp>=
+#include <ESGamma/system/elysian_light_system.hpp>
 #include <ESGamma/crtp/elysian_map_system.hpp>
 #include <ESGamma/crtp/elysian_particle_system.hpp>
 #include <ESGamma/system/elysian_day_system.hpp>

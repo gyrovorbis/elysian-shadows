@@ -179,6 +179,19 @@ static inline int Singletons_getEventSystem(lua_State* const vm) {
     OOLUA_C_FUNCTION(elysian::EventSystem*, elysian::Singletons::getEventSys)
 }
 
+static inline int Singletons_getThreadSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::ThreadSystem*, elysian::Singletons::getThreadSystem)
+}
+
+static inline int Singletons_getComputeSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::ComputeSystem*, elysian::Singletons::getComputeSystem)
+}
+
+static inline int Singletons_getRenderSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::RenderSystem*, elysian::Singletons::getRenderSystem)
+}
+
+
 static inline int Direction_fromVector2(lua_State* const vm) {
     OOLUA_C_FUNCTION(elysian::Direction::DIR4, elysian::Direction::fromVector2, const GYVector2&)
 }

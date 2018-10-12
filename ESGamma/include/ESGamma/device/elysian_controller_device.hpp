@@ -4,8 +4,12 @@
 #include <ESGamma/device/elysian_player_io_device.hpp>
 #include <libGyro/gyro_input_api.h>
 
-#define ELYSIAN_INPUT_CONTROLLER_ANALOG_MIN             0.3f
-#define ELYSIAN_INPUT_CONTROLLER_ANALOG_MAX             0.7f
+#define ELYSIAN_CONTROLLER_ANALOG_TO_DPAD_MIN                   0.3f
+#define ELYSIAN_CONTROLLER_ANALOG_TO_DPAD_MAX                   0.7f
+
+#define ELYSIAN_CONTROLLER_ANALOG_DEAD_ZONE_MAX_DEFAULT         1.0f
+#define ELYSIAN_CONTROLLER_ANALOG_DEAD_ZONE_MIN_DEFAULT         0.1f
+#define ELYSIAN_CONTROLLER_ANALOG_SQUARE_PRECISION_DEFAULT      true
 
 namespace elysian {
     class Controller;
@@ -91,10 +95,14 @@ namespace elysian {
 
     class Controller: public PlayerIODevice {
     private:
+        GYVector2           _analogSticks[GY_CONTROLLER_ANALOG_COUNT]   = { { 0.0f, 0.0f } };
         GYVector2           _analogDirs[GY_CONTROLLER_ANALOG_COUNT]     = { { 0.0f, 0.0f } };
         VirtualDPad         _virtualDPads[GY_CONTROLLER_ANALOG_COUNT];
         float               _analogMags[GY_CONTROLLER_ANALOG_COUNT]     = { 0.0f };
         GYController*       _gyHandle                                   = nullptr;
+        float               _analogDeadZoneMinThreshold                 = ELYSIAN_CONTROLLER_ANALOG_DEAD_ZONE_MIN_DEFAULT;
+        float               _analogDeadZoneMaxThreshold                 = ELYSIAN_CONTROLLER_ANALOG_DEAD_ZONE_MAX_DEFAULT;
+        bool                _analogUseSquarePrecision                   = ELYSIAN_CONTROLLER_ANALOG_SQUARE_PRECISION_DEFAULT;
         unsigned            _port                                       = 0;
 
         void                _clearDerivedValues(void);
@@ -107,13 +115,26 @@ namespace elysian {
         void                setAnalogStick(const GY_CONTROLLER_ANALOG stick, const GYVector2& vec);
         const GYVector2&    getAnalogDir(const GY_CONTROLLER_ANALOG stick) const;
         float               getAnalogMag(const GY_CONTROLLER_ANALOG stick) const;
+        bool                isAnalogUsingSquarePrecision(void) const;
+        void                setAnalogUseSquarePrecision(bool val=true);
+        float               getAnalogDeadZoneMinThreshold(void) const;
+        void                setAnalogDeadZoneMinThreshold(float val);
+        float               getAnalogDeadZoneMaxThreshold(void) const;
+        void                setAnalogDeadZoneMaxThreshold(float val);
+
+
         const VirtualDPad&  getVirtualDPad(const GY_CONTROLLER_ANALOG stick) const;
         float               getTriggerPressure(const GY_CONTROLLER_TRIGGER trigger) const;
 
         GY_BUTTON_STATE     getButtonState(const GY_CONTROLLER_BUTTON button) const;
         bool                isPressed(const GY_CONTROLLER_BUTTON button) const;
+        bool                wasPressed(const GY_CONTROLLER_BUTTON button) const;
         void                setPressed(const GY_CONTROLLER_BUTTON button, const bool pressed);
         bool                isTapped(const GY_CONTROLLER_BUTTON button) const;
+
+        bool                didAnyButtonChange(void) const;
+        bool                didAnalogChange(const GY_CONTROLLER_ANALOG analog) const;
+        bool                didTriggerChange(const GY_CONTROLLER_TRIGGER trigger) const;
 
         unsigned            getPort(void) const;
         void                setPort(const unsigned port);
@@ -176,8 +197,10 @@ namespace elysian {
         case GY_CONTROLLER_BUT_DPAD_DOWN:   return 1;
         case GY_CONTROLLER_BUT_DPAD_LEFT:   return 2;
         case GY_CONTROLLER_BUT_DPAD_RIGHT:  return 3;
-        default:                            return 0; //Don't be a dumbass, because I ain't gonna save you.
+        default:                            return 0;  //Don't be a dumbass, because I ain't gonna save you.
+            //YOU'RE THE DUMBASS, BECAUSE YOU KNOW THEY ARE A DUMBASS, AND YOU FUCKING SHOULD SAVE THEM BECAUSE THAT MEANS SAVING YOUR OWN ASS, DUMBASS)
         }
+
     }
     inline GY_BUTTON_STATE VirtualDPad::getButtonState(const GY_CONTROLLER_BUTTON button) const { return (GY_BUTTON_STATE)_dpad[_toIndex(button)]; }
     inline bool VirtualDPad::isPressed(const GY_CONTROLLER_BUTTON button) const { return (_dpad[_toIndex(button)] & GY_BUT_FLAGS_IS_PRESSED); }
@@ -187,13 +210,14 @@ namespace elysian {
     inline unsigned Controller::getPort(void) const { return _port; }
     inline void Controller::setPort(const unsigned port) { _port = port; }
     inline bool Controller::isPressed(const GY_CONTROLLER_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
+    inline bool Controller::wasPressed(const GY_CONTROLLER_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_WAS_PRESSED); }
     inline bool Controller::isTapped(const GY_CONTROLLER_BUTTON button) const { return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
     inline GY_BUTTON_STATE Controller::getButtonState(const GY_CONTROLLER_BUTTON button) const { return (GY_BUTTON_STATE)_gyHandle->buttons[button]; }
     inline const GYVector2& Controller::getAnalogStick(const GY_CONTROLLER_ANALOG stick) const { return _gyHandle->analogSticks[stick]; }
     inline const GYVector2& Controller::getAnalogDir(const GY_CONTROLLER_ANALOG stick) const { return _analogDirs[stick]; }
     inline const VirtualDPad& Controller::getVirtualDPad(const GY_CONTROLLER_ANALOG stick) const { return _virtualDPads[stick]; }
     inline float Controller::getAnalogMag(const GY_CONTROLLER_ANALOG stick) const { return _analogMags[stick]; }
-    inline float Controller::getTriggerPressure(const GY_CONTROLLER_TRIGGER trigger) const { return 0.0f; }
+    inline float Controller::getTriggerPressure(const GY_CONTROLLER_TRIGGER trigger) const { return _gyHandle->triggers[trigger]; }
     inline void Controller::setPressed(const GY_CONTROLLER_BUTTON button, const bool pressed) {
         _gyHandle->buttons[button] &= ~GY_BUT_FLAGS_IS_PRESSED;
         _gyHandle->buttons[button] |= pressed;
@@ -201,6 +225,9 @@ namespace elysian {
     inline void Controller::setAnalogStick(const GY_CONTROLLER_ANALOG stick, const GYVector2 &vec) {
         _gyHandle->analogSticks[stick] = vec;
     }
+    inline bool Controller::didAnyButtonChange(void) const { return (bool)_gyHandle->buttonsChanged; }
+    inline bool Controller::didAnalogChange(const GY_CONTROLLER_ANALOG analog) const { assert(analog < GY_CONTROLLER_ANALOG_COUNT); return (bool)_gyHandle->analogsChanged[analog]; }
+    inline bool Controller::didTriggerChange(const GY_CONTROLLER_TRIGGER trigger) const { assert(trigger < GY_CONTROLLER_TRIGGER_COUNT); return (bool)_gyHandle->triggersChanged[trigger]; }
 
 
 }

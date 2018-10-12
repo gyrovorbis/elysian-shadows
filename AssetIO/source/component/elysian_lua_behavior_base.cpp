@@ -1,6 +1,7 @@
 #include <AssetIO/proxy/elysian_entity_proxy.hpp>
 #include <ESGamma/crtp/elysian_debug.hpp>
 #include <AssetIO/proxy/elysian_event_proxy.hpp>
+#include <ESGamma/proxy/elysian_input_system_proxy.hpp>
 
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \
@@ -241,19 +242,45 @@ void LuaBehaviorBase::onReceiveEvent(Event* event) {
 }
 
 void LuaBehaviorBase::onObserveEvent(Event *event, EventTarget* target) {
+    Behavior::onObserveEvent(event, target);
+    if(event->getEventState() != EVENT_STATE_PENDING) return;
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_OBSERVE_EVENT_INDEX, *_ooSelfTableRef, event, LuaVariant(target)));
 }
 
-void LuaBehaviorBase::onKeyPressEvent(KeyEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onKeyPressEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onKeyReleaseEvent(KeyEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onKeyReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onMousePressEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMousePressEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onMouseReleaseEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onMouseMoveEvent(MouseEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseMOveEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onMouseWheelEvent(MouseWheelEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onMouseWheelEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onControllerButtonPressEvent(ControllerButtonEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControlerButtonPressEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onControllerButtonReleaseEvent(ControllerButtonEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerButtonReleaseEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onControllerAnalogEvent(ControllerAnalogEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerAnalogEvent() - Unimplemented for '%s'.", getBehavName());}
-void LuaBehaviorBase::onControllerTriggerEvent(ControllerTriggerEvent*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onControllerTriggerEvent() - Unimplemented for '%s'.", getBehavName());}
+void LuaBehaviorBase::onKeyPressEvent(KeyEvent* keyEvent) {
+    _PROTECTED(_callTriggerByName<void>("onKeyPressEvent", *_ooSelfTableRef, keyEvent));
+}
+
+void LuaBehaviorBase::onKeyReleaseEvent(KeyEvent* keyEvent) {
+    _PROTECTED(_callTriggerByName<void>("onKeyReleaseEvent", *_ooSelfTableRef, keyEvent));
+}
+void LuaBehaviorBase::onMousePressEvent(MouseEvent* mouseEvent) {
+    _PROTECTED(_callTriggerByName<void>("onMousePressEvent", *_ooSelfTableRef, mouseEvent));
+}
+
+void LuaBehaviorBase::onMouseReleaseEvent(MouseEvent* mouseEvent) {
+    _PROTECTED(_callTriggerByName<void>("onMouseReleaseEvent", *_ooSelfTableRef, mouseEvent));
+}
+
+void LuaBehaviorBase::onMouseMoveEvent(MouseEvent* mouseEvent) {
+    _PROTECTED(_callTriggerByName<void>("onMouseMoveEvent", *_ooSelfTableRef, mouseEvent));
+}
+
+void LuaBehaviorBase::onMouseWheelEvent(MouseWheelEvent* wheelEvent) {
+    _PROTECTED(_callTriggerByName<void>("onMouseWheelEvent", *_ooSelfTableRef, wheelEvent));
+}
+void LuaBehaviorBase::onControllerButtonPressEvent(ControllerButtonEvent* contEvent) {
+    _PROTECTED(_callTriggerByName<void>("onControllerButtonPressEvent", *_ooSelfTableRef, contEvent));
+}
+void LuaBehaviorBase::onControllerButtonReleaseEvent(ControllerButtonEvent* contEvent) {
+    _PROTECTED(_callTriggerByName<void>("onControllerButtonReleaseEvent", *_ooSelfTableRef, contEvent));
+}
+void LuaBehaviorBase::onControllerAnalogEvent(ControllerAnalogEvent* analogEvent) {
+    _PROTECTED(_callTriggerByName<void>("onControllerAnalogEvent", *_ooSelfTableRef, analogEvent));
+}
+void LuaBehaviorBase::onControllerTriggerEvent(ControllerTriggerEvent* triggerEvent) {
+    _PROTECTED(_callTriggerByName<void>("onControllerTriggerEvent", *_ooSelfTableRef, triggerEvent));
+}
 
 
 }

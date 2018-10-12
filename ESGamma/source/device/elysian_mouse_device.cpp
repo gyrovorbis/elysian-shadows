@@ -6,7 +6,7 @@ namespace elysian {
 float Mouse::_doubleClickTimeoutIntervalSecs = ELYSIAN_MOUSE_BUTTON_DOUBLE_CLICK_TIMEOUT_INTERVAL_SECS;
 
 bool Mouse::pollInput(uint64_t ticks) {
-    _attached = gyMousePoll(&_gyHandle);
+    _attached = gyMousePoll((unsigned)getPlayerIndex(), &_gyHandle);
     if(_attached && _gyHandle) {
         if(_gyHandle->buttonsChanged) {
             for(int b = 0; b < GY_MOUSE_BUT_COUNT; ++b) {
@@ -19,8 +19,8 @@ bool Mouse::pollInput(uint64_t ticks) {
                 }
             }
         }
-        if(_gyHandle->screenPosChanged)     System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_MOVED,     this, GY_MOUSE_BUT_NONE));
-        if(_gyHandle->scrollWheelChanged)   System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_SCROLLED,  this, GY_MOUSE_BUT_NONE));
+        if(_gyHandle->screenPosChanged)     System::getEventSys()->broadcastEvent(MouseEvent(EVENT_MOUSE_MOVED, this, GY_MOUSE_BUT_NONE));
+        if(_gyHandle->scrollWheelChanged)   System::getEventSys()->broadcastEvent(MouseWheelEvent(EVENT_MOUSE_SCROLLED,  this));
 
         _updateDerivedData(ticks);
     }

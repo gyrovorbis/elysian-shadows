@@ -73,6 +73,7 @@ GuiSystem::GuiSystem(void):
 }
 
 GuiSystem::~GuiSystem(void) {
+    for(auto&& widget : _widgets) delete widget;
     delete _menuWidget;
 }
 
@@ -105,6 +106,8 @@ bool GuiSystem::loadAssets(void) {
 void GuiSystem::update(void) {
     gyVidResolution(&_projWidth, &_projHeight);
     adventureLog.update();
+
+    for(auto&& widget : _widgets) widget->update();
 
     _menuWidget->setPosition(Widget::X, _projWidth*0.5f);
     _menuWidget->setPosition(Widget::Y, _projHeight*0.5f);

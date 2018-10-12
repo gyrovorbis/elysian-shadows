@@ -112,7 +112,9 @@ void BehaviorBase::onTkSelect(void) { Debug::printf(Debug::LOG_WARNING, "Behavio
 void BehaviorBase::onTkUnselect(void) { Debug::printf(Debug::LOG_WARNING, "Behavior::onTkUnselect() - Unimplemented for '%s'.", getBehavName()); }
 
 void BehaviorBase::onReceiveEvent(Event*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onReceiveEvent() - Unimplemented for '%s'.", getBehavName()); }
-void BehaviorBase::onObserveEvent(Event*, EventTarget*) { Debug::printf(Debug::LOG_WARNING, "Behavior::onObserveEvent() - Unimplemented for '%s'.", getBehavName()); }
+void BehaviorBase::onObserveEvent(Event* event, EventTarget* target) {
+    EventSink<Behavior, KeyEvent, ControllerButtonEvent, ControllerAnalogEvent, ControllerTriggerEvent, MouseEvent, MouseWheelEvent>::onObserveEvent(event, target);
+}
 
 BehaviorBase::BehaviorBase(Entity& parent): Component(parent) {
 //    dbgprintf(Asset::LOG_LOG_WARNING, "ENTITY - %s", parent.getName());

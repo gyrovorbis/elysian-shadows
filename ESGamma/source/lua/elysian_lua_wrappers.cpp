@@ -27,6 +27,9 @@
 #include <ESGamma/proxy/elysian_event_system_proxy.hpp>
 #include <ESGamma/proxy/elysian_collision_system_proxy.hpp>
 #include <ESGamma/proxy/elysian_examinable_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_render_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_thread_system_proxy.hpp>
+#include <ESGamma/proxy/elysian_compute_system_proxy.hpp>
 #include <ESGamma/crtp/elysian_lua_manager.hpp>
 #include <ESGamma/lua/elysian_lua_wrappers.hpp>
 
@@ -364,22 +367,24 @@ namespace elysian {
         s->register_class_static<Event>("ENTITY_DEACTIVATE",        EVENT_ENTITY_DEACTIVATE);
         s->register_class_static<Event>("KEYBOARD_ATTACHED",        EVENT_KEYBOARD_ATTACHED);
         s->register_class_static<Event>("KEYBOARD_REMOVED",         EVENT_KEYBOARD_REMOVED);
-        s->register_class_static<Event>("RUMBLE_DEVICE_ATTACHED",   EVENT_RUMBLE_DEVICE_ATTACHED);
-        s->register_class_static<Event>("RUMBLE_DEVICE_REMOVED",    EVENT_RUMBLE_DEVICE_REMOVED);
-        s->register_class_static<Event>("VMU_ATTACHED",             EVENT_VMU_ATTACHED);
-        s->register_class_static<Event>("VMU_REMOVED",              EVENT_VMU_REMOVED);
+        s->register_class_static<Event>("KEYBOARD_KEY_PRESSED",     EVENT_KEYBOARD_KEY_PRESSED);
+        s->register_class_static<Event>("KEYBOARD_KEY_RELEASED",    EVENT_KEYBOARD_KEY_RELEASED);
+        s->register_class_static<Event>("MOUSE_ATTACHED",           EVENT_MOUSE_ATTACHED);
+        s->register_class_static<Event>("MOUSE_REMOVED",            EVENT_MOUSE_REMOVED);
+        s->register_class_static<Event>("MOUSE_MOVED",              EVENT_MOUSE_MOVED);
+        s->register_class_static<Event>("MOUSE_BUTTON_PRESSED",     EVENT_MOUSE_BUTTON_PRESSED);
+        s->register_class_static<Event>("MOUSE_BUTTON_RELEASED",     EVENT_MOUSE_BUTTON_RELEASED);
+        s->register_class_static<Event>("MOUSE_SCROLLED",           EVENT_MOUSE_SCROLLED);
         s->register_class_static<Event>("CONTROLLER_ATTACHED",      EVENT_CONTROLLER_ATTACHED);
         s->register_class_static<Event>("CONTROLLER_REMOVED",       EVENT_CONTROLLER_REMOVED);
         s->register_class_static<Event>("CONTROLLER_BUTTON_PRESSED",EVENT_CONTROLLER_BUTTON_PRESSED);
         s->register_class_static<Event>("CONTROLLER_BUTTON_RELEASED",EVENT_CONTROLLER_BUTTON_RELEASED);
         s->register_class_static<Event>("CONTROLLER_ANALOG_MOVED",  EVENT_CONTROLLER_ANALOG_MOVED);
         s->register_class_static<Event>("CONTROLLER_TRIGGER_MOVED", EVENT_CONTROLLER_TRIGGER_MOVED);
-        s->register_class_static<Event>("MOUSE_ATTACHED",           EVENT_MOUSE_ATTACHED);
-        s->register_class_static<Event>("MOUSE_REMOVED",            EVENT_MOUSE_REMOVED);
-        s->register_class_static<Event>("MOUSE_MOVED",              EVENT_MOUSE_MOVED);
-        s->register_class_static<Event>("MOUSE_BUTTON_PRESSED",     EVENT_MOUSE_BUTTON_PRESSED);
-        s->register_class_static<Event>("MOUSE_BUTTON_RELASED",     EVENT_MOUSE_BUTTON_RELEASED);
-        s->register_class_static<Event>("MOUSE_SCROLLED",           EVENT_MOUSE_SCROLLED);
+        s->register_class_static<Event>("RUMBLE_DEVICE_ATTACHED",   EVENT_RUMBLE_DEVICE_ATTACHED);
+        s->register_class_static<Event>("RUMBLE_DEVICE_REMOVED",    EVENT_RUMBLE_DEVICE_REMOVED);
+        s->register_class_static<Event>("VMU_ATTACHED",             EVENT_VMU_ATTACHED);
+        s->register_class_static<Event>("VMU_REMOVED",              EVENT_VMU_REMOVED);
         s->register_class_static<Event>("COLLISION_ENTER",          EVENT_COLLISION_ENTER);
         s->register_class_static<Event>("COLLISION_EXIT",           EVENT_COLLISION_EXIT);
         s->register_class_static<Event>("AREA_ENTER",               EVENT_AREA_ENTER);
@@ -520,6 +525,9 @@ namespace elysian {
 		_mainState->register_class<DialogSystem>();
         _mainState->register_class<CollisionSystem>();
 		_mainState->register_class<RigidBodySystem>();
+        _mainState->register_class<ComputeSystem>();
+        _mainState->register_class<ThreadSystem>();
+        _mainState->register_class<RenderSystem>();
         _mainState->register_class<AdventureLog>();
         OOLUA::register_class<HorizontalLayout>(*_mainState);
         _mainState->register_class<VerticalLayout>();
@@ -592,6 +600,9 @@ namespace elysian {
         _mainState->register_class_static<Engine>("getCharSys",         &Singletons_getCharacterSystem);
         _mainState->register_class_static<Engine>("getEventSys",        &Singletons_getEventSystem);
         _mainState->register_class_static<Engine>("getExamSys",         &Singletons_getExaminableSystem);
+        _mainState->register_class_static<Engine>("getComputeSys",      &Singletons_getComputeSystem);
+        _mainState->register_class_static<Engine>("getRenderSys",       &Singletons_getRenderSystem);
+        _mainState->register_class_static<Engine>("getThreadSys",       &Singletons_getThreadSystem);
 
 		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
 
@@ -717,11 +728,24 @@ namespace elysian {
             \li \l{TimerSystem}
             \li \l{TimerSystem::getDeltaTime()}{deltaTime}
             \li Calculates frame time, maintains framerate, manages timers
+        \row
+            \li \l{ThreadSystem}
+            \li Threads, ThreadTasks
+            \li Manages CPU threads and thread-level parallelization
+        \row
+            \li \l{ComputeSystem}
+            \li GPGPU Kernels/Compute Shaders
+            \li Manages GPGPU and hardware accelerated parallel tasks
+        \row
+            \li \l{RenderSystem}
+            \li \l{Renderable}, \l{Skeleton}, \l{LightSource}
+            \li Handles all rendering and displaying graphics
     \endtable
 
     \sa PartySystem, InputSystem, TimerSystem, AudioSystem, LightSystem, LevelSystem,
     CombatSystem, ParticleSystem, DaySystem, CollisionSystem, RigidBodySystem, GuiSystem,
-    CharacterSystem, CameraSystem, DialogSystem, ExaminableSystem
+    CharacterSystem, CameraSystem, DialogSystem, ExaminableSystem, ThreadSystem,
+    ComputeSystem, RenderSystem
 */
 
 /*!
@@ -824,6 +848,21 @@ namespace elysian {
  * \qmlmethod EventSystem* Engine::getEventSys()
  *
  * Returns the EventSystem subsystem.
+ */
+/*!
+ * \qmlmethod RenderSystem* Engine::getRenderSys()
+ *
+ * Returns the RenderSystem subsystem.
+ */
+/*!
+ * \qmlmethod ComputeSystem* Engine::getComputeSys()
+ *
+ * Returns the ComputeSystem subsystem.
+ */
+/*!
+ * \qmlmethod ThreadSystem* Engine::getThreadSys()
+ *
+ * Returns the ThreadSystem subsystem.
  */
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Engine)

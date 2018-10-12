@@ -301,11 +301,13 @@ bool ComputeSystem::_createContexts(void) {
     return success;
 }
 
-void ComputeSystem::addComputeTask(ComputeTask* task) {
-    assert(task && task->getKernel());
+bool ComputeSystem::addComputeTask(ComputeTask* task) {
+    if(!task || !task->getKernel()) return false;
+    //assert(task && task->getKernel());
     _computeTasks[task->getKernel()->getGyKernel()->name] = task;
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
     _perfMonitor.addChild(task->getPerfMonitor());
+    return true;
 #endif
 }
 

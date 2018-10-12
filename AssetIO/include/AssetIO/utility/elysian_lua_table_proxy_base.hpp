@@ -1008,76 +1008,120 @@ namespace elysian {
          * 3) Entity.new({})        (initialize properties from table)
          * 4) entityObj:new()       (copy construct new entity from entityObj)
          * 5) entityObj:new({})     (copy construct new entity from entityObj then initialize properties from table)
+         * 6) ????                  (fall-the-fuck back to OOLUA (overloaded) constructor(s)
+         *
+         * THIS SHIT RIGHT HERE WARRANTS SOME SERIOUS OPTIMIZATION SOME DAY, SHIT HAPPENS EVERY FUCKING TIME
+         * A LUA TYPE IS CONSTRUCTED!!!
          */
         static int _luaCreate(lua_State*const l) {
             LuaVariant          rvalue;     //Entity Object
             LuaVariant          valueTable; //Lua Value Table
-            int args     =      lua_gettop(l);
+            int argc     =      lua_gettop(l);
             int retCount =      1;
+            bool customConstruct = false;
 
-            for(int i = 0; i < args; ++i) {
-                const int luaType = lua_type(l, -1);
-                if(luaType == LUA_TTABLE) {
-                    //Check whether table we were passed is a new value table or just the oolua method table (ie: Entity:new())
-                    lua_rawgeti(l, LUA_REGISTRYINDEX, _ooluaIndexTable);
-                    const bool isMetaTable = lua_compare(l, -1, -2, LUA_OPEQ);
-                    lua_pop(l, 1);
-                    if(!isMetaTable) valueTable.pull(); //Only pull table if it's a value initialization table
-                    else lua_pop(l, 1);
+            if(argc == 1 || argc == 2) {
+                LuaVariant arg1 = LuaVariant::fromStack(1, false);
+                LuaVariant arg2 = LuaVariant::fromStack(2, false);
+                LuaManager::pushGlobalField(OOLUA::Proxy_class<T>::class_name);
+                LuaVariant udTable = LuaVariant::fromStack();
+
+                if(arg1.getType() == LUA_TTABLE) {
+                    if(arg1 == udTable) {
+                        switch(arg2.getType()) {
+                        case LUA_TNIL:
+                            lua_pop(l, argc);
+                            goto custom_construct;     //2
+                        case LUA_TTABLE:
+                            if(arg2 != udTable) {
+                                valueTable = std::move(arg2);
+                                lua_pop(l, 2);      //4
+                                goto custom_construct;
+                            }
+                        default:
+                            lua_remove(l, 1); //lets go ahead and not shit on Vector2:new(..) also
+                            goto oolua_construct;
+                        }
+                    } else {
+                        switch(arg2.getType()) {
+                        case LUA_TNIL:
+                            valueTable = std::move(arg1);   //3
+                            lua_pop(l, argc);
+                            goto custom_construct;
+                        default: goto oolua_construct;
+                        }
+
+                    }
+                } else if(arg1.getType() == LUA_TUSERDATA) {
+                    if(strcmp(arg1.getTypeString(), OOLUA::Proxy_class<T>::class_name) == 0) {
+                        switch(arg2.getType()) {
+                        case LUA_TNIL:
+                            rvalue = std::move(arg1);
+                            lua_pop(l, argc);
+                            goto custom_construct;             //5
+                        case LUA_TTABLE:
+                            if(arg2 != udTable) {
+                                rvalue = std::move(arg1);
+                                valueTable = std::move(arg2);
+                                lua_pop(l, 2);
+                                goto custom_construct;         //6
+                            }
+                        default: goto oolua_construct;
+                        }
+
+                    }
                 }
-                else if(luaType == LUA_TUSERDATA) rvalue.pull();
-                else lua_pop(l, 1); //ignore unknown argument type, whatever.
+
+            } else {
+                goto oolua_construct; //1 or other
+
             }
+            goto oolua_construct;
+
+            custom_construct:
+                customConstruct = true;
+            oolua_construct:
 
             lua_rawgeti(l, LUA_REGISTRYINDEX, _ooluaIndexTable);
             lua_getfield(l, -1, "oolua_new");
             GY_ASSERT(!lua_isnil(l, -1));       //Could not find constructor!
-#if 0
-            if(!rvalue.isNil()) rvalue.push();  //Push rvalue object as argument to copy constructor!
 
-            if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(!rvalue.isNil()? 1 : 0, 1, nullptr)) {
-                errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!", OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
+            lua_remove(l, -2);  //remove __ooLuaIndexTable
+            lua_insert(l, 1);   //move to bottom of stack, behind any remaining user args
+
+            if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(lua_gettop(l)-1, 1, nullptr)) {
+                errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!",
+                          OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
                 retCount = 0;
-            }
+            } else {
 
-            //Whatever constructor that was invoked did not return a new object!
-            GY_ASSERT(!lua_isnil(l, -1));
-#else
+                //Whatever constructor that was invoked did not return a new object!
+                GY_ASSERT(!lua_isnil(l, -1));
 
-            if(!ELYSIAN_LUA_MANAGER_PROTECTED_CALL(0, 1, nullptr)) {
-                errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!", OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
-                retCount = 0;
-            }
+                if(customConstruct) {
+                    T* obj = nullptr;
+                    lua_pushvalue(l, -1);       //duplicate new obj on stack (so old one is still there for return value)
 
-            //Whatever constructor that was invoked did not return a new object!
-            GY_ASSERT(!lua_isnil(l, -1));
+                    if(!OOLUA::pull(l, obj)) {  //cache object internally
 
-            //Initialize new object from rvalue, if supplied.
-            if(!rvalue.isNil()) {
-                T* obj;
-                if(OOLUA::pull(l, obj)) {
-                    static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(std::move(rvalue));
-                    retCount = OOLUA::push(l, obj);
-                } else {
-                    GY_ASSERT(obj); //Could not pull correct object type from stack!
-                    retCount = 0;
-                }
-            }
-#endif
+                        errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed to pull constructed object from stack!",
+                                  OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
+                    } else {
 
-            //Initialize new object with valueTable, if supplied.
-            if(!valueTable.isNil()) {
-                T* obj;
-                if(OOLUA::pull(l, obj)) {
-                    static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(std::move(valueTable));
-                    retCount = OOLUA::push(l, obj);
-                } else {
-                    GY_ASSERT(obj); //Could not pull correct object type from stack!
-                    retCount = 0;
+                        //Initialize new object from rvalue, if supplied (analogous to copy-construction)
+                        if(!rvalue.isNil()) {
+                            static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(std::move(rvalue));
+                        }
+
+                        //Initialize new object from value table, if supplied (LSON-style constrution)
+                        if(!valueTable.isNil()) {
+                            static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(std::move(valueTable));
+                        }
+                    }
                 }
             }
 
-            GY_ASSERT(retCount);
+            //GY_ASSERT(retCount);
             return retCount;
         }
 

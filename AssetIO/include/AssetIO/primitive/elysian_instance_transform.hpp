@@ -42,6 +42,8 @@ namespace elysian {
         Vector2&    operator*=(float scalar);
         Vector2&    operator/=(float scalar);
 
+        Vector2     operator/(LuaVariant variant) const;
+        Vector2     operator*(LuaVariant variant) const;
 
         void        setValueByIndex(int index, float val);
         float       getValueByIndex(int index) const;
@@ -329,11 +331,12 @@ namespace elysian {
     inline Vector2::Vector2(void): Vector2(0.0f, 0.0f) {}
     inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}), _ptr(this) {}
     inline Vector2::Vector2(const float val): Vector2(val, val) {}
-    inline Vector2::Vector2(GYVector2 * const gyvec2): _ptr(gyvec2) {}
+    inline Vector2::Vector2(GYVector2 * const gyvec2): GYVector2(*gyvec2), _ptr(gyvec2) {}
     inline Vector2::Vector2(const GYVector2 &gyvec2): GYVector2(gyvec2), _ptr(this) {}
     inline Vector2::Vector2(const Vector2 &other) : LuaTableProxy<Vector2>() {
         if(other._ptr != &other) {
             _ptr = other._ptr;
+            *(GYVector2*)this = *(const GYVector2*)&other;
         } else {
             *(GYVector2*)this = *(const GYVector2*)&other;
             _ptr = this;
@@ -359,14 +362,9 @@ namespace elysian {
     inline void Vector2::normalize(void) {
         gyVec2Normalize(_ptr);
     }
-    inline Vector3 Vector3::getUnitVector(void) const {
-        Vector3 vec(*this);
-        gyVec3Normalize(&vec);
-        return vec;
-    }
     inline Vector2 Vector2::getUnitVector(void) const {
         Vector2 vec(*this);
-        gyVec2Normalize(&vec);
+        vec.normalize();
         return vec;
     }
     inline bool Vector2::operator==(const Vector2& rhs) const {
@@ -402,23 +400,23 @@ namespace elysian {
 
     inline Vector2 Vector2::getRotatedVector(float radians) const {
         Vector2 dest;
-        gyVec2RotOrigin(&dest, this, radians);
+        gyVec2RotOrigin(static_cast<GYVector2*>(&dest), static_cast<const GYVector2*>(this), radians);
         return dest;
     }
 
     inline void Vector2::rotate(float radians) {
-        gyVec2RotOrigin(this, this, radians);
+        gyVec2RotOrigin(static_cast<GYVector2*>(this), static_cast<GYVector2*>(this), radians);
     }
 
     inline Vector2 Vector2::getRotatedVectorAboutPoint(const Vector2& point, float radians) const {
         Vector2 dest;
-        gyVec2RotPoint(&dest, this, &point, radians);
+        gyVec2RotPoint(static_cast<GYVector2*>(&dest), static_cast<const GYVector2*>(this), static_cast<const GYVector2*>(&point), radians);
         return dest;
     }
 
     inline void Vector2::rotateAboutPoint(const Vector2& point, float radians) {
-        Vector2 src(this);
-        gyVec2RotPoint(this, &src, &point, radians);
+        Vector2 src(static_cast<GYVector2*>(this));
+        gyVec2RotPoint(static_cast<GYVector2*>(this), static_cast<GYVector2*>(&src), static_cast<const GYVector2*>(&point), radians);
     }
 
 
@@ -446,34 +444,34 @@ namespace elysian {
     }
 
    inline float Vector2::dotProduct(const Vector2 &rhs) const {
-        return gyVec2DotProd(this, &rhs);
+        return gyVec2DotProd(static_cast<const GYVector2*>(this), static_cast<const GYVector2*>(&rhs));
    }
 
    inline Vector2 Vector2::vectorCrossProduct(float scalar) const {
         Vector2 result;
-        gyVec2VectorCrossProd((GYVector2*)&result, this, scalar);
+        gyVec2VectorCrossProd((GYVector2*)&result, static_cast<const GYVector2*>(this), scalar);
         return result;
    }
 
    inline float Vector2::scalarCrossProduct(const Vector2 &rhs) const {
-        return gyVec2ScalarCrossProd(this, &rhs);
+        return gyVec2ScalarCrossProd(static_cast<const GYVector2*>(this),  static_cast<const GYVector2*>(&rhs));
    }
 
    inline float Vector2::squaredDistance(const Vector2& rhs) const {
-       return gyVec2SquareDist(this, &rhs);
+       return gyVec2SquareDist(static_cast<const GYVector2*>(this),  static_cast<const GYVector2*>(&rhs));
    }
 
    inline float Vector2::distance(const Vector2 &rhs) const {
-        return gyVec2Dist(this, &rhs);
+        return gyVec2Dist(static_cast<const GYVector2*>(this), static_cast<const GYVector2*>(&rhs));
    }
 
    inline Vector2& Vector2::operator +=(const Vector2& rhs) {
-        gyVec2AddAccum(this, &rhs);
+        gyVec2AddAccum(static_cast<GYVector2*>(this),  static_cast<const GYVector2*>(&rhs));
         return *this;
    }
 
    inline Vector2& Vector2::operator -=(const Vector2& rhs) {
-       gyVec2SubFrom(this, &rhs);
+       gyVec2SubFrom(static_cast<GYVector2*>(this),  static_cast<const GYVector2*>(&rhs));
        return *this;
    }
 
@@ -507,6 +505,30 @@ namespace elysian {
 
     inline float Vector2::toAngle(void) const {
         return atan2f(getY(), getX());
+    }
+
+
+    inline Vector2 Vector2::operator/(LuaVariant variant) const {
+        switch(variant.getType()) {
+        case LUA_TNUMBER: return *this / Vector2(variant.getValue<float>());
+        case LUA_TUSERDATA:
+            if(strcmp(variant.getTypeString(), "Vector2") == 0)
+                return *this/variant.getValue<Vector2>();
+        default: break; //you dun fucked up
+        }
+
+        return Vector2(0.0f);
+    }
+    inline Vector2 Vector2::operator*(LuaVariant variant) const {
+        switch(variant.getType()) {
+        case LUA_TNUMBER: return *this * Vector2(variant.getValue<float>());
+        case LUA_TUSERDATA:
+            if(strcmp(variant.getTypeString(), "Vector2") == 0)
+                return *this * variant.getValue<Vector2>();
+        default: break; //you dun fucked up
+        }
+
+        return Vector2(0.0f);
     }
 
 
@@ -684,6 +706,11 @@ namespace elysian {
    inline void Vector3::divScalar(float scalar) {
        const float inv = 1.0f/scalar;
         multVec(Vector3(inv));
+   }
+   inline Vector3 Vector3::getUnitVector(void) const {
+       Vector3 vec(*this);
+       gyVec3Normalize(&vec);
+       return vec;
    }
 
     inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}

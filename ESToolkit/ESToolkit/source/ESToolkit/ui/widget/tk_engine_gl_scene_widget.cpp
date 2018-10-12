@@ -37,6 +37,7 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     QGLWidget(parent),
     _engineTask("ESGamma")
 {
+    //setMouseTracking(true);
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);

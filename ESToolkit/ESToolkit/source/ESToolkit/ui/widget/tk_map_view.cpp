@@ -455,6 +455,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
             static_cast<EntitySelectable*>(getAssets()->getCurrentSelection())->setPosition(newPos.x(), newPos.y());
         }
     }
+    if(event) event->ignore();
 }
 
 void MapView::mouseReleaseEvent(QMouseEvent *event) {

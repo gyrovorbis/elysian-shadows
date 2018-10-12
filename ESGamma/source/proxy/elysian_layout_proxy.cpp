@@ -6,7 +6,7 @@
     \qmltype TableLayout
     \since 1.6.0
     \inmodule Engine
-    \brief Abstract class for organizing Widgets as child GUI elements within a parent Widget.
+    \brief Abstract class for arranging Widgets as child GUI elements within a parent Widget.
 */
 
 OOLUA_EXPORT_FUNCTIONS(TableLayout,

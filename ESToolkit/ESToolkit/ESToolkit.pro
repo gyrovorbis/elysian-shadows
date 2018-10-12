@@ -244,7 +244,10 @@ SOURCES += \
     ../../ESGamma/source/device/elysian_keyboard_device.cpp \
     ../../ESGamma/source/device/elysian_mouse_device.cpp \
     ../../ESGamma/source/device/elysian_visual_memory_device.cpp \
-    ../../ESGamma/source/device/elysian_sensor_device.cpp
+    ../../ESGamma/source/device/elysian_sensor_device.cpp \
+    ../../ESGamma/source/proxy/elysian_compute_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_thread_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_render_system_proxy.cpp
 
 !ios: !dreamcast: !android {
 
@@ -547,7 +550,10 @@ HEADERS += \
     ../../ESGamma/include/ESGamma/device/elysian_visual_memory_device.hpp \
     ../../ESGamma/include/ESGamma/device/elysian_touch_device.hpp \
     ../../ESGamma/include/ESGamma/device/elysian_power_supply_device.hpp \
-    ../../ESGamma/include/ESGamma/device/elysian_sensor_device.hpp
+    ../../ESGamma/include/ESGamma/device/elysian_sensor_device.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_compute_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_thread_system_proxy.hpp \
+    ../../ESGamma/include/ESGamma/proxy/elysian_render_system_proxy.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

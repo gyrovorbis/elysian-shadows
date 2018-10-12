@@ -320,7 +320,7 @@ public:
                                                   ComputeTask::NativeKernel                        nativeFallbackFunc              = ComputeTask::NativeKernel(),
                                                   bool                                             requireRendererSharedContext    = false,
                                                   bool                                             outOfOrderExecution             = false);
-        void                    addComputeTask(ComputeTask* task);
+        bool                    addComputeTask(ComputeTask* task);
         ComputeContext*         createContext(int gyPlatformIdx, bool isRendererContext, unsigned deviceCount, ComputeDevice** devices);
         ComputeDevice*          getDevice(int platformIdx, int deviceIdx);
         ComputeDevice*          getDeviceByCategory(ComputeDeviceCategory type, unsigned idx = 0);

@@ -44,6 +44,22 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PlayerIODevice,
     will automatically treat like any other mouse for you. Note that some platforms like smartphones aren't
     going to have mice, so do not count on a mouse always being connected and active.
 
+    \e {NOTE: Laptop trackpads are also treated as mice and are fully handled by the Mouse Device.}
+
+    \section1 Events
+    An active Mouse Device can emit the following observable Events:
+    \table
+        \header
+            \li \b {Event Type}
+            \li \b {Description}
+        \row
+            \li \l{MouseEvent}
+            \li Emitted when the mouse moves or when the state of one of its buttons changes
+        \row
+            \li \l{MouseWheelEvent}
+            \li Emitted when the user scroll's the mouse's wheel or or performs a scroll gesture on a trackpad
+    \endtable
+
 
     \sa {Input Devices}, {InputSystem}, {PlayerIODevice}, {Controller}, {Keyboard}, {RumbleDevice}, {VisualMemoryUnit}
 */
@@ -64,13 +80,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PlayerIODevice,
  * \qmlmethod InputSystem::BUT_STATE Mouse::getButtonState(Mouse::BUT_TYPE button)
  *
  *  Returns the enumerated value representing the current state of the given \a{button}
- * \sa InputSystem::BUT_STATE, isPressed, isTapped
+ * \sa InputSystem::BUT_STATE, isPressed, isTapped, MouseEvent
  */
 /*!
  * \qmlmethod bool Mouse::isPressed(Mouse::BUT_TYPE button)
  *
  *  Returns true if the given \a{button} is currently being held down.
- * \sa getButtonState, isTapped
+ * \sa getButtonState, isTapped, MouseEvent
  */
 /*!
  * \qmlmethod bool Mouse::isTapped(Mouse::BUT_TYPE button)
@@ -88,11 +104,24 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PlayerIODevice,
  * \sa isTapped, isPressed, getButtonState
  */
 /*!
- * \qmlmethod Vector2 Mouse::getScrollWheel()
+ * \qmlmethod Vector2 Mouse::getScrollWheelAngleDelta()
  *
- *  Returns a 2D vector containing the current state of the mouse's scroll wheel. For normal scroll wheels, only the y
- *  component is used (for vertical scrolling). For trackballs and trackpads, both the x and y components are used for
- *  two-dimensional scrolling.
+ *  Returns a 2D vector representing the distance the wheel has been rotated since the previous frame.
+ *  A positive value indicates the wheel was rotated forwards, and away from the user; a negative value
+ *  indicates that hte wheel was rotated backwards toward the user. For normal scroll wheels, only the y
+ *  component is used (for vertical scrolling). For trackballs and trackpads, both the x and y components
+ *  are used for two-dimensional scrolling.
+ *
+ *  Scroll wheel usage is modeled after the Qt approach. Their docs say the following:
+ *  \quotation
+ *      Most mouse types work in steps of 15 degrees, in which case the delta value is a multiple of 120;
+ *      i.e., 120 units * 1/8 = 15 degrees. However, some mice have finer-resolution wheels and send delta
+ *      values that are less than 120 units (less than 15 degrees). To support this possibility, you can
+ *      either cumulatively add the delta values from events until the value of 120 is reached, then scroll
+ *      the widget, or you can partially scroll the widget in response to each wheel event.
+ *  \endquotation
+ *
+ * \sa MouseWheelEvent
  */
 /*!
  * \qmlmethod Vector2 Mouse::getScreenPos()
@@ -102,7 +131,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PlayerIODevice,
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Mouse,
                              getScreenPos,
-                             getScrollWheel,
+                             getScrollWheelAngleDelta,
                              isTapped,
                              isPressed,
                              getButtonState)
@@ -1688,15 +1717,15 @@ List of \l{Event::TYPE}s that are represented by subclasses of MouseBaseEvent:
 \sa {Mouse}, {MouseBaseEvent}, {MouseEvent}
 */
 /*!
- * \qmlmethod Vector2 MouseWheelEvent::getScrollWheel()
+ * \qmlmethod Vector2 MouseWheelEvent::getScrollWheelAngleDelta()
  *
  * Returns the state of the scroll wheel responsible for this Event
  * being emitted.
- * \sa Mouse::getScrollWheel
+ * \sa Mouse::getScrollWheelAngleDelta
  */
 
 OOLUA_EXPORT_FUNCTIONS_CONST(MouseWheelEvent,
-                             getScrollWheel)
+                             getScrollWheelAngleDelta)
 OOLUA_EXPORT_FUNCTIONS(MouseWheelEvent)
 
 

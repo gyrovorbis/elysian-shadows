@@ -80,7 +80,7 @@ OOLUA_PROXY(Mouse, PlayerIODevice)
         No_public_destructor
     )
     OOLUA_MFUNC_CONST(getButtonState)
-    OOLUA_MFUNC_CONST(getScrollWheel)
+    OOLUA_MFUNC_CONST(getScrollWheelAngleDelta)
     OOLUA_MFUNC_CONST(getScreenPos)
     OOLUA_MFUNC_CONST(isPressed)
     OOLUA_MFUNC_CONST(isTapped)
@@ -220,7 +220,7 @@ OOLUA_PROXY(MouseWheelEvent, MouseBaseEvent)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MFUNC_CONST(getScrollWheel)
+    OOLUA_MFUNC_CONST(getScrollWheelAngleDelta)
 OOLUA_PROXY_END
 
 
