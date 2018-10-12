@@ -261,7 +261,12 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 
     if(event->button() == Qt::LeftButton && !(event->modifiers() &= Qt::ControlModifier)) {
         if(_selItemGroup) placeSelection();
-        else { _startPan(); }
+        else {
+            _startPan();
+            event->ignore();
+            //    QGraphicsView::mousePressEvent(event);
+            return;
+        }
         //event->ignore();
         //return;
     }
@@ -288,7 +293,7 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 
         _startRegionSelection(event);
         //event->accept();
-        return;
+        //return;
     }
 
     event->ignore();
