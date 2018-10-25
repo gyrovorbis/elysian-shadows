@@ -171,7 +171,7 @@ namespace elysian {
         //allow external software (ESTk) to initialize input outside the engine with custom parameters
         static bool         initialize(const GYInputInitParams*const params=nullptr);
         static bool         uninitialize(void);
-
+        static bool         importControllerButtonMappings(const char* filename);
 
         void                update(void);
         void                dumpStats(void);

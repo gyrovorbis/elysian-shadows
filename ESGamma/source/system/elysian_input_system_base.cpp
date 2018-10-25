@@ -48,6 +48,8 @@ void KeyEventObserver::onKeyPressEvent(KeyEvent*) {}
 void KeyEventObserver::onKeyReleaseEvent(KeyEvent*) {}
 
 
+//====== STATICZ =====
+
 bool InputSystemBase::_initialized          = false;
 bool InputSystemBase::_managedExternally    = false;
 const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
@@ -56,6 +58,11 @@ const constexpr GYRumbleInitParams InputSystemBase::_defaultRumbleInitParams;
 const constexpr GYSensorInitParams InputSystemBase::_defaultSensorInitParams;
 #endif
 
+bool InputSystemBase::importControllerButtonMappings(const char*const filepath) {
+    return (!_initialized)? false : gyControllerLoadMappingsFile(filepath);
+}
+
+//====== INSTANCED =====
 InputSystemBase::InputSystemBase(void) {
 
     GYVisualMemoryInitParams vmuInitParams = {
@@ -525,5 +532,7 @@ void InputSystemBase::_mapControllerToMouse(const int) {}
 void InputSystemBase::_mapControllerToTouchDevice(const int) {}
 void InputSystemBase::_mapMouseToTouchDevice(const int) {}
 void InputSystemBase::_mapTouchDeviceToMouse(const int) {}
+
+
 
 }

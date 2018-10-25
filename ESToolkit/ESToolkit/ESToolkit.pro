@@ -321,6 +321,7 @@ SOURCES += \
         source/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.cpp \
         source/ESGamma/tk_input_system.cpp \
         source/ESGamma/tk_render_system.cpp \
+        ../../QESTkUtils/source/tk_debug_log_stack.cpp \
         ../../QESTkUtils/source/model/tk_lua_table_stack_model.cpp \
         ../../QESTkUtils/source/model/tk_property_stack_model.cpp \
         ../../QESTkUtils/source/model/tk_rows_joiner_proxy_model.cpp \
@@ -553,7 +554,8 @@ HEADERS += \
     ../../ESGamma/include/ESGamma/device/elysian_sensor_device.hpp \
     ../../ESGamma/include/ESGamma/proxy/elysian_compute_system_proxy.hpp \
     ../../ESGamma/include/ESGamma/proxy/elysian_thread_system_proxy.hpp \
-    ../../ESGamma/include/ESGamma/proxy/elysian_render_system_proxy.hpp
+    ../../ESGamma/include/ESGamma/proxy/elysian_render_system_proxy.hpp \
+    ../../ElysianVMU/QESTkUtils/include/QESTkUtils/tk_debug_log_stack.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -643,6 +645,7 @@ HEADERS += \
         include/ESToolkit/ESGamma/tk_level_system.h \
         include/ESToolkit/ESGamma/tk_particle_system.h \
         include/ESToolkit/ui/dock/tk_particle_attrib_preview_dock_widget.h \
+        ../../QESTkUtils/include/QESTkUtils/tk_debug_log_stack.h\
         ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_dest_view.h \
         ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_selection_item_group.h \
         ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_source_view.h \
@@ -727,7 +730,7 @@ vmu_child_app {
 
 docs {
 
-    DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
+    DEFINES+=QESTKUTILS_DOCUMENTATION_RESOURCES
 
     RESOURCES += resource/docs.qrc
 

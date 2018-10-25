@@ -191,6 +191,9 @@ static inline int Singletons_getRenderSystem(lua_State* const vm) {
     OOLUA_C_FUNCTION(elysian::RenderSystem*, elysian::Singletons::getRenderSystem)
 }
 
+static inline int InputSystem_importControllerButtonMappings(lua_State* const vm) {
+    OOLUA_C_FUNCTION(bool, elysian::InputSystem::importControllerButtonMappings, const char*);
+}
 
 static inline int Direction_fromVector2(lua_State* const vm) {
     OOLUA_C_FUNCTION(elysian::Direction::DIR4, elysian::Direction::fromVector2, const GYVector2&)

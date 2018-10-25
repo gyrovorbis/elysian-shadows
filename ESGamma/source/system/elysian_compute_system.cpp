@@ -302,7 +302,15 @@ bool ComputeSystem::_createContexts(void) {
 }
 
 bool ComputeSystem::addComputeTask(ComputeTask* task) {
-    if(!task || !task->getKernel()) return false;
+    if(!task) {
+        errprintf("ComputeSystem::addComputeTask(): Failed to add ComputeTask (nullptr)");
+        return false;
+    }
+    if(!task->getKernel()) {
+        errprintf("ComputeSystem::addComputeTask() - Failed to add ComputeTask "
+                  "(no valid ComputeKernel");
+        return false;
+    }
     //assert(task && task->getKernel());
     _computeTasks[task->getKernel()->getGyKernel()->name] = task;
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1

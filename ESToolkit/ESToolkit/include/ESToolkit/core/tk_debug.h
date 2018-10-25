@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTreeWidget>
 #include <ESGamma/utility/elysian_debug_base.hpp>
+#include <QESTkUtils/tk_debug_log_stack.h>
 #include <libGyro/gyro_defines.h>
 #include <QStack>
 #include <QPoint>
@@ -12,8 +13,6 @@
 #define GY_FILE_QT_DEBUG_DIR            "logs"
 #define DEBUG_QT_BUFF_SIZE              GYRO_PRINTF_BUFFER_SIZE
 #define DEBUG_LOG_POLL_MSEC             500
-
-#define Q_CSTR(a) (a.toStdString().c_str())
 
 class QString;
 class QTreeWidgetItem;
@@ -33,7 +32,10 @@ protected:
     virtual bool    eventFilter(QObject *object, QEvent* event) override;
 };
 
-class TkDebug: public QObject, public elysian::DebugBase {
+class TkDebug:
+        public QObject,
+        public elysian::DebugBase
+{
     Q_OBJECT
     friend class DebugBase;
 public:
@@ -47,8 +49,27 @@ public:
         COMMAND,
         OPENGL,
         EVMU,
+        QESTKUTILS,
         SOURCE_MAX
     };
+
+    struct QESTkUtilAdapter: public QESTkUtils::Debug::LogAdapter {
+        virtual void log(QESTkUtils::Debug::LOG_SEVERITY severity, const char* fmt, ...) override {
+            char buffer[GYRO_PRINTF_BUFFER_SIZE];
+            va_list argptr;
+            va_start(argptr, fmt);
+            vsnprintf(buffer, sizeof(buffer), fmt, argptr);
+            va_end(argptr);
+            Logf((SEVERITY)severity, "%s", buffer);
+        }
+        virtual void    push(void) override {
+            TkDebug::push();
+        }
+        virtual void    pop(unsigned depth=1) override {
+            TkDebug::pop(depth);
+        }
+
+    } _qestkUtilsLogAdapter;
 
     static void Log(SEVERITY flag, QString msg, int src = TOOLKIT);
     static void Logf(SEVERITY flag, const char *string, ...);

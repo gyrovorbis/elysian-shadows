@@ -36,6 +36,10 @@ namespace elysian {
     class Engine;
 }
 
+namespace QESTkUtils {
+    class HelpDockWidget;
+}
+
 class EngineDialog;
 class AssetDockWidget;
 class EntityDockWidget;
@@ -48,7 +52,6 @@ class EngineSettingsDialog;
 class EngineGLSceneWidget;
 class CameraDockWidget;
 class GitlabDialog;
-class HelpDockWidget;
 class VMUMainWindow;
 class TkArea;
 
@@ -157,7 +160,8 @@ private:
     EngineSettingsDialog*   _engineSettingsDialog;
     SheetManager*           _sheetManager;
     GitlabDialog*           _gitlabDialog;
-    HelpDockWidget*         _helpDockWidget;
+    QESTkUtils::HelpDockWidget*
+                            _helpDockWidget;
 
     QToolButton*            m_activePlatform;
     QActionGroup*           m_platformActionGroup;

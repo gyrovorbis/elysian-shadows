@@ -59,6 +59,7 @@ bool                TkDebug::_evmuActive = false;
 QAction*            TkDebug::_filterActions[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{nullptr}};
 
 TkDebug::TkDebug(void) {
+    QESTkUtils::Debug::setLogAdapter(&_qestkUtilsLogAdapter);
     _commandHistory = QVector<QString>();
     _centralWidget = new QWidget;
 	_vertLayout = new QVBoxLayout;
@@ -137,6 +138,7 @@ TkDebug::TkDebug(void) {
     addFilterSource("Lua",          Debug::LUA);
     addFilterSource("Commands",     Debug::COMMAND);
     addFilterSource("ElysianVMU",   Debug::EVMU);
+    addFilterSource("QESTkUtils",   Debug::QESTKUTILS);
     sourcesMenu.insertAction("Enable All Filters", [](bool) {
         for(unsigned i = 0; i < Debug::SOURCE_MAX; ++i)
             for(unsigned j = 0; j < Debug::LOG_OFF; ++j)

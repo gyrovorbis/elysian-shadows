@@ -1259,6 +1259,20 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PowerSupply,
  * Returns the PowerSupply device object reponsible for powering the current platform.
  * \sa PowerSupply
  */
+/*!
+ * \qmlmethod static bool InputSystem::importControllerButtonMapping(string filePath)
+ *
+ *\e {NOTE: THIS IS A STATIC METHOD!}
+ *
+ * Loads the file located at \a filePath, which is a collection of SDL2 Input controller mapping
+ * declarations. This should be called BEFORE controllers are created/initialized/used and should
+ * usually be called when the Engine initializes (global_init.lua).
+ *
+ * \e {NOTE: The method returns true if the file was successfully opened and its mappings were
+ * imported or false if it could not be opened, or if the format was invalid, or upon any other
+ * issue. }
+ * \sa Controller
+ */
 #ifdef ELYSIAN_INPUT_SYSTEM_SENSORS_ENABLED
 /*!
  * \qmlmethod Accelerometer* InputSystem::getAccelerometer(unsigned port)

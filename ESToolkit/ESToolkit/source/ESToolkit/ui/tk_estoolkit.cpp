@@ -78,7 +78,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     _engineDialog           = new EngineDialog(/*this*/);
     _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
     _gitlabDialog           = new GitlabDialog(/*this*/);
-    _helpDockWidget         = new HelpDockWidget(/*this*/);
+    _helpDockWidget         = new QESTkUtils::HelpDockWidget(nullptr, "ESToolkit", ":/manual/docs", "qthelp://elysianshadows.toolkit.help/doc/index.html");
     _lineChartWidget        = new QESTkUtils::LineChartView();
     connect(&_assets,                SIGNAL(engineUpdated()), _lineChartWidget, SLOT(onEngineUpdated()));
     connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
@@ -853,7 +853,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
     GYInputInitParams inputParams = {
         static_cast<QObject*>(_ui->mapView),
         static_cast<QGLWidget*>(_engineGLView),
-        4
+        10
     };
 
     success &= elysian::InputSystem::initialize(&inputParams);

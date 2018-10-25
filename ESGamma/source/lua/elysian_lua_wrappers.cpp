@@ -604,6 +604,9 @@ namespace elysian {
         _mainState->register_class_static<Engine>("getRenderSys",       &Singletons_getRenderSystem);
         _mainState->register_class_static<Engine>("getThreadSys",       &Singletons_getThreadSystem);
 
+        _mainState->register_class_static<InputSystem>("importControllerButtonMappings",
+                                                                        &InputSystem_importControllerButtonMappings);
+
 		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
 
         _mainState->register_class_static<Direction>("fromVector2", &Direction_fromVector2);
