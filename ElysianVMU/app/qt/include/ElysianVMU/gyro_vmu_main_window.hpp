@@ -10,12 +10,13 @@
 
 #define VMU_FB_DEFAULT_WIDTH            48
 #define VMU_FB_DEFAULT_HEIGHT           40
-#define VMU_TEXT_CODEC                  "Shift-JIS"
 #define VMU_ROM_HISTORY_SIZE            5
 #define VMU_TRIGGER_SPEED_FACTOR        10.0f
 #define VMU_FB_DEFAULT_ZOOM_LEVEL       8
 #define FILTER_DUPLICATE_LOG_STRINGS    1
 #define VMU_MAIN_WINDOW_SETTINGS_PREFIX "mainWindow"
+
+#define VMU_STATUS_BAR_FORCE_UPDATE_INTERVAL    300
 
 #define ICON_ES_PATH                    ":/icons/images/vmu_es.png"
 #define ICON_CLOCK_PATH                 ":/icons/images/icon_clock.png"
@@ -35,6 +36,7 @@ class   QGifImage;
 class   QSettings;
 class   QLabel;
 class   QTextCodec;
+class   QTableView;
 struct  GYAudioSource;
 struct  GYAudBuffer;
 struct  VMUDevice;
@@ -43,9 +45,16 @@ class   VmuTcpDialog;
 class   VmuBuzzerDialog;
 class   VmuMemoryBrowserWidget;
 class   QGraphicsPixmapItem;
+class   JetSetRadioGraffitiTool;
+class   VmuFileSystemTableModel;
+class   VmuFileSystemTableView;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 class   VmuComDialog;
 #endif
+
+namespace QESTkUtils {
+    class HelpDockWidget;
+}
 
 namespace Ui {
     class VMUMainWindow;
@@ -64,7 +73,7 @@ public:
     };
 
     explicit            VMUMainWindow(QWidget *parent = 0, QString workingDir=QString());
-    virtual             ~VMUMainWindow(void);
+    virtual             ~VMUMainWindow(void) override;
 
     bool                loadRom(QString filepath);
     bool                loadBios(QString filepath);
@@ -91,39 +100,44 @@ protected Q_SLOTS:
     void                _onSaveGameAboutToShow(void);
     void                _onSaveGameAboutToHide(void);
 
-    void on_actionLoad_ROM_triggered();
-    void on_actionSave_State_triggered();
-    void on_actionLoad_State_triggered();
-    void on_actionReset_triggered();
-    void on_actionScreenshot_triggered();
+    void on_actionLoad_ROM_triggered(void);
+    void on_actionSave_State_triggered(void);
+    void on_actionLoad_State_triggered(void);
+    void on_actionReset_triggered(void);
+    void on_actionScreenshot_triggered(void);
     void on_actionEmulate_Audio_toggled(bool arg1);
     void on_actionDump_Icons_triggered(void);
     void on_actionDump_Eyecatch_triggered(void);
     void on_actionTCP_Connection_Manager_triggered(void);
-    void on_actionQuick_Connect_triggered();
+    void on_actionQuick_Connect_triggered(void);
     void on_actionEnable_Low_Battery_toggled(bool arg1);
-    void on_actionQuit_triggered();
-    void on_actionView_Log_triggered();
-    void on_actionLoad_BIOS_Image_triggered();
-    void on_actionDisassemble_ROM_triggered();
+    void on_actionQuit_triggered(void);
+    void on_actionView_Log_triggered(void);
+    void on_actionLoad_BIOS_Image_triggered(void);
+    void on_actionDisassemble_ROM_triggered(void);
     void on_actionEnable_Pixel_Ghosting_toggled(bool arg1);
     void on_actionPreserve_Aspect_Ratio_toggled(bool arg1);
-    void on_action1x_triggered();
-    void on_action2x_triggered();
-    void on_action4x_triggered();
-    void on_action8x_triggered();
-    void on_action16x_triggered();
-    void on_action32x_triggered();
-    void on_action64x_triggered();
+    void on_action1x_triggered(void);
+    void on_action2x_triggered(void);
+    void on_action4x_triggered(void);
+    void on_action8x_triggered(void);
+    void on_action16x_triggered(void);
+    void on_action32x_triggered(void);
+    void on_action64x_triggered(void);
     void on_actionHalt_toggled(bool arg1);
-    void on_actionAdvance_Frame_triggered();
+    void on_actionAdvance_Frame_triggered(void);
     void on_actionRecordAnim_toggled(bool arg1);
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
-    void on_actionSerial_COM_Connection_Manager_triggered();
+    void on_actionSerial_COM_Connection_Manager_triggered(void);
 #endif
-    void on_actionBIOS_Runtime_Disassembly_triggered();
-    void on_actionBuzzer_Tool_triggered();
-    void on_actionMemory_Browser_triggered();
+    void on_actionBIOS_Runtime_Disassembly_triggered(void);
+    void on_actionBuzzer_Tool_triggered(void);
+    void on_actionMemory_Browser_triggered(void);
+    void on_actionDocumentation_triggered(bool checked);
+    void on_actionJet_Set_Radio_Graffiti_Tool_triggered(void);
+    void on_actionFilesystem_triggered(void);
+    void on_actionExport_Flash_Image_triggered(void);
+    void on_actionNew_Flash_Image_triggered(void);
 
 private:
 
@@ -164,9 +178,17 @@ private:
     QVector<QPixmap>    _iconPixmaps;
     QImage              _eyecatchImage;
     QString             _romDir;
+    QESTkUtils::HelpDockWidget*
+                        _helpDockWidget     = nullptr;
+    VmuFileSystemTableModel*
+                        _fileSysTableModel  = nullptr;
+    VmuFileSystemTableView* _fileSysTable   = nullptr;
     VmuTcpDialog*       _tcpDialog          = nullptr;
     VmuBuzzerDialog*    _buzzerDialog       = nullptr;
-    VmuMemoryBrowserWidget*   _memBrowser   = nullptr;
+    VmuMemoryBrowserWidget*
+                        _memBrowser   = nullptr;
+    JetSetRadioGraffitiTool*
+                        _jsrGraffitiTool    = nullptr;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     VmuComDialog*       _comDialog          = nullptr;
 #endif
@@ -181,7 +203,6 @@ private:
     VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;
-    QTextCodec*         _japCodec           = nullptr;
     VMUDevice*          _dev                = nullptr;
     QGifImage*          _animGif            = nullptr;
     int64_t             _prevAnimFrameTicks = 0;

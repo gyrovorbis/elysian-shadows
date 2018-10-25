@@ -106,8 +106,9 @@
     <addaction name="menuLoad_Recent"/>
     <addaction name="actionLoad_BIOS_Image"/>
     <addaction name="separator"/>
-    <addaction name="actionSave_Game"/>
-    <addaction name="actionLoad_Game"/>
+    <addaction name="actionNew_Flash_Image"/>
+    <addaction name="actionExport_Flash_Image"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_State"/>
     <addaction name="actionLoad_State"/>
     <addaction name="separator"/>
@@ -159,12 +160,14 @@
     <addaction name="actionBIOS_Runtime_Disassembly"/>
     <addaction name="actionBuzzer_Tool"/>
     <addaction name="actionView_Log"/>
+    <addaction name="actionJet_Set_Radio_Graffiti_Tool"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionDocumentation"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -191,6 +194,7 @@
     <addaction name="actionPreserve_Aspect_Ratio"/>
     <addaction name="menuPixel_Perfect_Aspect_Zoom"/>
     <addaction name="menuDebugger"/>
+    <addaction name="actionFilesystem"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -524,6 +528,35 @@
   <action name="actionMemory_Browser">
    <property name="text">
     <string>Memory Browser</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionJet_Set_Radio_Graffiti_Tool">
+   <property name="icon">
+    <iconset resource="../resource/evmu.qrc">
+     <normaloff>:/icons/images/jet_set_radio_logo.png</normaloff>:/icons/images/jet_set_radio_logo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Jet Set Radio Graffiti Tool</string>
+   </property>
+  </action>
+  <action name="actionFilesystem">
+   <property name="text">
+    <string>Filesystem</string>
+   </property>
+  </action>
+  <action name="actionExport_Flash_Image">
+   <property name="text">
+    <string>Export Flash Image</string>
+   </property>
+  </action>
+  <action name="actionNew_Flash_Image">
+   <property name="text">
+    <string>New Flash Image</string>
    </property>
   </action>
  </widget>

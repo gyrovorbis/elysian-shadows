@@ -7,6 +7,7 @@
 #include <QMimeData>
 #include <QTextCodec>
 #include <QDesktopServices>
+#include <QTableView>
 #include <qgifimage.h>
 
 #include "gyro_vmu_version.h"
@@ -43,6 +44,10 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneDragDropEvent>
+#include <QESTkUtils/ui/widget/tk_documentation_browser.h>
+#include <ElysianVMU/jet_set_radio_graffiti_tool.hpp>
+#include <ElysianVMU/gyro_vmu_filesystem_model.hpp>
+#include <ElysianVMU/gyro_vmu_qt_util.hpp>
 
 #define Q_CSTR(a) (a.toStdString().c_str())
 
@@ -98,7 +103,7 @@ bool VMUMainWindow::eventFilter(QObject *watched, QEvent *event) {
                         QFileInfo info(url.toLocalFile());
                         QString suff = info.suffix().toLower();
                         if(suff == "vms" || suff == "lcd" ||
-                                suff == "vmi" || suff == "vmu") {
+                                suff == "vmi" || suff == "vmu" || suff == "bin") {
                             sceneEvent->acceptProposedAction();
                             loadRom(info.absoluteFilePath());
                             return true;
@@ -143,19 +148,21 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconListening(ICON_TCP_LISTENING_PATH),
     _iconConnected(ICON_TCP_CONNECTED_PATH),
     _iconRecording(ICON_RECORDING_PATH),
+    _fileSysTable(new VmuFileSystemTableView),
+    _fileSysTableModel(new VmuFileSystemTableModel),
     _tcpDialog(new VmuTcpDialog),
     _buzzerDialog(new VmuBuzzerDialog),
-    _statusLabel(new QLabel("HALTED: No ROM Image")),
+    _statusLabel(new QLabel("Drag & Drop VMU Files")),
     _iconLabel(new QLabel()),
     _recordingLabel(new QLabel()),
     _remoteLabel(new QLabel()),
     _loadGameMenu(new QMenu()),
-    _saveGameMenu(new QMenu()),
-    _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
+    _saveGameMenu(new QMenu())
 {
     //UI Initialization/Setup
     _ui->setupUi(this);
     setAcceptDrops(true);
+    VmuQtUtils::initialize();
     _iconLabel->setMargin(0);
     _iconLabel->setFixedSize(21, 21);
     _recordingLabel->setMargin(0);
@@ -265,6 +272,16 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _dev = gyVmuDeviceCreate();
 
     //Initialize external file menu dialogs
+#ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
+    _helpDockWidget = new QESTkUtils::HelpDockWidget(nullptr,
+                                                     "ElysianVMU",
+                                                     ":/manual/docs",
+                                                     "qthelp://elysianvmu.help/doc/index.html",
+                                                     VMU_OUTPUT_DIR);
+    _ui->actionDocumentation->setEnabled(true);
+#else
+    _ui->actionDocumentation->setEnabled(false);
+#endif
     _tcpDialog->setVmuDevice(_dev);
     _buzzerDialog->setVmuDevice(_dev);
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
@@ -361,7 +378,7 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
         QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
         QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
         QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
+        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Inolen, RinMaru, and all of the Elysian Shadows Kickstarter backers and supporters  :)</br</br>") +
         QString("</table><br><br>") +
         QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
         QString("<i>ElysianVMU Copyright 2017-2018 Elysian Shadows</i><br>") +
@@ -419,6 +436,30 @@ void VMUMainWindow::update(void) {
 
     bool ranThisFrame = false;
     int64_t deltaTicks;
+
+    auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
+    if(!_running) {
+        if(gameEntry) {
+            _gyLog(GY_DEBUG_VERBOSE, "New game detected, resetting CPU!");
+            resetCpu();
+            _running = true;
+        }
+
+    } else {
+        if(!gameEntry) {
+            _gyLog(GY_DEBUG_VERBOSE, "Game was removed, halting CPU!");
+            resetCpu();
+            _fb.fill(Qt::black);
+            _updateScene();
+            _running = false;
+        }
+    }
+
+    static int statusBarCount = 0;
+    if(++statusBarCount >= VMU_STATUS_BAR_FORCE_UPDATE_INTERVAL) {
+        _statusBarChanged = true;
+        _updateStatusbar();
+    }
 
     if(!_running && !_dev->lcdFile) return;
 
@@ -529,18 +570,28 @@ void VMUMainWindow::_updateStatusbar(void) {
             if(_dev->lcdFile) {
                 _statusLabel->setText(QString("LCD Animation"));
 
-            } else if(_vmsHeader) {
-                char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-                gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
-                _statusLabel->setText(_japCodec->toUnicode(string));
-
-            } else if(_dev->biosLoaded) {
-                palette.setColor(QPalette::WindowText, QColor(Qt::gray));
-                _statusLabel->setText("System BIOS Image");
-
             } else {
-                palette.setColor(QPalette::WindowText, QColor(Qt::darkRed));
-                _statusLabel->setText("No ROM Image Loaded!");
+
+                auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
+                if(gameEntry) {
+                    auto* vmsHeader = gyVmuFlashDirEntryVmsHeader(_dev, gameEntry);
+                    char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+                    gyVmuVmsHeaderVmuDescGet(vmsHeader, string);
+                    _statusLabel->setText(VmuQtUtils::japCodec->toUnicode(string));
+                } else {
+                    int fileCount = gyVmuFlashFileCount(_dev);
+                    if(fileCount) {
+                        VMUFlashMemUsage mem = gyVmuFlashMemUsage(_dev);
+                        QString label = QString("File(s): %1  Free Blocks: %2/%3").arg(fileCount).arg(mem.blocksFree).arg(gyVmuFlashUserDataBlocks(_dev));
+                        _statusLabel->setText(label);
+                    } else if(_dev->biosLoaded) {
+                        palette.setColor(QPalette::WindowText, QColor(Qt::gray));
+                        _statusLabel->setText("System BIOS Image");
+                    } else {
+                        palette.setColor(QPalette::WindowText, QColor(Qt::darkRed));
+                        _statusLabel->setText("Drag & Drop VMU File.");
+                    }
+                }
 
             }
         }
@@ -558,7 +609,7 @@ void VMUMainWindow::_updateScene(void) {
     //Update framebuffer texture based on VMU LCD screen state
     {
         QPainter painter(&_fb);
-        if(!gyVmuDisplayEnabled(_dev) && _displayWasEnabled) {
+        if((!gyVmuDisplayEnabled(_dev) && _displayWasEnabled) || !_running) {
             painter.drawPixmap(QPoint(0,0), _iconES);
             _displayWasEnabled = false;
             updatedFb = true;
@@ -627,6 +678,32 @@ void VMUMainWindow::_updateScene(void) {
 }
 
 bool VMUMainWindow::loadRom(QString filepath) {
+#if 1
+    VMUFlashDirEntry* dirEntry = nullptr;
+    bool status = VmuQtUtils::loadVMUImage(_dev, filepath, &dirEntry, true);
+
+    if(status) {
+
+        _pushRecentRom(filepath);
+        if(dirEntry) {
+            QString typeStr;
+
+            if(dirEntry->fileType == VMU_FLASH_FILE_TYPE_DATA) {
+                typeStr = "DATA";
+                if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
+            } else typeStr = "GAME";
+
+            char buff[100];
+            gyVmuFlashDirEntryName(dirEntry, buff);
+            QString msg = QString("Loaded: %1").arg(buff).arg(typeStr);
+            _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
+            _statusBarChanged = true;
+            _updateStatusbar();
+        }
+
+
+    }
+#else
     if(filepath.isEmpty()) return false;
 
     QFileInfo info(filepath);
@@ -666,7 +743,8 @@ bool VMUMainWindow::loadRom(QString filepath) {
         }
     }
 
-    if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
+    VMU_LOAD_IMAGE_STATUS status;
+    if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str(), &status)) {
         if(_dev->lcdFile) {
             _statusBarChanged = true;
             _pushRecentRom(filepath);
@@ -687,6 +765,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
     }
     _gyLog(GY_DEBUG_ERROR, "Error Loading File! [%s]", info.absoluteFilePath().toStdString().c_str());
     return false;
+#endif
 }
 
 void VMUMainWindow::resetCpu(void) {
@@ -720,10 +799,7 @@ void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
-                                         "VMS Files(*.vms *.VMS);;"
-                                         "Web Browser Files(*.vmi *.VMI);;"
-                                         "Dream Animator Files(*.lcd *.LCD);;"
-                                         "Flash Image Files(*.vmu *.VMU)"));
+                                         "VMS Files (*.vms *.VMS);;Web Browser Files (*.vmi *.VMI);;Dream Animator Files (*.lcd *.LCD);;Flash Image Files (*.vmu *.VMU *.bin *.BIN)"));
 }
 
 void VMUMainWindow::on_actionSave_State_triggered(void)
@@ -950,7 +1026,7 @@ void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
                 QFileInfo info(url.toLocalFile());
                 QString suff = info.suffix().toLower();
                 if(suff == "vms" || suff == "lcd" ||
-                        suff == "vmi" || suff == "vmu") {
+                        suff == "vmi" || suff == "vmu" || suff == "bin") {
                     event->acceptProposedAction();
                     return;
                 }
@@ -970,7 +1046,7 @@ void VMUMainWindow::dropEvent(QDropEvent* event) {
                 QFileInfo info(url.toLocalFile());
                 QString suff = info.suffix().toLower();
                 if(suff == "vms" || suff == "lcd" ||
-                        suff == "vmi" || suff == "vmu") {
+                        suff == "vmi" || suff == "vmu" || suff == "bin") {
                     event->acceptProposedAction();
                     loadRom(info.absoluteFilePath());
                     return;
@@ -1014,7 +1090,8 @@ bool VMUMainWindow::_loadIcons(void) {
     _iconAnimCounter    = 0;
     _iconCurIndex       = 0;
 
-    _iconsData    = gyVmuVMSFileInfoCreateIconsARGB444(_vmsHeader);
+    auto* dirEntry = gyVmuFlashDirEntryGame(_dev);
+    _iconsData    = gyVmuVMSFileInfoCreateIconsARGB444(_dev, dirEntry);
 
     if(_iconsData) {
         for(unsigned i = 0; i < _vmsHeader->iconCount; ++i) {
@@ -1027,7 +1104,7 @@ bool VMUMainWindow::_loadIcons(void) {
         hasIcons = true;
     }
 
-    _eyecatchData = gyVmuVMSFileInfoCreateEyeCatchARGB444(_vmsHeader);
+    _eyecatchData = gyVmuVMSFileInfoCreateEyeCatchARGB444(_dev, dirEntry);
 
     if(_eyecatchData) {
         _gyLog(GY_DEBUG_VERBOSE, "Creating texture for eyecatch.");
@@ -1084,7 +1161,7 @@ void VMUMainWindow::on_actionDump_Icons_triggered(void)
 
     for(int i = 0; i < _iconImages.size(); ++i) {
         sprintf(filename, "%s_%d.png", vmsDesc, i);
-        if(!_iconImages[i].save(_japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
+        if(!_iconImages[i].save(VmuQtUtils::japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
             _gyLog(GY_DEBUG_ERROR, "Could not dump icon to file [%s]!", _workingDir->absoluteFilePath(filename).toStdString().c_str());
         else
             _gyLog(GY_DEBUG_VERBOSE, "Dumped icon to file [%s].", _workingDir->absoluteFilePath(filename).toStdString().c_str());
@@ -1135,7 +1212,7 @@ void VMUMainWindow::on_actionDump_Eyecatch_triggered(void)
     gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
 
     sprintf(filename, "%s_eyecatch.png", vmsDesc);
-    if(!_eyecatchImage.save(_japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
+    if(!_eyecatchImage.save(VmuQtUtils::japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
         _gyLog(GY_DEBUG_ERROR, "Could not dump eyecatch to file [%s]!", _workingDir->absoluteFilePath(filename).toStdString().c_str());
     else
         _gyLog(GY_DEBUG_VERBOSE, "Dumped eyecatch to file [%s].", _workingDir->absoluteFilePath(filename).toStdString().c_str());
@@ -1169,6 +1246,7 @@ void VMUMainWindow::on_actionQuit_triggered(void)
 
 void VMUMainWindow::on_actionView_Log_triggered(void)
 {
+    gyVmuFlashPrintFilesystem(_dev);
     QDesktopServices::openUrl(QUrl::fromLocalFile(_workingDir->absoluteFilePath(VMU_LOG_FILE)));
 }
 
@@ -1209,7 +1287,7 @@ void VMUMainWindow::on_actionDisassemble_ROM_triggered(void)
     char fileName[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+5];
     gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
     sprintf(fileName, "%s.ASM", vmsDesc);
-    auto unicodeFile = _japCodec->toUnicode(fileName);
+    auto unicodeFile = VmuQtUtils::japCodec->toUnicode(fileName);
     bool lineNumbers = (QMessageBox::question(nullptr, "Disassemble ROM", "Include memory addresses in disassembly file ["+
                                               unicodeFile+"]?")
             == QMessageBox::Yes);
@@ -1431,4 +1509,63 @@ void VMUMainWindow::on_actionMemory_Browser_triggered(void)
         _memBrowser = new VmuMemoryBrowserWidget(_dev, nullptr);
     }
     _memBrowser->show();
+}
+
+void VMUMainWindow::on_actionDocumentation_triggered(bool checked)
+{
+#ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
+    _helpDockWidget->show();
+#endif
+}
+
+void VMUMainWindow::on_actionJet_Set_Radio_Graffiti_Tool_triggered() {
+    if(!_jsrGraffitiTool) {
+        _jsrGraffitiTool = new JetSetRadioGraffitiTool(nullptr);
+    }
+    _jsrGraffitiTool->show();
+}
+
+void VMUMainWindow::on_actionFilesystem_triggered(void)
+{
+    delete _fileSysTableModel;
+    _fileSysTableModel = new VmuFileSystemTableModel;
+    _fileSysTableModel->setDevice(_dev);
+    _fileSysTable->setModel(_fileSysTableModel);
+    _fileSysTable->show();
+
+}
+
+void VMUMainWindow::on_actionExport_Flash_Image_triggered(void)
+{
+    QString path = QFileDialog::getSaveFileName(nullptr, "Choose Flash Image Export Location", _romDir,
+                                             "Flash Image Files (*bin)");
+
+    if(path.isEmpty()) return;
+
+    gyVmuFlashExportImage(_dev, Q_CSTR(path));
+
+}
+
+void VMUMainWindow::on_actionNew_Flash_Image_triggered()
+{
+    int fileCount = gyVmuFlashFileCount(_dev);
+    if(gyVmuFlashDirEntryGame(_dev)) --fileCount;
+
+    if(fileCount) {
+        auto resp = QMessageBox::question(nullptr, "Save Changes",
+                            "Would you like to save changes made to the current flash image?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+
+        if(resp == QMessageBox::Cancel) return;
+
+        if(resp == QMessageBox::Yes) {
+            QString path = QFileDialog::getSaveFileName(nullptr, "Choose Flash Image Export Location", _romDir,
+                                                     "Flash Image Files (*bin)");
+
+            if(path.isEmpty()) return;
+
+            gyVmuFlashExportImage(_dev, Q_CSTR(path));
+        }
+
+        gyVmuFlashFormat(_dev);
+    }
 }

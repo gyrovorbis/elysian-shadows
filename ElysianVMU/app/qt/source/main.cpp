@@ -7,10 +7,28 @@
 #include "gyro_vmu_version.h"
 #include "gyro_vmu_disassembler.h"
 #include <vulkan/gyro_video_vulkan.h>
+#include <QESTkUtils/tk_debug_log_stack.h>
+#include <libGyro/gyro_defines.h>
+
+static struct VMUQESTkUtilsDebugAdapter:
+        public QESTkUtils::Debug::LogAdapter
+{
+    virtual void push(void) override { _gyPush(); }
+    virtual void pop(unsigned count) override { _gyPop(count); }
+    virtual void log(QESTkUtils::Debug::LOG_SEVERITY severity, const char* fmt, ...) override {
+        char buffer[GYRO_PRINTF_BUFFER_SIZE];
+        va_list argptr;
+        va_start(argptr, fmt);
+        vsnprintf(buffer, sizeof(buffer), fmt, argptr);
+        va_end(argptr);
+        _gyLog((GY_DEBUG_SEVERITY)severity, "%s", buffer);
+    }
+} _vmuQESTkUtilsLogAdapter;
 
 int main(int argc, char* argv[]) {
 
     gyDebugInit();
+    QESTkUtils::Debug::setLogAdapter(&_vmuQESTkUtilsLogAdapter);
 
     QString romPath;
     QString workingDir;

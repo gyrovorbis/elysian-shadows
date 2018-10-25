@@ -18,10 +18,15 @@ LIBGYRO_BUILD_PATH  = $$relative_path($$LIBGYRO_BUILD_PATH)
 #SUBDIRS +=  $${LIBGYRO_BUILD_PATH}
 
 vmu_child_app {
-    DEFINES+=VMU_CHILD_APP
+    DEFINES += VMU_CHILD_APP
     TEMPLATE = lib
     CONFIG += staticlib
     CONFIG -= app_bundle
+}
+
+docs {
+    DEFINES += QESTKUTILS_DOCUMENTATION_RESOURCES
+    QT += help
 }
 
 INCLUDEPATH += ../../../app/qt \
@@ -29,7 +34,8 @@ INCLUDEPATH += ../../../app/qt \
     ../../../evmu-core/include \
     ../../../evmu-core/include/evmu-core \
     $${LIBGYRO_PATH}/api \
-    $${LIBGYRO_PATH}/api/libGyro
+    $${LIBGYRO_PATH}/api/libGyro \
+    ../../../QESTkUtils/include/
 
 TARGET = ElysianVMU
 QT += gui opengl
@@ -59,7 +65,11 @@ macx {
 }
 }
 
-
+docs {
+    DISTFILES += \
+        ../../../app/qt/doc/ElysianVMU.qdocconf \
+        ../../../app/qt/doc/ElysianVMU.qhcp
+}
 
 ICON = $${SOURCE_ROOT}/resource/images/vmu_icon.icns
 
@@ -68,6 +78,7 @@ SOURCES += \
     ../../../app/qt/source/gyro_vmu_tcp_dialog.cpp \
     ../../../app/qt/source/gyro_vmu_buzzer_dialog.cpp \
     ../../../app/qt/source/gyro_vmu_address_space_model.cpp \
+    ../../../QESTkUtils/source/ui/widget/tk_documentation_browser.cpp \
     ../../../app/qt/gif/qgifimage.cpp \
     ../../../app/qt/gif/dgif_lib.c \
     ../../../app/qt/gif/egif_lib.c \
@@ -75,7 +86,13 @@ SOURCES += \
     ../../../app/qt/gif/gif_font.c \
     ../../../app/qt/gif/gif_hash.c \
     ../../../app/qt/gif/gifalloc.c \
-    ../../../app/qt/gif/quantize.c
+    ../../../app/qt/gif/quantize.c \
+    ../../../QESTkUtils/source/tk_debug_log_stack.cpp \
+    ../../../QESTkUtils/source/tk_menu_stack.cpp \
+ #   ../../../QESTkUtils/source/tk_mime_drop_manager.cpp \
+    ../../../app/qt/source/jet_set_radio_graffiti_tool.cpp \
+    ../../../app/qt/source/gyro_vmu_filesystem_model.cpp \
+    ../../../app/qt/source/gyro_vmu_qt_util.cpp
 
 !vmu_child_app {
     SOURCES += ../../../app/qt/source/main.cpp
@@ -95,10 +112,16 @@ HEADERS += \
     $${SOURCE_ROOT}/gif/qgifglobal.h \
     $${SOURCE_ROOT}/gif/qgifimage.h \
     $${SOURCE_ROOT}/gif/qgifimage_p.h \
+    ../../../QESTkUtils/include/QESTkUtils/ui/widget/tk_documentation_browser.h \
+    ../../../QESTkUtils/include/QESTkUtils/tk_menu_stack.h \
+    ../../../QESTkUtils/include/QESTkUtils/tk_mime_drop_manager.h \
     $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_buzzer_dialog.hpp \
     $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_address_space_model.hpp \
     $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_main_window.hpp \
-    $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_tcp_dialog.hpp
+    $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_tcp_dialog.hpp \
+    ../../../app/qt/include/ElysianVMU/jet_set_radio_graffiti_tool.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_model.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_qt_util.hpp
 
 !raspberrypi {
 
@@ -123,7 +146,8 @@ FORMS += \
     $${SOURCE_ROOT}/ui/gyro_vmu_main_window.ui \
     $${SOURCE_ROOT}/ui/gyro_vmu_tcp_dialog.ui \
     $${SOURCE_ROOT}/ui/gyro_vmu_com_dialog.ui \
-    $${SOURCE_ROOT}/ui/gyro_vmu_buzzer_dialog.ui
+    $${SOURCE_ROOT}/ui/gyro_vmu_buzzer_dialog.ui \
+    ../../../app/qt/ui/jet_set_radio_graffiti_tool.ui
 
 
 EVMU_CORE_PATH      = ../../../evmu-core
@@ -253,4 +277,8 @@ win32 {
 RESOURCES += \
     $${SOURCE_ROOT}/resource/evmu.qrc
 }
+
+DISTFILES += \
+    ../../../app/qt/resource/docs/ElysianVMU.qch \
+    ../../../app/qt/resource/docs/ElysianVMU.qhc
 
