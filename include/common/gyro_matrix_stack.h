@@ -92,8 +92,6 @@ static inline void gyMatTranslateScale(const float x, const float y, const float
     gyMatApply(_tranScaleMat);
 }
 
-
-
 static inline void gyMatRotate(const float angle, const float x, const float y, const float z) {
   float sinTheta, cosTheta;
 

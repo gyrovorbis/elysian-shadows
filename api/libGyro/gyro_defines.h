@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#define GYRO_PATH_MAX_SIZE		200
+#define GYRO_PATH_MAX_SIZE		400
 #define GYRO_PRINTF_BUFFER_SIZE 100000
 
 #define GYRO_SWITCH_CASE_STRING(a) case a: return #a

@@ -101,18 +101,22 @@ typedef enum GY_CONTROLLER_BUTTON {
 } GY_CONTROLLER_BUTTON;
 
 typedef struct GYController {
-    GYVector2        analogSticks[GY_CONTROLLER_ANALOG_COUNT];
-    GYVector2        triggers    [GY_CONTROLLER_TRIGGER_COUNT];
-    unsigned         buttons     [GY_CONTROLLER_BUT_COUNT];
+    GYVector2       analogSticks[GY_CONTROLLER_ANALOG_COUNT];
+    float           triggers    [GY_CONTROLLER_TRIGGER_COUNT];
+    unsigned        buttons     [GY_CONTROLLER_BUT_COUNT];
+    char            buttonsChanged;
+    char            analogsChanged[GY_CONTROLLER_ANALOG_COUNT];
+    char            triggersChanged[GY_CONTROLLER_TRIGGER_COUNT];
 } GYController;
 
 int         gyInputInit(const struct GYInputInitParams*const params);
 int         gyInputUninit(void);
 int         gyInputPollEvents(void);
 
+int         gyControllerLoadMappingsFile(const char* filepath);
 int         gyControllerPoll(const unsigned slot, struct GYController** const input);
-int         gyKeyboardPoll(struct GYKeyboard** const keybd);
-int         gyMousePoll(struct GYMouse**const mouse);
+int         gyKeyboardPoll(const unsigned slot, struct GYKeyboard** const keybd);
+int         gyMousePoll(const unsigned slot, struct GYMouse**const mouse);
 
 void        gyInputDeviceDump(void);
 

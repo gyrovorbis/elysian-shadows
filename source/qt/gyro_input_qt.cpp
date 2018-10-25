@@ -241,7 +241,12 @@ extern "C" int gyInputUninit(void) {
     return 1;
 }
 
-extern "C" int gyKeyboardPoll(GYKeyboard**const keybd) {
+extern "C" int gyKeyboardPoll(const unsigned slot, GYKeyboard**const keybd) {
+    if(slot > 0) {
+        *keybd = NULL;
+        return 0;
+    }
+
     *keybd = static_cast<GYKeyboard*>(_inputFilter);
     (*keybd)->changed = 0;
     for(unsigned i = 0; i < GY_KEY_COUNT; ++i) {
@@ -262,7 +267,12 @@ extern "C" int gyKeyboardPoll(GYKeyboard**const keybd) {
     return 1;
 }
 
-extern "C" int gyMousePoll(GYMouse**const mouse) {
+extern "C" int gyMousePoll(const unsigned slot, GYMouse**const mouse) {
+    if(slot > 0) {
+        *mouse = NULL;
+        return 0;
+    }
+
     *mouse = (_inputFilter);
     (*mouse)->buttonsChanged = 0;
     for(unsigned i = 0; i < GY_MOUSE_BUT_COUNT; ++i) {

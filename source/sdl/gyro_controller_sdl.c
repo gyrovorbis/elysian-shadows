@@ -1,7 +1,10 @@
 #include <libGyro/gyro_platform.h>
-#include <sdl/gyro_sdl_input.h>
 #include <libGyro/gyro_system_api.h>
 #include <libGyro/gyro_input_api.h>
+#include <libGyro/gyro_defines.h>
+#include <sdl/gyro_sdl_input.h>
+#include <sdl/gyro_sdl.inl>
+#include <libGyro/gyro_file_api.h>
 
 #define GYRO_CONTROLLER_SDL_X86_GUID_SIZE    1024
 
@@ -104,9 +107,10 @@ static int _sdlOpenController(const int deviceIndex, SDLController*const cont) {
 
     cont->sdlJoystick   = SDL_JoystickOpen(deviceIndex);
 
-    if(SDL_IsGameController(deviceIndex)) {
-        cont->sdlController = SDL_GameControllerOpen(deviceIndex);
-    }
+    cont->sdlController = SDL_IsGameController(deviceIndex)?
+        SDL_GameControllerOpen(deviceIndex) :
+        NULL;
+
     //cont->sdlJoystick   = SDL_GameControllerGetJoystick(cont->sdlController);
     cont->sdlJoystickInstanceId = SDL_JoystickInstanceID(cont->sdlJoystick);
     cont->deviceIndex = deviceIndex;
@@ -131,9 +135,11 @@ static int _sdlCloseController(SDLController *const cont) {
 }
 
 static void _sdlPrintControllerStats(SDLController*const cont) {
-    char guidStr[GYRO_CONTROLLER_SDL_X86_GUID_SIZE];
+    char guidStr[GYRO_CONTROLLER_SDL_X86_GUID_SIZE] = { 0 };
+    char* controllerMappings = NULL;
+    SDL_JoystickGUID guid = SDL_JoystickGetGUID(cont->sdlJoystick);
 
-    SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(cont->sdlJoystick), guidStr, sizeof(guidStr));
+    SDL_JoystickGetGUIDString(guid, guidStr, sizeof(guidStr));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Device Type:", cont->sdlController? "SDL_GAMECONTROLLER" : "SDL_JOYSTICK");
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Name", SDL_JoystickName(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "GUID", guidStr);
@@ -147,6 +153,10 @@ static void _sdlPrintControllerStats(SDLController*const cont) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Buttons", SDL_JoystickNumButtons(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Hats", SDL_JoystickNumHats(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Balls", SDL_JoystickNumBalls(cont->sdlJoystick));
+
+    controllerMappings = cont->sdlController? //joysticks don't even support mapping, bitches
+                SDL_GameControllerMapping(cont->sdlController) : NULL;
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Button Mappings", controllerMappings? controllerMappings : "NOT FOUND");
 #if 0
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Haptic Support", cont->sdlHaptic? "TRUE" : "FALSE");
 
@@ -250,6 +260,7 @@ static void _sdlControllerEvent(const SDL_JoystickID instanceID, const SDL_Event
             _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Unidentified key - %d", state);
             return;
         }
+        cont->cont.buttonsChanged = 1;
         cont->cont.buttons[gyButton] &= ~GY_BUT_FLAGS_IS_PRESSED;
         cont->cont.buttons[gyButton] |= state;
 
@@ -280,6 +291,7 @@ static void _sdlControllerEvent(const SDL_JoystickID instanceID, const SDL_Event
             _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Unidentified Controller Button - %d", state);
             return;
         }
+        cont->cont.buttonsChanged = 1;
         cont->cont.buttons[gyButton] &= ~GY_BUT_FLAGS_IS_PRESSED;
         cont->cont.buttons[gyButton] |= state;
 
@@ -290,13 +302,38 @@ static void _sdlControllerEvent(const SDL_JoystickID instanceID, const SDL_Event
     case SDL_JOYAXISMOTION:
         analogVal = (float)event->jaxis.value/(float)INT16_MAX;
         switch(event->jaxis.axis) {
-        case 0: cont->cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT].x    = analogVal; break;
-        case 1: cont->cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT].y    = analogVal; break;
-        case 2: cont->cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT].x   = analogVal; break;
-        case 3: cont->cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT].x   = analogVal; break;
+        case 0:
+            cont->cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT].x = analogVal;
+            cont->cont.analogsChanged[GY_CONTROLLER_ANALOG_LEFT] = 1;
+            break;
+        case 1:
+            cont->cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT].y    = analogVal;
+            cont->cont.analogsChanged[GY_CONTROLLER_ANALOG_LEFT] = 1;
+            break;
+        case 2: {
+            float trigVal = 1.0f - (float)(event->jaxis.value - INT16_MIN)/(float)(INT16_MAX - INT16_MIN);
+            cont->cont.triggers[GY_CONTROLLER_TRIGGER_LEFT]         = trigVal;
+            cont->cont.triggersChanged[GY_CONTROLLER_TRIGGER_LEFT]  = 1;
+            break;
+        }
+        case 3:
+            cont->cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT].x   = analogVal;
+            cont->cont.analogsChanged[GY_CONTROLLER_ANALOG_RIGHT]   = 1;
+            break;
+        case 4:
+            cont->cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT].y   = analogVal;
+            cont->cont.analogsChanged[GY_CONTROLLER_ANALOG_RIGHT] = 1;
+            break;
+        case 5: {
+            float trigVal = 1.0f - (float)(event->jaxis.value - INT16_MIN)/(float)(INT16_MAX - INT16_MIN);
+            cont->cont.triggers[GY_CONTROLLER_TRIGGER_RIGHT]         = trigVal;
+            cont->cont.triggersChanged[GY_CONTROLLER_TRIGGER_RIGHT]  = 1;
+            break;
+        }
         default: break;
         }
         break;
+
     default: break;
     }
 
@@ -305,7 +342,7 @@ static void _sdlControllerEvent(const SDL_JoystickID instanceID, const SDL_Event
 static void _sdlPollEvents(void) {
     SDL_Event event;
 
-    while(SDL_PollEvent( &event ) != 0)
+    while(SDL_PollEvent(&event))
     {
         switch (event.type) {
         case SDL_JOYAXISMOTION:
@@ -344,6 +381,11 @@ int gyInputPollEvents(void) {
         memset(_devices[slot].ar, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
         memset(_devices[slot].ad, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
         memset(_devices[slot].au, 0, sizeof(unsigned)*GY_CONTROLLER_ANALOG_COUNT);
+        _devices[slot].cont.buttonsChanged = 0;
+        for(int a = 0; a < GY_CONTROLLER_ANALOG_COUNT; ++a)
+            _devices[slot].cont.analogsChanged[a] = 0;
+        for(int t = 0; t < GY_CONTROLLER_TRIGGER_COUNT; ++t)
+            _devices[slot].cont.triggersChanged[t] = 0;
 
         if(!_devices[slot].sdlJoystick) {
             _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT]     = analog;
@@ -396,3 +438,33 @@ int gyControllerPoll(const unsigned slot, struct GYController** const input) {
     return _devices[slot].sdlJoystick? 1 : 0;
 }
 
+int gyControllerLoadMappingsFile(const char* filepath) {
+    int     success         = 1;
+    char*   resolvedPath    = NULL;
+    size_t  pathLen         = 0;
+    int     mappingsCount   = 0;
+
+    assert(filepath);
+
+    _gyLog(GY_DEBUG_VERBOSE, "GYRO_CONTROLLER_API: Importing SDL Controller Button Mappings. [%s]", filepath);
+    _gyPush();
+
+    if(!gyFileResolvePath(GY_PATH_ASSETS, filepath, &resolvedPath, &pathLen)) {
+        _gyLog(GY_DEBUG_ERROR, "Failed to resolve asset's actual path!");
+        success = 0;
+    } else {
+
+        //Fucking SDL retardery, because it defaults to binary...
+        if((mappingsCount = SDL_GameControllerAddMappingsFromFile(resolvedPath)) < 0) {
+            GY_SDL_CHECK_ERROR();
+            success = 0;
+        } else {
+            _gyLog(GY_DEBUG_VERBOSE, "%d mappings were added successfully.", mappingsCount);
+            success = 1;
+        }
+
+    }
+
+    _gyPop(1);
+    return success;
+}
