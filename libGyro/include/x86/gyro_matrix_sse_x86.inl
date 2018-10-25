@@ -325,8 +325,8 @@ static inline void gyVec2RotOrigin(void *const dest, const void *const src, cons
     float psin, pcos;
     gySinCos(angle, &psin, &pcos);
     GYVector2 tmp = { VEC2(src)->x, VEC2(src)->y };
-    VEC2(dest)->x = tmp.x*pcos - tmp.x*psin;
-    VEC2(dest)->y = tmp.y*psin + tmp.y*pcos;
+    VEC2(dest)->x = tmp.x*pcos - tmp.y*psin;
+    VEC2(dest)->y = tmp.x*psin + tmp.y*pcos;
 }
 
 static inline void gyVec2RotPoint(void *const dest, const void*const vec, const void* const pt, const float angle) {
