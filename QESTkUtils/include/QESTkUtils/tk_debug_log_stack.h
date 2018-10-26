@@ -48,7 +48,6 @@ namespace QESTkUtils {
         }
     }
 
-
 }
 
 #endif // TK_DEBUG_STACK_H

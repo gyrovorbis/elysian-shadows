@@ -1,6 +1,8 @@
 #include <QESTkUtils/tk_menu_stack.h>
 #include <QMenu>
 
+namespace QESTkUtils {
+
 MenuStack::MenuStack(const QString name) { _stack.push_back(new QMenu(name)); }
 
 MenuStack::MenuStack(QMenu *topLevelMenu, QString name) {
@@ -37,8 +39,14 @@ QAction* MenuStack::insertCheckableAction(const QString text, const std::functio
     return action;
 }
 
+QAction* MenuStack::insertSeparator(void) {
+    return _stack.top()->addSeparator();
+}
+
 void MenuStack::execDeleteLater(const QPoint &pos, QAction *at) {
     auto* topLevel = takeTopLevel();
     QObject::connect(topLevel, &QMenu::triggered, topLevel, &QMenu::deleteLater);
     topLevel->exec(pos, at);
+}
+
 }

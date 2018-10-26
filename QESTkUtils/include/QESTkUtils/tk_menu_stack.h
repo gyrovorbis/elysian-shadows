@@ -8,6 +8,9 @@ class QMenu;
 class QAction;
 class QPoint;
 
+namespace QESTkUtils {
+
+
 /* Once you've created the stack, calling takeTopLevel() relinquishes ownership of the menus on the stack.
  * If you do not call takeTopLevel() and assume ownership, the QMenus will be deleted with the MenuStack object.
  */
@@ -24,6 +27,7 @@ public:
 
     QAction*    insertAction(const QString text, const std::function<void(bool)>& callback, const bool enabled=true);
     QAction*    insertCheckableAction(const QString text, const std::function<void(bool)>& callback, const bool checked=false, const bool enabled=true);
+    QAction*    insertSeparator(void);
 
     QMenu*      push(const QString name);
     void        pop(const unsigned count=1);
@@ -48,6 +52,8 @@ inline QMenu* MenuStack::current(void) const { return _stack.top(); }
 inline QMenu* MenuStack::takeTopLevel(void) { _ownsStack = false; return _stack.first(); }
 inline QMenu* MenuStack::first(void) const { return _stack.first(); }
 inline void MenuStack::pop(const unsigned count) { for(unsigned i = 0; i < count; ++i) _stack.pop(); }
+
+}
 
 
 
