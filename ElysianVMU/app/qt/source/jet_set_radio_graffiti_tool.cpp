@@ -188,7 +188,7 @@ void JetSetRadioGraffitiTool::on_exportButton_clicked()
 {
     if(_dstImage.isNull()) return; //Should NEVER fucking happen, though...
 
-    QString filter = "VMU Save Data (*.vms *.VMS)";
+    QString filter = "VMU Save Data (*.vms)";
     QString path = QFileDialog::getSaveFileName(nullptr,
                                                 "Specify Preview Image Destination",
                                                 QString(),

@@ -154,13 +154,11 @@
     </widget>
     <addaction name="actionScreenshot"/>
     <addaction name="menuScreen_Capture"/>
-    <addaction name="actionDump_Icons"/>
-    <addaction name="actionDump_Eyecatch"/>
     <addaction name="actionDisassemble_ROM"/>
     <addaction name="actionBIOS_Runtime_Disassembly"/>
     <addaction name="actionBuzzer_Tool"/>
-    <addaction name="actionView_Log"/>
     <addaction name="actionJet_Set_Radio_Graffiti_Tool"/>
+    <addaction name="actionView_Log"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -193,8 +191,8 @@
     </widget>
     <addaction name="actionPreserve_Aspect_Ratio"/>
     <addaction name="menuPixel_Perfect_Aspect_Zoom"/>
-    <addaction name="menuDebugger"/>
     <addaction name="actionFilesystem"/>
+    <addaction name="menuDebugger"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -324,6 +322,9 @@
    <property name="text">
     <string>Configure Input Devices</string>
    </property>
+   <property name="toolTip">
+    <string>Coming Soon...</string>
+   </property>
    <property name="shortcutContext">
     <enum>Qt::WidgetWithChildrenShortcut</enum>
    </property>
@@ -353,8 +354,14 @@
    </property>
   </action>
   <action name="actionDisassemble_ROM">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Disassemble ROM</string>
+   </property>
+   <property name="toolTip">
+    <string>Under Development...</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::WidgetWithChildrenShortcut</enum>
@@ -546,7 +553,7 @@
   </action>
   <action name="actionFilesystem">
    <property name="text">
-    <string>Filesystem</string>
+    <string>Filesystem Manager</string>
    </property>
   </action>
   <action name="actionExport_Flash_Image">
@@ -557,6 +564,11 @@
   <action name="actionNew_Flash_Image">
    <property name="text">
     <string>New Flash Image</string>
+   </property>
+  </action>
+  <action name="actionDefrag_Flash_Image">
+   <property name="text">
+    <string>Defrag Flash Image</string>
    </property>
   </action>
  </widget>

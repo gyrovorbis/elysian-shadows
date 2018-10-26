@@ -14,6 +14,7 @@
 
 QTextCodec* VmuQtUtils::japCodec;
 QStringList VmuQtUtils::_supportedFileExtensions;
+QString VmuQtUtils::_romDir;
 
 bool VmuQtUtils::initialize(void) {
     japCodec = QTextCodec::codecForName(VMU_TEXT_CODEC);
@@ -132,8 +133,8 @@ bool VmuAnimatedIconCache::exportAsGIF(const VMUFlashDirEntry* dirEntry, QString
 
 QPixmap VmuEyecatchCache::loadPixmap(VMUDevice* dev, const VMUFlashDirEntry* dirEntry) {
     QPixmap pixmap;
-    const VMSFileInfo* vmsHeader = gyVmuFlashDirEntryVmsHeader(dev, dirEntry);
-    uint16_t* iconData    = gyVmuVMSFileInfoCreateEyeCatchARGB444(dev, dirEntry);
+    const VMSFileInfo*  vmsHeader   = gyVmuFlashDirEntryVmsHeader(dev, dirEntry);
+    uint16_t*           iconData    = gyVmuVMSFileInfoCreateEyeCatchARGB444(dev, dirEntry);
 
     if(iconData) {
         QImage image((uchar*)iconData, VMU_VMS_EYECATCH_BITMAP_WIDTH, VMU_VMS_EYECATCH_BITMAP_HEIGHT, QImage::Format_ARGB4444_Premultiplied);
@@ -186,80 +187,92 @@ bool VmuQtUtils::loadVMUImage(VMUDevice* dev, QString filepath, VMUFlashDirEntry
     if(filepath.isEmpty()) return false;
 
     QFileInfo info(filepath);
-    QString romDir = info.absoluteDir().absolutePath();
+    _romDir = info.absoluteDir().absolutePath();
 
-    VMU_LOAD_IMAGE_STATUS status;
-    auto* dirEntry = gyVmuFlashLoadImage(dev, Q_CSTR(filepath), &status);
+    VMU_LOAD_IMAGE_STATUS stats;
+    auto* dirEntry = gyVmuFlashLoadImage(dev, Q_CSTR(filepath), &stats);
     if(entry) *entry = dirEntry;
 
-    switch(status) {
-    case VMU_LOAD_IMAGE_SUCCESS: return true;
-    case VMU_LOAD_IMAGE_FILES_MAXED:
-        QMessageBox::critical(nullptr, "Too many files", "The current VMU image already has the maximum allowable number of files.");
-        return false;
-    case VMU_LOAD_IMAGE_OPEN_FAILED:
-        QMessageBox::critical(nullptr, "File Error", "ElysianVMU was unable to open the specified file!");
-        return false;
-    case VMU_LOAD_IMAGE_READ_FAILED:
-        QMessageBox::critical(nullptr, "File Error", "ElysianVMU failed to read from the specified file!");
-        return false;
-    case VMU_LOAD_IMAGE_INADEQUATE_FREE_BLOCKS:
-        QMessageBox::critical(nullptr, "Not Enough Space", "Current VMU image does not have enough free blocks for the file! Free Blocks: File Size: [%2]");
-        return false;
-    case VMU_LOAD_IMAGE_VMS_NO_VMI:
-            if(QMessageBox::question(nullptr, "VMI File Not Found",
-                                "A .VMS file must have a corresponding .VMI file describing its contents. "
-                                "No corresponding .VMI files were autodetected. Would you like to specify one manually?")
-                    == QMessageBox::Yes)
-            {
-                QString vmiFile = QFileDialog::getOpenFileName(nullptr, "Browse for the VMI file", romDir,
-                                                         "VMU metadata files (*.vmi *.VMI)");
+    std::function<bool(VMU_LOAD_IMAGE_STATUS)> statusMsg = [&](VMU_LOAD_IMAGE_STATUS status) {
+        switch(status) {
+        case VMU_LOAD_IMAGE_SUCCESS: return true;
+        case VMU_LOAD_IMAGE_FILES_MAXED:
+            QMessageBox::critical(nullptr, "Too many files", "The current VMU image already has the maximum allowable number of files.");
+            return false;
+        case VMU_LOAD_IMAGE_OPEN_FAILED:
+            QMessageBox::critical(nullptr, "File Error", "ElysianVMU was unable to open the specified file!");
+            return false;
+        case VMU_LOAD_IMAGE_READ_FAILED:
+            QMessageBox::critical(nullptr, "File Error", "ElysianVMU failed to read from the specified file!");
+            return false;
+        case VMU_LOAD_IMAGE_INADEQUATE_FREE_BLOCKS:
+            QMessageBox::critical(nullptr, "Not Enough Space", QString(gyVmuFlashLoadImageLastErrorMessage()));
+            return false;
+        case VMU_LOAD_IMAGE_VMS_NO_VMI:
+                if(QMessageBox::question(nullptr, "VMI File Not Found",
+                                    "A .VMS file must have a corresponding .VMI file describing its contents. "
+                                    "No corresponding .VMI files were autodetected. Would you like to specify one manually?")
+                        == QMessageBox::Yes)
+                {
+                    QString vmiFile = QFileDialog::getOpenFileName(nullptr,
+                                                                   "Browse for the VMI file",
+                                                                   _romDir,
+                                                                   "VMU metadata files (*.vmi *.VMI)");
 
-                if(vmiFile.isEmpty()) return false;
+                    if(vmiFile.isEmpty()) return false;
 
-                return gyVmuFlashLoadImageVmiVms(dev, Q_CSTR(vmiFile), Q_CSTR(filepath), &status);
-            } else return false;
 
-        return false;
-    case VMU_LOAD_IMAGE_VMI_NO_VMS:
-            if(QMessageBox::question(nullptr, "VMS File Not Found",
-                                "A .VMI file simply describes and points to a .VMS file, which holds the actual data contents. "
-                                "No corresponding VMS file could be autodetected. Would you like to specify one manually?")
-                    == QMessageBox::Yes)
-            {
-                QString vmsFile = QFileDialog::getOpenFileName(nullptr, "Browse for the VMS file", romDir,
-                                                         "VMU data files (*.vms *.VMS)");
 
-                if(vmsFile.isEmpty()) return false;
+                    auto* entryRet = gyVmuFlashLoadImageVmiVms(dev, Q_CSTR(vmiFile), Q_CSTR(filepath), &status);
+                    if(entry) *entry = entryRet;
+                    return statusMsg(status);
+                } else return false;
 
-                return gyVmuFlashLoadImageVmiVms(dev, Q_CSTR(filepath), Q_CSTR(vmsFile), &status);
-            } else return false;
+            return false;
+        case VMU_LOAD_IMAGE_VMI_NO_VMS:
+                if(QMessageBox::question(nullptr, "VMS File Not Found",
+                                    "A .VMI file simply describes and points to a .VMS file, which holds the actual data contents. "
+                                    "No corresponding VMS file could be autodetected. Would you like to specify one manually?")
+                        == QMessageBox::Yes)
+                {
+                    QString vmsFile = QFileDialog::getOpenFileName(nullptr,
+                                                                   "Browse for the VMS file",
+                                                                   _romDir,
+                                                                   "VMU data files (*.vms *.VMS)");
 
-    case VMU_LOAD_IMAGE_GAME_DUPLICATE:
-        //Don't bitch if it's the only game file!!
-        if(reloadGame && gyVmuFlashFileCount(dev) == 1) {
-            auto* dirEntry = gyVmuFlashDirEntryGame(dev);
-            if(gyVmuFlashFileDelete(dev, dirEntry)) {
-                return loadVMUImage(dev, filepath, entry);
-            }
+                    if(vmsFile.isEmpty()) return false;
 
-        } else QMessageBox::critical(nullptr, "Game Exists", "The current VMU image already contains a GAME file, please delete it and try again.");
-        return false;
-    case VMU_LOAD_IMAGE_NAME_DUPLICATE:
-        QMessageBox::critical(nullptr, "Duplicate File", "The image could not be loaded, because there is already a file in the filesystem with the same name. ");
-        return false;
-    case VMU_LOAD_IMAGE_UNKNOWN_FORMAT:
-        QMessageBox::critical(nullptr, "Unknown Format", "The image could not be loaded, because it is in an unknown or unsupported file format!");
-        return false;
-    case VMU_LOAD_IMAGE_DEVICE_READ_ERROR:
-    case VMU_LOAD_IMAGE_DEVICE_WRITE_ERROR:
-    case VMU_LOAD_IMAGE_DEFRAG_FAILED:
-        QMessageBox::critical(nullptr, "Failure", "The image couldn't be loaded due to an internal error. Please submit the debug log file and bug report.");
-        return false;
-    default:
-        QMessageBox::critical(nullptr, "Failure", "The image couldn't be loaded due an unknown error.");
-        return false;
-    }
+                    auto* entryRet = gyVmuFlashLoadImageVmiVms(dev, Q_CSTR(filepath), Q_CSTR(vmsFile), &status);
+                    if(entry) *entry = entryRet;
+                    return statusMsg(status);
+                } else return false;
 
-    return false;
+        case VMU_LOAD_IMAGE_GAME_DUPLICATE:
+            //Don't bitch if it's the only game file!!
+            if(reloadGame && gyVmuFlashFileCount(dev) == 1) {
+                auto* dirEntry = gyVmuFlashDirEntryGame(dev);
+                if(gyVmuFlashFileDelete(dev, dirEntry)) {
+                    return loadVMUImage(dev, filepath, entry);
+                }
+
+            } else QMessageBox::critical(nullptr, "Game Exists", "The current VMU image already contains a GAME file, please delete it and try again.");
+            return false;
+        case VMU_LOAD_IMAGE_NAME_DUPLICATE:
+            QMessageBox::critical(nullptr, "Duplicate File", "The image could not be loaded, because there is already a file in the filesystem with the same name. ");
+            return false;
+        case VMU_LOAD_IMAGE_UNKNOWN_FORMAT:
+            QMessageBox::critical(nullptr, "Unknown Format", "The image could not be loaded, because it is in an unknown or unsupported file format!");
+            return false;
+        case VMU_LOAD_IMAGE_DEVICE_READ_ERROR:
+        case VMU_LOAD_IMAGE_DEVICE_WRITE_ERROR:
+        case VMU_LOAD_IMAGE_DEFRAG_FAILED:
+            QMessageBox::critical(nullptr, "Failure", "The image couldn't be loaded due to an internal error. Please submit the debug log file and bug report.");
+            return false;
+        default:
+            QMessageBox::critical(nullptr, "Failure", "The image couldn't be loaded due an unknown error.");
+            return false;
+        }
+    };
+
+    return statusMsg(stats);
 }

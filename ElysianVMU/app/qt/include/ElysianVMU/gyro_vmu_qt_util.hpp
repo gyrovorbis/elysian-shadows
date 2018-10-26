@@ -14,12 +14,15 @@ struct VMSFileInfo;
 class VmuQtUtils {
 
 private:
-    static QStringList       _supportedFileExtensions;
+    static QStringList      _supportedFileExtensions;
+    static QString          _romDir;
 public:
 
     static QTextCodec*      japCodec;
     static bool             initialize(void);
     static bool             canOpenFile(QString filePath);
+    static QString          getRomDir(void);
+    static void             setRomDir(QString dir);
     static bool             loadVMUImage(VMUDevice* device, QString filePath, VMUFlashDirEntry** entry=nullptr, bool reloadGame=false);
 };
 
@@ -57,5 +60,14 @@ public:
     static bool exportAsPNG(const VMUFlashDirEntry* dirEntry, QString filename);
 
 };
+
+
+
+
+
+
+//======= INLINEZ ========
+inline QString VmuQtUtils::getRomDir(void) { return _romDir; }
+inline void VmuQtUtils::setRomDir(QString dir) { _romDir = std::move(dir); }
 
 #endif // GYRO_VMU_QT_UTIL_HPP

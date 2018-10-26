@@ -696,7 +696,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
             char buff[100];
             gyVmuFlashDirEntryName(dirEntry, buff);
-            QString msg = QString("Loaded: %1").arg(buff).arg(typeStr);
+            QString msg = QString("Loaded: %1 [%2]").arg(buff).arg(typeStr);
             _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
             _statusBarChanged = true;
             _updateStatusbar();
@@ -799,7 +799,7 @@ void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
 
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
-    loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
+    loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", VmuQtUtils::getRomDir(),
                                          "VMS Files (*.vms *.VMS);;Web Browser Files (*.vmi *.VMI);;Dream Animator Files (*.lcd *.LCD);;Flash Image Files (*.vmu *.VMU *.bin *.BIN)"));
 }
 
@@ -873,7 +873,6 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
         "! - ",
         "X - "
     };
-    qDebug() << tabBuff << prefix[level] << msg;
 #if 0
     char buffer[10000] = {0};
     strcat(buffer, tabBuff);
@@ -890,6 +889,7 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
     if(previous == msg) return;
     previous = msg;
 #endif
+    qDebug() << tabBuff << prefix[level] << msg;
     fprintf(_logFile, "%s%s%s\n", tabBuff, prefix[level], msg);
     fflush(_logFile);
 }
@@ -926,7 +926,7 @@ void VMUMainWindow::_saveSettings(void) {
     settings.setValue("settings",   true);
     settings.setValue("geometry",   saveGeometry());
     settings.setValue("state",      saveState());
-    settings.setValue("romDir",     _romDir);
+    settings.setValue("romDir",     VmuQtUtils::getRomDir());
     settings.setValue("audio",      _ui->actionEmulate_Audio->isChecked());
     settings.setValue("ghosting",   _ui->actionEnable_Pixel_Ghosting->isChecked());
     settings.setValue("lowBattery", _ui->actionEnable_Low_Battery->isChecked());
@@ -954,7 +954,7 @@ void VMUMainWindow::_loadSettings(void) {
     if(saved) {
         restoreGeometry(settings.value("geometry", QByteArray()).toByteArray());
         restoreState(settings.value("state", QByteArray()).toByteArray());
-        _romDir = settings.value("romDir", "").toString();
+        VmuQtUtils::setRomDir(settings.value("romDir", "").toString());
         _ui->actionEmulate_Audio->setChecked(settings.value("audio", true).toBool());
         _ui->actionEnable_Low_Battery->setChecked(settings.value("lowBattery", false).toBool());
         _ui->actionEnable_Pixel_Ghosting->setChecked(settings.value("ghosting", true).toBool());
@@ -1269,8 +1269,9 @@ bool VMUMainWindow::loadBios(QString filepath) {
 
 void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
 {
-    QString file = QFileDialog::getOpenFileName(nullptr, "Browse BIOS file to open", _romDir,
-                                             "Binary Files(*.bin *.BIN)");
+    QString file = QFileDialog::getOpenFileName(nullptr, "Browse BIOS file to open",
+                                                VmuQtUtils::getRomDir(),
+                                                "Binary Files(*.bin *.BIN)");
 
     if(file.isNull()) return;
 
@@ -1445,7 +1446,16 @@ void VMUMainWindow::on_actionRecordAnim_toggled(bool arg1) {
 
         //Flush animation queue
         _addAnimFrame(QPixmap());
+#if 1
+        QString filter = "Animated GIF (*.gif)";
+        QString path = QFileDialog::getSaveFileName(nullptr,
+                                                    "Specify Output Destination",
+                                                    VmuQtUtils::getRomDir(),
+                                                    filter,
+                                                    &filter);
 
+        if(path.isEmpty()) return;
+#else
         //+10 digits + 4 ext + 1 NULL byte
         char filename[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+15];
         char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
@@ -1455,12 +1465,15 @@ void VMUMainWindow::on_actionRecordAnim_toggled(bool arg1) {
         do {
             sprintf(filename, "%s_%d.gif", vmsDesc, ++animNum);
         } while(QFile::exists(filename));
-
-        _gyLog(GY_DEBUG_VERBOSE, "Saving to Animated GIF: [%s]", filename);
+#endif
+        _gyLog(GY_DEBUG_VERBOSE, "Saving to Animated GIF: [%s]", Q_CSTR(path));
         _gyPush();
 
-        if(!_animGif->save(filename)) _gyLog(GY_DEBUG_ERROR, "File could not be saved!");
-        else QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
+        if(!_animGif->save(path)) {
+            _gyLog(GY_DEBUG_ERROR, "File could not be saved!");
+            return;
+        }
+        else QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 
         on_actionEnable_Pixel_Ghosting_toggled(_ghostingWasEnabled);
         _gyPop(2);
@@ -1541,7 +1554,7 @@ void VMUMainWindow::on_actionExport_Flash_Image_triggered(void)
     QString filter = "Flash Image Files (*.bin)";
     QString path = QFileDialog::getSaveFileName(nullptr,
                                                 "Choose Flash Image Export Location",
-                                                _romDir,
+                                                VmuQtUtils::getRomDir(),
                                                 filter,
                                                 &filter);
 
@@ -1563,14 +1576,17 @@ void VMUMainWindow::on_actionNew_Flash_Image_triggered()
         if(resp == QMessageBox::Cancel) return;
 
         if(resp == QMessageBox::Yes) {
-            QString path = QFileDialog::getSaveFileName(nullptr, "Choose Flash Image Export Location", _romDir,
-                                                     "Flash Image Files (*bin)");
+            QString filter = "Flash Image Files (*bin)";
+            QString path = QFileDialog::getSaveFileName(nullptr, "Choose Flash Image Export Location",
+                                                        VmuQtUtils::getRomDir(),
+                                                        filter,
+                                                        &filter);
 
             if(path.isEmpty()) return;
 
             gyVmuFlashExportImage(_dev, Q_CSTR(path));
         }
 
-        gyVmuFlashFormat(_dev);
+        gyVmuFlashFormatDefault(_dev);
     }
 }

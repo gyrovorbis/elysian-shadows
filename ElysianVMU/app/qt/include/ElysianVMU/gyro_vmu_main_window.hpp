@@ -177,7 +177,6 @@ private:
     QVector<QImage>     _iconImages;
     QVector<QPixmap>    _iconPixmaps;
     QImage              _eyecatchImage;
-    QString             _romDir;
     QESTkUtils::HelpDockWidget*
                         _helpDockWidget     = nullptr;
     VmuFileSystemTableModel*

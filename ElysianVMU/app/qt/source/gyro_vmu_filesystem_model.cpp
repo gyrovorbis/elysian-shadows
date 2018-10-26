@@ -277,7 +277,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
     int row = index.row();
     const VMUFlashDirEntry* dirEntry = gyVmuFlashFileAtIndex(dev, row);
     const VMSFileInfo* vmsHeader = gyVmuFlashDirEntryVmsHeader(dev, dirEntry);
-
+#if 0
     stack.push("Export File");
     stack.insertAction("VMI/VMS",
         [=](bool) {
@@ -296,6 +296,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
 
         });
     stack.pop();
+#endif
 
     stack.push("Export Graphics");
 
@@ -322,7 +323,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
     stack.pop();
 
     stack.insertSeparator();
-
+#if 0
     stack.insertAction("Fix CRC",
         [=](bool) {
 
@@ -332,9 +333,8 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
 
 
         });
-
     stack.insertSeparator();
-
+#endif
     stack.insertAction("Delete",
         [=](bool) {
 
