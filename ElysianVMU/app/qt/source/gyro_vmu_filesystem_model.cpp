@@ -270,7 +270,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
     QModelIndex index(indexAt(pos));
     if(!index.isValid()) return;
 
-    QESTkUtils::MenuStack menustack("Flash Entry");
+    QESTkUtils::MenuStack stack("Flash Entry");
 
     VmuFileSystemTableModel* fsModel = static_cast<VmuFileSystemTableModel*>(model());
     VMUDevice* dev = fsModel->getDevice();
