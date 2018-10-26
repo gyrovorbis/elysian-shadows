@@ -576,6 +576,7 @@ void VMUMainWindow::_updateStatusbar(void) {
                 if(gameEntry) {
                     auto* vmsHeader = gyVmuFlashDirEntryVmsHeader(_dev, gameEntry);
                     char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+                    _vmsHeader = vmsHeader;
                     gyVmuVmsHeaderVmuDescGet(vmsHeader, string);
                     _statusLabel->setText(VmuQtUtils::japCodec->toUnicode(string));
                 } else {
@@ -1537,8 +1538,12 @@ void VMUMainWindow::on_actionFilesystem_triggered(void)
 
 void VMUMainWindow::on_actionExport_Flash_Image_triggered(void)
 {
-    QString path = QFileDialog::getSaveFileName(nullptr, "Choose Flash Image Export Location", _romDir,
-                                             "Flash Image Files (*bin)");
+    QString filter = "Flash Image Files (*.bin)";
+    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                "Choose Flash Image Export Location",
+                                                _romDir,
+                                                filter,
+                                                &filter);
 
     if(path.isEmpty()) return;
 

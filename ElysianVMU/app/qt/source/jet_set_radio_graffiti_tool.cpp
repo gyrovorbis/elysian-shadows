@@ -187,9 +187,13 @@ void JetSetRadioGraffitiTool::on_widthSlider_valueChanged(int value)
 void JetSetRadioGraffitiTool::on_exportButton_clicked()
 {
     if(_dstImage.isNull()) return; //Should NEVER fucking happen, though...
-    QString path = QFileDialog::getSaveFileName(nullptr, "Specify Preview Image Destination",
-                                             QString(),
-                                             "VMU Save Data (*.vms *.VMS)");
+
+    QString filter = "VMU Save Data (*.vms *.VMS)";
+    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                "Specify Preview Image Destination",
+                                                QString(),
+                                                filter,
+                                                &filter);
 
     if(!path.isEmpty()) {
         createVmsFromImage(_dstImage, path);
@@ -212,9 +216,11 @@ void JetSetRadioGraffitiTool::on_destSavePreviewButton_clicked()
 {
     if(_dstImage.isNull()) return; //shoudln't fucking happen, though.
 
+    QString filter = "VMU Save Data (*.jpg)";
     QString path = QFileDialog::getSaveFileName(nullptr, "Specify Preview Image Destination",
                                              QString(),
-                                             "VMU Save Data (*.jpg)");
+                                             filter,
+                                             &filter);
 
     if(path.isEmpty()) {
         return;
@@ -271,28 +277,37 @@ bool JetSetRadioGraffitiTool::createVmsFromImage(QImage image, QString outPath) 
                 Debug::log(Debug::LOG_ERROR, "Failed to write JPEG to internal buffer!");
                 success = false;
             } else {
+                char mimeHeader[0x30] = { '\0' };
+
+                mimeHeader[0]  = 'i';
+                mimeHeader[1]  = 'm';
+                mimeHeader[2]  = 'a';
+                mimeHeader[3]  = 'g';
+                mimeHeader[4]  = 'e';
+                mimeHeader[5]  = '/';
+            // image type, but as this is 4 JSR I just letting it use JPG and not gif, although it should be easy to change
+                mimeHeader[6]  = 'j';
+                mimeHeader[7]  = 'p';
+                mimeHeader[8]  = 'e';
+                mimeHeader[9]  = 'g';
+                mimeHeader[10] = ' ';
+                mimeHeader[11] = ';';
+                mimeHeader[12] = ' ';
+
+                strcat(mimeHeader, "image_name");
                 int bytesWritten;
-                if((bytesWritten = out.writeRawData(byteArray.data(), byteArray.size())) != byteArray.size()) {
-                    Debug::log(Debug::LOG_ERROR, "Failed to write JPEG buffer to VMS file!");
+
+                if((bytesWritten = out.writeRawData(mimeHeader, sizeof(mimeHeader))) != sizeof(mimeHeader)) {
+                    Debug::log(Debug::LOG_ERROR, "Failed to write entire MIME header: [bytes written %d/%d", bytesWritten, sizeof(mimeHeader));
                     success = false;
                 } else {
-                    char mimeHeader[0x30];
 
-                            mimeHeader[0]  = 'i';
-                            mimeHeader[1]  = 'm';
-                            mimeHeader[2]  = 'a';
-                            mimeHeader[3]  = 'g';
-                            mimeHeader[4]  = 'e';
-                            mimeHeader[5]  = '/';
-                        // image type, but as this is 4 JSR I just letting it use JPG and not gif, although it should be easy to change
-                            mimeHeader[6]  = 'j';
-                            mimeHeader[7]  = 'p';
-                            mimeHeader[8]  = 'e';
-                            mimeHeader[9]  = 'g';
-                            mimeHeader[10] = ' ';
-                            mimeHeader[11] = ';';
-                            mimeHeader[12] = ' ';
+                    if((bytesWritten = out.writeRawData(byteArray.data(), byteArray.size())) != byteArray.size()) {
+                        Debug::log(Debug::LOG_ERROR, "Failed to write JPEG buffer to VMS file!");
+                        success = false;
+                    } else {
 
+                    }
                 }
             }
 

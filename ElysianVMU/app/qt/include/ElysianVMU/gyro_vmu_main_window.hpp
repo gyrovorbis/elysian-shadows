@@ -200,7 +200,7 @@ private:
     QMenu*              _loadGameMenu       = nullptr;
     QMenu*              _saveGameMenu       = nullptr;
     QGraphicsPixmapItem*    _pixmapItem     = nullptr;
-    VMSFileInfo*        _vmsHeader          = nullptr;
+    const VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;
     VMUDevice*          _dev                = nullptr;
