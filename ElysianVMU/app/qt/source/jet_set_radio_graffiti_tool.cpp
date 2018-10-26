@@ -33,8 +33,8 @@ JetSetRadioGraffitiTool::JetSetRadioGraffitiTool(QWidget* parent):
     _srcScene->addItem(_srcItem);
     _dstScene->addItem(_dstItem);
 
-    assert(!_srcPixmapDefault.isNull());
-        assert(!_dstPixmapDefault.isNull());
+    Q_ASSERT(!_srcPixmapDefault.isNull());
+        Q_ASSERT(!_dstPixmapDefault.isNull());
 }
 
 
