@@ -44,7 +44,7 @@ void _gySysPrintBuildInfo(const char*const platString) {
 }
 
 void _gyLog(GY_DEBUG_SEVERITY level, const char*const str, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    char buffer[GYRO_PRINTF_BUFFER_SIZE] = { '\0' };
     va_list argptr;
 
     if(_dbgLevel == GY_DEBUG_OFF || level < _dbgLevel) return;
