@@ -144,6 +144,7 @@ private:
     static void         _push(void);
     static void         _pop(const unsigned depth);
     static void         _log(GY_DEBUG_SEVERITY level, const char* msg);
+    static bool         _flushLog(void);
 
     void                _updateStatusbar(void);
     void                _updatePConRegister(void);
@@ -161,7 +162,6 @@ private:
     void                _pushRecentRom(QString path);
 
     Ui::VMUMainWindow*  _ui                 = nullptr;
-    QDir*               _workingDir         = nullptr;
     QPixmap             _fb;
     QPixmap             _iconES;
     QPixmap             _iconClock;
@@ -222,6 +222,7 @@ private:
     REMOTE_STATE        _remoteState        = REMOTE_NONE;
     bool                _statusBarChanged   = true;
 
+    static QDir*         _workingDir;
     static FILE*        _logFile;
     static int          _logDepth;
 

@@ -32,6 +32,8 @@ private:
     QImage                  _dstImage;
     QByteArray*             _byteArray  = nullptr;
     QBuffer*                _buffer     = nullptr;
+    size_t                  _vmuSize    = 0;
+    size_t                  _vmuBlocks  = 0;
 
     static const unsigned char
                             _vmsHeader[0x28C];
@@ -45,6 +47,7 @@ private:
     void                    _updateDstImageFromSrcImage(const QPixmap& srcImage);
     bool                    _writeJpegToBuffer(const QImage& image, QBuffer& buffer, int qualityLevel);
 
+
 public:
                             JetSetRadioGraffitiTool(QWidget* parent);
     virtual                 ~JetSetRadioGraffitiTool(void) = default;
@@ -52,7 +55,7 @@ public:
 
     bool                    openSourceImage(QString path);
     QSizeF                  getScaleFactor(void) const;
-    bool                    createVmsFromImage(QImage image, QString outPath);
+    bool                    exportVmiVmsFromImage(const QImage& image, QString outPath);
 private Q_SLOTS:
     void                    on_sourceBrowseButton_clicked(void);
     void                    on_closeButton_clicked(void);

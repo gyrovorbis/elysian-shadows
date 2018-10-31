@@ -133,8 +133,9 @@ bool VMUMainWindow::eventFilter(QObject *watched, QEvent *event) {
     return QMainWindow::eventFilter(watched, event);
 }
 
-FILE* VMUMainWindow::_logFile = nullptr;
-int VMUMainWindow::_logDepth = 0;
+QDir* VMUMainWindow::_workingDir    = nullptr;
+FILE* VMUMainWindow::_logFile       = nullptr;
+int VMUMainWindow::_logDepth        = 0;
 
 VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     QMainWindow(parent),
@@ -220,7 +221,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
         // _workingDir->setPath(_workingDir->filePath(VMU_OUTPUT_DIR));
     }
 
-    _logFile = fopen(_workingDir->absoluteFilePath(VMU_LOG_FILE).toStdString().c_str(), "w");
+    _flushLog();
 
     //Initialize libGyro Debug API with logging
 #ifndef VMU_CHILD_APP
@@ -343,6 +344,18 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _loadSettings();
 }
 
+bool VMUMainWindow::_flushLog(void) {
+    bool success = true;
+    if(_logFile) {
+        success &= fflush(_logFile);
+        success &= fclose(_logFile);
+
+    }
+    _logFile = fopen(Q_CSTR(_workingDir->absoluteFilePath(VMU_LOG_FILE)), _logFile? "a" : "w");
+    success &= (bool)_logFile;
+    return success;
+}
+
 
 
 VMUMainWindow::~VMUMainWindow(void)
@@ -375,11 +388,11 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
         QMessageBox::about(this, "About ElysianVMU",
         QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
         QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
-        QString("<a href=\"http://www.elysianshadows.com\">elysianshadows.com</a><br>") +
+        QString("<a href=\"http://evmu.elysianshadows.com\">elysianshadows.com</a><br>") +
         QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
         QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
         QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Inolen, RinMaru, and all of the Elysian Shadows Kickstarter backers and supporters  :)</br</br>") +
+        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Inolen, Dmitry Grinberg, RinMaru, and all of the Elysian Shadows Kickstarter backers and supporters  :)</br</br>") +
         QString("</table><br><br>") +
         QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
         QString("<i>ElysianVMU Copyright 2017-2018 Elysian Shadows</i><br>") +
@@ -926,6 +939,7 @@ void VMUMainWindow::on_actionReset_triggered(void)
 
 void VMUMainWindow::on_actionScreenshot_triggered(void)
 {
+#if 0
     char buffer[SCREENSHOT_FILENAME_SIZE_MAX];
     unsigned int number = 0;
 
@@ -934,10 +948,23 @@ void VMUMainWindow::on_actionScreenshot_triggered(void)
     } while(QFileInfo(buffer).exists());
 
     QFile file(buffer);
+#endif
+    QString filter = "PNG Image File (*.png)";
+    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                "Choose Screenshot Location",
+                                                VmuQtUtils::getRomDir(),
+                                                filter,
+                                                &filter);
+
+    if(path.isEmpty()) return;
+    QFile file(path);
+
     file.open(QIODevice::WriteOnly);
-    _gyLog(GY_DEBUG_VERBOSE, "Saving screenshot[%s]", _workingDir->absoluteFilePath(buffer).toStdString().c_str());
+    _gyLog(GY_DEBUG_VERBOSE, "Saving screenshot[%s]", Q_CSTR(path));
     _ui->statusbar->showMessage("Screenshot saved.", VMU_STATUS_TEMP_TIMEOUT);
-    _fb.save(&file, SCREENSHOT_FILENAME_EXT);
+    if(_fb.save(&file, SCREENSHOT_FILENAME_EXT)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    }
 
 }
 
@@ -1275,7 +1302,11 @@ void VMUMainWindow::on_actionQuit_triggered(void)
 
 void VMUMainWindow::on_actionView_Log_triggered(void)
 {
+    _gyLog(GY_DEBUG_VERBOSE, "View Log Requested - Dumping Filesystem State for Additional Info!");
+    _gyPush();
     gyVmuFlashPrintFilesystem(_dev);
+    _gyPop(1);
+    _flushLog();
     QDesktopServices::openUrl(QUrl::fromLocalFile(_workingDir->absoluteFilePath(VMU_LOG_FILE)));
 }
 
@@ -1562,6 +1593,7 @@ void VMUMainWindow::on_actionDocumentation_triggered(bool checked)
 
 void VMUMainWindow::on_actionJet_Set_Radio_Graffiti_Tool_triggered() {
     if(!_jsrGraffitiTool) {
+        QMessageBox::warning(nullptr, "Work in Progress!", "I'm still finishing up the very last of this tool. Everything works fine EXCEPT for exporting the final image to the VMU. It will be done pretty soon in an upcoming build, but feel free to play with the settings and UI in the meantime. ");
         _jsrGraffitiTool = new JetSetRadioGraffitiTool(this);
     }
     _jsrGraffitiTool->show();

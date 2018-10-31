@@ -148,7 +148,7 @@
     </property>
     <widget class="QMenu" name="menuScreen_Capture">
      <property name="title">
-      <string>Capture Animation</string>
+      <string>Record Screen</string>
      </property>
      <addaction name="actionRecordAnim"/>
     </widget>

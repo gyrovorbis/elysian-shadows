@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QDesktopServices>
 
 QTextCodec* VmuQtUtils::japCodec;
 QStringList VmuQtUtils::_supportedFileExtensions;
@@ -64,7 +65,11 @@ bool VmuAnimatedIconCacheEntry::exportAsGif(QString path) {
         gif->addFrame(icon.toImage(), animSpeed * 16);
     }
 
-    return gif->save(path);
+    if(gif->save(path)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        return true;
+    }
+    return false;
 }
 
 
@@ -181,7 +186,11 @@ bool VmuEyecatchCache::exportAsPNG(const VMUFlashDirEntry* dirEntry, QString fil
         return false;
     }
 
-    return pixmap.toImage().save(filename);
+    if(pixmap.toImage().save(filename)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
+        return true;
+    }
+    return false;
 
 }
 
@@ -253,7 +262,7 @@ bool VmuQtUtils::loadVMUImage(VMUDevice* dev,
                 VMIFileInfo vmi;
                 size_t vmsFileSize = 0;
                 uint8_t* vmsBytes = gyVmuFlashLoadVMS(Q_CSTR(filepath), &vmsFileSize);
-                gyVmuVmiGenerateFromGameVms(&vmi, (const VMSFileInfo*)&vmsBytes[VMU_FLASH_GAME_VMS_HEADER_OFFSET], vmsFileSize);
+                gyVmuVmiGenerateFromVms(&vmi, (const VMSFileInfo*)&vmsBytes[VMU_FLASH_GAME_VMS_HEADER_OFFSET], vmsFileSize, VMI_FILE_MODE_GAME_GAME);
                 auto* entryRet = gyVmuFlashCreateFileVmiVms(dev, &vmi, vmsBytes, &status);
                 if(entry) *entry = entryRet;
                 _gyPop(1);

@@ -12,6 +12,7 @@
 #include "ui_jet_set_radio_graffiti_tool.h"
 #include <evmu-core/gyro_vmu_flash.h>
 #include <evmu-core/gyro_vmu_vms.h>
+#include <evmu-core/gyro_vmu_vmi.h>
 #include <QDesktopWidget>
 
 using namespace QESTkUtils;
@@ -167,10 +168,10 @@ void JetSetRadioGraffitiTool::_updateDstImage(const QPixmap& srcPixmap, int qual
 
                 _ui->destBytesLabel->setText(QString("%1").arg(_byteArray->size()));
                 _ui->destDimLabel->setText(QString("<%1, %2>").arg(_dstImage.width()).arg(_dstImage.height()));
-                size_t vmuSize = _baseSize + _byteArray->size();
-                size_t vmuBlocks = vmuSize / VMU_FLASH_BLOCK_SIZE;
-                if(vmuSize % VMU_FLASH_BLOCK_SIZE) ++vmuBlocks;
-                _ui->blocksLabel->setText(QString("%1").arg((vmuBlocks)));
+                _vmuSize = _baseSize + _byteArray->size();
+                _vmuBlocks = _vmuSize / VMU_FLASH_BLOCK_SIZE;
+                if(_vmuSize % VMU_FLASH_BLOCK_SIZE) ++_vmuBlocks;
+                _ui->blocksLabel->setText(QString("%1").arg((_vmuBlocks)));
                 _ui->exportButton->setEnabled(true);
                 _ui->destSavePreviewButton->setEnabled(true);
                 _ui->qualitySlider->setEnabled(true);
@@ -212,7 +213,7 @@ void JetSetRadioGraffitiTool::on_exportButton_clicked()
 {
     if(_dstImage.isNull()) return; //Should NEVER fucking happen, though...
 
-    QString filter = "VMU Save Data (*.vms)";
+    QString filter = "VMU VMS/VMI Files (*.vms)";
     QString path = QFileDialog::getSaveFileName(nullptr,
                                                 "Specify Preview Image Destination",
                                                 VmuQtUtils::getRomDir(),
@@ -220,7 +221,7 @@ void JetSetRadioGraffitiTool::on_exportButton_clicked()
                                                 &filter);
 
     if(!path.isEmpty()) {
-        createVmsFromImage(_dstImage, path);
+        exportVmiVmsFromImage(_dstImage, path.split(".").first());
     }
 }
 
@@ -270,7 +271,7 @@ void JetSetRadioGraffitiTool::on_destSavePreviewButton_clicked()
     }
 }
 
-bool JetSetRadioGraffitiTool::createVmsFromImage(QImage image, QString outPath) {
+bool JetSetRadioGraffitiTool::exportVmiVmsFromImage(const QImage& image, QString outPath) {
     bool success = true;
 
     Debug::log(Debug::LOG_VERBOSE, "Exporting Graffiti VMS file: [%s]", Q_CSTR(outPath));
@@ -278,11 +279,14 @@ bool JetSetRadioGraffitiTool::createVmsFromImage(QImage image, QString outPath) 
 
     VMSFileInfo* vmsHeader = (VMSFileInfo*)_vmsHeader;
 
+    QString vmsPath = outPath + QString(".vms");
     gyVmuPrintVMSFileInfo(vmsHeader);
    // Debug::log(Debug::LOG_VERBOSE, "Desc: %s", gyVmuVmsHeaderVmuDescGet(vmsHeader));
     //Debug::log(Debug::LOG_VERBOSE, "DCDesc: %s", )
+    Debug::log(Debug::LOG_VERBOSE, "Creating VMS File: [%s]", Q_CSTR(vmsPath));
+    Debug::push();
 
-    QFile file(outPath);
+    QFile file(vmsPath);
     if(!file.open(QIODevice::WriteOnly)) {
         Debug::log(Debug::LOG_ERROR, "Failed to create file!");
         success = false;
@@ -292,7 +296,7 @@ bool JetSetRadioGraffitiTool::createVmsFromImage(QImage image, QString outPath) 
         if((bytesWritten = out.writeRawData((const char*)_vmsHeader, sizeof(_vmsHeader)))
                 != sizeof(_vmsHeader))
         {
-            Debug::log(Debug::LOG_ERROR, "Failed to write VMS header! [bytes written: %d]", bytesWritten);
+            Debug::log(Debug::LOG_ERROR, "Failed to write VMS header! [bytes written: %d of total: %d]", bytesWritten, sizeof(_vmsHeader));
             success = false;
         } else {
             QByteArray byteArray;
@@ -340,5 +344,30 @@ bool JetSetRadioGraffitiTool::createVmsFromImage(QImage image, QString outPath) 
     }
 
     Debug::pop();
+
+    QString vmiPath = outPath + QString(".vmi");
+    Debug::log(Debug::LOG_VERBOSE, "Creating VMI File: [%s]", Q_CSTR(vmiPath));
+    Debug::push();
+
+    VMIFileInfo vmi;
+    gyVmuVmiGenerateFromVms(&vmi, vmsHeader, _vmuSize, VMI_FILE_MODE_GAME_DATA);
+    QFile vmiFile(vmiPath);
+    if(!vmiFile.open(QIODevice::WriteOnly)) {
+        Debug::log(Debug::LOG_ERROR, "Failed to create file!");
+        success = false;
+    } else {
+        QDataStream out(&vmiFile);
+        int bytesWritten;
+        if((bytesWritten = out.writeRawData((const char*)&vmi, sizeof(VMIFileInfo)))
+                != sizeof(VMIFileInfo))
+        {
+            Debug::log(Debug::LOG_ERROR, "Failed to write VMI File! [bytes written: %d total: %d]", bytesWritten, sizeof(VMIFileInfo));
+            success = false;
+        }
+    }
+
+
+    Debug::pop();
+
     return success;
 }

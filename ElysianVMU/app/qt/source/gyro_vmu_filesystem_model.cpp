@@ -321,7 +321,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
             if(path.isEmpty()) return;
 
             VmuAnimatedIconCache::exportAsGIF(dirEntry, path);
-        });
+        }, vmsHeader->iconCount != 0);
 
     stack.insertAction("Eyecatch",
         [=](bool) {
@@ -336,7 +336,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
             VmuEyecatchCache::exportAsPNG(dirEntry, path);
 
 
-        });
+        }, vmsHeader->eyecatchType != VMS_EYECATCH_NONE);
 
     stack.pop();
 
