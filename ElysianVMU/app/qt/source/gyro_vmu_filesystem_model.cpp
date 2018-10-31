@@ -178,9 +178,9 @@ VmuFileSystemTableView::VmuFileSystemTableView(QWidget* widget):
     auto rect = geometry();
     rect.setSize(QSize(800, 300));
     setGeometry(rect);
-    setWindowTitle("EVMU Filesystem Manager");
-    setWindowIcon(QIcon(ICON_FILE_PATH));
-    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint | Qt::WindowMaximizeButtonHint);
+    //setWindowTitle("EVMU Filesystem Manager");
+    //setWindowIcon(QIcon(ICON_FILE_PATH));
+    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMaximizeButtonHint);
     auto flags = windowFlags();
     flags &= ~Qt::WindowStaysOnTopHint;
     setWindowFlags(flags);
