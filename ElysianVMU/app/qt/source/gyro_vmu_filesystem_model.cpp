@@ -180,7 +180,7 @@ VmuFileSystemTableView::VmuFileSystemTableView(QWidget* widget):
     setGeometry(rect);
     setWindowTitle("EVMU Filesystem Manager");
     setWindowIcon(QIcon(ICON_FILE_PATH));
-    setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint | Qt::WindowMaximizeButtonHint);
+    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint | Qt::WindowMaximizeButtonHint);
     move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
 
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(_contextMenuRequested(const QPoint&)));
