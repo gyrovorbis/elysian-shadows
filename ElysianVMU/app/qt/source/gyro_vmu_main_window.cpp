@@ -151,7 +151,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconConnected(ICON_TCP_CONNECTED_PATH),
     _iconRecording(ICON_RECORDING_PATH),
     _fileSysTableModel(new VmuFileSystemTableModel),
-    _fileSysTable(new VmuFileSystemTableView(this)),
+    _fileSysTable(new VmuFileSystemTableView()),
     _tcpDialog(new VmuTcpDialog),
     _buzzerDialog(new VmuBuzzerDialog),
     _statusLabel(new QLabel("Drag & Drop VMU Files")),
