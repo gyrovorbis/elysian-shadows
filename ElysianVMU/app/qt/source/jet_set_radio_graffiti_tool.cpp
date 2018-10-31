@@ -1,4 +1,5 @@
 #include <ElysianVMU/jet_set_radio_graffiti_tool.hpp>
+#include <ElysianVMU/gyro_vmu_qt_util.hpp>
 #include <QImage>
 #include <QImageWriter>
 #include <QESTkUtils/tk_debug_log_stack.h>
@@ -214,7 +215,7 @@ void JetSetRadioGraffitiTool::on_exportButton_clicked()
     QString filter = "VMU Save Data (*.vms)";
     QString path = QFileDialog::getSaveFileName(nullptr,
                                                 "Specify Preview Image Destination",
-                                                QString(),
+                                                VmuQtUtils::getRomDir(),
                                                 filter,
                                                 &filter);
 
@@ -240,10 +241,11 @@ void JetSetRadioGraffitiTool::on_destSavePreviewButton_clicked()
     if(_dstImage.isNull()) return; //shoudln't fucking happen, though.
 
     QString filter = "VMU Save Data (*.jpg)";
-    QString path = QFileDialog::getSaveFileName(nullptr, "Specify Preview Image Destination",
-                                             QString(),
-                                             filter,
-                                             &filter);
+    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                "Specify Preview Image Destination",
+                                                VmuQtUtils::getRomDir(),
+                                                filter,
+                                                &filter);
 
     if(path.isEmpty()) {
         return;

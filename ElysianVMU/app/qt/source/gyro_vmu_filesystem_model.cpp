@@ -178,11 +178,10 @@ VmuFileSystemTableView::VmuFileSystemTableView(QWidget* widget):
     auto rect = geometry();
     rect.setSize(QSize(800, 300));
     setGeometry(rect);
-    move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
     setWindowTitle("EVMU Filesystem Manager");
     setWindowIcon(QIcon(ICON_FILE_PATH));
     setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint | Qt::WindowMaximizeButtonHint);
-
+    move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
 
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(_contextMenuRequested(const QPoint&)));
 }
@@ -313,8 +312,12 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
 
     stack.insertAction("Icon(s)",
         [=](bool) {
-            QString path = QFileDialog::getSaveFileName(nullptr, "Choose Location to export GIF", "",
-                                                     "Animated GIF (*gif)");
+        QString filter = "Animated GIF (*.gif)";
+            QString path = QFileDialog::getSaveFileName(nullptr,
+                                                        "Choose Location to export GIF",
+                                                        VmuQtUtils::getRomDir(),
+                                                        filter,
+                                                        &filter);
             if(path.isEmpty()) return;
 
             VmuAnimatedIconCache::exportAsGIF(dirEntry, path);
@@ -322,8 +325,12 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
 
     stack.insertAction("Eyecatch",
         [=](bool) {
-            QString path = QFileDialog::getSaveFileName(nullptr, "Choose Location to export eyecatch", "",
-                                                     "Animated PNG (*gif)");
+            QString filter = "PNG (*.png)";
+            QString path = QFileDialog::getSaveFileName(nullptr,
+                                                        "Choose Location to export eyecatch",
+                                                        VmuQtUtils::getRomDir(),
+                                                        filter,
+                                                        &filter);
             if(path.isEmpty()) return;
 
             VmuEyecatchCache::exportAsPNG(dirEntry, path);

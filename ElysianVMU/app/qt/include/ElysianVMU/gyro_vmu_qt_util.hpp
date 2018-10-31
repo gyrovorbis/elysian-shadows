@@ -12,7 +12,18 @@
 struct VMSFileInfo;
 
 class VmuQtUtils {
-
+public:
+    /*
+     *  Yes, the fact I need this struct is truly fucking shameful.
+     *
+     */
+    struct ReloadState {
+        bool    reloading;
+        QString vmsPath;
+        QString vmiPath;
+        bool    autogenerate;
+                ReloadState(void);
+    };
 private:
     static QStringList      _supportedFileExtensions;
     static QString          _romDir;
@@ -23,7 +34,11 @@ public:
     static bool             canOpenFile(QString filePath);
     static QString          getRomDir(void);
     static void             setRomDir(QString dir);
-    static bool             loadVMUImage(VMUDevice* device, QString filePath, VMUFlashDirEntry** entry=nullptr, bool reloadGame=false);
+    static bool             loadVMUImage(VMUDevice* device,
+                                         QString filePath,
+                                         VMUFlashDirEntry** entry=nullptr,
+                                         bool replaceGame=false,
+                                         ReloadState reloadInfo=ReloadState());
 };
 
 struct VmuAnimatedIconCacheEntry {
@@ -69,5 +84,8 @@ public:
 //======= INLINEZ ========
 inline QString VmuQtUtils::getRomDir(void) { return _romDir; }
 inline void VmuQtUtils::setRomDir(QString dir) { _romDir = std::move(dir); }
+inline VmuQtUtils::ReloadState::ReloadState(void):
+    reloading(false),
+    autogenerate(false){}
 
 #endif // GYRO_VMU_QT_UTIL_HPP

@@ -824,7 +824,7 @@ void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", VmuQtUtils::getRomDir(),
-                                         "VMS Files (*.vms *.VMS);;Nexus Files (*.dci);;Web Browser Files (*.vmi *.VMI);;Dream Animator Files (*.lcd *.LCD);;Raw Flash Image Files (*.vmu *.VMU *.bin *.BIN);;Nexus Flash Image Files(*.dcm *.DCM)"));
+                                         "VMS Files (*.vms *.VMS);;Nexus Files (*.dci *DCI);;Web Browser Files (*.vmi *.VMI);;Dream Animator Files (*.lcd *.LCD);;Raw Flash Image Files (*.vmu *.VMU *.bin *.BIN);;Nexus Flash Image Files(*.dcm *.DCM)"));
 }
 
 void VMUMainWindow::on_actionSave_State_triggered(void)
