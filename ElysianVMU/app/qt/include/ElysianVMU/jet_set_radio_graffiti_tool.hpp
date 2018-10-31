@@ -36,6 +36,8 @@ private:
     static const unsigned char
                             _vmsHeader[0x28C];
 
+    static size_t           _baseSize;
+
     void                    _setupDefaultUI(void);
     void                    _setSrcImageProperties(QString path, const QPixmap& pixmap);
     void                    _updateDstImage(void);

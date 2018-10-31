@@ -35,6 +35,7 @@ public:
         COL_NAME,
         COL_DC_DESC,
         COL_VM_DESC,
+        COL_APP,
         COL_BLOCKS,
         COL_FILE_TYPE,
         COL_CREATED,

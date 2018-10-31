@@ -13,6 +13,8 @@
 #include <QESTkUtils/tk_debug_log_stack.h>
 #include <QFileDialog>
 #include <ElysianVMU/gyro_vmu_main_window.hpp>
+#include <QApplication>
+#include <QDesktopWidget>
 
 VmuFileSystemTableModel::VmuFileSystemTableModel(VMUDevice* dev, QObject* parent):
     QAbstractTableModel(parent),
@@ -57,13 +59,18 @@ QVariant VmuFileSystemTableModel::data(const QModelIndex& index, int role) const
             return VmuQtUtils::japCodec->toUnicode(buffer);
         }
         case COL_VM_DESC: {
-            char buffer[VMU_VMS_FILE_INFO_VMU_DESC_SIZE];
+            char buffer[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
             gyVmuVmsHeaderVmuDescGet(vmsHeader, buffer);
             return VmuQtUtils::japCodec->toUnicode(buffer);
         }
         case COL_DC_DESC: {
-            char buffer[VMU_VMS_FILE_INFO_DC_DESC_SIZE];
+            char buffer[VMU_VMS_FILE_INFO_DC_DESC_SIZE+1];
             gyVmuVmsHeaderDcDescGet(vmsHeader, buffer);
+            return VmuQtUtils::japCodec->toUnicode(buffer);
+        }
+        case COL_APP: {
+            char buffer[VMU_VMS_FILE_INFO_CREATOR_APP_SIZE];
+            gyVmuVmsHeaderCreatorAppGet(vmsHeader, buffer);
             return VmuQtUtils::japCodec->toUnicode(buffer);
         }
         case COL_BLOCKS:
@@ -117,6 +124,7 @@ QVariant VmuFileSystemTableModel::headerData(int section, Qt::Orientation orient
             case COL_NAME:          return "Name";
             case COL_VM_DESC:       return "VMU Info";
             case COL_DC_DESC:       return "DC Info";
+            case COL_APP:           return "Application";
             case COL_BLOCKS:        return "Blocks";
             case COL_FILE_TYPE:     return "Type";
             case COL_CREATED:       return "Date Created";
@@ -170,8 +178,11 @@ VmuFileSystemTableView::VmuFileSystemTableView(QWidget* widget):
     auto rect = geometry();
     rect.setSize(QSize(800, 300));
     setGeometry(rect);
+    move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
     setWindowTitle("EVMU Filesystem Manager");
     setWindowIcon(QIcon(ICON_FILE_PATH));
+    setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint | Qt::WindowMaximizeButtonHint);
+
 
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(_contextMenuRequested(const QPoint&)));
 }

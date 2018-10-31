@@ -9,14 +9,17 @@
 #include <QFileInfo>
 #include <QBuffer>
 #include "ui_jet_set_radio_graffiti_tool.h"
+#include <evmu-core/gyro_vmu_flash.h>
 #include <evmu-core/gyro_vmu_vms.h>
+#include <QDesktopWidget>
 
 using namespace QESTkUtils;
 
+size_t JetSetRadioGraffitiTool::_baseSize = 0;
 const unsigned char JetSetRadioGraffitiTool::_vmsHeader[0x28C] = { 68,75,32,80,105,99,116,117,114,101,32,32,32,32,32,32,68,114,101,97,109,75,101,121,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,224,34,233,28,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,255,0,255,0,255,0,255,0,255,0,255,0,255,0,255,0,255,0,255,190,251,206,252,222,253,238,254,255,255,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,38,220,203,167,102,84,67,34,34,34,34,34,34,34,34,34,39,235,205,223,237,203,169,118,85,67,34,34,34,34,34,34,57,230,85,103,154,188,222,253,204,185,118,101,84,50,34,34,57,214,34,34,52,69,102,121,187,205,238,220,186,147,34,34,74,214,34,34,34,34,34,35,69,86,119,171,205,197,34,34,74,213,34,34,34,34,34,34,34,34,34,52,90,214,34,34,75,197,34,34,34,34,34,34,34,50,34,34,75,197,34,34,91,197,34,34,34,34,34,34,38,116,34,34,75,197,34,34,92,181,34,34,34,34,34,34,107,198,34,34,91,197,34,34,92,180,34,34,34,34,34,37,173,234,66,34,92,181,34,34,92,180,34,34,34,34,34,90,223,252,114,34,92,180,34,34,93,164,34,34,34,34,35,156,222,237,164,34,93,164,34,34,109,163,34,34,34,34,34,71,154,171,182,34,109,163,34,34,109,147,36,85,68,67,34,34,51,68,67,34,109,147,34,34,110,146,39,204,187,169,98,34,34,34,34,34,110,146,34,34,110,114,55,223,254,236,147,34,34,34,34,34,110,114,34,34,127,114,55,223,255,253,147,34,34,34,34,34,127,114,34,34,126,98,55,223,255,253,147,34,34,34,34,34,126,98,34,34,158,98,55,206,239,253,147,34,34,34,34,35,158,98,34,35,157,98,37,154,187,204,115,34,34,35,100,35,173,98,34,35,173,98,34,52,68,85,66,34,34,89,219,84,173,98,34,36,173,82,34,34,34,34,34,34,71,190,238,181,188,82,34,36,188,84,67,50,34,34,35,71,173,238,239,233,188,82,34,36,189,203,186,169,119,119,121,190,238,239,254,236,188,82,34,34,122,188,222,238,255,255,254,238,255,255,255,238,203,82,34,34,36,85,103,154,188,221,238,238,255,255,255,254,219,66,34,34,34,34,34,52,69,102,122,188,222,255,238,238,218,66,34,34,34,34,34,34,34,34,35,69,102,121,188,205,217,50,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,0,0,194,68,25,37,239,163,83,73,90,69};
 
 JetSetRadioGraffitiTool::JetSetRadioGraffitiTool(QWidget* parent):
-    QDialog(parent),
+    QDialog(parent, Qt::Window | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint),
     _srcPixmapDefault(JET_SET_RADIO_GRAFFITI_TOOL_SRC_PIXMAP_DEFAULT),
     _dstPixmapDefault(JET_SET_RADIO_GRAFFITI_TOOL_DST_PIXMAP_DEFAULT),
     _ui(new Ui::JetSetRadioGraffitiTool),
@@ -34,7 +37,12 @@ JetSetRadioGraffitiTool::JetSetRadioGraffitiTool(QWidget* parent):
     _dstScene->addItem(_dstItem);
 
     Q_ASSERT(!_srcPixmapDefault.isNull());
-        Q_ASSERT(!_dstPixmapDefault.isNull());
+    Q_ASSERT(!_dstPixmapDefault.isNull());
+
+    _baseSize = gyVmuVmsFileInfoHeaderSize((const VMSFileInfo*)_vmsHeader) + 0x30;
+    _setupDefaultUI();
+
+    move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
 }
 
 
@@ -44,6 +52,10 @@ void JetSetRadioGraffitiTool::_setupDefaultUI(void) {
     _ui->sourceNameLabel->setText("Drag n Drop Image");
     _ui->exportButton->setEnabled(false);
     _ui->destSavePreviewButton->setEnabled(false);
+    _ui->qualitySlider->setEnabled(false);
+    _ui->widthSlider->setEnabled(false);
+    _ui->heightSlider->setEnabled(false);
+
 }
 
 void JetSetRadioGraffitiTool::on_sourceBrowseButton_clicked(void)
@@ -127,6 +139,9 @@ void JetSetRadioGraffitiTool::_updateDstImage(const QPixmap& srcPixmap, int qual
         _dstImage = QImage();
         _ui->exportButton->setEnabled(false);
         _ui->destSavePreviewButton->setEnabled(false);
+        _ui->qualitySlider->setEnabled(false);
+        _ui->widthSlider->setEnabled(false);
+        _ui->heightSlider->setEnabled(false);
 
         //reset all the shit
     } else {
@@ -151,9 +166,17 @@ void JetSetRadioGraffitiTool::_updateDstImage(const QPixmap& srcPixmap, int qual
 
                 _ui->destBytesLabel->setText(QString("%1").arg(_byteArray->size()));
                 _ui->destDimLabel->setText(QString("<%1, %2>").arg(_dstImage.width()).arg(_dstImage.height()));
+                size_t vmuSize = _baseSize + _byteArray->size();
+                size_t vmuBlocks = vmuSize / VMU_FLASH_BLOCK_SIZE;
+                if(vmuSize % VMU_FLASH_BLOCK_SIZE) ++vmuBlocks;
+                _ui->blocksLabel->setText(QString("%1").arg((vmuBlocks)));
                 _ui->exportButton->setEnabled(true);
                 _ui->destSavePreviewButton->setEnabled(true);
+                _ui->qualitySlider->setEnabled(true);
+                _ui->widthSlider->setEnabled(true);
+                _ui->heightSlider->setEnabled(true);
             }
+        _ui->destGraphicsView->setSceneRect(_dstItem->sceneBoundingRect());
         }
     }
 }

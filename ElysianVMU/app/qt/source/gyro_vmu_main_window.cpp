@@ -80,8 +80,8 @@ bool VMUMainWindow::eventFilter(QObject *watched, QEvent *event) {
                     if(url.isLocalFile()) {
                         QFileInfo info(url.toLocalFile());
                         QString suff = info.suffix().toLower();
-                        if(suff == "vms" || suff == "lcd" ||
-                                suff == "vmi" || suff == "vmu") {
+                        if(suff == "vms" || suff == "lcd" || suff == "vmi" || suff == "vmu" ||
+                           suff == "bin" || suff == "dci" || suff == "dcm") {
                             sceneEvent->setAccepted(true);
                             return true;
                         }
@@ -102,8 +102,9 @@ bool VMUMainWindow::eventFilter(QObject *watched, QEvent *event) {
                     if(url.isLocalFile()) {
                         QFileInfo info(url.toLocalFile());
                         QString suff = info.suffix().toLower();
-                        if(suff == "vms" || suff == "lcd" ||
-                                suff == "vmi" || suff == "vmu" || suff == "bin") {
+                        if(suff == "vms" || suff == "lcd" || suff == "vmi" || suff == "dci" ||
+                           suff == "vmu" || suff == "bin" || suff == "dcm")
+                        {
                             sceneEvent->acceptProposedAction();
                             loadRom(info.absoluteFilePath());
                             return true;
@@ -148,8 +149,8 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconListening(ICON_TCP_LISTENING_PATH),
     _iconConnected(ICON_TCP_CONNECTED_PATH),
     _iconRecording(ICON_RECORDING_PATH),
-    _fileSysTable(new VmuFileSystemTableView),
     _fileSysTableModel(new VmuFileSystemTableModel),
+    _fileSysTable(new VmuFileSystemTableView(this)),
     _tcpDialog(new VmuTcpDialog),
     _buzzerDialog(new VmuBuzzerDialog),
     _statusLabel(new QLabel("Drag & Drop VMU Files")),
@@ -439,14 +440,14 @@ void VMUMainWindow::update(void) {
 
     auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
     if(!_running) {
-        if(gameEntry) {
+        if(gameEntry || _dev->biosLoaded) {
             _gyLog(GY_DEBUG_VERBOSE, "New game detected, resetting CPU!");
             resetCpu();
             _running = true;
         }
 
     } else {
-        if(!gameEntry) {
+        if(!gameEntry && !_dev->biosLoaded) {
             _gyLog(GY_DEBUG_VERBOSE, "Game was removed, halting CPU!");
             resetCpu();
             _fb.fill(Qt::black);
@@ -680,15 +681,28 @@ void VMUMainWindow::_updateScene(void) {
 
 bool VMUMainWindow::loadRom(QString filepath) {
 #if 1
+    int prevFileCount = gyVmuFlashFileCount(_dev);
     VMUFlashDirEntry* dirEntry = nullptr;
     bool status = VmuQtUtils::loadVMUImage(_dev, filepath, &dirEntry, true);
 
     if(status) {
 
+        if(gyVmuFlashDirEntryGame(_dev)) resetCpu();
+
         _pushRecentRom(filepath);
+
+        /* Grab first file if we loaded entire VMU image (instead of one ROM),
+         * and that image only had one file in it. */
+        if(!dirEntry) {
+            if(gyVmuFlashFileCount(_dev)) {
+                dirEntry = gyVmuFlashFileAtIndex(_dev, 0);
+            }
+        }
+
         if(dirEntry) {
             QString typeStr;
 
+            //Loaded a data file or multiple files
             if(dirEntry->fileType == VMU_FLASH_FILE_TYPE_DATA) {
                 typeStr = "DATA";
                 if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
@@ -697,6 +711,16 @@ bool VMUMainWindow::loadRom(QString filepath) {
             char buff[100];
             gyVmuFlashDirEntryName(dirEntry, buff);
             QString msg = QString("Loaded: %1 [%2]").arg(buff).arg(typeStr);
+            _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
+            _statusBarChanged = true;
+            _updateStatusbar();
+
+        //We loaded an image with more than one file
+        } else if(gyVmuFlashFileCount(_dev) > 1) {
+            char buff[100];
+            int fileCount = gyVmuFlashFileCount(_dev);
+            if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
+            QString msg = QString("Loaded: %1 Files").arg(fileCount);
             _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
             _statusBarChanged = true;
             _updateStatusbar();
@@ -800,7 +824,7 @@ void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", VmuQtUtils::getRomDir(),
-                                         "VMS Files (*.vms *.VMS);;Web Browser Files (*.vmi *.VMI);;Dream Animator Files (*.lcd *.LCD);;Flash Image Files (*.vmu *.VMU *.bin *.BIN)"));
+                                         "VMS Files (*.vms *.VMS);;Nexus Files (*.dci);;Web Browser Files (*.vmi *.VMI);;Dream Animator Files (*.lcd *.LCD);;Raw Flash Image Files (*.vmu *.VMU *.bin *.BIN);;Nexus Flash Image Files(*.dcm *.DCM)"));
 }
 
 void VMUMainWindow::on_actionSave_State_triggered(void)
@@ -864,7 +888,7 @@ void VMUMainWindow::_pop(const unsigned depth) {
 void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
     char tabBuff[100] = { 0 };
 
-    for(int i = 0; i < _logDepth; ++i) {
+    for(int i = 0; i < _logDepth && i < sizeof(tabBuff)-1; ++i) {
         strcat(tabBuff, "\t");
     }
 
@@ -882,7 +906,7 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
     printf(buffer);
 #endif
 #ifdef VMU_DEBUG
-    return;
+   // return;
 #endif
 #if FILTER_DUPLICATE_LOG_STRINGS
     static QString previous;
@@ -1026,8 +1050,10 @@ void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
             if(url.isLocalFile()) {
                 QFileInfo info(url.toLocalFile());
                 QString suff = info.suffix().toLower();
-                if(suff == "vms" || suff == "lcd" ||
-                        suff == "vmi" || suff == "vmu" || suff == "bin") {
+                if(suff == "vms" || suff == "lcd" || suff == "vmi" ||
+                   suff == "vmu" || suff == "bin" || suff == "dci" ||
+                   suff == "dcm")
+                {
                     event->acceptProposedAction();
                     return;
                 }
@@ -1046,8 +1072,10 @@ void VMUMainWindow::dropEvent(QDropEvent* event) {
             if(url.isLocalFile()) {
                 QFileInfo info(url.toLocalFile());
                 QString suff = info.suffix().toLower();
-                if(suff == "vms" || suff == "lcd" ||
-                        suff == "vmi" || suff == "vmu" || suff == "bin") {
+                if(suff == "vms" || suff == "lcd" || suff == "vmi" ||
+                   suff == "vmu" || suff == "bin" || suff == "dci" ||
+                   suff == "dcm")
+                {
                     event->acceptProposedAction();
                     loadRom(info.absoluteFilePath());
                     return;
@@ -1491,12 +1519,12 @@ bool VMUMainWindow::startTcpServer(unsigned port) {
 
 
 void VMUMainWindow::on_actionBIOS_Runtime_Disassembly_triggered() {
-
+#if 0
     GYWav* wav = gyAudWavCreate("/Users/falcogirgis/square.wav");
     GYAudioSource* src = gyAudSourceCreate();
     gyAudSourcePlayWav(src, wav);
 
-#if 0
+#else
 
     char* buff = (char*)malloc((ROM_SIZE+1)*400);
 
@@ -1534,7 +1562,7 @@ void VMUMainWindow::on_actionDocumentation_triggered(bool checked)
 
 void VMUMainWindow::on_actionJet_Set_Radio_Graffiti_Tool_triggered() {
     if(!_jsrGraffitiTool) {
-        _jsrGraffitiTool = new JetSetRadioGraffitiTool(nullptr);
+        _jsrGraffitiTool = new JetSetRadioGraffitiTool(this);
     }
     _jsrGraffitiTool->show();
 }
