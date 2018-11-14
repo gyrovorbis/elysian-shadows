@@ -187,7 +187,14 @@
      <property name="title">
       <string>Debugger</string>
      </property>
-     <addaction name="actionMemory_Browser"/>
+     <widget class="QMenu" name="menuMemory_Browser">
+      <property name="title">
+       <string>Memory Browser</string>
+      </property>
+      <addaction name="actionRAM_Address_Space"/>
+      <addaction name="actionFlash_Address_Space"/>
+     </widget>
+     <addaction name="menuMemory_Browser"/>
     </widget>
     <addaction name="actionPreserve_Aspect_Ratio"/>
     <addaction name="menuPixel_Perfect_Aspect_Zoom"/>
@@ -532,11 +539,6 @@
     <string>Debugger</string>
    </property>
   </action>
-  <action name="actionMemory_Browser">
-   <property name="text">
-    <string>Memory Browser</string>
-   </property>
-  </action>
   <action name="actionDocumentation">
    <property name="text">
     <string>Documentation</string>
@@ -569,6 +571,16 @@
   <action name="actionDefrag_Flash_Image">
    <property name="text">
     <string>Defrag Flash Image</string>
+   </property>
+  </action>
+  <action name="actionRAM_Address_Space">
+   <property name="text">
+    <string>RAM Address Space</string>
+   </property>
+  </action>
+  <action name="actionFlash_Address_Space">
+   <property name="text">
+    <string>Flash Address Space</string>
    </property>
   </action>
  </widget>

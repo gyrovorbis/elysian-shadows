@@ -48,6 +48,8 @@
 #include <ElysianVMU/jet_set_radio_graffiti_tool.hpp>
 #include <ElysianVMU/gyro_vmu_filesystem_model.hpp>
 #include <ElysianVMU/gyro_vmu_qt_util.hpp>
+#include <ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp>
+#include <ElysianVMU/gyro_vmu_qt_util.hpp>
 
 #define Q_CSTR(a) (a.toStdString().c_str())
 
@@ -150,6 +152,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconListening(ICON_TCP_LISTENING_PATH),
     _iconConnected(ICON_TCP_CONNECTED_PATH),
     _iconRecording(ICON_RECORDING_PATH),
+    _fileSystemBar(new VmuFileSystemUtilizationBar),
     _fileSysTableModel(new VmuFileSystemTableModel),
     _fileSysTable(new VmuFileSystemTableView()),
     _tcpDialog(new VmuTcpDialog),
@@ -170,11 +173,15 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _recordingLabel->setMargin(0);
     _remoteLabel->setMargin(0);
     _remoteLabel->setFixedSize(20, 20);
+    _fileSystemBar->setFixedHeight(20);
+    //_fileSystemBar->setFixedSize(40, 20);
     _ui->statusbar->layout()->setSpacing(0);
-    _ui->statusbar->insertPermanentWidget(0, _remoteLabel);
-    _ui->statusbar->insertPermanentWidget(1, _recordingLabel);
-    _ui->statusbar->insertPermanentWidget(2, _statusLabel);
-    _ui->statusbar->insertPermanentWidget(3, _iconLabel);
+    //_ui->statusbar->insertPermanentWidget(0, _remoteLabel, 1);
+    _ui->statusbar->insertPermanentWidget(0, _iconLabel, 1);
+    _ui->statusbar->insertPermanentWidget(1, _recordingLabel, 1);
+    _ui->statusbar->insertPermanentWidget(2, _statusLabel, 2);
+    _ui->statusbar->insertPermanentWidget(3, _fileSystemBar, 2);
+
     setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
 
 #ifdef VMU_CHILD_APP
@@ -286,6 +293,8 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 #endif
     _tcpDialog->setVmuDevice(_dev);
     _buzzerDialog->setVmuDevice(_dev);
+    _fileSystemBar->setDevice(_dev);
+      //  _fileSystemBar->show();
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     QAction* comConfig = new QAction("Serial/COM Connection Manager");
     connect(comConfig, SIGNAL(triggered()), this, SLOT(on_actionSerial_COM_Connection_Manager_triggered()));
@@ -293,6 +302,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _comDialog = new VmuComDialog;
     _comDialog->setVmuDevice(_dev);
 #endif
+
 
     //Connect Load/Save File Menu Logic
     _ui->actionLoad_Game->setMenu(_loadGameMenu);
@@ -388,11 +398,10 @@ void VMUMainWindow::_setupAboutMsgBox(void) {
         QMessageBox::about(this, "About ElysianVMU",
         QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
         QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
-        QString("<a href=\"http://evmu.elysianshadows.com\">elysianshadows.com</a><br>") +
+        QString("<a href=\"http://evmu.elysianshadows.com\">evmu.elysianshadows.com</a><br>") +
         QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
-        QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
         QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Inolen, Dmitry Grinberg, RinMaru, and all of the Elysian Shadows Kickstarter backers and supporters  :)</br</br>") +
+        QString("Special Thanks:<br> Tulio Goncalves, Deunan Knute, Marcus Comstedt, Inolen, Dmitry Grinberg, RinMaru, and all of the Elysian Shadows Kickstarter backers and supporters  :)</br</br>") +
         QString("</table><br><br>") +
         QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
         QString("<i>ElysianVMU Copyright 2017-2018 Elysian Shadows</i><br>") +
@@ -465,6 +474,7 @@ void VMUMainWindow::update(void) {
             resetCpu();
             _fb.fill(Qt::black);
             _updateScene();
+            _updateIcon();
             _running = false;
         }
     }
@@ -585,7 +595,7 @@ void VMUMainWindow::_updateStatusbar(void) {
                 _statusLabel->setText(QString("LCD Animation"));
 
             } else {
-
+                VMUFlashMemUsage mem = gyVmuFlashMemUsage(_dev);
                 auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
                 if(gameEntry) {
                     auto* vmsHeader = gyVmuFlashDirEntryVmsHeader(_dev, gameEntry);
@@ -593,11 +603,12 @@ void VMUMainWindow::_updateStatusbar(void) {
                     _vmsHeader = vmsHeader;
                     gyVmuVmsHeaderVmuDescGet(vmsHeader, string);
                     _statusLabel->setText(VmuQtUtils::japCodec->toUnicode(string));
+
+
                 } else {
                     int fileCount = gyVmuFlashFileCount(_dev);
                     if(fileCount) {
-                        VMUFlashMemUsage mem = gyVmuFlashMemUsage(_dev);
-                        QString label = QString("File(s): %1  Free Blocks: %2/%3").arg(fileCount).arg(mem.blocksFree).arg(gyVmuFlashUserDataBlocks(_dev));
+                        QString label = QString("File(s): %1").arg(fileCount);
                         _statusLabel->setText(label);
                     } else if(_dev->biosLoaded) {
                         palette.setColor(QPalette::WindowText, QColor(Qt::gray));
@@ -624,8 +635,22 @@ void VMUMainWindow::_updateScene(void) {
     //Update framebuffer texture based on VMU LCD screen state
     {
         QPainter painter(&_fb);
+        //Check if we need to clear the screen with the screensaver/LCD off image
         if((!gyVmuDisplayEnabled(_dev) && _displayWasEnabled) || !_running) {
-            painter.drawPixmap(QPoint(0,0), _iconES);
+            //Custom ICONDATA_VMS Icon if given, otherwise ES logo
+            VMUFlashDirEntry* entry = gyVmuFlashDirEntryIconData(_dev);
+            const QPixmap* icon = nullptr;
+            int xOffset = 0;
+
+            if(entry) {
+                auto* icns = VmuQtUtils::getIconDataBank().getEntry(_dev, entry);
+                if(icns && !icns->vmuIcon.isNull()) {
+                    icon = &icns->vmuIcon;
+                    xOffset = 8;
+                }
+            }
+            painter.eraseRect(0, 0, VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT);
+            painter.drawPixmap(QPoint(xOffset, 0), icon? *icon : _iconES);
             _displayWasEnabled = false;
             updatedFb = true;
         } else if(gyVmuDisplayUpdateEnabled(_dev)) {
@@ -876,7 +901,7 @@ void VMUMainWindow::on_actionLoad_State_triggered(void)
         _dev->imem = _dev->flash;
 
         int xramBk = gyVmuMemRead(_dev, SFR_ADDR_XBNK);
-        int ramBk = (gyVmuMemRead(_dev, SFR_ADDR_PSW)&SFR_PSW_RAMBK0_MASK)>>SFR_PSW_RAMBKO_POS;
+        int ramBk = (gyVmuMemRead(_dev, SFR_ADDR_PSW)&SFR_PSW_RAMBK0_MASK)>>SFR_PSW_RAMBK0_POS;
         _dev->memMap[VMU_MEM_SEG_XRAM]   = _dev->xram[xramBk];
         _dev->memMap[VMU_MEM_SEG_SFR]    = _dev->sfr;
         _dev->memMap[VMU_MEM_SEG_GP1]    = _dev->ram[ramBk];
@@ -1172,17 +1197,29 @@ bool VMUMainWindow::_loadIcons(void) {
 }
 
 void VMUMainWindow::_updateIcon(void) {
-    if(!_iconPixmaps.size()) return;
+    //if(!_iconPixmaps.size()) return;
+    auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
 
-    if(++_iconAnimCounter >= _vmsHeader->animSpeed*2) { //x2, because I believe units are frames, and I think the DC ROM is @ 30fps.
-        _iconAnimCounter = 0;
+    if(!gameEntry) {
+        _iconCurIndex = -1;
+        _iconLabel->clear();
+        return;
+    }
 
-        if(++_iconCurIndex >= _vmsHeader->iconCount) {
-            _iconCurIndex = 0;
+    QPixmap newPixmap;
+    VmuAnimatedIconCacheEntry* iconEntry = nullptr;
+
+    newPixmap = VmuAnimatedIconCache::getIcon(_dev, gameEntry, &iconEntry);
+
+    if(iconEntry) {
+        if(_iconCurIndex != iconEntry->currentFrame) {
+            _iconLabel->setPixmap(newPixmap);
+            _iconCurIndex = iconEntry->currentFrame;
         }
 
-        _iconLabel->setPixmap(_iconPixmaps[_iconCurIndex]);
     }
+
+
 
 }
 
@@ -1579,7 +1616,7 @@ void VMUMainWindow::on_actionBuzzer_Tool_triggered() {
 void VMUMainWindow::on_actionMemory_Browser_triggered(void)
 {
     if(!_memBrowser) {
-        _memBrowser = new VmuMemoryBrowserWidget(_dev, nullptr);
+        _memBrowser = new VmuAddressSpaceExplorerWidget(_dev, nullptr);
     }
     _memBrowser->show();
 }
@@ -1649,4 +1686,24 @@ void VMUMainWindow::on_actionNew_Flash_Image_triggered()
 
         gyVmuFlashFormatDefault(_dev);
     }
+}
+
+void VMUMainWindow::_showAddressSpaceModel(VMUDevice* dev, int type) {
+    if(!_memBrowser) {
+        _memBrowser = new VmuAddressSpaceExplorerWidget(_dev);
+    }
+    _memBrowser->setAddressSpaceModelType(static_cast<VMU_ADDRESS_SPACE_MODEL_TYPE>(type));
+    _memBrowser->setVMUDevice(dev);
+    _memBrowser->show();
+}
+
+
+void VMUMainWindow::on_actionRAM_Address_Space_triggered(void)
+{
+    _showAddressSpaceModel(_dev, VMU_ADDRESS_SPACE_MODEL_CURRENT_RAM);
+}
+
+void VMUMainWindow::on_actionFlash_Address_Space_triggered(void)
+{
+    _showAddressSpaceModel(_dev, VMU_ADDRESS_SPACE_MODEL_FILESYSTEM);
 }

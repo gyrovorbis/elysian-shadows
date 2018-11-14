@@ -43,11 +43,12 @@ struct  VMUDevice;
 struct  VMSFileInfo;
 class   VmuTcpDialog;
 class   VmuBuzzerDialog;
-class   VmuMemoryBrowserWidget;
+class   VmuAddressSpaceExplorerWidget;
 class   QGraphicsPixmapItem;
 class   JetSetRadioGraffitiTool;
 class   VmuFileSystemTableModel;
 class   VmuFileSystemTableView;
+class   VmuFileSystemUtilizationBar;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 class   VmuComDialog;
 #endif
@@ -99,6 +100,7 @@ protected Q_SLOTS:
     void                _onLoadGameAboutToHide(void);
     void                _onSaveGameAboutToShow(void);
     void                _onSaveGameAboutToHide(void);
+    void                _showAddressSpaceModel(VMUDevice* dev, int type);
 
     void on_actionLoad_ROM_triggered(void);
     void on_actionSave_State_triggered(void);
@@ -138,6 +140,8 @@ protected Q_SLOTS:
     void on_actionFilesystem_triggered(void);
     void on_actionExport_Flash_Image_triggered(void);
     void on_actionNew_Flash_Image_triggered(void);
+    void on_actionFlash_Address_Space_triggered();
+    void on_actionRAM_Address_Space_triggered();
 
 private:
 
@@ -177,6 +181,8 @@ private:
     QVector<QImage>     _iconImages;
     QVector<QPixmap>    _iconPixmaps;
     QImage              _eyecatchImage;
+    VmuFileSystemUtilizationBar*
+                        _fileSystemBar      = nullptr;
     QESTkUtils::HelpDockWidget*
                         _helpDockWidget     = nullptr;
     VmuFileSystemTableModel*
@@ -184,7 +190,7 @@ private:
     VmuFileSystemTableView* _fileSysTable   = nullptr;
     VmuTcpDialog*       _tcpDialog          = nullptr;
     VmuBuzzerDialog*    _buzzerDialog       = nullptr;
-    VmuMemoryBrowserWidget*
+    VmuAddressSpaceExplorerWidget*
                         _memBrowser   = nullptr;
     JetSetRadioGraffitiTool*
                         _jsrGraffitiTool    = nullptr;
@@ -207,7 +213,7 @@ private:
     int64_t             _prevAnimFrameTicks = 0;
     int64_t             _prevTicks          = 0;
     int                 _iconAnimCounter    = 0;
-    int                 _iconCurIndex       = 0;
+    int                 _iconCurIndex       = -1;
     int                 _pConRegister       = 0;
     int                 _prevFbWidth        = 0;
     int                 _prevFbHeight       = 0;

@@ -92,7 +92,8 @@ SOURCES += \
  #   ../../../QESTkUtils/source/tk_mime_drop_manager.cpp \
     ../../../app/qt/source/jet_set_radio_graffiti_tool.cpp \
     ../../../app/qt/source/gyro_vmu_filesystem_model.cpp \
-    ../../../app/qt/source/gyro_vmu_qt_util.cpp
+    ../../../app/qt/source/gyro_vmu_qt_util.cpp \
+    ../../../app/qt/source/gyro_vmu_filesystem_utilization_bar.cpp
 
 !vmu_child_app {
     SOURCES += ../../../app/qt/source/main.cpp
@@ -121,7 +122,8 @@ HEADERS += \
     $${SOURCE_ROOT}/include/ElysianVMU/gyro_vmu_tcp_dialog.hpp \
     ../../../app/qt/include/ElysianVMU/jet_set_radio_graffiti_tool.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_model.hpp \
-    ../../../app/qt/include/ElysianVMU/gyro_vmu_qt_util.hpp
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_qt_util.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp
 
 !raspberrypi {
 

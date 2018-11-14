@@ -16,36 +16,80 @@ struct VMUDevice;
 
 class VmuAddressSpaceModel;
 
-class VmuMemoryBrowserWidget: public QTableView {
-    VmuAddressSpaceModel* _model = nullptr;
+enum VMU_MODEL_ADDR_SEGMENT {
+    VMU_MODEL_ADDR_SEGMENT_SYSTEM,
+    VMU_MODEL_ADDR_SEGMENT_STACK,
+    VMU_MODEL_ADDR_SEGMENT_GP,
+    VMU_MODEL_ADDR_SEGMENT_SFR,
+    VMU_MODEL_ADDR_SEGMENT_XRAM,
+    VMU_MODEL_ADDR_SEGMENT_INVALID,
+    VMU_MODEL_ADDR_SEGMENT_COUNT
+};
 
-public:
-    VmuMemoryBrowserWidget(VMUDevice* device, QObject* object);
+struct VmuModelMemoryAddress {
 
 };
 
-class VmuAddressSpaceModel: public QAbstractTableModel {
+struct VmuModelAddrSegmentUIProperties {
+    QString prefix;
+    QColor  bgColor;
+};
+
+enum VMU_ADDRESS_SPACE_MODEL_TYPE {
+    VMU_ADDRESS_SPACE_MODEL_CURRENT_RAM,
+    VMU_ADDRESS_SPACE_MODEL_FILESYSTEM,
+    VMU_ADDRESS_SPACE_MODEL_COUNT
+};
+
+class VmuAddressSpaceExplorerWidget: public QTableView {
+    VMU_ADDRESS_SPACE_MODEL_TYPE _currentModel = VMU_ADDRESS_SPACE_MODEL_COUNT;
+    VmuAddressSpaceModel* _models[VMU_ADDRESS_SPACE_MODEL_COUNT] = { nullptr };
+
+public:
+                VmuAddressSpaceExplorerWidget(VMUDevice* device, QWidget* object=nullptr);
+    virtual     ~VmuAddressSpaceExplorerWidget(void) override = default;
+    void        setAddressSpaceModelType(VMU_ADDRESS_SPACE_MODEL_TYPE type);
+    void        setVMUDevice(VMUDevice* device);
+
+};
+
+
+
+namespace QESTkUtils {
+
+
+struct AddressModelData {
+    QColor  bgColor;
+    QString prefix;
+};
+
+
+class AddressSpaceModel: public QAbstractTableModel {
+public:
     enum COL_TYPE {
-        COL_TYPE_HEADER,
+        //COL_TYPE_HEADER,
         COL_TYPE_DATA,
         COL_TYPE_ASCII,
         COL_TYPE_COUNT,
         COL_TYPE_INVALID
     };
-
 private:
-    struct VMUDevice*       _dev            = nullptr;
+    uintptr_t           _baseAddress            = 0;
+    uintptr_t           _addressRange           = 0;
+    unsigned            _addrDisplayLength      = 0;
+
 public:
-                        VmuAddressSpaceModel(VMUDevice* dev, QObject* parent=nullptr);
+                        AddressSpaceModel(uintptr_t baseAddress, uintptr_t addressRange, QObject* parent=nullptr);
+    virtual             ~AddressSpaceModel(void) override = default;
 
-    virtual             ~VmuAddressSpaceModel(void) override = default;
-
-    VMUDevice*          getVMUDevice(void) const;
-    void                setVMUDevice(VMUDevice* dev);
-
-    int                 modelIndexToMemAddr(const QModelIndex& index) const;
     COL_TYPE            getColType(const QModelIndex& index) const;
     COL_TYPE            getColType(int col) const;
+
+    //Minimal requirements to power the back-end of the model
+    virtual uintptr_t   modelIndexToAddress(const QModelIndex& index) const         = 0;
+    virtual QVariant    readMemory(uintptr_t addr) const                            = 0;
+    virtual bool        writeMemory(uintptr_t addr, QVariant value)                 = 0;
+    virtual auto        modelData(uintptr_t addr) const -> const AddressModelData*  = 0;
 
     //Overridden from QAbstractTableModel
     //(read-only methods)
@@ -61,8 +105,68 @@ public:
     virtual auto        flags(const QModelIndex& index) const -> Qt::ItemFlags override;
 };
 
+}
 
 
+class VmuAddressSpaceModel: public QESTkUtils::AddressSpaceModel {
+protected:
+    struct VMUDevice*    _dev            = nullptr;
+public:
+
+                        VmuAddressSpaceModel(VMUDevice* dev, uintptr_t baseAddress, uintptr_t addressRange, QObject* parent=nullptr);
+    VMUDevice*          getVMUDevice(void) const;
+    void                setVMUDevice(VMUDevice* dev);
+
+    //Base, generic implementation using RAM address space
+    virtual uintptr_t   modelIndexToAddress(const QModelIndex& index) const override;
+    virtual QVariant    readMemory(uintptr_t addr) const override;
+    virtual bool        writeMemory(uintptr_t addr, QVariant value) override;
+    virtual auto        modelData(uintptr_t addr) const -> const QESTkUtils::AddressModelData* override;
+};
+
+class VmuCurrentRamAddressSpaceModel: public VmuAddressSpaceModel {
+protected:
+    static const VmuModelAddrSegmentUIProperties
+                        _addrSegProperties[VMU_MODEL_ADDR_SEGMENT_COUNT];
+public:
+                    //VmuCurrentRamAddressSpaceModel(VMUDevice* dev=nullptr, uintptr_t baseAddress=0, uintptr_t addressRange=0, QObject* parent=nullptr);
+                    VmuCurrentRamAddressSpaceModel(VMUDevice* device=nullptr);
+
+    static VMU_MODEL_ADDR_SEGMENT
+                        getAddrSegment(VMUDevice* dev, uintptr_t address);
+
+    static const VmuModelAddrSegmentUIProperties&
+                        getAddrSegmentProperties(VMU_MODEL_ADDR_SEGMENT segment);
+
+
+
+    virtual auto        modelData(uintptr_t addr) const -> const QESTkUtils::AddressModelData* override;
+
+};
+
+class VmuFileSystemAddressSpaceModel: public VmuAddressSpaceModel {
+private:
+
+    uint8_t*            _addressToFlashPointer(uintptr_t addr) const;
+    virtual QVariant    readMemory(uintptr_t addr) const override;
+    virtual bool        writeMemory(uintptr_t addr, QVariant value) override;
+public:
+                        VmuFileSystemAddressSpaceModel(void);
+    virtual             ~VmuFileSystemAddressSpaceModel(void) override = default;
+
+   virtual auto        modelData(uintptr_t addr) const -> const QESTkUtils::AddressModelData* override;
+};
+
+
+
+
+
+
+
+inline const VmuModelAddrSegmentUIProperties&
+VmuCurrentRamAddressSpaceModel::getAddrSegmentProperties(VMU_MODEL_ADDR_SEGMENT segment) {
+    return _addrSegProperties[segment];
+}
 
 inline VMUDevice* VmuAddressSpaceModel::getVMUDevice(void) const {
     return _dev;
@@ -73,31 +177,37 @@ inline void VmuAddressSpaceModel::setVMUDevice(VMUDevice* dev) {
 }
 
 
-inline int VmuAddressSpaceModel::modelIndexToMemAddr(const QModelIndex& index) const {
-    int addr = -1;
+inline uintptr_t VmuAddressSpaceModel::modelIndexToAddress(const QModelIndex& index) const {
+    uintptr_t addr = 0;
     switch(getColType(index)) {
     case COL_TYPE_DATA:
-        addr = (unsigned)(((unsigned)index.row()) << 4);
-        addr |= (unsigned)index.column();
+        addr = (uintptr_t)(((uintptr_t)index.row()) << 4);
+        addr += (uintptr_t)index.column();
         break;
+    case COL_TYPE_ASCII:
+        addr = (uintptr_t)(((uintptr_t)index.row()) << 4);
     default:
         break;
     }
     return addr;
 }
 
-inline auto VmuAddressSpaceModel::getColType(const QModelIndex& index) const -> COL_TYPE {
+namespace QESTkUtils {
+
+inline auto AddressSpaceModel::getColType(const QModelIndex& index) const -> COL_TYPE {
     return getColType(index.column());
 }
 
-inline auto VmuAddressSpaceModel::getColType(int col) const -> COL_TYPE {
+inline auto AddressSpaceModel::getColType(int col) const -> COL_TYPE {
     if(col >= ADDRESS_SPACE_MODEL_COLUMN_COUNT) return COL_TYPE_INVALID;
     else if(col < 0) return COL_TYPE_INVALID;
 
-    if(col < ADDRESS_SPACE_MODEL_HEADER_COL_COUNT) return COL_TYPE_HEADER;
+    //if(col < ADDRESS_SPACE_MODEL_HEADER_COL_COUNT) return COL_TYPE_HEADER;
     else if(col < ADDRESS_SPACE_MODEL_HEADER_COL_COUNT + ADDRESS_SPACE_MODEL_DATA_COL_COUNT) return COL_TYPE_DATA;
     else if(col < ADDRESS_SPACE_MODEL_HEADER_COL_COUNT + ADDRESS_SPACE_MODEL_DATA_COL_COUNT + ADDRESS_SPACE_MODEL_ASCII_COL_COUNT) return COL_TYPE_ASCII;
     return COL_TYPE_INVALID;
+}
+
 }
 
 

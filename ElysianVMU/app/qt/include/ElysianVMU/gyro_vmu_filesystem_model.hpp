@@ -41,7 +41,7 @@ public:
         COL_CREATED,
         COL_CRC,
         COL_COPY,
-        COL_EYECATCH,
+        COL_IMAGE,
         COL_COUNT,
         COL_DIR_ENTRY,
         COL_FIRST_BLOCK
