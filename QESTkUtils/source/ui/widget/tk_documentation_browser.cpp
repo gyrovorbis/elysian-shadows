@@ -8,6 +8,8 @@
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
 #include <QMessageBox>
+#include <QApplication>
+#include <QDesktopWidget>
 #ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
 #   include <QHelpSearchEngine>
 #   include <QHelpSearchResultWidget>
@@ -72,6 +74,7 @@ HelpDockWidget::HelpDockWidget(QWidget* parent,
     _dbResourcePath(std::move(dbResourcePath)),
     _basePath(std::move(basePath))
 {
+    move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
 #ifndef QESTKUTILS_DOCUMENTATION_RESOURCES
     warnprintf("This build was compiled without documentation resource files!");
 
