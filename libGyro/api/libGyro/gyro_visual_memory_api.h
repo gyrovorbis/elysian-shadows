@@ -75,7 +75,7 @@ extern "C" {
 #define MAPLE_HEADER(cmd,dst_addr,src_addr,len)	( (((cmd)&0xfful)<<24) | (((dst_addr)&0xfful)<<16) | (((src_addr)&0xfful)<<8) | ((len)&0xff))
 
 #define VMU_MAPLE_WRITE_SIZE_MAX                128
-#define VMU_BLOCK_SIZE                          256
+#define VMU_BLOCK_SIZE                          512
 
 #define GY_VISUAL_MEMORY_TCP_HOSTNAME_SIZE      200
 

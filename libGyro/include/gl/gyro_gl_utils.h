@@ -7,6 +7,7 @@
 
 #include <gl/gyro_gl.h>
 #include <libGyro/gyro_system_api.h>
+#include <libGyro/gyro_defines.h>
 #include <stdio.h>
 
 #define GY_GL_CHECK_ERROR() \
@@ -18,22 +19,18 @@ void glalGLDriverQuery(void);
 static inline const char* glalErrorStr(GLenum err) {
     static char buff[15];
 
-#define ERROR_CASE(t) \
-    case t: return #t;
-
     switch(err) {
-        ERROR_CASE(GL_NO_ERROR)
-        ERROR_CASE(GL_INVALID_ENUM)
-        ERROR_CASE(GL_INVALID_VALUE)
-        ERROR_CASE(GL_INVALID_OPERATION)
-        ERROR_CASE(GL_OUT_OF_MEMORY)
-        ERROR_CASE(GL_INVALID_FRAMEBUFFER_OPERATION)
+        GYRO_SWITCH_CASE_STRING(GL_NO_ERROR);
+        GYRO_SWITCH_CASE_STRING(GL_INVALID_ENUM);
+        GYRO_SWITCH_CASE_STRING(GL_INVALID_VALUE);
+        GYRO_SWITCH_CASE_STRING(GL_INVALID_OPERATION);
+        GYRO_SWITCH_CASE_STRING(GL_OUT_OF_MEMORY);
+        GYRO_SWITCH_CASE_STRING(GL_INVALID_FRAMEBUFFER_OPERATION);
         default:
             sprintf(buff, "Unknown: %d", err);
             return buff;
     }
 
-#undef ERROR_CASE
 }
 
 static inline int glalCheckError(const char* file, int line, const char* function) {
