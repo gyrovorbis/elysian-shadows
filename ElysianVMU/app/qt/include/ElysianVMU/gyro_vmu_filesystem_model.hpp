@@ -48,42 +48,36 @@ public:
     };
 
 private:
-    VMUDevice*          _dev        = nullptr;
-    QTimer*             _animTimer  = nullptr;
-    int                 _rowCount   = 0;
+    VMUDevice*              _dev        = nullptr;
+    QTimer*                 _animTimer  = nullptr;
+    int                     _rowCount   = 0;
 
 private Q_SLOTS:
-    void                _updateIcons(void);
+    void                    _updateIcons(void);
 
 public:
-                        VmuFileSystemTableModel(VMUDevice* dev=nullptr, QObject* parent=nullptr);
-    VMUDevice*          getDevice(void) const;
-    void                setDevice(VMUDevice* device);
+                            VmuFileSystemTableModel(VMUDevice* dev=nullptr, QObject* parent=nullptr);
+    VMUDevice*              getDevice(void) const;
+    void                    setDevice(VMUDevice* device);
 
     //Overridden from QAbstractTableModel
     //(read-only methods)
-    virtual int         rowCount(const QModelIndex& parent=QModelIndex()) const override;
-    virtual int         columnCount(const QModelIndex& parent=QModelIndex()) const override;
-    virtual QVariant    data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
+    virtual int             rowCount(const QModelIndex& parent=QModelIndex()) const override;
+    virtual int             columnCount(const QModelIndex& parent=QModelIndex()) const override;
+    virtual QVariant        data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
 
     //(well-behaved method(s))
-    virtual QVariant    headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override;
+    virtual QVariant        headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override;
 
-        virtual Qt::DropActions supportedDropActions(void) const override;
-        virtual Qt::DropActions supportedDragActions(void) const override;
+    virtual Qt::DropActions supportedDropActions(void) const override;
+    virtual Qt::DropActions supportedDragActions(void) const override;
 
-    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-
-    bool canDropMimeData(const QMimeData *data,
-      Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action,
-                      int row, int column, const QModelIndex &parent) override;
-
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
-
-    virtual QStringList mimeTypes(void) const override;
+    virtual bool            insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    virtual bool            removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    virtual bool            canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    virtual bool            dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    virtual Qt::ItemFlags   flags(const QModelIndex& index) const override;
+    virtual QStringList     mimeTypes(void) const override;
 };
 
 

@@ -238,7 +238,7 @@ bool VmuQtUtils::loadVMUImage(VMUDevice* dev,
             QMessageBox::critical(nullptr, "File Error", "ElysianVMU failed to read from the specified file!");
             return false;
         case VMU_LOAD_IMAGE_INADEQUATE_FREE_BLOCKS:
-            QMessageBox::critical(nullptr, "Not Enough Space", QString(gyVmuFlashLoadImageLastErrorMessage()));
+            QMessageBox::critical(nullptr, "Not Enough Space", QString(gyVmuFlashLastErrorMessage()));
             return false;
         case VMU_LOAD_IMAGE_VMS_NO_VMI: {
 

@@ -718,7 +718,6 @@ void VMUMainWindow::_updateScene(void) {
 }
 
 bool VMUMainWindow::loadRom(QString filepath) {
-#if 1
     int prevFileCount = gyVmuFlashFileCount(_dev);
     VMUFlashDirEntry* dirEntry = nullptr;
     bool status = VmuQtUtils::loadVMUImage(_dev, filepath, &dirEntry, true);
@@ -764,71 +763,8 @@ bool VMUMainWindow::loadRom(QString filepath) {
             _updateStatusbar();
         }
 
-
     }
-#else
-    if(filepath.isEmpty()) return false;
-
-    QFileInfo info(filepath);
-    _romDir = info.absoluteDir().absolutePath();
-
-    //If loading a .VMI, we need to get the .VMS file too.
-    if(info.exists()) {
-        if(info.suffix() == "VMI" || info.suffix() == "vmi") {
-            VMIFileInfo vmiInfo;
-            if(gyVmuFlashLoadVMI(&vmiInfo, filepath.toStdString().c_str())) {
-                char buff[33];
-                QString fileName;
-                gyVmuVmiFileInfoResourceNameGet(&vmiInfo, buff);
-                fileName = QString(buff) + QString(".vms");
-                if(!info.absoluteDir().exists(fileName)) {
-                    fileName = QString(buff) + QString(".VMS");
-                    if(!info.absoluteDir().exists(fileName)) {
-                        fileName = "";
-                    }
-                }
-
-                if(!fileName.isEmpty()) {
-                    loadRom(info.absoluteDir().absoluteFilePath(fileName));
-                } else {
-                    QString newVMSPath = filepath.split(".")[0] + QString(".vms");
-                    if(QMessageBox::question(nullptr, "VMS Not found!",
-                                        QString("The specified VMI file references ")+QString(buff)+QString(".vms")+
-                                        QString(" which does not exist. Try loading ")+newVMSPath+QString(" instead?"))
-                            == QMessageBox::Yes) {
-                        return loadRom(newVMSPath);
-                    }
-                }
-
-            } else {
-
-            }
-        }
-    }
-
-    VMU_LOAD_IMAGE_STATUS status;
-    if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str(), &status)) {
-        if(_dev->lcdFile) {
-            _statusBarChanged = true;
-            _pushRecentRom(filepath);
-            _gyLog(GY_DEBUG_VERBOSE, "Playing LCD animation.");
-            resetCpu();
-            return true;
-        } else {
-            _vmsHeader = (VMSFileInfo*)&_dev->flash[VMU_FLASH_GAME_VMS_HEADER_OFFSET];
-
-            resetCpu();
-
-            _statusBarChanged = true;
-            _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
-            _running = true;
-            _pushRecentRom(filepath);
-            return true;
-        }
-    }
-    _gyLog(GY_DEBUG_ERROR, "Error Loading File! [%s]", info.absoluteFilePath().toStdString().c_str());
-    return false;
-#endif
+    return true;
 }
 
 void VMUMainWindow::resetCpu(void) {
