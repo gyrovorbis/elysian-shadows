@@ -7,6 +7,7 @@
 #include <QHeaderView>
 #include <QESTkUtils/tk_debug_log_stack.h>
 #include <libGyro/gyro_system_api.h>
+#include <ElysianVMU/gyro_elysian_vmu_flash.hpp>
 
 
 const VmuModelAddrSegmentUIProperties VmuCurrentRamAddressSpaceModel::_addrSegProperties[VMU_MODEL_ADDR_SEGMENT_COUNT] {
@@ -26,6 +27,17 @@ const VmuModelAddrSegmentUIProperties VmuCurrentRamAddressSpaceModel::_addrSegPr
     { "?",      Qt::white}
 #endif
 };
+
+namespace QESTkUtils {
+
+    uint8_t AddressSpaceModel::byteFromHexVariant(QVariant value) {
+       QString string = value.value<QString>();
+       string.truncate(2);
+       QByteArray byte = QByteArray::fromHex(string.toUtf8());
+       if(!byte.size()) return false;
+       return static_cast<uint8_t>(byte.data()[0]);
+    }
+}
 
 VmuAddressSpaceExplorerWidget::VmuAddressSpaceExplorerWidget(VMUDevice* dev, QWidget* parent):
     QTableView(parent)
@@ -138,7 +150,7 @@ QVariant AddressSpaceModel::data(const QModelIndex& index, int role) const {
             char byteData[16 + 1] =  { 0 };
 
             for(int b = 0; b < 16; ++b) {
-                char byte = readMemory(baseAddr + b).value<char>();//gyVmuMemRead(_dev, addr + b);
+                char byte = (char)readMemory(baseAddr + b);
                 byteData[b] = byte? byte : '.';
             }
 
@@ -150,7 +162,7 @@ QVariant AddressSpaceModel::data(const QModelIndex& index, int role) const {
 
             if(addr >= _baseAddress && addr < _baseAddress + _addressRange) {
 
-                int val = readMemory(modelIndexToAddress(index)).value<uint8_t>() & 0xff;
+                int  val = readMemory(modelIndexToAddress(index)) & 0xff;
                 sprintf(buff, "%02x", val);
                 return buff;
             } else {
@@ -172,18 +184,22 @@ bool AddressSpaceModel::setData(const QModelIndex& index, const QVariant& value,
     if(role == Qt::EditRole) {
         QString str = value.toString();
 
-        for(unsigned b = 0; b < 0xa; ++b) {
-            if(b >= str.size()) {
-                writeMemory(addr + b, '\0');
-            } else {
-                writeMemory(addr + b, QChar(str[b]));
+        switch(getColType(index)) {
+        case COL_TYPE_ASCII:
+            for(unsigned b = 0; b < 0x10; ++b) {
+                if(b >= str.size()) {
+                    writeMemory(addr + b, '\0');
+                } else {
+                    writeMemory(addr + b, QChar(str[b]).toLatin1());
+                }
             }
+            break;
+        case COL_TYPE_DATA:
+
+            uint8_t byte = byteFromHexVariant(value);
+            writeMemory(addr, byte);
         }
 
-
-
-    } else {
-        writeMemory(addr, value);
     }
 }
 
@@ -270,24 +286,12 @@ VMU_MODEL_ADDR_SEGMENT VmuCurrentRamAddressSpaceModel::getAddrSegment(VMUDevice*
 }
 
 
-QVariant VmuAddressSpaceModel::readMemory(uintptr_t addr) const {
-    return gyVmuMemRead(_dev, (int)addr);
+uint8_t VmuAddressSpaceModel::readMemory(uintptr_t addr) const {
+    return _dev.readMemoryByte(addr);
 }
 
-bool VmuAddressSpaceModel::writeMemory(uintptr_t addr, QVariant value) {
-#if 0
-    bool ok = false;
-    int integralValue = value.toInt(&ok);
-
-    if(!ok) {
-        _gyLog(GY_DEBUG_VERBOSE, "[VmuAddressSpaceModel::writeMemory(%u): Failed to set new model value, could not convert to an integer! [%s]",
-               addr,
-               Q_CSTR(value.toString()));
-        return false;
-    }
-#endif
-    gyVmuMemWrite(_dev, (int)addr, value.value<uint8_t>());
-    return true;
+bool VmuAddressSpaceModel::writeMemory(uintptr_t addr, uint8_t value) {
+    return _dev.writeMemoryByte(addr, value);
 }
 
 auto VmuAddressSpaceModel::modelData(uintptr_t addr) const -> const QESTkUtils::AddressModelData* {
@@ -314,19 +318,23 @@ auto VmuCurrentRamAddressSpaceModel::modelData(uintptr_t addr) const -> const QE
 }
 
 auto VmuFileSystemAddressSpaceModel::modelData(uintptr_t addr) const -> const QESTkUtils::AddressModelData* {
-    unsigned block = addr/VMU_FLASH_BLOCK_SIZE;
-    uint16_t* fatEntry = gyVmuFlashBlockFATEntry(_dev, block);
 
-    if(!fatEntry) return nullptr;
+    if(!_dev.isFlashFormatted()) return  nullptr;
+
+    unsigned block = addr/VMU_FLASH_BLOCK_SIZE;
+    uint16_t fatEntry = _dev.getFatEntry(block);
 
     static auto addrData = QESTkUtils::AddressModelData {
         Qt::white,
         QString("")
     };
 
-    switch(*fatEntry) {
+    switch(fatEntry) {
     case VMU_FLASH_BLOCK_FAT_UNALLOCATED:
         addrData.bgColor = QColor(0xe6e6fa);
+        break;
+    case VMU_FLASH_BLOCK_FAT_DAMAGED:
+        addrData.bgColor = QColor(Qt::red);
         break;
     default:
         addrData.bgColor = QColor(0xffe4e1);
@@ -342,27 +350,12 @@ VmuFileSystemAddressSpaceModel::VmuFileSystemAddressSpaceModel(void):
     VmuAddressSpaceModel(nullptr, 0, FLASH_SIZE) {}
 
 
-QVariant VmuFileSystemAddressSpaceModel::readMemory(uintptr_t addr) const {
-    uint8_t* flashPtr = _addressToFlashPointer(addr);
-    return flashPtr? QVariant(*flashPtr) : QVariant();
+uint8_t VmuFileSystemAddressSpaceModel::readMemory(uintptr_t addr) const {
+    return _dev.readFlashByte(addr);
 }
 
-uint8_t* VmuFileSystemAddressSpaceModel::_addressToFlashPointer(uintptr_t addr) const {
-    int block = addr / VMU_FLASH_BLOCK_SIZE;
-    int offset = addr % VMU_FLASH_BLOCK_SIZE;
 
-    uint8_t* data = gyVmuFlashBlock(_dev, block);
-    return data? &data[offset] : nullptr;
-}
-
-bool VmuFileSystemAddressSpaceModel::writeMemory(uintptr_t addr, QVariant value) {
-    uint8_t* flashPtr = _addressToFlashPointer(addr);
-    if(!flashPtr) {
-        return false;
-    } else {
-        *flashPtr = value.value<uint8_t>();
-        return true;
-    }
-
+bool VmuFileSystemAddressSpaceModel::writeMemory(uintptr_t addr, uint8_t value) {
+    return _dev.writeFlashByte(addr, value);
 }
 

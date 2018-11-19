@@ -6,6 +6,7 @@
 #include <QVector>
 #include <stdint.h>
 #include <libGyro/gyro_system_api.h>
+#include <ElysianVMU/gyro_elysian_vmu_device.hpp>
 #include <functional>
 
 #define VMU_FB_DEFAULT_WIDTH            48
@@ -108,8 +109,6 @@ protected Q_SLOTS:
     void on_actionReset_triggered(void);
     void on_actionScreenshot_triggered(void);
     void on_actionEmulate_Audio_toggled(bool arg1);
-    void on_actionDump_Icons_triggered(void);
-    void on_actionDump_Eyecatch_triggered(void);
     void on_actionTCP_Connection_Manager_triggered(void);
     void on_actionQuick_Connect_triggered(void);
     void on_actionEnable_Low_Battery_toggled(bool arg1);
@@ -155,9 +154,7 @@ private:
     void                _updateLcdAnimStatusMessage(void);
     void                _resizeWindowFromScreenZoom(int level);
 
-    bool                _loadIcons(void);
     void                _updateIcon(void);
-    void                _freeIcons(void);
     void                _addAnimFrame(const QPixmap& pixmap);
 
     void                _setupAboutMsgBox(void);
@@ -178,9 +175,6 @@ private:
     QPixmap             _iconRecording;
     QPixmap             _pendingAnimFrame;
     QTimer              _updateTimer;
-    QVector<QImage>     _iconImages;
-    QVector<QPixmap>    _iconPixmaps;
-    QImage              _eyecatchImage;
     VmuFileSystemUtilizationBar*
                         _fileSystemBar      = nullptr;
     QESTkUtils::HelpDockWidget*
@@ -204,11 +198,8 @@ private:
     QLabel*             _remoteLabel        = nullptr;
     QMenu*              _loadGameMenu       = nullptr;
     QMenu*              _saveGameMenu       = nullptr;
-    QGraphicsPixmapItem*    _pixmapItem     = nullptr;
-    const VMSFileInfo*        _vmsHeader          = nullptr;
-    uint16_t**          _iconsData          = nullptr;
-    uint16_t*           _eyecatchData       = nullptr;
-    VMUDevice*          _dev                = nullptr;
+    QGraphicsPixmapItem* _pixmapItem        = nullptr;
+    EVmuDevice          _dev;
     QGifImage*          _animGif            = nullptr;
     int64_t             _prevAnimFrameTicks = 0;
     int64_t             _prevTicks          = 0;

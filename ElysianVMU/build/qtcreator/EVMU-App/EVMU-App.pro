@@ -93,7 +93,9 @@ SOURCES += \
     ../../../app/qt/source/jet_set_radio_graffiti_tool.cpp \
     ../../../app/qt/source/gyro_vmu_filesystem_model.cpp \
     ../../../app/qt/source/gyro_vmu_qt_util.cpp \
-    ../../../app/qt/source/gyro_vmu_filesystem_utilization_bar.cpp
+    ../../../app/qt/source/gyro_vmu_filesystem_utilization_bar.cpp \
+    ../../../app/qt/source/gyro_elysian_vmu_device.cpp \
+    ../../../app/qt/source/gyro_elysian_vmu_flash.cpp
 
 !vmu_child_app {
     SOURCES += ../../../app/qt/source/main.cpp
@@ -123,7 +125,9 @@ HEADERS += \
     ../../../app/qt/include/ElysianVMU/jet_set_radio_graffiti_tool.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_model.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_qt_util.hpp \
-    ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_device.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_flash.hpp
 
 !raspberrypi {
 

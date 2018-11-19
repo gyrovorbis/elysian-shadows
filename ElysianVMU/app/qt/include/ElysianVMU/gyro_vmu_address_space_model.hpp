@@ -3,10 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QTableView>
-
-struct VMUDevice;
-
-
+#include <ElysianVMU/gyro_elysian_vmu_device.hpp>
 
 #define ADDRESS_SPACE_MODEL_BYTES_PER_ROW       2
 #define ADDRESS_SPACE_MODEL_HEADER_COL_COUNT    0
@@ -84,11 +81,12 @@ public:
 
     COL_TYPE            getColType(const QModelIndex& index) const;
     COL_TYPE            getColType(int col) const;
+    static uint8_t      byteFromHexVariant(QVariant value);
 
     //Minimal requirements to power the back-end of the model
     virtual uintptr_t   modelIndexToAddress(const QModelIndex& index) const         = 0;
-    virtual QVariant    readMemory(uintptr_t addr) const                            = 0;
-    virtual bool        writeMemory(uintptr_t addr, QVariant value)                 = 0;
+    virtual uint8_t     readMemory(uintptr_t addr) const                            = 0;
+    virtual bool        writeMemory(uintptr_t addr, uint8_t byte)                 = 0;
     virtual auto        modelData(uintptr_t addr) const -> const AddressModelData*  = 0;
 
     //Overridden from QAbstractTableModel
@@ -110,7 +108,7 @@ public:
 
 class VmuAddressSpaceModel: public QESTkUtils::AddressSpaceModel {
 protected:
-    struct VMUDevice*    _dev            = nullptr;
+    EVmuDevice          _dev;
 public:
 
                         VmuAddressSpaceModel(VMUDevice* dev, uintptr_t baseAddress, uintptr_t addressRange, QObject* parent=nullptr);
@@ -119,8 +117,8 @@ public:
 
     //Base, generic implementation using RAM address space
     virtual uintptr_t   modelIndexToAddress(const QModelIndex& index) const override;
-    virtual QVariant    readMemory(uintptr_t addr) const override;
-    virtual bool        writeMemory(uintptr_t addr, QVariant value) override;
+    virtual uint8_t     readMemory(uintptr_t addr) const override;
+    virtual bool        writeMemory(uintptr_t addr, uint8_t byte) override;
     virtual auto        modelData(uintptr_t addr) const -> const QESTkUtils::AddressModelData* override;
 };
 
@@ -147,9 +145,8 @@ public:
 class VmuFileSystemAddressSpaceModel: public VmuAddressSpaceModel {
 private:
 
-    uint8_t*            _addressToFlashPointer(uintptr_t addr) const;
-    virtual QVariant    readMemory(uintptr_t addr) const override;
-    virtual bool        writeMemory(uintptr_t addr, QVariant value) override;
+    virtual uint8_t     readMemory(uintptr_t addr) const override;
+    virtual bool        writeMemory(uintptr_t addr, uint8_t byte) override;
 public:
                         VmuFileSystemAddressSpaceModel(void);
     virtual             ~VmuFileSystemAddressSpaceModel(void) override = default;

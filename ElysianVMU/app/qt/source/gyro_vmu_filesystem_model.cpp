@@ -52,214 +52,172 @@ int VmuFileSystemTableModel::columnCount(const QModelIndex& parent) const {
 QVariant VmuFileSystemTableModel::data(const QModelIndex& index, int role) const {
     int row = index.row();
 
-    const VMUFlashDirEntry* dirEntry = gyVmuFlashFileAtIndex(_dev, row);
+    auto dirEntry   = _dev.getFileFlashDirEntry(row);
     if(!dirEntry) return QVariant();
-    const VMSFileInfo* vmsHeader = gyVmuFlashDirEntryVmsHeader(_dev, dirEntry);
-    if(!vmsHeader) return QVariant();
+
+    auto vmsHeader  = dirEntry.getVmsHeader();
+    auto iconData   = dirEntry.getIconDataFileInfo();
+    auto extraBgPvr = dirEntry.isExtraBgPvr();
+    //if(!vmsHeader) return QVariant(); IconData has no VMS header!!!
 
     if(role == Qt::DisplayRole) {
         switch(index.column()) {
-        case COL_NAME: {
-            if(gyVmuFlashIsIconDataVms(dirEntry)) {
-                return VMU_ICONDATA_VMS_FILE_NAME;
-            } else {
-                char buffer[VMU_FLASH_DIRECTORY_FILE_NAME_SIZE+1];
-                gyVmuFlashDirEntryName(dirEntry, buffer);
-                return VmuQtUtils::japCodec->toUnicode(buffer);
-            }
-        }
-        case COL_VM_DESC: {
-            char buffer[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-            gyVmuVmsHeaderVmuDescGet(vmsHeader, buffer);
-            return VmuQtUtils::japCodec->toUnicode(buffer);
-        }
-        case COL_DC_DESC: {
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                char buffer[VMU_VMS_FILE_INFO_DC_DESC_SIZE+1];
-                gyVmuVmsHeaderDcDescGet(vmsHeader, buffer);
-                return VmuQtUtils::japCodec->toUnicode(buffer);
-            } else return QString("-");
-        }
-        case COL_APP: {
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                char buffer[VMU_VMS_FILE_INFO_CREATOR_APP_SIZE];
-                gyVmuVmsHeaderCreatorAppGet(vmsHeader, buffer);
-                return VmuQtUtils::japCodec->toUnicode(buffer);
-            } else return QString("-");
-        }
+        case COL_NAME:
+            if(iconData) return VMU_ICONDATA_VMS_FILE_NAME;
+            else return dirEntry.getFileName();
+
+        case COL_VM_DESC:
+            return iconData? iconData.getVmuDescription() :
+                             vmsHeader.getVmuDescription();
+
+        case COL_DC_DESC:
+            if(!iconData) return vmsHeader.getVmuDescription();
+            else return QString("-");
+
+        case COL_APP:
+            if(!iconData) return vmsHeader.getCreatorApp();
+            else return QString("-");
+
         case COL_BLOCKS:
-            return dirEntry? dirEntry->fileSize : 0;
+            return dirEntry.getFileSizeBlocks();
+
         case COL_FILE_TYPE:
-            if(!dirEntry) return "?";
-            if(gyVmuFlashIsIconDataVms(dirEntry)) {
-                return "ICONDATA";
-            } else {
-                switch(dirEntry->fileType) {
-                case VMU_FLASH_FILE_TYPE_DATA: return "DATA";
-                case VMU_FLASH_FILE_TYPE_GAME: return "GAME";
-                case VMU_FLASH_FILE_TYPE_NONE: return "NONE";
-                default:                       return "INVALID";
-                }
-            }
-        case COL_CREATED: {//Mouse-over to give entire, full-detail (Century, day of week, second)
-            if(!dirEntry) return "?";
-            return QString("%1/%2/%3 %4:%5").
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_MONTH])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_DAY])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_YEAR])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_HOUR])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_MINUTE]));
-            }
+            if(iconData)  return "ICONDATA";
+            else return dirEntry.getFileTypeStr();
+
+        case COL_CREATED: //Mouse-over to give entire, full-detail (Century, day of week, second)
+            return dirEntry.getCreationDateStr();
+
         case COL_CRC:
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                return vmsHeader? vmsHeader->crc : 0;
-            } else return QString("-");
+            if(!iconData) return vmsHeader.getCrc();
+            else return QString("-");
+
         case COL_COPY:
-            return dirEntry? dirEntry->copyProtection? "No" : "Yes" : "?";
+             return dirEntry.isCopyProtected()? "No" : "Yes";
+
         case COL_DIR_ENTRY:
-            return dirEntry? gyVmuFlashDirEntryIndex(_dev, dirEntry) : 0;
+            return dirEntry.getFileIndex();
+
         case COL_FIRST_BLOCK:
-            return dirEntry? dirEntry->firstBlock : 0;
+            return dirEntry.getFirstBlock();
+
         case COL_COUNT:
         default: return QVariant("");
         }
+
     } else if(role == Qt::DecorationRole) {
+
         switch(index.column()) {
         case COL_NAME:
-             if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                return VmuAnimatedIconCache::getIcon(_dev, dirEntry);
-             } else {
-                 auto* iconData = VmuQtUtils::getIconDataBank().getEntry(_dev, dirEntry);
-                 return iconData->dcIcon;
-             }
-        case COL_IMAGE: {
-            if(gyVmuFlashIsIconDataVms(dirEntry)) {
-                auto* iconData = VmuQtUtils::getIconDataBank().getEntry(_dev, dirEntry);
-                return iconData->vmuIcon;
-            } else if(gyVmuFlashIsExtraBgPvr(dirEntry)) {
-                auto* bgEntry = VmuQtUtils::getExtraBgPvrBank().getEntry(_dev, dirEntry);
-                return bgEntry->image;
-            } else {
-                return VmuEyecatchCache::getIcon(_dev, dirEntry);
-            }
-        }
+             if(iconData) return _dev.getVolumeDcIcon();
+             else return dirEntry.getFileIcon();
+
+        case COL_IMAGE:
+            if(iconData) return _dev.getVolumeVmuIcon();
+            else if(extraBgPvr) return _dev.getExtraBgPvrTexture();
+            else if(dirEntry.isPsoImg()) return dirEntry.getPsoImgBankEntry()->image;
+            else return dirEntry.getEyeCatch();
+
         default:
             return QVariant();
         }
+
     } else if(role == Qt::ToolTipRole) {
+
         switch(index.column()) {
-        case COL_NAME: {
-            if(gyVmuFlashIsIconDataVms(dirEntry)) {
-                return VMU_ICONDATA_VMS_FILE_NAME;
-            } else {
-                char buffer[VMU_FLASH_DIRECTORY_FILE_NAME_SIZE+1];
-                gyVmuFlashDirEntryName(dirEntry, buffer);
-                return VmuQtUtils::japCodec->toUnicode(buffer);
-            }
-        }
-        case COL_VM_DESC: {
-            char buffer[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-            gyVmuVmsHeaderVmuDescGet(vmsHeader, buffer);
-            return VmuQtUtils::japCodec->toUnicode(buffer);
-        }
-        case COL_DC_DESC: {
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                char buffer[VMU_VMS_FILE_INFO_DC_DESC_SIZE+1];
-                gyVmuVmsHeaderDcDescGet(vmsHeader, buffer);
-                return VmuQtUtils::japCodec->toUnicode(buffer);
-            } else return QString("ICONDATA.VMS has no DC description.");
-        }
-        case COL_APP: {
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                char buffer[VMU_VMS_FILE_INFO_CREATOR_APP_SIZE];
-                gyVmuVmsHeaderCreatorAppGet(vmsHeader, buffer);
-                return VmuQtUtils::japCodec->toUnicode(buffer);
-            } else return QString("ICONDATA.VMS has no application field.");
-        }
+        case COL_NAME:
+            return iconData? VMU_ICONDATA_VMS_FILE_NAME :
+                             dirEntry.getFileName();
+        case COL_VM_DESC:
+            return iconData? iconData.getVmuDescription() :
+                             vmsHeader.getVmuDescription();
+        case COL_DC_DESC:
+            if(!iconData) return vmsHeader.getVmuDescription();
+            else return QString("ICONDATA.VMS has no DC description.");
+
+        case COL_APP:
+
+            if(!iconData) return vmsHeader.getCreatorApp();
+            else return QString("ICONDATA.VMS has no application field.");
+
         case COL_BLOCKS:
-            return QString("%1 Byte(s)").arg(dirEntry? dirEntry->fileSize * VMU_FLASH_BLOCK_SIZE : 0);
+            return QString("%1 Byte(s)").arg(dirEntry.getFileSizeBytes());
+
         case COL_FILE_TYPE:
-            if(!dirEntry) return "?";
-            if(gyVmuFlashIsIconDataVms(dirEntry)) {
-                return "Custom VMU Icon (Hidden File)";
-            } else {
-                switch(dirEntry->fileType) {
-                case VMU_FLASH_FILE_TYPE_DATA: return "Save Data File";
-                case VMU_FLASH_FILE_TYPE_GAME: return "Game Data File";
-                case VMU_FLASH_FILE_TYPE_NONE: return "Not a File";
-                default:                       return "Invalid File Type";
-                }
-            }
-        case COL_CREATED: {//Mouse-over to give entire, full-detail (Century, day of week, second)
-            if(!dirEntry) return "?";
-            return QString("%1/%2/%3 %4:%5").
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_MONTH])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_DAY])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_YEAR])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_HOUR])).
-                    arg(gyVmuFromBCD(dirEntry->timeStamp[VMU_FLASH_DIRECTORY_DATE_MINUTE]));
-            }
+            if(iconData) return "Custom VMU Icon (Hidden File)";
+            else return dirEntry.getFileTypeStr();
+
+        case COL_CREATED: //Mouse-over to give entire, full-detail (Century, day of week, second)
+            return dirEntry.getCreationDateStr() + QString(" (") + dirEntry.getCreationDayOfWeekStr() + QString(")");
+
         case COL_CRC:
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                if(vmsHeader) {
-                    if(dirEntry->fileType == VMU_FLASH_FILE_TYPE_GAME) {
-                        return QString("GAME files don't require a CRC.");
-                    } else {
-                        if(gyVmuFlashFileCalculateCRC(_dev, dirEntry) == vmsHeader->crc) {
-                            return QString("CRC is valid.");
-                        } else return QString("CRC is incorrect and must be fixed!");
-                    }
+            if(!iconData) {
+                if(dirEntry.getFileType() == VMU_FLASH_FILE_TYPE_GAME) {
+                    return QString("GAME files don't require a CRC.");
+                } else {
+                    if(dirEntry.calculateCrc() == vmsHeader.getCrc()) {
+                        return QString("CRC is valid.");
+                    } else return QString("CRC is incorrect and must be fixed!");
                 }
             } else return QString("ICONDATA.VMS does not have a CRC field.");
         case COL_COPY:
-            return dirEntry? dirEntry->copyProtection? "File cannot be copied on VMU+DC" : "File can be copied on DC+VMU." : "?";
+            return dirEntry.isCopyProtected()? "File cannot be copied on VMU+DC" :
+                                               "File can be copied on DC+VMU.";
         case COL_DIR_ENTRY:
-            return dirEntry? gyVmuFlashDirEntryIndex(_dev, dirEntry) : 0;
+            return dirEntry.getFileIndex();
+
         case COL_FIRST_BLOCK:
-            return dirEntry? dirEntry->firstBlock : 0;
-        case COL_IMAGE: {
-            if(gyVmuFlashIsIconDataVms(dirEntry)) {
-                auto* iconData = VmuQtUtils::getIconDataBank().getEntry(_dev, dirEntry);
+            return dirEntry.getFirstBlock();
 
-                if(!iconData->vmuIcon.isNull()) return QString("Custom Monochrome VMU Icon");
+        case COL_IMAGE:
+            if(iconData) {
+                if(_dev.getVolumeVmuIcon().isNull()) return QString("Custom Monochrome VMU Icon");
                 else return QString("No Monochrome VMU Icon found!");
-
-            } else if(gyVmuFlashIsExtraBgPvr(dirEntry)) {
-                auto* bgEntry = VmuQtUtils::getExtraBgPvrBank().getEntry(_dev, dirEntry);
-
-                if(!bgEntry->image.isNull()) return QString("Extra Dreamcast BIOS Background PVR Texture");
+            } else if(extraBgPvr) {
+                if(_dev.getExtraBgPvrTexture().isNull()) return QString("Extra Dreamcast BIOS Background PVR Texture");
                 else return QString("No Dreamcast PVR Texture for Extra Bios Background!");
+            } else if(dirEntry.isPsoImg()) {
+                auto* entry = dirEntry.getPsoImgBankEntry();
+                if(entry) {
+                    QString str("PSO Screenshot with");
+                    int count = 0;
+                    for(auto& it : entry->characterNames) {
+                        if(count++) {
+                            str += QString(",");
+                        }
+                        str += QString(" ") + it;
+                    }
+                    return str;
+                }
             } else {
-                QPixmap eyecatch = VmuEyecatchCache::getIcon(_dev, dirEntry);
-                if(eyecatch.isNull()) return QString("No Extra Eyecatch Image");
+                if(dirEntry.getEyeCatch().isNull()) return QString("No Extra Eyecatch Image");
                 else return QString("Additional Eyecatch Image");
             }
-        }
+
         case COL_COUNT:
         default: return QVariant("");
         }
+
     } else if(role == Qt::ForegroundRole) {
+
         switch(index.column()) {
-        case COL_DC_DESC: {
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                return QColor(Qt::black);
-            } else return QColor(Qt::gray);
-        }
-        case COL_APP: {
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                return QColor(Qt::black);
-            } else return QColor(Qt::gray);
-        }
+        case COL_DC_DESC:
+            if(!iconData)  return QColor(Qt::black);
+            else return QColor(Qt::gray);
+
+        case COL_APP:
+            if(!iconData) return QColor(Qt::black);
+            else return QColor(Qt::gray);
+
         case COL_FILE_TYPE:
-            if(!gyVmuFlashIsIconDataVms(dirEntry)) {
-                return QColor(Qt::black);
-            } else return QColor(Qt::gray);
+            if(!iconData) return QColor(Qt::black);
+            else return QColor(Qt::gray);
+
         case COL_CRC:
-            if(gyVmuFlashIsIconDataVms(dirEntry)) return QColor(Qt::gray);
-            else if(dirEntry->fileType == VMU_FLASH_FILE_TYPE_GAME) return QColor(Qt::black);
-            else if(gyVmuFlashFileCalculateCRC(_dev, dirEntry) == vmsHeader->crc) {
-                return QColor(Qt::darkGreen);
-            } else return QColor(Qt::red);
+            if(iconData) return QColor(Qt::gray);
+            else if(dirEntry.getFileType() == VMU_FLASH_FILE_TYPE_GAME) return QColor(Qt::black);
+            else if(dirEntry.calculateCrc() == vmsHeader.getCrc()) return QColor(Qt::darkGreen);
+            else return QColor(Qt::red);
 
         default: break;
         }
@@ -315,7 +273,7 @@ QVariant VmuFileSystemTableModel::headerData(int section, Qt::Orientation orient
 void VmuFileSystemTableModel::_updateIcons() {
     if(!_dev) return;
 
-    int fileCount = gyVmuFlashFileCount(_dev);
+    unsigned fileCount = _dev.getFlashFileCount();
     if(_rowCount != fileCount) {
         if(_rowCount > fileCount) {
             removeRows(rowCount()-1, _rowCount-fileCount, QModelIndex());
@@ -441,16 +399,16 @@ bool VmuFileSystemTableModel::insertRows(int row, int count, const QModelIndex &
 bool VmuFileSystemTableModel::removeRows(int row, int count, const QModelIndex &parent) {
     bool success = true;
 
-    std::vector<VMUFlashDirEntry*> entries;
+    std::vector<EVmuFlashDirEntry> entries;
     for(int r = 0; r < count; ++r) {
-        entries.push_back(gyVmuFlashFileAtIndex(_dev, row-r));
+        entries.push_back(_dev.getFileFlashDirEntry(row-r));
     }
 
     for(int i = 0; i < entries.size(); ++i) {
-        auto* entry = entries[i];
+        auto& entry = entries[i];
         beginRemoveRows(parent, row-i, row-i);
         if(entry) {
-            success &= gyVmuFlashFileDelete(_dev, entry);
+            success &= entry.deleteFile();
         }
         --_rowCount;
         endRemoveRows();
@@ -466,14 +424,12 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
     QESTkUtils::MenuStack stack("Flash Entry");
 
     VmuFileSystemTableModel*    fsModel     = static_cast<VmuFileSystemTableModel*>(model());
-    VMUDevice*                  dev         = fsModel->getDevice();
+    EVmuDevice                  dev         = fsModel->getDevice();
     int                         row         = index.row();
-    const VMUFlashDirEntry*     dirEntry    = gyVmuFlashFileAtIndex(dev, row);
-    VMSFileInfo*                vmsHeader   = gyVmuFlashDirEntryVmsHeader(dev, dirEntry);
-    const IconDataFileInfo*     icnData     = nullptr;
-    VmuExtraBgPvrFileInfo       pvrInfo     = {
-        nullptr, nullptr
-    };
+    auto                        dirEntry    = dev.getFileFlashDirEntry(row);
+    auto                        vmsHeader   = dirEntry.getVmsHeader();
+    auto                        icnData     = dirEntry.getIconDataFileInfo();
+    bool                        pvrInfo     = dirEntry.isExtraBgPvr();
 
     stack.push("Export File");
 
@@ -561,18 +517,34 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
             }
 
         });
+
+    if(dirEntry.getFileType() == VMU_FLASH_FILE_TYPE_DATA) {
+        stack.insertAction("Raw",
+            [=](bool) {
+
+                if(index.isValid()) {
+                    QString filter = QString("Binary File (*.bin)");
+                    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                                "Choose Location to export raw binary",
+                                                                VmuQtUtils::getRomDir(),
+                                                                filter,
+                                                                &filter);
+
+                    if(path.isEmpty()) return;
+
+                    if(!gyVmuFlashExportRaw(dev, dirEntry, Q_CSTR(path))) {
+                        QMessageBox::critical(nullptr, "Export Failed", "Failed to export the selected item to a raw binary file!");
+                    }
+                }
+
+            });
+    }
+
     stack.pop();
 
     stack.push("Export Graphics");
-    bool isIconData = gyVmuFlashIsIconDataVms(dirEntry);
-    bool isExtraBgPvr = false;
-    if(isIconData) {
-        icnData = reinterpret_cast<const IconDataFileInfo*>(vmsHeader);
-    } else if((isExtraBgPvr = gyVmuFlashIsExtraBgPvr(dirEntry))) {
-        gyVmuExtraBgPvrFileInfo(vmsHeader, &pvrInfo);
-    }
 
-    if(isIconData) {
+    if(icnData) {
 
         stack.insertAction("Custom VMU LCD Icon",
             [=](bool) {
@@ -589,7 +561,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
                     entry->exportVmuIcon(path);
                 }
 
-            }, icnData->vmuIconOffset != 0);
+            }, icnData.getVmuIconData() != 0);
 
         stack.insertAction("Custom Volume Icon",
             [=](bool) {
@@ -606,27 +578,44 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
                     entry->exportDcIcon(path);
                 }
 
-            }, icnData->dcIconOffset != 0);
+            }, icnData.getDcIconOffset());
 
-
-    } else if(isExtraBgPvr) {
-        stack.insertAction("Custom BIOS BG Texture",
-            [=](bool) {
-                QString defaultSelected = "Portable Network Graphics Format(*.png)";
-                QString path = QFileDialog::getSaveFileName(nullptr,
-                                                            "Choose Location to export image",
-                                                            VmuQtUtils::getRomDir(),
-                                                            VmuQtUtils::getDefaultImageTypeFilter(),
-                                                            &defaultSelected);
-                if(path.isEmpty()) return;
-
-                auto* entry = VmuQtUtils::getExtraBgPvrBank().getEntry(dev, dirEntry);
-                if(entry) {
-                    entry->exportImage(path);
-                }
-            });
 
     } else {
+        if(pvrInfo) {
+            stack.insertAction("Custom BIOS BG Texture",
+                [=](bool) {
+                    QString defaultSelected = "Portable Network Graphics Format(*.png)";
+                    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                                "Choose Location to export image",
+                                                                VmuQtUtils::getRomDir(),
+                                                                VmuQtUtils::getDefaultImageTypeFilter(),
+                                                                &defaultSelected);
+                    if(path.isEmpty()) return;
+
+                    auto* entry = VmuQtUtils::getExtraBgPvrBank().getEntry(dev, dirEntry);
+                    if(entry) {
+                        entry->exportImage(path);
+                    }
+                });
+
+        } else if(dirEntry.isPsoImg()) {
+            stack.insertAction("PSO Screenshot",
+                [=](bool) {
+                    QString defaultSelected = "Portable Network Graphics Format(*.png)";
+                    QString path = QFileDialog::getSaveFileName(nullptr,
+                                                                "Choose Location to export image",
+                                                                VmuQtUtils::getRomDir(),
+                                                                VmuQtUtils::getDefaultImageTypeFilter(),
+                                                                &defaultSelected);
+                    if(path.isEmpty()) return;
+
+                    auto* entry = dirEntry.getPsoImgBankEntry();
+                    if(entry) {
+                        entry->exportImage(path);
+                    }
+                });
+        }
 
         stack.insertAction("Icon(s)",
             [=](bool) {
@@ -639,7 +628,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
                 if(path.isEmpty()) return;
 
                 VmuAnimatedIconCache::exportAsGIF(dirEntry, path);
-            }, vmsHeader->iconCount != 0);
+            }, vmsHeader.getIconCount() != 0);
 
         stack.insertAction("Eyecatch",
             [=](bool) {
@@ -654,7 +643,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
                 VmuEyecatchCache::exportAsPNG(dirEntry, path);
 
 
-            }, vmsHeader->eyecatchType != VMS_EYECATCH_NONE);
+            }, vmsHeader.hasEyeCatch());
 
 
 
@@ -662,11 +651,11 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
 
     stack.pop();
 
-    if(isIconData) {
-        bool biosSecretUnlocked = gyVmuIconDataSecretBiosUnlocked(icnData);
+    if(icnData) {
+        bool biosSecretUnlocked = icnData.isSecretBiosUnlocked();
         stack.insertAction(biosSecretUnlocked? "Disable Secret BIOS" : "Unlock Secret BIOS",
             [=](bool) {
-                gyVmuIconDataSecretBiosSetUnlocked(icnData, !biosSecretUnlocked);
+                icnData.setSecretBiosUnlocked(!biosSecretUnlocked);
             });
     }
 
@@ -675,12 +664,17 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
     stack.insertAction("Fix CRC",
         [=](bool) {
             if(index.isValid()) {
-                uint16_t crc = gyVmuFlashFileCalculateCRC(dev, dirEntry);
-                if(vmsHeader) {
-                    vmsHeader->crc = crc;
-                }
+               dirEntry.fixCrc();
             }
-        }, vmsHeader && !isIconData);
+        }, !icnData);
+
+    stack.insertAction(dirEntry.isCopyProtected()? "Disable Copy Protection" : "Enable Copy Protection",
+        [=](bool) {
+            if(index.isValid()) {
+               dirEntry.setCopyProtected(!dirEntry.isCopyProtected());
+            }
+        });
+
     stack.insertSeparator();
 
     stack.insertAction("Delete",

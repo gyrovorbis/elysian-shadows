@@ -8,7 +8,9 @@
 #include <evmu-core/gyro_vmu_vmi.h>
 #include <evmu-core/gyro_vmu_icondata.h>
 #include <evmu-core/gyro_vmu_extra_bg_pvr.h>
+#include <evmu-core/gyro_vmu_pso_img.h>
 #include <QESTkUtils/tk_debug_log_stack.h>
+#include <ElysianVMU/gyro_elysian_vmu_flash.hpp>
 #include <libGyro/gyro_system_api.h>
 #include <QDebug>
 #include <QFileInfo>
@@ -22,6 +24,7 @@ QStringList             VmuQtUtils::_supportedFileExtensions;
 QString                 VmuQtUtils::_romDir;
 VmuIconDataImageBank    VmuQtUtils::_iconDataBank;
 VmuExtraBgPvrBank       VmuQtUtils::_extraBgPvrBank;
+VmuPsoImgBank           VmuQtUtils::_psoImgBank;
 QString                 VmuQtUtils::_defaultImageTypeFilter = "Portable Network Graphics Format(*.png)"; //;;Jpeg Images (*.jpg);;GIF Images (*.gif);;Bitmap Images (*.bmp);;PPM Images (*.ppm)";
 
 bool VmuQtUtils::initialize(void) {
@@ -210,6 +213,95 @@ bool VmuEyecatchCache::exportAsPNG(const VMUFlashDirEntry* dirEntry, QString fil
 
 }
 
+QImage VmuPsoImgBank::createPsoImgImage(const EVmuFlashDirEntry& flashEntry, QStringList& charNameList) {
+    auto vms = flashEntry.getVmsHeader();
+    uint8_t* data = new uint8_t[flashEntry.getFileSizeBlocks() * VMU_FLASH_BLOCK_SIZE];
+
+    _gyLog(GY_DEBUG_VERBOSE, "Decoding PSO__IMG to Create Entry");
+    _gyPush();
+
+    if(!flashEntry.readFile(data)) {
+        _gyLog(GY_DEBUG_ERROR, "Could not read PSO file to extract the screenshot image!");
+        _gyPop(1);
+        return QImage();
+    }
+
+    uint16_t* imgData = (uint16_t*)&data[vms.getHeaderSize()];
+    uint16_t width = imgData[0];
+    uint16_t height = imgData[1];
+    imgData += 2;
+    _gyLog(GY_DEBUG_VERBOSE, "Image Dimensions: <%u, %u>", width, height);
+
+    //Going from a 16bpp DC format to a 24bpp Qt format
+    uint8_t* img = (uint8_t*)malloc(3 * 256 * 192);
+    memset(img, 0, 3 * 256 * 192);
+
+    unsigned srcBytesPerPixel = 2;
+    unsigned dstBytesPerPixel = 3;
+
+    for(int y = 0; y < 192; ++y) {
+        for(int x = 0; x < 256; ++x) {
+            //determine indices
+            int pixelNumber = y * 256 + x;
+            int srcIndex    = pixelNumber * srcBytesPerPixel;
+            int dstIndex    = pixelNumber * dstBytesPerPixel;
+
+            //read source data
+            uint16_t srcColor = imgData[pixelNumber];
+
+            //extract relevant bits
+            uint32_t srcBitMask = 0;
+            for(int i = 0; i < srcBytesPerPixel * 8 && srcBytesPerPixel <= 4; ++i) {
+                srcBitMask |= 0x1 << i;
+            }
+            srcColor &= srcBitMask;
+
+            //Convert source color to destination color
+            //uint32_t dstColor = srcColor;
+
+            //Write destination color
+            img[dstIndex]   = ((srcColor>>11) & 0x1f) << 0x3;
+            img[dstIndex+1] = ((srcColor>>5)  & 0x3f) << 0x2;
+            img[dstIndex+2] = ((srcColor)     & 0x1f) << 0x3;
+            //*(uint32_t*)&img[dstIndex] |= dstColor;
+
+        }
+    }
+
+    _gyLog(GY_DEBUG_VERBOSE, "End offset: %x", 256 * 192 * 2 + 4);
+
+    QImage image(img,
+               256,
+               192,
+               QImage::Format_RGB888,
+               [](void* data) {
+                    free(data); //free the ElysianVMU image data when we're done with it.
+                });
+
+    _gyLog(GY_DEBUG_VERBOSE, "Extracting Character Names");
+    _gyPush();
+
+    size_t charOffset = VMU_PSO_IMG_CHAR_NAME_OFFSET + vms.getHeaderSize();
+    for(unsigned i = 0; i < 4; ++i) {
+        size_t curOffset = charOffset + i*VMU_PSO_IMG_CHAR_NAME_SIZE;
+        char charNameBuff[VMU_PSO_IMG_CHAR_NAME_SIZE + 1] = { '\0' };
+        char* charName = (char*)&data[curOffset];
+        memcpy(charNameBuff, charName, VMU_PSO_IMG_CHAR_NAME_SIZE);
+        QString qStrName(charNameBuff);
+        if(!qStrName.isEmpty()) {
+            _gyLog(GY_DEBUG_VERBOSE, "Character[%u] = %s", i, Q_CSTR(qStrName));
+            charNameList.push_back(qStrName);
+        }
+    }
+
+    _gyPop(2);
+
+    delete[] data;
+    return image;
+
+}
+
+
 bool VmuQtUtils::loadVMUImage(VMUDevice* dev,
                               QString filepath,
                               VMUFlashDirEntry** entry,
@@ -224,6 +316,15 @@ bool VmuQtUtils::loadVMUImage(VMUDevice* dev,
     VMU_LOAD_IMAGE_STATUS stats;
     auto* dirEntry = gyVmuFlashLoadImage(dev, Q_CSTR(filepath), &stats);
     if(entry) *entry = dirEntry;
+
+    if(stats == VMU_LOAD_IMAGE_SUCCESS && dirEntry) {
+        EVmuFlashDirEntry flashEntry(dev, dirEntry);
+#if 0
+        if(flashEntry.getFileName() == "PSO______IMG") {
+            createPsoImgPixmap(EVmuFlashDirEntry(flashEntry));
+        }
+#endif
+    }
 
     std::function<bool(VMU_LOAD_IMAGE_STATUS, ReloadState)> statusMsg = [&](VMU_LOAD_IMAGE_STATUS status, ReloadState reloadState) {
         switch(status) {
@@ -335,6 +436,14 @@ bool VmuQtUtils::loadVMUImage(VMUDevice* dev,
         case VMU_LOAD_IMAGE_DEFRAG_FAILED:
             QMessageBox::critical(nullptr, "Failure", "The image couldn't be loaded due to an internal error. Please submit the debug log file and bug report.");
             return false;
+        case VMU_LOAD_IMAGE_FLASH_UNFORMATTED:
+            if(QMessageBox::question(nullptr, "Not Formatted", "The selected image appears to not be formatted. "
+                                            "This might be a new image or the image may have "
+                                            "been corrupted. Would you like to format?") == QMessageBox::Yes)
+            {
+                gyVmuFlashFormatDefault(dev);
+            }
+            break;
         default:
             QMessageBox::critical(nullptr, "Failure", "The image couldn't be loaded due an unknown error.");
             return false;
@@ -499,7 +608,7 @@ QImage VmuExtraBgPvrBank::extraBgPvrImage(const VMUDevice* dev, const VmuExtraBg
                     free(data); //free the ElysianVMU image data when we're done with it.
                 });
 
-    img.save("~/pvr_bg.png");
+    //img.save("~/pvr_bg.png");
 
     _gyPop(1);
 
@@ -567,6 +676,64 @@ done:
 bool VmuExtraBgPvrBankEntry::exportImage(QString filepath) const {
     bool success = true;
     _gyLog(GY_DEBUG_VERBOSE, "Exporting EXTRA.BG.PVR: [%s]", Q_CSTR(filepath));
+    _gyPush();
+
+    if(image.toImage().save(filepath)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(filepath));
+
+    } else {
+        _gyLog(GY_DEBUG_ERROR, "Failed to export image!");
+    }
+
+    _gyPop(1);
+    return success;
+}
+
+
+
+VmuPsoImgBankKey VmuPsoImgBank::createKey(VMUDevice* device, const VMUFlashDirEntry* dirEntry) {
+    return VmuPsoImgBankKey {
+        dirEntry
+    };
+}
+
+VmuPsoImgBankEntry* VmuPsoImgBank::createEntry(VMUDevice* device, VMUFlashDirEntry* dirEntry) {
+    QImage                  img;
+    VmuPsoImgBankEntry*     entry       = nullptr;
+    uint8_t*                vms         = nullptr;
+    size_t                  bytesRead   = 0;
+    size_t                  fileSize    = 0;
+    QStringList             nameList;
+
+    _gyLog(GY_DEBUG_VERBOSE, "Creating Image Bank/Cache Entry for PSO___IMG");
+    _gyPush();
+
+    if(!dirEntry || !dirEntry->fileSize) {
+        _gyLog(GY_DEBUG_ERROR, "Could not create entry for PSO___IMG, because size of file on device is 0 bytes!");
+        goto done;
+    }
+
+    img = createPsoImgImage(EVmuFlashDirEntry(device, dirEntry), nameList);
+
+    if(img.isNull()) {
+        _gyLog(GY_DEBUG_ERROR, "Failed to create QImage from EXTRA.BG.PVR raw data!");
+        goto done;
+    }
+
+    entry = new VmuPsoImgBankEntry {
+        QPixmap::fromImage(img),
+        nameList
+    };
+
+done:
+    _gyPop(1);
+    return entry;
+}
+
+
+bool VmuPsoImgBankEntry::exportImage(QString filepath) const {
+    bool success = true;
+    _gyLog(GY_DEBUG_VERBOSE, "Exporting PSO___IMG: [%s]", Q_CSTR(filepath));
     _gyPush();
 
     if(image.toImage().save(filepath)) {

@@ -3,6 +3,7 @@
 
 
 #include <QWidget>
+#include <evmu-core/gyro_vmu_flash.h>
 
 #define VMU_FILESYSTEM_UTILIZATION_BAR_BLOCK_FREE_COLOR 	Qt::darkGreen
 #define VMU_FILESYSTEM_UTILIZATION_BAR_BLOCK_USED_COLOR		Qt::green
@@ -18,17 +19,20 @@ public:
     enum  BLOCK_STATUS {
         BLOCK_STATUS_FREE,
         BLOCK_STATUS_USED,
+        BLOCK_STATUS_DAMAGED,
         BLOCK_STATUS_LOCKED,
         BLOCK_STATUS_COUNT
     };
 private:
-    QColor			_blockColors[BLOCK_STATUS_COUNT];
-    VMUDevice*		_dev 								= nullptr;
-    bool 			_showLockedBlocks					= false;
-    size_t			_blockCounts[BLOCK_STATUS_COUNT]	= { 0 };
-    size_t			_blocksTotal						= 0;
+    QColor              _blockColors[BLOCK_STATUS_COUNT];
+    VMUDevice*          _dev 								= nullptr;
+    bool                _showLockedBlocks					= true;
+    size_t              _blockCounts[BLOCK_STATUS_COUNT]	= { 0 };
+    size_t              _blocksTotal						= 0;
+    VMUFlashMemUsage    _internalMemUsage;
 
-    virtual size_t	_queryBlockCount(BLOCK_STATUS status) const;
+    virtual void        _beginQueryBlockCount(void);
+    virtual size_t      _queryBlockCount(BLOCK_STATUS status) const;
 
 public:
 
@@ -45,7 +49,7 @@ public:
     bool			updateBlockUtilization(void);
 
     virtual void 	paintEvent(QPaintEvent* event) override;
-
+    virtual void    mousePressEvent(QMouseEvent *event) override;
 
 
 };

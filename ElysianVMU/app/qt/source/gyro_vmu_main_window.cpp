@@ -372,7 +372,6 @@ VMUMainWindow::~VMUMainWindow(void)
 {
     _gyLog(GY_DEBUG_VERBOSE, "Uninitializing ElysianVMU");
     _gyPush();
-    _freeIcons();
     gyVmuDeviceDestroy(_dev);
     gyNetUninit();
 #ifndef VMU_CHILD_APP
@@ -460,16 +459,15 @@ void VMUMainWindow::update(void) {
     bool ranThisFrame = false;
     int64_t deltaTicks;
 
-    auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
     if(!_running) {
-        if(gameEntry || _dev->biosLoaded) {
+        if(_dev.isRunning()) {
             _gyLog(GY_DEBUG_VERBOSE, "New game detected, resetting CPU!");
             resetCpu();
             _running = true;
         }
 
     } else {
-        if(!gameEntry && !_dev->biosLoaded) {
+        if(!_dev.isRunning()) {
             _gyLog(GY_DEBUG_VERBOSE, "Game was removed, halting CPU!");
             resetCpu();
             _fb.fill(Qt::black);
@@ -485,7 +483,7 @@ void VMUMainWindow::update(void) {
         _updateStatusbar();
     }
 
-    if(!_running && !_dev->lcdFile) return;
+    if(!_running && !_dev.getLcdFile()) return;
 
     if(_halt) {
         if(!_advanceFrame) deltaTicks = 0;
@@ -509,7 +507,7 @@ void VMUMainWindow::update(void) {
 
 #ifndef VMU_DEBUG
         #if 1
-          ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
+          ranThisFrame = _dev.update((float)deltaTicks/1000000000.0f);
 #else
                     ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/10000000.0f);
 #endif
@@ -522,17 +520,17 @@ void VMUMainWindow::update(void) {
 
     if(ranThisFrame) {
 
-        if(_contAttached && !_dev->gamepad.contAttached) {
+        if(_contAttached && !static_cast<VMUDevice*>(_dev)->gamepad.contAttached) {
             _ui->statusbar->showMessage("Controller Disconnected!", VMU_STATUS_TEMP_TIMEOUT);
-        } else if(!_contAttached && _dev->gamepad.contAttached) {
+        } else if(!_contAttached && static_cast<VMUDevice*>(_dev)->gamepad.contAttached) {
             _ui->statusbar->showMessage("Controller Connected!", VMU_STATUS_TEMP_TIMEOUT);
         }
-        _contAttached = (bool)_dev->gamepad.contAttached;
+        _contAttached = (bool)static_cast<VMUDevice*>(_dev)->gamepad.contAttached;
 
         _tcpDialog->updateConnectionStatus();
         _updateStatusbar();
 
-        if(!_dev->lcdFile) _updatePConRegister();
+        if(!_dev.getLcdFile()) _updatePConRegister();
         else _updateLcdAnimStatusMessage();
         _updateIcon();
 
@@ -542,7 +540,7 @@ void VMUMainWindow::update(void) {
 void VMUMainWindow::_updateStatusbar(void) {
     REMOTE_STATE next;
 
-    switch(gyVmuSerialConnectionType(_dev)) {
+    switch(gyVmuSerialConnectionType(static_cast<VMUDevice*>(_dev))) {
         case GY_VMU_TCP_CONNECTION_VMU:
         next = REMOTE_CONNECTED;
         break;
@@ -591,26 +589,19 @@ void VMUMainWindow::_updateStatusbar(void) {
 
         } else {
             palette.setColor(QPalette::WindowText, QColor(Qt::black));
-            if(_dev->lcdFile) {
+            if(_dev.getLcdFile()) {
                 _statusLabel->setText(QString("LCD Animation"));
 
             } else {
-                VMUFlashMemUsage mem = gyVmuFlashMemUsage(_dev);
-                auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
-                if(gameEntry) {
-                    auto* vmsHeader = gyVmuFlashDirEntryVmsHeader(_dev, gameEntry);
-                    char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-                    _vmsHeader = vmsHeader;
-                    gyVmuVmsHeaderVmuDescGet(vmsHeader, string);
-                    _statusLabel->setText(VmuQtUtils::japCodec->toUnicode(string));
-
-
+                auto gameEntry = _dev.getGameFlashDirEntry();
+                if(!gameEntry.isNull()) {
+                    _statusLabel->setText(gameEntry.getVmsHeader().getVmuDescription());
                 } else {
-                    int fileCount = gyVmuFlashFileCount(_dev);
+                    unsigned fileCount = _dev.getFlashFileCount();
                     if(fileCount) {
                         QString label = QString("File(s): %1").arg(fileCount);
                         _statusLabel->setText(label);
-                    } else if(_dev->biosLoaded) {
+                    } else if(_dev.isBiosLoaded()) {
                         palette.setColor(QPalette::WindowText, QColor(Qt::gray));
                         _statusLabel->setText("System BIOS Image");
                     } else {
@@ -636,35 +627,31 @@ void VMUMainWindow::_updateScene(void) {
     {
         QPainter painter(&_fb);
         //Check if we need to clear the screen with the screensaver/LCD off image
-        if((!gyVmuDisplayEnabled(_dev) && _displayWasEnabled) || !_running) {
+        if((!_dev.isDisplayEnabled() && _displayWasEnabled) || !_running) {
             //Custom ICONDATA_VMS Icon if given, otherwise ES logo
-            VMUFlashDirEntry* entry = gyVmuFlashDirEntryIconData(_dev);
             const QPixmap* icon = nullptr;
             int xOffset = 0;
-
-            if(entry) {
-                auto* icns = VmuQtUtils::getIconDataBank().getEntry(_dev, entry);
-                if(icns && !icns->vmuIcon.isNull()) {
-                    icon = &icns->vmuIcon;
-                    xOffset = 8;
-                }
+            QPixmap vmuVolIcon = _dev.getVolumeVmuIcon();
+            if(!vmuVolIcon.isNull()) {
+                icon = &vmuVolIcon;
+                xOffset = 8;
             }
             painter.eraseRect(0, 0, VMU_DISP_PIXEL_WIDTH, VMU_DISP_PIXEL_HEIGHT);
             painter.drawPixmap(QPoint(xOffset, 0), icon? *icon : _iconES);
             _displayWasEnabled = false;
             updatedFb = true;
-        } else if(gyVmuDisplayUpdateEnabled(_dev)) {
+        } else if(_dev.isDisplayUpdateEnabled()) {
             _displayWasEnabled = true;
-            if(_dev->display.screenChanged) {
-                for(int y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {
-                    for(int x = 0; x < VMU_DISP_PIXEL_WIDTH; ++x) {
-                        int col = gyVmuDisplayPixelGhostValue(_dev, x, y);
+            if(_dev.hasDisplayChanged()) {
+                for(unsigned y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {
+                    for(unsigned x = 0; x < VMU_DISP_PIXEL_WIDTH; ++x) {
+                        int col = _dev.getDisplayPixelGhostValue(x, y);
                         painter.fillRect(x, y, 1, 1, QBrush(QColor(col, col, col, 255)));
                     }
                 }
                 updatedFb = true;
                 if(_recording) _addAnimFrame(_fb);
-                _dev->display.screenChanged = 0;
+                _dev.setDisplayChanged(false);
             }
         }
     }
@@ -696,13 +683,13 @@ void VMUMainWindow::_updateScene(void) {
         float iconXStart    = xMargin*0.5*(float)frameWidth;
         float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)frameWidth;
 
-        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
+        if(_dev.isDisplayModeIconEnabled(VMU_DISP_ICN_FILE))
             painter2.drawPixmap(iconXStart, iconY, iconWidth, iconHeight, _iconFile);
-        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_GAME))
+        if(_dev.isDisplayModeIconEnabled(VMU_DISP_ICN_GAME))
             painter2.drawPixmap(iconXStart+iconXStride, iconY, iconWidth, iconHeight, _iconGame);
-        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_CLOCK))
+        if(_dev.isDisplayModeIconEnabled(VMU_DISP_ICN_CLOCK))
             painter2.drawPixmap(iconXStart+iconXStride*2.0f, iconY, iconWidth, iconHeight, _iconClock);
-        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
+        if(_dev.isDisplayModeIconEnabled(VMU_DISP_ICN_FLASH))
             painter2.drawPixmap(iconXStart+iconXStride*3.0f, iconY, iconWidth, iconHeight, _iconFlash);
     }
 
@@ -718,49 +705,43 @@ void VMUMainWindow::_updateScene(void) {
 }
 
 bool VMUMainWindow::loadRom(QString filepath) {
-    int prevFileCount = gyVmuFlashFileCount(_dev);
-    VMUFlashDirEntry* dirEntry = nullptr;
-    bool status = VmuQtUtils::loadVMUImage(_dev, filepath, &dirEntry, true);
+
+    VMUFlashDirEntry* rawDirEntry = nullptr;
+    bool status = VmuQtUtils::loadVMUImage(_dev, filepath, &rawDirEntry, true);
+
+    EVmuFlashDirEntry   dirEntry(_dev, rawDirEntry);
 
     if(status) {
 
-        if(gyVmuFlashDirEntryGame(_dev)) resetCpu();
-
+        if(!_dev.getGameFlashDirEntry().isNull()) resetCpu();
         _pushRecentRom(filepath);
+
+        unsigned fileCount = _dev.getFlashFileCount();
 
         /* Grab first file if we loaded entire VMU image (instead of one ROM),
          * and that image only had one file in it. */
         if(!dirEntry) {
-            if(gyVmuFlashFileCount(_dev)) {
-                dirEntry = gyVmuFlashFileAtIndex(_dev, 0);
+            if(fileCount == 1) {
+                dirEntry = _dev.getFileFlashDirEntry(0);
             }
         }
 
         if(dirEntry) {
-            QString typeStr;
-
-            //Loaded a data file or multiple files
-            if(dirEntry->fileType == VMU_FLASH_FILE_TYPE_DATA) {
-                typeStr = "DATA";
-                if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
-            } else typeStr = "GAME";
-
-            char buff[100];
-            gyVmuFlashDirEntryName(dirEntry, buff);
-            QString msg = QString("Loaded: %1 [%2]").arg(buff).arg(typeStr);
+            QString msg = QString("Loaded: %1 [%2]").arg(dirEntry.getFileName()).arg(dirEntry.getFileTypeStr());
             _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
             _statusBarChanged = true;
             _updateStatusbar();
 
         //We loaded an image with more than one file
-        } else if(gyVmuFlashFileCount(_dev) > 1) {
-            char buff[100];
-            int fileCount = gyVmuFlashFileCount(_dev);
-            if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
+        } else if(fileCount) {
             QString msg = QString("Loaded: %1 Files").arg(fileCount);
             _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
             _statusBarChanged = true;
             _updateStatusbar();
+        }
+
+        if(!dirEntry || (dirEntry && !dirEntry.isGame())) {
+            if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
         }
 
     }
@@ -769,7 +750,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
 void VMUMainWindow::resetCpu(void) {
 
-    gyVmuDeviceReset(_dev);
+    _dev.reset();
 
     gyVmuBuzzerEnabledSet(_dev, _ui->actionEmulate_Audio->isChecked());
 
@@ -779,7 +760,7 @@ void VMUMainWindow::resetCpu(void) {
         gyVmuBatteryMonitorEnabledSet(_dev, 1);
     }
 
-    gyVmuDisplayGhostingEnabledSet(_dev, _ui->actionEnable_Pixel_Ghosting->isChecked());
+    _dev.setDisplayPixelGhostingEnabled(_ui->actionEnable_Pixel_Ghosting->isChecked());
 }
 
 void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
@@ -790,8 +771,8 @@ void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
     };
     char buff[100];
 
-    sprintf(buff, "frame: [%d/%d]\t state: %s", _dev->lcdFile->currentFrame, _dev->lcdFile->header->frameCount-1,
-            stateNames[_dev->lcdFile->state]);
+    sprintf(buff, "frame: [%d/%d]\t state: %s", _dev.getLcdFile()->currentFrame, _dev.getLcdFile()->header->frameCount-1,
+            stateNames[_dev.getLcdFile()->state]);
     _ui->statusbar->showMessage(buff, VMU_STATUS_TEMP_TIMEOUT);
 }
 
@@ -804,49 +785,18 @@ void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 void VMUMainWindow::on_actionSave_State_triggered(void)
 {
     if(!_running) return;
-    _gyLog(GY_DEBUG_VERBOSE, "Saving state [%s].", _workingDir->absoluteFilePath(STATE_FILE).toStdString().c_str());
-    _gyPush();
-
-    FILE* file = fopen(Q_CSTR(_workingDir->absoluteFilePath(STATE_FILE)), "wb");
-    if(!file) {
-        _gyLog(GY_DEBUG_ERROR, "Could not open file for writing!");
-    } else {
-        fwrite(_dev, sizeof(VMUDevice), 1, file);
-        fclose(file);
+    if(_dev.saveState(_workingDir->absoluteFilePath(STATE_FILE))) {
         _ui->statusbar->showMessage("State Saved.", VMU_STATUS_TEMP_TIMEOUT);
     }
-
-    _gyPop(1);
 }
 
 void VMUMainWindow::on_actionLoad_State_triggered(void)
 {
     if(!_running) return;
 
-    _gyLog(GY_DEBUG_VERBOSE, "Loading state [%s].", _workingDir->absoluteFilePath(STATE_FILE).toStdString().c_str());
-    _gyPush();
-
-    FILE* file = fopen(Q_CSTR(_workingDir->absoluteFilePath(STATE_FILE)), "rb");
-    if(!file) {
-        _gyLog(GY_DEBUG_ERROR, "Could not open file for reading!");
-    } else {
-        fread(_dev, sizeof(VMUDevice), 1, file);
-        fclose(file);
-
-        //adjust pointer values
-        _dev->imem = _dev->flash;
-
-        int xramBk = gyVmuMemRead(_dev, SFR_ADDR_XBNK);
-        int ramBk = (gyVmuMemRead(_dev, SFR_ADDR_PSW)&SFR_PSW_RAMBK0_MASK)>>SFR_PSW_RAMBK0_POS;
-        _dev->memMap[VMU_MEM_SEG_XRAM]   = _dev->xram[xramBk];
-        _dev->memMap[VMU_MEM_SEG_SFR]    = _dev->sfr;
-        _dev->memMap[VMU_MEM_SEG_GP1]    = _dev->ram[ramBk];
-        _dev->memMap[VMU_MEM_SEG_GP2]    = &_dev->ram[ramBk][VMU_MEM_SEG_SIZE];
-
+    if(_dev.loadState(_workingDir->absoluteFilePath(STATE_FILE))) {
         _ui->statusbar->showMessage("State Loaded.", VMU_STATUS_TEMP_TIMEOUT);
-
     }
-
     _gyPop(1);
 }
 
@@ -1075,68 +1025,11 @@ void VMUMainWindow::dropEvent(QDropEvent* event) {
     QMainWindow::dropEvent(event);
 }
 
-void VMUMainWindow::_freeIcons(void) {
-    int iconCount = _iconImages.size();
-
-    //Clean up icons if we're about to load more!
-    if(iconCount) {
-        _gyLog(GY_DEBUG_VERBOSE, "Freeing icon data.");
-
-        _iconImages.clear();
-        _iconPixmaps.clear();
-        for(int i = 0; i < iconCount; ++i)
-            free(_iconsData[i]);
-        free(_iconsData);
-
-        if(_eyecatchData) {
-            _gyLog(GY_DEBUG_VERBOSE, "Freeing eyecatch data.");
-            free(_eyecatchData);
-        }
-    }
-}
-
-bool VMUMainWindow::_loadIcons(void) {
-    bool hasIcons = false;
-    //Clear out old shit
-    _freeIcons();
-
-    _gyLog(GY_DEBUG_VERBOSE, "Loading icon data.");
-    _gyPush();
-
-    //_ui->statusbar->removeWidget(_iconLabel);
-    _iconAnimCounter    = 0;
-    _iconCurIndex       = 0;
-
-    auto* dirEntry = gyVmuFlashDirEntryGame(_dev);
-    _iconsData    = gyVmuVMSFileInfoCreateIconsARGB444(_dev, dirEntry);
-
-    if(_iconsData) {
-        for(unsigned i = 0; i < _vmsHeader->iconCount; ++i) {
-            _gyLog(GY_DEBUG_VERBOSE, "Creating texture for icon %d.", i);
-            _iconImages.push_back(QImage((uchar*)_iconsData[i], VMU_VMS_ICON_BITMAP_WIDTH, VMU_VMS_ICON_BITMAP_HEIGHT, QImage::Format_ARGB4444_Premultiplied));
-            _iconPixmaps.push_back(QPixmap::fromImage(_iconImages[i]).scaled(21, 21, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-        }
-
-        _iconLabel->setPixmap(_iconPixmaps[0]);
-        hasIcons = true;
-    }
-
-    _eyecatchData = gyVmuVMSFileInfoCreateEyeCatchARGB444(_dev, dirEntry);
-
-    if(_eyecatchData) {
-        _gyLog(GY_DEBUG_VERBOSE, "Creating texture for eyecatch.");
-        _eyecatchImage = QImage((uchar*)_eyecatchData, VMU_VMS_EYECATCH_BITMAP_WIDTH, VMU_VMS_EYECATCH_BITMAP_HEIGHT,  QImage::Format_ARGB4444_Premultiplied);
-    }
-
-    _gyPop(1);
-    return hasIcons;
-}
 
 void VMUMainWindow::_updateIcon(void) {
-    //if(!_iconPixmaps.size()) return;
-    auto* gameEntry = gyVmuFlashDirEntryGame(_dev);
+    auto gameEntry = _dev.getGameFlashDirEntry();
 
-    if(!gameEntry) {
+    if(gameEntry.isNull()) {
         _iconCurIndex = -1;
         _iconLabel->clear();
         return;
@@ -1154,9 +1047,6 @@ void VMUMainWindow::_updateIcon(void) {
         }
 
     }
-
-
-
 }
 
 
@@ -1171,36 +1061,8 @@ void VMUMainWindow::on_actionEmulate_Audio_toggled(bool arg1)
     }
 }
 
-void VMUMainWindow::on_actionDump_Icons_triggered(void)
-{
-    //+2 digits + 4 ext + 1 NULL byte
-    char filename[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+7];
-    char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-
-    //Ain't nothing to dump!
-    if(!_iconImages.size()) {
-        QMessageBox::critical(nullptr, "No Icons", "The current VMS image does not have any icons!");
-        return;
-    }
-
-    _gyLog(GY_DEBUG_VERBOSE, "Dumping VMS Icons.");
-    _gyPush();
-
-    gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
-
-    for(int i = 0; i < _iconImages.size(); ++i) {
-        sprintf(filename, "%s_%d.png", vmsDesc, i);
-        if(!_iconImages[i].save(VmuQtUtils::japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
-            _gyLog(GY_DEBUG_ERROR, "Could not dump icon to file [%s]!", _workingDir->absoluteFilePath(filename).toStdString().c_str());
-        else
-            _gyLog(GY_DEBUG_VERBOSE, "Dumped icon to file [%s].", _workingDir->absoluteFilePath(filename).toStdString().c_str());
-    }
-
-    _gyPop(1);
-}
-
 void VMUMainWindow::_updatePConRegister(void) {
-    int pcon = gyVmuMemRead(_dev, SFR_ADDR_PCON) & (SFR_PCON_HALT_MASK|SFR_PCON_HOLD_MASK);
+    int pcon = _dev.readMemoryByte(SFR_ADDR_PCON) & (SFR_PCON_HALT_MASK|SFR_PCON_HOLD_MASK);
 
     if(pcon != _pConRegister) {
         switch(pcon) {
@@ -1220,33 +1082,6 @@ void VMUMainWindow::_updatePConRegister(void) {
 
         _pConRegister = pcon;
     }
-
-}
-
-void VMUMainWindow::on_actionDump_Eyecatch_triggered(void)
-{
-    //+2 digits + 4 ext + 1 NULL byte
-    char filename[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+7];
-    char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-
-    //Ain't nothing to dump!
-    if(!_eyecatchData) {
-        QMessageBox::critical(nullptr, "No Eyecatch", "The current VMS image does not have an eyecatch graphic!");
-        return;
-    }
-
-    _gyLog(GY_DEBUG_VERBOSE, "Dumping VMS Eyecatch.");
-    _gyPush();
-
-    gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
-
-    sprintf(filename, "%s_eyecatch.png", vmsDesc);
-    if(!_eyecatchImage.save(VmuQtUtils::japCodec->toUnicode(_workingDir->absoluteFilePath(filename).toStdString().c_str())))
-        _gyLog(GY_DEBUG_ERROR, "Could not dump eyecatch to file [%s]!", _workingDir->absoluteFilePath(filename).toStdString().c_str());
-    else
-        _gyLog(GY_DEBUG_VERBOSE, "Dumped eyecatch to file [%s].", _workingDir->absoluteFilePath(filename).toStdString().c_str());
-
-    _gyPop(1);
 
 }
 
@@ -1312,26 +1147,22 @@ void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
 
 void VMUMainWindow::on_actionDisassemble_ROM_triggered(void)
 {
-    if(!_running || !_vmsHeader) {
+    if(!_running) {
         QMessageBox::critical(nullptr, "Failed to disassemble ROM", "You don't even have a ROM loaded to disassemble!");
         return;
     }
 
-    char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-    char fileName[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+5];
-    gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
-    sprintf(fileName, "%s.ASM", vmsDesc);
-    auto unicodeFile = VmuQtUtils::japCodec->toUnicode(fileName);
+    QString filename = _dev.getGameFlashDirEntry().getVmsHeader().getVmuDescription() + QString(".asm");
     bool lineNumbers = (QMessageBox::question(nullptr, "Disassemble ROM", "Include memory addresses in disassembly file ["+
-                                              unicodeFile+"]?")
+                                              filename + "]?")
             == QMessageBox::Yes);
-    gyVmuDisassemble((const unsigned char*)_dev->flash, VMU_FLASH_BLOCK_SIZE*8, unicodeFile.toStdString().c_str(), lineNumbers);
-    QDesktopServices::openUrl(QUrl::fromLocalFile(unicodeFile));
+    gyVmuDisassemble((const unsigned char*)static_cast<VMUDevice*>(_dev)->flash, VMU_FLASH_BLOCK_SIZE*8, Q_CSTR(filename), lineNumbers);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
 }
 
 void VMUMainWindow::on_actionEnable_Pixel_Ghosting_toggled(bool arg1)
 {
-    gyVmuDisplayGhostingEnabledSet(_dev, arg1);
+    _dev.setDisplayPixelGhostingEnabled(arg1);
     if(!arg1) {
         _gyLog(GY_DEBUG_VERBOSE, "Pixel Ghosting Disabled.");
     } else {
@@ -1463,7 +1294,7 @@ void VMUMainWindow::on_actionRecordAnim_toggled(bool arg1) {
          * (otherwise we're skipping the first frame). */
         _addAnimFrame(_fb);
 
-        _ghostingWasEnabled = gyVmuDisplayGhostingEnabledGet(_dev);
+        _ghostingWasEnabled = _dev.isDisplayPixelGhostingEnabled();
         on_actionEnable_Pixel_Ghosting_toggled(false);
 
         _gyPop(1);
@@ -1584,23 +1415,28 @@ void VMUMainWindow::on_actionFilesystem_triggered(void)
 
 void VMUMainWindow::on_actionExport_Flash_Image_triggered(void)
 {
-    QString filter = "Flash Image Files (*.bin)";
+    QString current = "Flash Image Files (*.bin)";
+    QString filter = "Flash Image Files (*.bin);;Nexus Flash Image Files (*.dcm)";
     QString path = QFileDialog::getSaveFileName(nullptr,
                                                 "Choose Flash Image Export Location",
                                                 VmuQtUtils::getRomDir(),
                                                 filter,
-                                                &filter);
+                                                &current);
 
     if(path.isEmpty()) return;
 
-    gyVmuFlashExportImage(_dev, Q_CSTR(path));
+    if(current == "Flash Image Files (*.bin)") {
+        gyVmuFlashExportImage(_dev, Q_CSTR(path));
+    } else if(current == "Nexus Flash Image Files (*.dcm)") {
+        gyVmuFlashExportDcm(_dev, Q_CSTR(path));
+    } else _gyLog(GY_DEBUG_ERROR, "No fucking clue how they tried to flash image: [%s]", Q_CSTR(current));
 
 }
 
 void VMUMainWindow::on_actionNew_Flash_Image_triggered()
 {
-    int fileCount = gyVmuFlashFileCount(_dev);
-    if(gyVmuFlashDirEntryGame(_dev)) --fileCount;
+    unsigned fileCount = _dev.getFlashFileCount();
+    if(_dev.getGameFlashDirEntry()) --fileCount;
 
     if(fileCount) {
         auto resp = QMessageBox::question(nullptr, "Save Changes",
@@ -1620,7 +1456,7 @@ void VMUMainWindow::on_actionNew_Flash_Image_triggered()
             gyVmuFlashExportImage(_dev, Q_CSTR(path));
         }
 
-        gyVmuFlashFormatDefault(_dev);
+        _dev.formatFlash();
     }
 }
 

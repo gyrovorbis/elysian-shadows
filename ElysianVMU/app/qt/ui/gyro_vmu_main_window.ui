@@ -279,22 +279,6 @@
     <enum>Qt::WidgetWithChildrenShortcut</enum>
    </property>
   </action>
-  <action name="actionDump_Icons">
-   <property name="text">
-    <string>Dump Icons</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::WidgetWithChildrenShortcut</enum>
-   </property>
-  </action>
-  <action name="actionDump_Eyecatch">
-   <property name="text">
-    <string>Dump Eyecatch</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::WidgetWithChildrenShortcut</enum>
-   </property>
-  </action>
   <action name="actionEnable_Low_Battery">
    <property name="checkable">
     <bool>true</bool>

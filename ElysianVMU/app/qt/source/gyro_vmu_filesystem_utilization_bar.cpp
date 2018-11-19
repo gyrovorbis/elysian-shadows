@@ -3,6 +3,10 @@
 #include <evmu-core/gyro_vmu_flash.h>
 #include <QGraphicsDropShadowEffect>
 #include <QFontDatabase>
+#include <QESTkUtils/tk_menu_stack.h>
+#include <QMouseEvent>
+#include <QMessageBox>
+#include <libGyro/gyro_system_api.h>
 
 
 VmuFileSystemUtilizationBar::VmuFileSystemUtilizationBar(QWidget* parent):
@@ -20,14 +24,18 @@ VmuFileSystemUtilizationBar::VmuFileSystemUtilizationBar(QWidget* parent):
 #endif
 }
 
+void VmuFileSystemUtilizationBar::_beginQueryBlockCount(void) {
+    _internalMemUsage = gyVmuFlashMemUsage(_dev);
+}
+
 size_t VmuFileSystemUtilizationBar::_queryBlockCount(BLOCK_STATUS status) const {
-    VMUFlashMemUsage usage = gyVmuFlashMemUsage(_dev);
 
     switch(status) {
-    case BLOCK_STATUS_FREE: return usage.blocksFree;
-    case BLOCK_STATUS_USED: return usage.blocksUsed;
-    default:
-    case BLOCK_STATUS_LOCKED: return 0;
+    case BLOCK_STATUS_FREE:     return _internalMemUsage.blocksFree;
+    case BLOCK_STATUS_USED:     return _internalMemUsage.blocksUsed;
+    case BLOCK_STATUS_DAMAGED:  return _internalMemUsage.blocksDamaged;
+    case BLOCK_STATUS_LOCKED:   return _internalMemUsage.blocksHidden;
+    default: return 0;
     }
 }
 
@@ -139,13 +147,13 @@ void VmuFileSystemUtilizationBar::paintEvent(QPaintEvent* event) {
         painter.drawText(rec, Qt::AlignCenter, blocksRatio);
     }
 
-
+#if 0
     if(_showLockedBlocks && _blockCounts[BLOCK_STATUS_LOCKED]) {
         float lockedRatio = (float)_blockCounts[BLOCK_STATUS_LOCKED] / (float)_blocksTotal;
         QRectF lockedRect = createSubRect(usedRect, lockedRatio);
         painter.fillRect(lockedRect, getBlockColor(BLOCK_STATUS_LOCKED));
     }
-
+#endif
 }
 
 
@@ -155,23 +163,76 @@ bool VmuFileSystemUtilizationBar::updateBlockUtilization(void) {
 
     _blocksTotal = 0;
 
-    for(unsigned b = 0; b < (_showLockedBlocks? BLOCK_STATUS_COUNT : BLOCK_STATUS_LOCKED); ++b) {
+    _beginQueryBlockCount();
+
+    for(unsigned b = 0; b < BLOCK_STATUS_COUNT; ++b) {
         size_t count = _queryBlockCount(static_cast<BLOCK_STATUS>(b));
         if(count != _blockCounts[b]) {
             changed = true;
             _blockCounts[b] = count;
         }
-        _blocksTotal += _blockCounts[b];
     }
+
+    _blocksTotal += _blockCounts[BLOCK_STATUS_FREE];
+    _blocksTotal += _blockCounts[BLOCK_STATUS_USED];
+
 
     if(_blocksTotal != prevTotal) changed = true;
 
     if(changed) {
         QString text = QString("Used: %1, Free: %2").arg(_blockCounts[BLOCK_STATUS_USED]).arg(_blockCounts[BLOCK_STATUS_FREE]);
 
-        if(_showLockedBlocks) text += QString(", Locked: %1").arg(_blockCounts[BLOCK_STATUS_LOCKED]);
+        if(_showLockedBlocks) text += QString(", Damaged: %1, Hidden: %2").arg(_blockCounts[BLOCK_STATUS_DAMAGED]).arg(_blockCounts[BLOCK_STATUS_LOCKED]);
         setToolTip(text);
     }
 
     return changed;
 }
+
+void VmuFileSystemUtilizationBar::mousePressEvent(QMouseEvent *event) {
+
+
+
+    if(event->button() != Qt::RightButton) return;
+
+    QESTkUtils::MenuStack stack("Memory Usage");
+
+    //stack.push("Export File");
+
+    bool unlocked = _internalMemUsage.blocksHidden == 0;
+
+    stack.insertAction(unlocked? "Disable Extra Blocks" : "Unlock Extra Blocks",
+        [=](bool) {
+
+            auto* root      = gyVmuFlashBlockRoot(_dev);
+
+            if(!unlocked) {
+                if(QMessageBox::question(nullptr, "Confirm Extra Blocks", "You are about to unlock the additional " + QString::number(_internalMemUsage.blocksHidden) + " blocks. "
+                                        "These were reserved for the system, but they are unused. Unfortunately there are a few games that have"
+                                        "issues recognizing memory cards with extra capacity. Are you sure you want to continue?")
+                        == QMessageBox::No)
+                {
+                    return;
+                } else {
+                    _gyLog(GY_DEBUG_VERBOSE, "Unlocking additional hidden system blocks: [Count: %u]", _internalMemUsage.blocksHidden);
+                    root->userSize  = _internalMemUsage.blocksHidden + gyVmuFlashUserDataBlocks(_dev);
+                }
+            } else {
+
+                if(_internalMemUsage.blocksUsed > 200) {
+                    QMessageBox::critical(nullptr, "Failure!", "The additional system blocks could not be locked again, because there are too many blocks in use. "
+                                                               "A standard memory card without the additonal blocks can only hold 200 blocks!");
+
+                    return;
+                } else {
+                    _gyLog(GY_DEBUG_VERBOSE, "Relocking hidden system blocks, going back to 200 block of user storage!");
+                    gyVmuFlashDefragment(_dev, 200);
+                }
+            }
+            repaint();
+
+        }, _blocksTotal > 0);
+
+    stack.execDeleteLater(mapToGlobal(event->pos()));
+}
+

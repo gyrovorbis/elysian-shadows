@@ -14,6 +14,8 @@ struct VMSFileInfo;
 struct IconDataFileInfo;
 struct VmuExtraBgPvrFileInfo;
 
+class EVmuFlashDirEntry;
+
 namespace QESTkUtils {
 
 template <typename Derived,
@@ -24,13 +26,13 @@ class AssetBank {
 private:
     Container<Key, const Entry*>   _cache;
 protected:
-    static const Entry*     createEntry(VMUDevice* device, const VMUFlashDirEntry* entry);
+    static const Entry*     createEntry(VMUDevice* device, VMUFlashDirEntry* entry);
     static Key              createKey(VMUDevice* device, const VMUFlashDirEntry* entry);
 
 public:
                             ~AssetBank(void);
     const Entry*            findEntry(const Key& key) const;
-    const Entry*            getEntry(VMUDevice* device, const VMUFlashDirEntry* entry);
+    const Entry*            getEntry(VMUDevice* device, VMUFlashDirEntry* entry);
     bool                    removeEntry(VMUDevice* dev, const VMUFlashDirEntry* entry);
     bool                    removeEntry(const Key& key);
 
@@ -40,7 +42,7 @@ template <typename Derived,
           typename Key,
           typename Entry,
           template<class K, class E> class Container>
-const Entry* AssetBank<Derived, Key, Entry, Container>::createEntry(VMUDevice* device, const VMUFlashDirEntry* dirEntry) {
+const Entry* AssetBank<Derived, Key, Entry, Container>::createEntry(VMUDevice* device, VMUFlashDirEntry* dirEntry) {
     return Derived::createEntry(device, dirEntry);
 }
 
@@ -82,7 +84,7 @@ template <typename Derived,
           typename Key,
           typename Entry,
           template<class K, class E> class Container>
-const Entry* AssetBank<Derived, Key, Entry, Container>::getEntry(VMUDevice* dev, const VMUFlashDirEntry* dirEntry) {
+const Entry* AssetBank<Derived, Key, Entry, Container>::getEntry(VMUDevice* dev, VMUFlashDirEntry* dirEntry) {
     Key key = static_cast<Derived*>(this)->createKey(dev, dirEntry);
     const Entry* entry = nullptr;
     const auto& it = _cache.find(key);
@@ -209,6 +211,33 @@ public:
     static VmuExtraBgPvrBankEntry*  createEntry(VMUDevice* device, const VMUFlashDirEntry* dirEntry);
 };
 
+
+
+struct VmuPsoImgBankKey {
+    const VMUFlashDirEntry*         entry      = nullptr;
+    bool operator < (const VmuPsoImgBankKey& rhs) const;
+};
+
+struct VmuPsoImgBankEntry {
+    QPixmap     image;
+    QStringList characterNames;
+    bool        exportImage(QString filepath) const;
+};
+
+class VmuPsoImgBank:
+        public QESTkUtils::AssetBank<VmuPsoImgBank,
+                                     VmuPsoImgBankKey,
+                                     VmuPsoImgBankEntry,
+                                     QMap>
+{
+private:
+    static QImage               createPsoImgImage(const EVmuFlashDirEntry& dirEntry, QStringList& charNamesList);
+
+public:
+    static VmuPsoImgBankKey     createKey(VMUDevice* device, const VMUFlashDirEntry* dirEntry);
+    static VmuPsoImgBankEntry*  createEntry(VMUDevice* device, VMUFlashDirEntry* dirEntry);
+};
+
 class VmuQtUtils {
 
 public:
@@ -232,6 +261,9 @@ private:
                             _iconDataBank;
     static VmuExtraBgPvrBank
                             _extraBgPvrBank;
+
+    static VmuPsoImgBank    _psoImgBank;
+
 public:
 
     static QTextCodec*      japCodec;
@@ -243,6 +275,8 @@ public:
                             getIconDataBank(void);
     static VmuExtraBgPvrBank&
                             getExtraBgPvrBank(void);
+    static VmuPsoImgBank&   getPsoImgBank(void);
+
     static bool             loadVMUImage(VMUDevice* device,
                                          QString filePath,
                                          VMUFlashDirEntry** entry=nullptr,
@@ -250,6 +284,8 @@ public:
                                          ReloadState reloadInfo=ReloadState());
 
     static QString          getDefaultImageTypeFilter(void);
+
+
 
 
 };
@@ -269,8 +305,12 @@ inline bool VmuIconDataBankKey::operator<(const VmuIconDataBankKey& rhs) const {
 inline bool VmuExtraBgPvrBankKey::operator<(const VmuExtraBgPvrBankKey& rhs) const {
     return (entry < rhs.entry);
 }
+inline bool VmuPsoImgBankKey::operator<(const VmuPsoImgBankKey& rhs) const {
+    return (entry < rhs.entry);
+}
 inline VmuIconDataImageBank& VmuQtUtils::getIconDataBank(void) { return _iconDataBank; }
 inline VmuExtraBgPvrBank& VmuQtUtils::getExtraBgPvrBank(void) { return _extraBgPvrBank; }
+inline VmuPsoImgBank& VmuQtUtils::getPsoImgBank(void) { return _psoImgBank; }
 inline QString VmuQtUtils::getRomDir(void) { return _romDir; }
 inline void VmuQtUtils::setRomDir(QString dir) { _romDir = std::move(dir); }
 inline VmuQtUtils::ReloadState::ReloadState(void):
