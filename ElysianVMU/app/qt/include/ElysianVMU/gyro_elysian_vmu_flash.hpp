@@ -10,6 +10,7 @@
 #include <ElysianVMU/gyro_vmu_qt_util.hpp>
 #include <QString>
 #include <QTextCodec>
+#include <cassert>
 
 class   EVmuDevice;
 struct  VMUFlashDirEntry;
