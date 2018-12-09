@@ -15,7 +15,7 @@ namespace QESTkUtils {
 
         struct LogAdapter {
             virtual         ~LogAdapter(void) = default;
-            virtual void    log(LOG_SEVERITY severity, const char* fmt, ...)   = 0;
+            virtual void    log(int severity, const char* fmt, ...)   = 0;
             virtual void    push(void)                                         = 0;
             virtual void    pop(unsigned depth=1)                              = 0;
         };
@@ -23,7 +23,7 @@ namespace QESTkUtils {
         static void         setLogAdapter(LogAdapter* iface);
 
         template<typename... Args>
-        static void         log(LOG_SEVERITY severity, const char* fmt, Args... args);
+        static void         log(int severity, const char* fmt, Args... args);
         static void         push(void);
         static void         pop(unsigned depth=1);
 
@@ -42,7 +42,7 @@ namespace QESTkUtils {
     inline void Debug::push(void) { if(_logAdapter) _logAdapter->push(); }
     inline void Debug::pop(unsigned depth) { if(_logAdapter) _logAdapter->pop(depth); }
     template<typename... Args>
-    inline void Debug::log(LOG_SEVERITY severity, const char* fmt, Args... args) {
+    inline void Debug::log(int severity, const char* fmt, Args... args) {
         if(_logAdapter) {
             _logAdapter->log(severity, fmt, args...);
         }
