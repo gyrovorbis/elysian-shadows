@@ -5,9 +5,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
-
 static inline const char* _ipAddr32BitToString(uint32_t addr) {
     return "localhost";
 }
