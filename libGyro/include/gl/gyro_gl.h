@@ -37,6 +37,15 @@ extern "C" {
 #   include <GLES3/gl3.h>
 #   include <GLES3/gl3ext.h>
 
+#elif GYRO_PLATFORM == GYRO_PLATFORM_WEB
+
+#ifdef __WIN32
+#       include <windows.h>
+#endif
+
+#       include <GL/glew.h>
+#define QT_NO_OPENGL_ES_2
+
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	ifdef __APPLE__
@@ -67,4 +76,3 @@ extern "C" {
 #endif
 
 #endif // GYRO_GL_H
-

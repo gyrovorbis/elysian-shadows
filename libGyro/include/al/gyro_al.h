@@ -26,6 +26,11 @@ extern "C" {
 #       define AL_LIBTYPE_STATIC
 #		include <AL/al.h>
 #       include <AL/alc.h>
+
+#elif GYRO_PLATFORM == GYRO_PLATFORM_WEB
+#       define AL_LIBTYPE_STATIC
+#		include <AL/al.h>
+#       include <AL/alc.h>
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	ifdef __APPLE__
@@ -50,4 +55,3 @@ extern ALboolean           _alExtFloat32;
 
 
 #endif // GYRO_AL_H
-
