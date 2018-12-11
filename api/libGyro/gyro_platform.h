@@ -39,6 +39,9 @@
 #   elif defined(__ICC)
 #       define GYRO_COMPILER_VERSION_STRING "ICC " __ICC
 
+#   elif defined(__EMSCRIPTEN__)
+#       define GYRO_COMPILER_VERSION_STRING "Emscripten " __EMSCRIPTEN__
+
 #   elif defined(__MINGW32_MAJOR_VERSION)
 #       define GYRO_COMPILER_VERSION_STRING "MinGW32 " GYRO_STRINGIFY_VERSION(__MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, "") " : GCC " GYRO_STRINGIFY_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 
@@ -75,6 +78,8 @@
 
 
 //Platform-Specific Definitions
+
+
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 
 #   define GYRO_ENDIAN					GYRO_ENDIAN_LITTLE
@@ -210,15 +215,14 @@
 #   define GYRO_NET_PLATFORM_INCLUDE        "sdl/gyro_net_sdl.inl"
 
 
+
 #elif GYRO_PLATFORM == GYRO_PLATFORM_WEB
-
-# define GYRO_MATH_NOASM
-
-#   define GY_ASSERT(a)                     assert(a)
 #   define                                  GYRO_GLAL
 #   define                                  GYRO_GLAL_GL_Desktop
-#	define GYRO_MATRIX4_ALIGN
-#	define GYRO_VECTOR4_ALIGN
+#   define                                  GY_CL_OPENGL_INTEROP
+#	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
+#	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
+
 
 //#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
@@ -230,8 +234,6 @@
 #	define GYRO_INPUT_PLATFORM_INCLUDE      "x86/gyro_input_x86.inl"
 #   define GYRO_FILE_PLATFORM_INCLUDE       "x86/gyro_file_x86.inl"
 #   define GYRO_NET_PLATFORM_INCLUDE        "sdl/gyro_net_sdl.inl"
-
-
 
 #endif
 
