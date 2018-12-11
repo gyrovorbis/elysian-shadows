@@ -8,6 +8,14 @@
 extern "C" {
 #endif
 
+#ifndef GYRO_MATRIX4_ALIGN
+#	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
+#endif
+
+#ifndef GYRO_VECTOR4_ALIGN
+#	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
+#endif
+
 // Column-Major
 typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN;
 

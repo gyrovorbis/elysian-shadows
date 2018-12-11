@@ -3,15 +3,15 @@
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_timer.h>
 
-int gyTimerInit(void) {
+extern "C" int gyTimerInit(void) {
     return 1;
 }
 
-int gyTimerUninit(void) {
+extern "C" int gyTimerUninit(void) {
     return 1;
 }
 
-int64_t gyTimerTicks(void) {
+extern "C" int64_t gyTimerTicks(void) {
     // return SDL_GetTicks();
   return 0;
 }
