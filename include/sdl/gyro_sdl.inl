@@ -1,6 +1,11 @@
 #ifndef GYRO_SDL_H
 #define GYRO_SDL_H
 
+
+#if GYRO_PLATFORM == GYRO_PLATFORM_WEB
+    #include <SDL2/SDL.h>
+#else
+
 #ifdef __WIN32 // :D Mmmmmm
 #   include <windows.h>
 #   include <SDL/SDL.h>
@@ -12,6 +17,7 @@
 
 #ifdef __APPLE__ // D: Fuck my life...
 #	include <SDL.h>
+#endif
 #endif
 
 /*
