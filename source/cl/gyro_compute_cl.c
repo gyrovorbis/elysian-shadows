@@ -894,7 +894,7 @@ int gyComputeInit(const GYComputeInitParams* params) {
     GY_ASSERT(params && !_initialized);
 
     _gyLog(GY_DEBUG_VERBOSE, "[GYRO_COMPUTE] Initializing OpenCL");
-    _gyPush();
+    _gyPush();    
 
     if(params) memcpy(&_initParams, params, sizeof(GYComputeInitParams));
 

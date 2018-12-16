@@ -429,6 +429,10 @@ static inline int gyMat4Compare(const GYMatrix4 m1, const GYMatrix4 m2) {
     return (gyVec4Compare(m1[0], m2[0]) && gyVec4Compare(m1[1], m2[1]) && gyVec4Compare(m1[2], m2[2]) && gyVec4Compare(m1[3], m2[3]));
 }
 
+static inline float gyVec4Magnitude(const void*const v) {
+    return gySqrt( (VEC4(v)->x * VEC4(v)->x) + (VEC4(v)->y * VEC4(v)->y) + (VEC4(v)->z * VEC4(v)->z) + (VEC4(v)->w * VEC4(v)->w) );
+}
+
 /*
 
 static inline float gyVec4Magnitude(GYVector4*const dest, GYVector4*const src) {

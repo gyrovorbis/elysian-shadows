@@ -1,5 +1,4 @@
 #include <math.h>
-#include <xmmintrin.h>
 
 inline static void gySinCos(const float theta, float *const psin, float *const pcos) {
     *psin = sinf(theta); *pcos = cosf(theta);
