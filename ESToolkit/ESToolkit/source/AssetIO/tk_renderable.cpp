@@ -4,6 +4,8 @@
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
+using namespace QESTkUtils;
+
 bool TkRenderable::validate(QString &str) const {
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {

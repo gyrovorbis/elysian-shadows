@@ -417,6 +417,8 @@ namespace elysian {
         Vector3::registerProxyMetaTable(*_mainState);
         OOLUA::register_class<Vector4>(*_mainState);
         Vector4::registerProxyMetaTable(*_mainState);
+        OOLUA::register_class<Quaternion>(*_mainState);
+        Quaternion::registerProxyMetaTable(*_mainState);
         _mainState->register_class<GYColor4>();
         _mainState->register_class<Color4>();
         Color4::registerProxyMetaTable(*_mainState);

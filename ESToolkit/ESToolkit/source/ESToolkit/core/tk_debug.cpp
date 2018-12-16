@@ -33,6 +33,8 @@
 #include <UnitTests/test_estk.h>
 #endif
 
+using namespace QESTkUtils;
+
 TkDebug*            TkDebug::_window = nullptr;
 QTreeWidgetItem*    TkDebug::_curParent;
 QTreeWidgetItem*    TkDebug::_prevItem;
@@ -111,37 +113,37 @@ TkDebug::TkDebug(void) {
 
 
     MenuStack sourcesMenu("Filters");
-    auto addFilterSource = [&](const QString name, const Debug::TK_SOURCE source) {
+    auto addFilterSource = [&](const QString name, const TK_SOURCE source) {
         sourcesMenu.push(name);
         _filterActions[source][Debug::LOG_VERBOSE] = sourcesMenu.insertCheckableAction("Verbose", [=](const bool checked) {
             _filterActions[source][Debug::LOG_VERBOSE]->blockSignals(true);
-            Debug::setFilter(source, Debug::LOG_VERBOSE, checked);
+            elysian::Debug::setFilter(source, Debug::LOG_VERBOSE, checked);
             _filterActions[source][Debug::LOG_VERBOSE]->blockSignals(false);
         });
         _filterActions[source][Debug::LOG_WARNING] = sourcesMenu.insertCheckableAction("Warning", [=](const bool checked) {
             _filterActions[source][Debug::LOG_WARNING]->blockSignals(true);
-            Debug::setFilter(source, Debug::LOG_WARNING, checked);
+            elysian::Debug::setFilter(source, Debug::LOG_WARNING, checked);
             _filterActions[source][Debug::LOG_WARNING]->blockSignals(false);
         });
         _filterActions[source][Debug::LOG_ERROR] = sourcesMenu.insertCheckableAction("Error", [=](const bool checked) {
             _filterActions[source][Debug::LOG_ERROR]->blockSignals(true);
-            Debug::setFilter(source, Debug::LOG_ERROR, checked);
+            elysian::Debug::setFilter(source, Debug::LOG_ERROR, checked);
             _filterActions[source][Debug::LOG_ERROR]->blockSignals(false);
         });
         sourcesMenu.pop();
     };
-    addFilterSource("LibGyro",      Debug::LIBGYRO);
-    addFilterSource("Engine",       Debug::ENGINE);
-    addFilterSource("Toolkit",      Debug::TOOLKIT);
-    addFilterSource("Qt",           Debug::SOURCE_QT);
-    addFilterSource("OpenGL",       Debug::OPENGL);
-    addFilterSource("Lua",          Debug::LUA);
-    addFilterSource("Commands",     Debug::COMMAND);
-    addFilterSource("ElysianVMU",   Debug::EVMU);
-    addFilterSource("QESTkUtils",   Debug::QESTKUTILS);
+    addFilterSource("LibGyro",      elysian::Debug::LIBGYRO);
+    addFilterSource("Engine",       elysian::Debug::ENGINE);
+    addFilterSource("Toolkit",      elysian::Debug::TOOLKIT);
+    addFilterSource("Qt",           elysian::Debug::SOURCE_QT);
+    addFilterSource("OpenGL",       elysian::Debug::OPENGL);
+    addFilterSource("Lua",          elysian::Debug::LUA);
+    addFilterSource("Commands",     elysian::Debug::COMMAND);
+    addFilterSource("ElysianVMU",   elysian::Debug::EVMU);
+    addFilterSource("QESTkUtils",   elysian::Debug::QESTKUTILS);
     sourcesMenu.insertAction("Enable All Filters", [](bool) {
-        for(unsigned i = 0; i < Debug::SOURCE_MAX; ++i)
-            for(unsigned j = 0; j < Debug::LOG_OFF; ++j)
+        for(unsigned i = 0; i < elysian::Debug::SOURCE_MAX; ++i)
+            for(unsigned j = 0; j < elysian::Debug::LOG_OFF; ++j)
                 setFilter((TK_SOURCE)i, (SEVERITY)j, true);
     });
     _filterMenu = sourcesMenu.takeTopLevel();
@@ -165,7 +167,7 @@ void Debug::ESDebugWrapper(elysian::Asset::DBG_TYPE flag, const char msg[] ) {
 }*/
 
 /* Fuck you and your QStrings, Marcel. I'm doing this C-Style. */
-void TkDebug::Logf(Debug::SEVERITY flag, const char *string, ...) {
+void TkDebug::Logf(int flag, const char *string, ...) {
     va_list argptr;
     static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_start(argptr, string);
@@ -178,7 +180,7 @@ void TkDebug::Logf(Debug::SEVERITY flag, const char *string, ...) {
 
 void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
     static char qtDebugBuff[DEBUG_QT_BUFF_SIZE];
-    SEVERITY level;
+    int level;
 
 	switch (type) {
     default:
@@ -233,7 +235,7 @@ void TkDebug::pop(const unsigned count) {
 void TkDebug::resetStackDepth(void) {
     _mutex->lock();
 
-    pop(Debug::getStackDepth());
+    pop(TkDebug::getStackDepth());
     _ignoredPushes.clear();
     _pendingQueue->clear();
     _curParent = _prevItem = _treeWidget->invisibleRootItem();
@@ -242,7 +244,7 @@ void TkDebug::resetStackDepth(void) {
 
 }
 
-void TkDebug::Log(SEVERITY flag, QString msg, int src) {
+void TkDebug::Log(int flag, QString msg, int src) {
 #ifdef DEBUG_FILTER_LIST_ENABLED
     for(unsigned i = 0; i < sizeof(_filterList); ++i) {
         if(msg == _filterList[i]) return;
@@ -290,8 +292,8 @@ void TkDebug::onCommandSubmit(void) {
 
     QString dispStr = str;
     dispStr = dispStr.replace("\n", "\n> ");
-    Debug::Log(LOG_VERBOSE, QString("> ")+dispStr, COMMAND);
-    const unsigned depth = Debug::getStackDepth();
+    TkDebug::Log(LOG_VERBOSE, QString("> ")+dispStr, COMMAND);
+    const unsigned depth = getStackDepth();
     auto* parent = _prevItem;
     Debug::push();
     elysian::LuaManager::runString(str.toStdString().c_str());
@@ -301,7 +303,7 @@ void TkDebug::onCommandSubmit(void) {
     _prompt->clear();
     _resizePrompt();
    // _treeWidget->om();
-    Debug::pop(Debug::getStackDepth()-depth);
+    TkDebug::pop(getStackDepth() - depth);
 }
 
 
@@ -371,7 +373,7 @@ void TkDebug::_resizePrompt(void) {
     //_treeWidget->scrollToBottom();
 }
 
-void TkDebug::_postToQueue(const TK_SOURCE src, const SEVERITY level, const QString text) {
+void TkDebug::_postToQueue(const TK_SOURCE src, const int level, const QString text) {
     _mutex->lock();
     elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
     if(_filterEnabled[src][level]) {
@@ -432,7 +434,7 @@ void TkDebug::copyEvent(void) {
 void TkDebug::_processLogEntry(const LogEntry& entry) {
     int src             = entry.source;
     const QString msg   = entry.string;
-    SEVERITY flag       = entry.level;
+    int flag            = entry.level;
 
     QBrush brush;
     _prevItem = new QTreeWidgetItem;
@@ -549,7 +551,7 @@ bool DebugLogTreeWidget::eventFilter(QObject* /*object*/, QEvent *event) {
     return false;
 }
 
-void TkDebug::setFilter(const TK_SOURCE src, const SEVERITY severity, const bool enabled) {
+void TkDebug::setFilter(const TK_SOURCE src, const int severity, const bool enabled) {
     _filterEnabled[src][severity] = enabled;
     _filterActions[src][severity]->setChecked(enabled);
 }

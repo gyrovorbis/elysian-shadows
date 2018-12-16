@@ -49,7 +49,7 @@ void TkSkeleton::setAttrib(std::shared_ptr<SkeletonAttrib> attrib) {
 }
 
 QMenu* TkSkeleton::createContextMenu(void) {
-    MenuStack menuStack("Skeleton");
+    QESTkUtils::MenuStack menuStack("Skeleton");
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {
@@ -258,7 +258,7 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
                             if(attrib) {
                                 unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-                                MenuStack stack("Animation");
+                                QESTkUtils::MenuStack stack("Animation");
                                 stack.insertAction("Delete", [=](bool) {
                                     attrib->setAnimation(index, nullptr);
 
@@ -347,7 +347,7 @@ void TkAnimation::initializeVirtualTableDelegates(QString key) {
                             if(anim) {
                                 unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-                                MenuStack stack("AnimationTrack");
+                                QESTkUtils::MenuStack stack("AnimationTrack");
                                 stack.insertAction("Delete", [=](bool) {
                                     anim->setTrack(index, nullptr);
 

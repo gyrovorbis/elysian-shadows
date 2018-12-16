@@ -20,7 +20,7 @@ bool TkLightSource::validate(QString& str) const {
 }
 
 QMenu* TkLightSource::createContextMenu(void) {
-    MenuStack menuStack("LightSource");
+    QESTkUtils::MenuStack menuStack("LightSource");
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {

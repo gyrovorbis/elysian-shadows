@@ -19,7 +19,7 @@ bool TkCombat::validate(QString& str) const {
 }
 
 QMenu* TkCombat::createContextMenu(void) {
-    MenuStack menuStack("Combat");
+    QESTkUtils::MenuStack menuStack("Combat");
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {

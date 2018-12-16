@@ -2,6 +2,9 @@
 #include <ESToolkit/AssetIO/tk_character.h>
 #include <QESTkUtils/tk_menu_stack.h>
 
+using namespace QESTkUtils;
+
+
 bool TkCharacter::canAddTo(const Entity &entity) const {
     return entity.getCollidable() && entity.getRigidBody();
 }
@@ -9,8 +12,6 @@ bool TkCharacter::canAddTo(const Entity &entity) const {
 bool TkCharacter::canRemoveFrom(const Entity &entity) const {
     return !entity.getCombat();
 }
-
-
 
 QMenu* TkCharacter::createContextMenu(void) {
     MenuStack menuStack("Character");

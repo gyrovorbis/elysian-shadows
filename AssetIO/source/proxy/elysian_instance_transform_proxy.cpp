@@ -756,6 +756,47 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Vector3,
 
 
 /*!
+    \qmltype Quaternion
+    \since 1.6.1
+    \inmodule Engine
+    \brief Represents an orientation or rotation in 3D space
+    A simple 3D vector containing an \l{x}, \l{y}, and \l{z} component.
+
+    \section2 Overloaded Operators
+    The following overloaded operators are implemented in Lua through the respective metamethods.
+    \table
+        \header
+            \li \b Symbol
+            \li \b Operation
+            \li \b Metamethod
+        \row
+            \li \b ==
+            \li Equality
+            \li \l{Vector3::_eq()}
+        \row
+            \li \b +
+            \li Addition
+            \li \l{Vector3::_add()}
+        \row
+            \li \b -
+            \li Subtraction
+            \li \l{Vector3::_sub()}
+        \row
+            \li \b *
+            \li Multiplication
+            \li \l{Vector3::_mult()}
+        \row
+            \li \b /
+            \li Division
+            \li \l{Vector3::_div()}
+    \endtable
+*/
+OOLUA_EXPORT_FUNCTIONS(Quaternion)
+OOLUA_EXPORT_FUNCTIONS_CONST(Quaternion)
+
+
+
+/*!
     \qmltype InstanceTransform
     \since 1.5.8
     \inmodule Engine

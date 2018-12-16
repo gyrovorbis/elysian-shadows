@@ -57,6 +57,7 @@ namespace elysian {
 
     };
 
+
     class Thread {
     public:
         using ThreadFunc    = std::function<int(void*)>;

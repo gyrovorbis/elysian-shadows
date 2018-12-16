@@ -15,7 +15,7 @@ bool TkWarp::canAddTo(const Entity &entity) const {
 }
 
 QMenu* TkWarp::createContextMenu(void) {
-    MenuStack menuStack("Warp");
+    QESTkUtils::MenuStack menuStack("Warp");
 
     menuStack.insertAction("Remove", [&](bool /*checked*/) {
             _entity->removeWarp();

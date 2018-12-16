@@ -37,8 +37,6 @@
 #include <ESGamma/gui/elysian_entity_widget.hpp>
 #include <ESGamma/system/elysian_thread_system.hpp>
 #include <ESGamma/system/elysian_compute_system.hpp>
-
-
 #include <ESToolkit/ui/tk_estoolkit.h>
 #include <QESTkUtils/ui/widget/tk_line_chart.h>
 
@@ -50,7 +48,7 @@ FILE*                       DebugBase::_dbgFile;
 FILE*                       DebugBase::_luaDbgFile;
 Engine*                     DebugBase::_engine          = nullptr;
 GYAtomic                    DebugBase::_stackDepth;
-Debug::SEVERITY             DebugBase::_level           = ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT;
+int                         DebugBase::_level           = ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT;
 Debug::ADV_LOG_WRAP         DebugBase::_advLogWrap      = Debug::ADV_LOG_LOG_OFF;
 Mutex*                      DebugBase::_logMutex        = nullptr;
 
@@ -144,10 +142,10 @@ DbgEvent::~DbgEvent(void) {
 //Invoked by LibGyro (callback function)
 void DebugBase::libGyroPrintf(const GY_DEBUG_SEVERITY level, const char* const str) { Debug::writeLog(LIBGYRO, (SEVERITY)level, str); }
 //Invoked by Lua (always LOG_VERBOSE, not silenced with the rest)
-void DebugBase::luaPrint(const char *string, const SEVERITY lev) { Debug::writeLog(LUA, lev, string); }
+void DebugBase::luaPrint(const char *string, const int lev) { Debug::writeLog(LUA, lev, string); }
 
 // Central endpoint for all debug log calls
-void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERITY level, const char *const str) {
+void DebugBase::writeLog(const DebugBase::SOURCE source, const int level, const char *const str) {
     char buffer[GYRO_PRINTF_BUFFER_SIZE];
 	//only log events that are as important or more important than the current level
 	if(level < _level && source != LUA) return;
@@ -228,7 +226,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 }
 
 // Invoked for non AssetIO Engine logging
-void DebugBase::printf(const Debug::SEVERITY level, const char *const string, ...) {
+void DebugBase::printf(const int level, const char *const string, ...) {
     char buffer[GYRO_PRINTF_BUFFER_SIZE];
 	va_list argptr;
 	//early-out

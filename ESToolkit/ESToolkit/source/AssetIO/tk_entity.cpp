@@ -24,6 +24,8 @@
 #include <ESToolkit/AssetIO/tk_lua_behavior.h>
 #include <ESToolkit/core/tk_undo_item.h>
 
+using namespace QESTkUtils;
+
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
 
 std::shared_ptr<elysian::CollidableAttrib> TkEntity::_selColliderAttrib;

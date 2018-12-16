@@ -92,7 +92,6 @@ namespace elysian {
         void                updateState(const GYVector2& analog);
     };
 
-
     class Controller: public PlayerIODevice {
     private:
         GYVector2           _analogSticks[GY_CONTROLLER_ANALOG_COUNT]   = { { 0.0f, 0.0f } };

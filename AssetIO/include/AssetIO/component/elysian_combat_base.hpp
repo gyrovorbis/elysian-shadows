@@ -219,6 +219,7 @@ namespace elysian {
         float                   getAggroDist(void) const;
         void                    setDeaggroDist(const float dist);
         float                   getDeaggroDist(void) const;
+        bool                    isDead(void) const;
 
     };
 

@@ -147,7 +147,7 @@ void TkDialog::initializeDelegates(void) {
         if(luaFieldItem) {
             auto dialog = luaFieldItem->getTableRef().getValue<shared_ptr<TkDialog>>();
             if(dialog) {
-                MenuStack menu("Add DialogScreen");
+                QESTkUtils::MenuStack menu("Add DialogScreen");
 
                 menu.insertAction("DialogText", [=](bool) {
                     luaFieldItem->getVariant()[dialog->getScreenCount()+1].setVariant(new TkDialogText);
@@ -318,7 +318,7 @@ void TkDialog::initializeVirtualTableDelegates(QString key) {
                     });
 
                     delegate->setContextMenuCallback([=](ESTkStandardItem* item) -> QMenu* {
-                        MenuStack stack("DialogScreen");
+                        QESTkUtils::MenuStack stack("DialogScreen");
                         stack.insertAction("Delete", [=](bool) {
                             delegate->getDeleteCallback()(item);
 
@@ -433,7 +433,7 @@ void TkDialogPrompt::initializeVirtualTableDelegates(QString key) {
                     });
 
                     delegate->setContextMenuCallback([=](ESTkStandardItem* item) -> QMenu* {
-                        MenuStack stack("DialogOption");
+                        QESTkUtils::MenuStack stack("DialogOption");
                         stack.insertAction("Delete", [=](bool) {
                             delegate->getDeleteCallback()(item);
 

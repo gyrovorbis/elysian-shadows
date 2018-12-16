@@ -34,11 +34,19 @@ protected:
 
 class TkDebug:
         public QObject,
+        public QESTkUtils::Debug,
         public elysian::DebugBase
 {
     Q_OBJECT
     friend class DebugBase;
 public:
+
+    enum LOG_SEVERITY {
+        LOG_VERBOSE,
+        LOG_WARNING,
+        LOG_ERROR,
+        LOG_OFF
+    };
 
     enum TK_SOURCE {
         LIBGYRO     = DebugBase::LIBGYRO,
@@ -54,13 +62,13 @@ public:
     };
 
     struct QESTkUtilAdapter: public QESTkUtils::Debug::LogAdapter {
-        virtual void log(QESTkUtils::Debug::LOG_SEVERITY severity, const char* fmt, ...) override {
+        virtual void log(int severity, const char* fmt, ...) override {
             char buffer[GYRO_PRINTF_BUFFER_SIZE];
             va_list argptr;
             va_start(argptr, fmt);
             vsnprintf(buffer, sizeof(buffer), fmt, argptr);
             va_end(argptr);
-            Logf((SEVERITY)severity, "%s", buffer);
+            Logf(severity, "%s", buffer);
         }
         virtual void    push(void) override {
             TkDebug::push();
@@ -71,8 +79,8 @@ public:
 
     } _qestkUtilsLogAdapter;
 
-    static void Log(SEVERITY flag, QString msg, int src = TOOLKIT);
-    static void Logf(SEVERITY flag, const char *string, ...);
+    static void Log(int flag, QString msg, int src = TOOLKIT);
+    static void Logf(int flag, const char *string, ...);
     static void logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
     static void push(void);
@@ -94,8 +102,8 @@ public:
 	}
 
     static void setEVMUActive(bool active=true);
-    static void setFilter(const TK_SOURCE source, const SEVERITY severity, const bool enabled);
-    static bool isFilterEnabled(const TK_SOURCE source, const SEVERITY severity);
+    static void setFilter(const TK_SOURCE source, const int severity, const bool enabled);
+    static bool isFilterEnabled(const TK_SOURCE source, const int severity);
     static void clear(void);
 
     static QString getDebugLogPath(void);
@@ -107,7 +115,7 @@ private:
     struct LogEntry {
         enum TYPE { TEXT, PUSH, POP };
         QString     string;
-        SEVERITY    level;
+        int         level;
         int         source;
         TYPE        type;
     };
@@ -118,7 +126,7 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     static void _servicePendingQueue(void);
-    static void _postToQueue(const TK_SOURCE src, const SEVERITY level, const QString text);
+    static void _postToQueue(const TK_SOURCE src, const int level, const QString text);
     static void _processLogEntry(const LogEntry& entry);
     void        _onLogWidgetContextMenuRequested(const QPoint point);
 
@@ -126,7 +134,7 @@ private:
 
     static void                 _resizePrompt(void);
     virtual bool                eventFilter(QObject* object, QEvent* event) override;
-    static void                 writeLog(const int source, const SEVERITY level, const char* const str);
+    static void                 writeLog(const int source, const int level, const char* const str);
 
                                 TkDebug(void);
     virtual                     ~TkDebug(void) override;
@@ -174,9 +182,9 @@ private:
 
 //========= INLINEZ ==========
 
-inline void TkDebug::writeLog(const int source, const SEVERITY level, const char* const str) {
+inline void TkDebug::writeLog(const int source, const int level, const char* const str) {
     _lastString = str;
-    Log(level, str, (TK_SOURCE)source);
+    Log(level, str, source);
     //elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)source, level, str);
 }
 
@@ -187,7 +195,7 @@ inline QMenu* TkDebug::getFilterMenu(void) {
     return _filterMenu;
 }
 
-inline bool TkDebug::isFilterEnabled(const TK_SOURCE source, const SEVERITY severity) {
+inline bool TkDebug::isFilterEnabled(const TK_SOURCE source, const int severity) {
     Q_ASSERT(source < SOURCE_MAX && severity < LOG_OFF);
     return _filterEnabled[source][severity];
 }

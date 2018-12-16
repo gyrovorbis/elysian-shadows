@@ -17,6 +17,8 @@
 #include <ESGamma/crtp/elysian_input_system.hpp>
 #include <ESGamma/device/elysian_visual_memory_device.hpp>
 
+using namespace QESTkUtils;
+
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),
     _ui(new Ui::AssetDockWidget)

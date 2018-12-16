@@ -2,6 +2,8 @@
 #include <QESTkUtils/tk_menu_stack.h>
 #include <ESToolkit/AssetIO/tk_entity.h>
 
+using namespace QESTkUtils;
+
 bool TkRigidBody::validate(QString &str) const {
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {

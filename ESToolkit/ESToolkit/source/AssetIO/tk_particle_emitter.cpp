@@ -6,8 +6,9 @@
 #include <ESGamma/system/elysian_system.hpp>
 #include <ESToolkit/ESGamma/tk_particle_system.h>
 #include <QApplication>
-
 #include <AssetIO/proxy/elysian_entity_proxy.hpp>
+
+using namespace QESTkUtils;
 
 bool TkParticleEmitter::validate(QString& str) const {
     bool success = true;

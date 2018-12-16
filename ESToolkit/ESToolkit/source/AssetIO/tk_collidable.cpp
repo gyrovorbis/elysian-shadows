@@ -4,7 +4,6 @@
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 
-
 bool TkCollidable::validate(QString &str) const {
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {
@@ -22,14 +21,11 @@ bool TkCollidable::validate(QString &str) const {
             "LOG_ERROR: Collidable component has invalid collider type!");
 
     }
-
     return success;
-
 }
 
-
 QMenu* TkCollidable::createContextMenu(void) {
-    MenuStack menuStack("Collidable");
+    QESTkUtils::MenuStack menuStack("Collidable");
 
     menuStack.insertCheckableAction("Attributes",
         [&](bool checked) {

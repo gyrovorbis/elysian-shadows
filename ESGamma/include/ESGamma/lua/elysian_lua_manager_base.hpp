@@ -61,7 +61,7 @@ namespace elysian {
 		static std::map<const char *, LuaScript *, ltstr> _scripts;
         static OOLUA::Script*       _mainState;
         static int                  _errorCode;
-        static Debug::SEVERITY      _printSeverity;
+        static int                  _printSeverity;
 #ifdef ELYSIAN_LUA_DEBUG
         static int                  _stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH];
         static int                  _stackBalanceRecursiveDepth;
@@ -80,7 +80,6 @@ namespace elysian {
         static RType                _callFunction(LuaScript* script, PTypes&&... parameters);
 
     protected:
-
                                     LuaManagerBase(void) = default;
 		static void					_showError(void);
 		static int					_getErrorCode(void);
@@ -123,7 +122,7 @@ namespace elysian {
 
         static void					rPrintByIndex(const int index, const unsigned depth, const char* name);
         static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
-        static void                 luaPrint(const char*const string, const Debug::SEVERITY severity = Debug::LOG_OFF);
+        static void                 luaPrint(const char*const string, const int severity = Debug::LOG_OFF);
         static bool                 genericIterate(const int index, std::function<void(void)> lambda);
 
         static const char*          getVariadicStringFromStack(void);

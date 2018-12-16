@@ -9,6 +9,7 @@ namespace OOLUA {
     typedef elysian::Vector2            Vector2;
     typedef elysian::Vector3            Vector3;
     typedef elysian::Vector4            Vector4;
+    typedef elysian::Quaternion         Quaternion;
     typedef elysian::InstanceTransform  InstanceTransform;
 
     template<> class Proxy_class<GYVector2>;
@@ -118,6 +119,9 @@ OOLUA_PROXY(Vector4)
     OOLUA_MEM_FUNC_CONST(void, setY, float)
     OOLUA_MEM_FUNC_CONST(void, setZ, float)
     OOLUA_MEM_FUNC_CONST(void, setW, float)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Quaternion)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InstanceTransform)

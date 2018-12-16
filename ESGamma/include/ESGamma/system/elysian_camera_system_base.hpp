@@ -68,6 +68,8 @@ namespace elysian {
         int                     scrEndX         = 0;
         int                     scrEndY         = 0;
 
+        Vector2                 screenToWorldTransform(const Vector2& screenCoords);
+
         void                    updateViewVolumeBoundingRegion(void);
         void                    clipBoundingRegion(const int startX, const int endX, const int startY, const int endY);
         void                    clipBoundingRegion(const Camera& cam);
@@ -194,8 +196,7 @@ namespace elysian {
             { 1.0f, 1.0f, 1.0f },
             { 0.0f, 0.0f, 0.0f },
             0.0f,
-            GY_INST_MAT_FLIP_NONE,
-            nullptr
+            GY_INST_MAT_FLIP_NONE
         })
     {}
     inline float CameraKeyFrame::getFov(void) const { return _fov; }

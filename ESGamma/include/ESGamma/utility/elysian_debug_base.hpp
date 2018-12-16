@@ -23,12 +23,12 @@
 #define ELYSIAN_DEBUG_PREFIX_LOG_WARNING        "! - "
 
 #define ELYSIAN_DEBUG_LOG_PRINTF(level, ...)    do { \
-                                                    Debug::printf(Debug::level, __VA_ARGS__); \
+                                                    elysian::Debug::printf(level, __VA_ARGS__); \
                                                 } while(0)
 
-#define dbgprintf(...)                          ELYSIAN_DEBUG_LOG_PRINTF(LOG_VERBOSE,   __VA_ARGS__)
-#define warnprintf(...)                         ELYSIAN_DEBUG_LOG_PRINTF(LOG_WARNING,  __VA_ARGS__)
-#define errprintf(...)                          ELYSIAN_DEBUG_LOG_PRINTF(LOG_ERROR,     __VA_ARGS__)
+#define dbgprintf(...)                          ELYSIAN_DEBUG_LOG_PRINTF(elysian::DebugBase::LOG_VERBOSE,   __VA_ARGS__)
+#define warnprintf(...)                         ELYSIAN_DEBUG_LOG_PRINTF(elysian::DebugBase::LOG_WARNING,   __VA_ARGS__)
+#define errprintf(...)                          ELYSIAN_DEBUG_LOG_PRINTF(elysian::DebugBase::LOG_ERROR,     __VA_ARGS__)
 
 #define dbgpush()                               Debug::push()
 #define dbgpop()                                Debug::pop()
@@ -80,15 +80,15 @@ namespace elysian {
         bool					_nextFrame;
 
         //Centralized Debug Print/Log Mechanism
-        static void             writeLog(const SOURCE source, const SEVERITY level, const char* const str);
+        static void             writeLog(const SOURCE source, const int level, const char* const str);
         //Invoked by LibGyro (callback function)
         static void             libGyroPrintf(const GY_DEBUG_SEVERITY level, const char* const str);
 
     public:
         //Invoked by Engine
-        static void             printf(const SEVERITY level, const char *const string, ...);
+        static void             printf(const int level, const char *const string, ...);
         //Invoked by Lua (always LOG_VERBOSE, not silenced with the rest)
-        static void             luaPrint(const char *string, const SEVERITY lev = LOG_VERBOSE);
+        static void             luaPrint(const char *string, const int lev = LOG_VERBOSE);
 
         static void             push(void);
         static void             pop(const unsigned count=1);
@@ -102,7 +102,7 @@ namespace elysian {
         GYDebugCallbacks        _gyDbgCallbacks;
 
         static Engine*          _engine;
-        static SEVERITY         _level;
+        static int              _level;
 
                                 DebugBase(void);
     public:
@@ -112,7 +112,7 @@ namespace elysian {
 
         static void             initialize(void);
         static void             setEngine(Engine &eng);
-        static void             setLevel(const SEVERITY level);
+        static void             setLevel(const int level);
 
         void                    update(void);
         void                    processInput(Keyboard*const input);
@@ -150,7 +150,7 @@ namespace elysian {
     }
     inline unsigned DebugBase::getStackDepth(void) { return gyAtomicGet(&_stackDepth); }
     inline void DebugBase::setEngine(Engine &eng) { _engine = &eng; }
-    inline void DebugBase::setLevel(const SEVERITY level) { _level = level; }
+    inline void DebugBase::setLevel(const int level) { _level = (SEVERITY)level; }
     inline const DebugBase::CmdLineArgs& DebugBase::getCmdLineArgs(void) const { return _cmdLineArgs; }
     inline void DebugBase::setNextFrame(const bool val) { _nextFrame = val; }
     inline bool DebugBase::getNextFrame(void) const { return _nextFrame; }

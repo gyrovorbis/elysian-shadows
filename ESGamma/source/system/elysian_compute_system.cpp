@@ -681,7 +681,7 @@ bool ComputeTask::_resolvePrioritizedDevices(bool rendererSharedContext) {
     char buff[100];
     ComputeDevice* firstDev = nullptr;
     ComputeDevice* dev;
-    Debug::SEVERITY severity = Debug::LOG_VERBOSE;
+    int severity = Debug::LOG_VERBOSE;
 
 
     for(size_t i = 0; i < _categoryPriorityList.size(); ++i) {

@@ -12,7 +12,7 @@ std::map<const char*, LuaScript*, ltstr>	LuaManagerBase::_scripts;
 bool                                        LuaManagerBase::_serializing                                                = false;
 OOLUA::Script*								LuaManagerBase::_mainState                                                  = nullptr;
 int											LuaManagerBase::_errorCode                                                  = 0;
-Debug::SEVERITY                             LuaManagerBase::_printSeverity                                              = Debug::LOG_VERBOSE;
+int                                         LuaManagerBase::_printSeverity                                              = Debug::LOG_VERBOSE;
 int                                         LuaManagerBase::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
 int                                         LuaManagerBase::_stackBalanceRecursiveDepth                                 = 0;
 int                                         LuaManagerBase::_traceBackDbgPushes                                         = 0;
@@ -33,7 +33,7 @@ const char									LuaManagerBase::_rPrint[] =
         "return l\n"
     "end\n";
 
-void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY severity) {
+void LuaManagerBase::luaPrint(const char * const string, const int severity) {
     Debug::luaPrint(string, (severity == Debug::LOG_OFF)? _printSeverity : severity);
 }
 
