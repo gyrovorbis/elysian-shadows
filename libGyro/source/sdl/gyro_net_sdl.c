@@ -255,5 +255,3 @@ const char* gyNetResolveIp(GYIpAddress* addr) {
 int gyNetResolveHost(GYIpAddress* addr, const char *host, uint16_t port) {
     return SDLNet_ResolveHost((IPaddress*)addr, host, port);
 }
-
-

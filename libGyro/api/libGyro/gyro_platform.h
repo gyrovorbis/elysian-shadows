@@ -16,6 +16,7 @@
 #define GYRO_PLATFORM_ANDROID	(1<<4)
 #define GYRO_PLATFORM_RASPI     (1<<5)
 #define GYRO_PLATFORM_Qt		(1<<6)
+#define GYRO_PLATFORM_WEB		(1<<7)
 
 //#define GYRO_GLAL_GL_Desktop    (1<<0)
 //#define GYRO_GLAL_GL_ES3        (1<<1)
@@ -37,6 +38,9 @@
 
 #   elif defined(__ICC)
 #       define GYRO_COMPILER_VERSION_STRING "ICC " __ICC
+
+#   elif defined(__EMSCRIPTEN__)
+#       define GYRO_COMPILER_VERSION_STRING "Emscripten " __EMSCRIPTEN__
 
 #   elif defined(__MINGW32_MAJOR_VERSION)
 #       define GYRO_COMPILER_VERSION_STRING "MinGW32 " GYRO_STRINGIFY_VERSION(__MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION, "") " : GCC " GYRO_STRINGIFY_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
@@ -76,6 +80,8 @@
 #define GYRO_ALIGN(a)                   __attribute__ ((aligned (a)));
 
 //Platform-Specific Definitions
+
+
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 
 #   define GYRO_ENDIAN					GYRO_ENDIAN_LITTLE
@@ -213,6 +219,26 @@
 #   define GYRO_NET_PLATFORM_INCLUDE        "sdl/gyro_net_sdl.inl"
 
 
+
+#elif GYRO_PLATFORM == GYRO_PLATFORM_WEB
+#	define GYRO_GLAL
+# define GYRO_GLAL_GL_ES2
+# define GYRO_NO_SPINE
+#	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
+#	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
+
+
+//#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
+#	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE    "gl/gyro_texture_gl.inl"
+#   define GYRO_SHADER_PLATFORM_INCLUDE     "gl/gyro_video_gl.h"
+#	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
+#	define GYRO_AUDIO_PLATFORM_INCLUDE      "al/gyro_audio_al.inl"
+#	define GYRO_INPUT_PLATFORM_INCLUDE      "x86/gyro_input_x86.inl"
+#   define GYRO_FILE_PLATFORM_INCLUDE       "x86/gyro_file_x86.inl"
+#   define GYRO_NET_PLATFORM_INCLUDE        "sdl/gyro_net_sdl.inl"
+
 #endif
 
 
@@ -226,4 +252,3 @@
 //#ifdef __cplusplus
 //}
 //#endif
-
