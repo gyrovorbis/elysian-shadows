@@ -95,7 +95,9 @@ SOURCES += \
     ../../../app/qt/source/gyro_vmu_qt_util.cpp \
     ../../../app/qt/source/gyro_vmu_filesystem_utilization_bar.cpp \
     ../../../app/qt/source/gyro_elysian_vmu_device.cpp \
-    ../../../app/qt/source/gyro_elysian_vmu_flash.cpp
+    ../../../app/qt/source/gyro_elysian_vmu_flash.cpp \
+    ../../../app/qt/source/gyro_vmu_device_model.cpp \
+    ../../../app/qt/source/gyro_vmu_device_properties_dialog.cpp
 
 !vmu_child_app {
     SOURCES += ../../../app/qt/source/main.cpp
@@ -127,7 +129,9 @@ HEADERS += \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_qt_util.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_device.hpp \
-    ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_flash.hpp
+    ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_flash.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_device_model.hpp \
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_device_properties_dialog.hpp
 
 !raspberrypi {
 
@@ -153,7 +157,8 @@ FORMS += \
     $${SOURCE_ROOT}/ui/gyro_vmu_tcp_dialog.ui \
     $${SOURCE_ROOT}/ui/gyro_vmu_com_dialog.ui \
     $${SOURCE_ROOT}/ui/gyro_vmu_buzzer_dialog.ui \
-    ../../../app/qt/ui/jet_set_radio_graffiti_tool.ui
+    ../../../app/qt/ui/jet_set_radio_graffiti_tool.ui \
+    ../../../app/qt/ui/gyro_vmu_device_properties_dialog.ui
 
 
 EVMU_CORE_PATH      = ../../../evmu-core
@@ -286,5 +291,6 @@ RESOURCES += \
 
 DISTFILES += \
     ../../../app/qt/resource/docs/ElysianVMU.qch \
-    ../../../app/qt/resource/docs/ElysianVMU.qhc
+    ../../../app/qt/resource/docs/ElysianVMU.qhc \
+    ../../../app/qt/resource/images/color_swatch_icon.png
 

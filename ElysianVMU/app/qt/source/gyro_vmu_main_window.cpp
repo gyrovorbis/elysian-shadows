@@ -50,6 +50,8 @@
 #include <ElysianVMU/gyro_vmu_qt_util.hpp>
 #include <ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp>
 #include <ElysianVMU/gyro_vmu_qt_util.hpp>
+#include <ElysianVMU/gyro_vmu_device_model.hpp>
+#include <ElysianVMU/gyro_vmu_device_properties_dialog.hpp>
 
 #define Q_CSTR(a) (a.toStdString().c_str())
 
@@ -155,6 +157,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _fileSystemBar(new VmuFileSystemUtilizationBar),
     _fileSysTableModel(new VmuFileSystemTableModel),
     _fileSysTable(new VmuFileSystemTableView()),
+    _deviceTable(new VmuDeviceTableView()),
     _tcpDialog(new VmuTcpDialog),
     _buzzerDialog(new VmuBuzzerDialog),
     _statusLabel(new QLabel("Drag & Drop VMU Files")),
@@ -389,6 +392,8 @@ VMUMainWindow::~VMUMainWindow(void)
     delete _comDialog;
 #endif
     delete _tcpDialog;
+    delete _jsrGraffitiTool;
+    delete _propertiesDialog;
     delete _ui;
 }
 
@@ -1478,4 +1483,22 @@ void VMUMainWindow::on_actionRAM_Address_Space_triggered(void)
 void VMUMainWindow::on_actionFlash_Address_Space_triggered(void)
 {
     _showAddressSpaceModel(_dev, VMU_ADDRESS_SPACE_MODEL_FILESYSTEM);
+}
+
+void VMUMainWindow::on_actionDevice_Manager_triggered(void)
+{
+    if(!_deviceTable->model())
+        _deviceTable->setModel(new VmuDeviceTableModel(_dev));
+
+    _deviceTable->show();
+}
+
+void VMUMainWindow::on_actionDevice_Properties_triggered()
+{
+    if(!_propertiesDialog) {
+        _propertiesDialog = new VmuDevicePropertiesDialog();
+    }
+    _propertiesDialog->setDevice(_dev);
+    _propertiesDialog->show();
+
 }

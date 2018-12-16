@@ -198,7 +198,11 @@
     </widget>
     <addaction name="actionPreserve_Aspect_Ratio"/>
     <addaction name="menuPixel_Perfect_Aspect_Zoom"/>
+    <addaction name="separator"/>
+    <addaction name="actionDevice_Manager"/>
+    <addaction name="actionDevice_Properties"/>
     <addaction name="actionFilesystem"/>
+    <addaction name="separator"/>
     <addaction name="menuDebugger"/>
    </widget>
    <addaction name="menuFile"/>
@@ -565,6 +569,16 @@
   <action name="actionFlash_Address_Space">
    <property name="text">
     <string>Flash Address Space</string>
+   </property>
+  </action>
+  <action name="actionDevice_Manager">
+   <property name="text">
+    <string>Device Manager</string>
+   </property>
+  </action>
+  <action name="actionDevice_Properties">
+   <property name="text">
+    <string>Device Properties</string>
    </property>
   </action>
  </widget>

@@ -8,7 +8,8 @@
 #include <evmu-core/gyro_vmu_memory.h>
 #include <ElysianVMU/gyro_elysian_vmu_flash.hpp>
 
-#define ELYSIAN_VMU_READ_INVALID_VALUE  0xaa
+#define ELYSIAN_VMU_READ_INVALID_VALUE              0xaa
+#define ELYSIAN_VMU_DEVICE_BUILTIN_ICON_RSRC_DIR    ":/volume_icons/"
 
 struct LCDFile;
 
@@ -17,8 +18,12 @@ private:
     VMUDevice*			_dev = nullptr;
 
 public:
+
+    static QPixmap      getBuiltinVolumeIcon(unsigned index);
+
                         EVmuDevice(void) = default;
                         EVmuDevice(VMUDevice* dev);
+
     bool                update(float deltaTime) const;
     bool                isNull(void) const;
     bool                saveState(QString path) const;
@@ -34,6 +39,13 @@ public:
     uint16_t            getProgramCounter(void) const;
     bool                setProgramCounter(uint16_t address) const;
     LCDFile*            getLcdFile(void) const;
+
+    bool                hasCustomVolumeColor(void) const;
+    bool                hasCustomVolumeIcon(void) const;
+    uint16_t            getVolumeIconShape(void) const;
+    void                setVolumeIconShape(uint16_t index);
+    QColor              getVolumeColor(void) const;
+    void                setVolumeColor(QColor color);
 
     QPixmap             getVolumeDcIcon(void) const;
     QPixmap             getVolumeVmuIcon(void) const;
@@ -83,6 +95,8 @@ public:
                         operator VMUDevice*(void) const;
                         operator bool(void) const;
     const EVmuDevice&   operator =(VMUDevice* dev);
+    bool                operator ==(const EVmuDevice& rhs) const;
+    bool                operator !=(const EVmuDevice& rhs) const;
 
 
     //===== IMPLEMENT ME!!!======
@@ -95,7 +109,98 @@ public:
     // save/load state
     // export
 
+
+
 };
+
+
+
+template<typename Derived>
+class VirtualByteArray {
+public:
+    size_t getSize(void) const {
+        return static_cast<const Derived*>(this)->_getSize();
+    }
+
+    bool setByte(size_t offset, uint8_t value) {
+        return static_cast<Derived*>(this)->_setByte(offset, value);
+    }
+
+    uint8_t getByte(size_t offset) const {
+            return static_cast<const Derived*>(this)->_getByte(offset);
+    }
+
+    template<typename T>
+    bool extract(size_t offset, T* data) {
+        return memcpy(data, offset, sizeof(T));
+    }
+
+    bool memcpy(void* data, size_t offset, size_t size) {
+        if(offset + size > getSize()) return false;
+
+        for(size_t i = 0; i < size; ++i) {
+            *(((uint8_t*)data)+i) = getByte(offset + i);
+        }
+
+        return true;
+    }
+
+    uint8_t     operator[](size_t offset) { return getByte(offset); }
+
+};
+
+class VmuFlashByteArray: public VirtualByteArray<VmuFlashByteArray> {
+    EVmuDevice          _dev;
+    EVmuFlashDirEntry   _entry;
+    size_t              _size;
+
+    uint16_t _blockFatList[VMU_FLASH_BLOCK_COUNT_DEFAULT];
+public:
+    uint8_t _getByte(size_t address) const {
+        size_t addr = getFlashAddrFromFileOffset(address);
+        if(addr < getSize()) {
+            return _dev.readFlashByte(addr);
+        } return 0;
+    }
+
+    size_t _getSize(void) const {
+        return _size;
+    }
+
+    size_t getFlashAddrFromFileOffset(size_t offset) const {
+        size_t block        = _blockFatList[offset / VMU_FLASH_BLOCK_SIZE];
+        if(block == VMU_FLASH_BLOCK_FAT_UNALLOCATED) return SIZE_T_MAX;
+        size_t blockOffset  = offset % VMU_FLASH_BLOCK_SIZE;
+        return block * VMU_FLASH_BLOCK_SIZE + blockOffset;
+    }
+
+    bool _setByte(size_t address, uint8_t value) {
+        size_t addr = getFlashAddrFromFileOffset(address);
+        if(addr < getSize()) {
+            return _dev.writeFlashByte(addr, value);
+        } return false;
+    }
+
+    VmuFlashByteArray(VMUDevice* dev, VMUFlashDirEntry* entry):
+        _dev(dev),
+        _entry(dev, entry)
+    {
+        for(int i = 0; i < VMU_FLASH_BLOCK_COUNT_DEFAULT; ++i)
+            _blockFatList[i] = VMU_FLASH_BLOCK_FAT_UNALLOCATED;
+
+        _size = _entry.getFileSizeBytes();
+
+        uint16_t fatBlock = _entry.getFirstBlock();
+        int idx = 0;
+
+        while(fatBlock != VMU_FLASH_BLOCK_FAT_LAST_IN_FILE) {
+            _blockFatList[idx++] = fatBlock;
+            fatBlock = gyVmuFlashBlockNext(dev, fatBlock);
+        }
+
+    }
+};
+
 
 
 
@@ -103,6 +208,13 @@ public:
 inline EVmuDevice::EVmuDevice(VMUDevice* dev):
     _dev(dev)
 {}
+
+inline bool EVmuDevice::operator ==(const EVmuDevice& rhs) const {
+    return _dev == rhs._dev;
+}
+inline bool EVmuDevice::operator !=(const EVmuDevice& rhs) const {
+    return !(*this == rhs);
+}
 
 inline bool EVmuDevice::isNull(void) const {
     return !_dev;

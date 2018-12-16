@@ -50,6 +50,8 @@ class   JetSetRadioGraffitiTool;
 class   VmuFileSystemTableModel;
 class   VmuFileSystemTableView;
 class   VmuFileSystemUtilizationBar;
+class   VmuDeviceTableView;
+class   VmuDevicePropertiesDialog;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 class   VmuComDialog;
 #endif
@@ -139,8 +141,10 @@ protected Q_SLOTS:
     void on_actionFilesystem_triggered(void);
     void on_actionExport_Flash_Image_triggered(void);
     void on_actionNew_Flash_Image_triggered(void);
-    void on_actionFlash_Address_Space_triggered();
-    void on_actionRAM_Address_Space_triggered();
+    void on_actionFlash_Address_Space_triggered(void);
+    void on_actionRAM_Address_Space_triggered(void);
+    void on_actionDevice_Manager_triggered(void);
+    void on_actionDevice_Properties_triggered(void);
 
 private:
 
@@ -182,12 +186,15 @@ private:
     VmuFileSystemTableModel*
                         _fileSysTableModel  = nullptr;
     VmuFileSystemTableView* _fileSysTable   = nullptr;
+    VmuDeviceTableView* _deviceTable        = nullptr;
     VmuTcpDialog*       _tcpDialog          = nullptr;
     VmuBuzzerDialog*    _buzzerDialog       = nullptr;
     VmuAddressSpaceExplorerWidget*
                         _memBrowser   = nullptr;
     JetSetRadioGraffitiTool*
                         _jsrGraffitiTool    = nullptr;
+    VmuDevicePropertiesDialog*
+                        _propertiesDialog   = nullptr;
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     VmuComDialog*       _comDialog          = nullptr;
 #endif

@@ -15,7 +15,7 @@ static struct VMUQESTkUtilsDebugAdapter:
 {
     virtual void push(void) override { _gyPush(); }
     virtual void pop(unsigned count) override { _gyPop(count); }
-    virtual void log(QESTkUtils::Debug::LOG_SEVERITY severity, const char* fmt, ...) override {
+    virtual void log(int severity, const char* fmt, ...) override {
         char buffer[GYRO_PRINTF_BUFFER_SIZE];
         va_list argptr;
         va_start(argptr, fmt);
