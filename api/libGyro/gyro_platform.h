@@ -217,9 +217,9 @@
 
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_WEB
-#   define                                  GYRO_GLAL
-#   define                                  GYRO_GLAL_GL_Desktop
-#   define                                  GY_CL_OPENGL_INTEROP
+#	define GYRO_GLAL
+# define GYRO_GLAL_GL_ES2
+# define GYRO_NO_SPINE
 #	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
 
