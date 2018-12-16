@@ -24,3 +24,4 @@ void gyTimerSleep(const unsigned long duration) {
     (void)duration;
     QApplication::processEvents();
 }
+

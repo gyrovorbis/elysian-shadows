@@ -73,6 +73,8 @@
 #endif
 
 
+#define GYRO_ALIGN(a)                   __attribute__ ((aligned (a)));
+
 //Platform-Specific Definitions
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 
@@ -88,13 +90,13 @@
 #	define GYRO_VIDEO_PLATFORM_INCLUDE	"x86/gyro_video_x86.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE "glal/gyro_texture_glal.inl"
 
-#	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)));
-#	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)));
+#	define GYRO_MATRIX4_ALIGNMENT			16
+#	define GYRO_VECTOR4_ALIGNMENT			16
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
 
-#	define GYRO_MATRIX4_ALIGN			__attribute__((aligned(32)));
-#	define GYRO_VECTOR4_ALIGN			__attribute__((aligned(16)));
+#	define GYRO_MATRIX4_ALIGNMENT			32
+#	define GYRO_VECTOR4_ALIGNMENT			16
 
 #   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
 #   ifndef GYRO_MATH_SOFTWARE
@@ -117,8 +119,8 @@
 #	define GYRO_GLAL
 #   define GYRO_GLAL_GL_ES3
 #	define GYRO_ENDIAN						GYRO_ENDIAN_LITTLE
-#	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (32)))
-#	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
+#	define GYRO_MATRIX4_ALIGNMENT			32
+#	define GYRO_VECTOR4_ALIGNMENT			16
 
 #   define GYRO_VIDEO_PLATFORM_INCLUDE      "ios/gyro_video_ios.inl"
 #	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
@@ -147,8 +149,8 @@
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE	"glal/gyro_texture_glal.inl"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE		"android/gyro_video_android.inl"
 
-#	define GYRO_MATRIX4_ALIGN				__attribute__ ((aligned (32)));
-#	define GYRO_VECTOR4_ALIGN				__attribute__ ((aligned (16)));
+#	define GYRO_MATRIX4_ALIGNMENT			32
+#	define GYRO_VECTOR4_ALIGNMENT			16
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_RASPI
 
@@ -156,11 +158,11 @@
 #	define GYRO_GLAL
 #   define GYRO_GLAL_GL_ES3
 #ifndef GYRO_MATH_NOASM
-#	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
-#	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
+#	define GYRO_MATRIX4_ALIGNMENT           16
+#	define GYRO_VECTOR4_ALIGNMENT           16
 #else
-#	define GYRO_MATRIX4_ALIGN
-#	define GYRO_VECTOR4_ALIGN
+#	define GYRO_MATRIX4_ALIGNMENT
+#	define GYRO_VECTOR4_ALIGNMENT
 #endif
 
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
@@ -190,11 +192,13 @@
 #   define                                  GYRO_GLAL_GL_Desktop
 #   define                                  GY_CL_OPENGL_INTEROP
 #ifndef GYRO_MATH_NOASM
-#	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
-#	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
+#	define GYRO_MATRIX4_ALIGNMENT           16
+#	define GYRO_VECTOR4_ALIGNMENT           16
+#   define GYRO_QUATERNION_ALIGNMENT        16
 #else
-#	define GYRO_MATRIX4_ALIGN
-#	define GYRO_VECTOR4_ALIGN
+#	define GYRO_MATRIX4_ALIGNMENT
+#	define GYRO_VECTOR4_ALIGNMENT
+#   define GYRO_QUATERNION_ALIGNMENT
 #endif
 
 //#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
