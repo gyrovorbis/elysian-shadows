@@ -92,7 +92,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
 
     if(!fieldItem) return nullptr;
 
-    MenuStack menu("PropertyItem");
+    QESTkUtils::MenuStack menu("PropertyItem");
 
     menu.push("type");
 
