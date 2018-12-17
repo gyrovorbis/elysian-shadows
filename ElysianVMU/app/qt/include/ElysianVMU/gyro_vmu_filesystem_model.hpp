@@ -4,7 +4,7 @@
 #include <QAbstractTableModel>
 #include <QTableView>
 #include <evmu-core/gyro_vmu_vms.h>
-#include <ElysianVMU/gyro_elysian_vmu_device.hpp>
+#include <ElysianVMU/qevmu_device.hpp>
 
 #define VMU_ICON_UPDATE_ANIMATION_INTERVAL_MS   33
 
@@ -49,7 +49,7 @@ public:
     };
 
 private:
-    EVmuDevice              _dev;
+    QtVmuDevice              _dev;
     QTimer*                 _animTimer  = nullptr;
     int                     _rowCount   = 0;
 

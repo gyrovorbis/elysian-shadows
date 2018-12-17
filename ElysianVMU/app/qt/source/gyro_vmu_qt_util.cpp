@@ -10,7 +10,7 @@
 #include <evmu-core/gyro_vmu_extra_bg_pvr.h>
 #include <evmu-core/gyro_vmu_pso_img.h>
 #include <QESTkUtils/tk_debug_log_stack.h>
-#include <ElysianVMU/gyro_elysian_vmu_flash.hpp>
+#include <ElysianVMU/qevmu_flash.hpp>
 #include <libGyro/gyro_system_api.h>
 #include <QDebug>
 #include <QFileInfo>
@@ -213,7 +213,7 @@ bool VmuEyecatchCache::exportAsPNG(const VMUFlashDirEntry* dirEntry, QString fil
 
 }
 
-QImage VmuPsoImgBank::createPsoImgImage(const EVmuFlashDirEntry& flashEntry, QStringList& charNameList) {
+QImage VmuPsoImgBank::createPsoImgImage(const QtVmuFlashDirEntry& flashEntry, QStringList& charNameList) {
     auto vms = flashEntry.getVmsHeader();
     uint8_t* data = new uint8_t[flashEntry.getFileSizeBlocks() * VMU_FLASH_BLOCK_SIZE];
 
@@ -318,7 +318,7 @@ bool VmuQtUtils::loadVMUImage(VMUDevice* dev,
     if(entry) *entry = dirEntry;
 
     if(stats == VMU_LOAD_IMAGE_SUCCESS && dirEntry) {
-        EVmuFlashDirEntry flashEntry(dev, dirEntry);
+        QtVmuFlashDirEntry flashEntry(dev, dirEntry);
 #if 0
         if(flashEntry.getFileName() == "PSO______IMG") {
             createPsoImgPixmap(EVmuFlashDirEntry(flashEntry));
@@ -713,7 +713,7 @@ VmuPsoImgBankEntry* VmuPsoImgBank::createEntry(VMUDevice* device, VMUFlashDirEnt
         goto done;
     }
 
-    img = createPsoImgImage(EVmuFlashDirEntry(device, dirEntry), nameList);
+    img = createPsoImgImage(QtVmuFlashDirEntry(device, dirEntry), nameList);
 
     if(img.isNull()) {
         _gyLog(GY_DEBUG_ERROR, "Failed to create QImage from EXTRA.BG.PVR raw data!");

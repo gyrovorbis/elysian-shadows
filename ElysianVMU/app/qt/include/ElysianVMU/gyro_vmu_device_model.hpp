@@ -2,7 +2,7 @@
 #define GYRO_VMU_DEVICE_MODEL_HPP
 
 #include <QAbstractTableModel>
-#include <ElysianVMU/gyro_elysian_vmu_device.hpp>
+#include <ElysianVMU/qevmu_device.hpp>
 #include <QTableView>
 #include <QPixmap>
 
@@ -32,7 +32,7 @@ public:
     };
 
 private:
-    EVmuDevice              _dev;
+    QtVmuDevice             _dev;
     QPixmap                 _volumeIcon;
     int                     _rowCount   = 1;
 

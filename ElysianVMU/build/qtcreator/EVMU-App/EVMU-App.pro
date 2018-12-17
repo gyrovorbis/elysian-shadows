@@ -33,6 +33,7 @@ INCLUDEPATH += ../../../app/qt \
     ../../../app/qt/include/ElysianVMU \
     ../../../evmu-core/include \
     ../../../evmu-core/include/evmu-core \
+    ../../../evmu-core/wrappers/cpp/include \
     $${LIBGYRO_PATH}/api \
     $${LIBGYRO_PATH}/api/libGyro \
     ../../../QESTkUtils/include/
@@ -94,10 +95,12 @@ SOURCES += \
     ../../../app/qt/source/gyro_vmu_filesystem_model.cpp \
     ../../../app/qt/source/gyro_vmu_qt_util.cpp \
     ../../../app/qt/source/gyro_vmu_filesystem_utilization_bar.cpp \
-    ../../../app/qt/source/gyro_elysian_vmu_device.cpp \
-    ../../../app/qt/source/gyro_elysian_vmu_flash.cpp \
     ../../../app/qt/source/gyro_vmu_device_model.cpp \
-    ../../../app/qt/source/gyro_vmu_device_properties_dialog.cpp
+    ../../../app/qt/source/gyro_vmu_device_properties_dialog.cpp \
+    ../../../evmu-core/wrappers/cpp/source/evmu_device.cpp \
+    ../../../evmu-core/wrappers/cpp/source/evmu_flash.cpp \
+    ../../../app/qt/source/qevmu_device.cpp \
+    ../../../app/qt/source/qevmu_flash.cpp
 
 !vmu_child_app {
     SOURCES += ../../../app/qt/source/main.cpp
@@ -128,10 +131,12 @@ HEADERS += \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_model.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_qt_util.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_filesystem_utilization_bar.hpp \
-    ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_device.hpp \
-    ../../../app/qt/include/ElysianVMU/gyro_elysian_vmu_flash.hpp \
     ../../../app/qt/include/ElysianVMU/gyro_vmu_device_model.hpp \
-    ../../../app/qt/include/ElysianVMU/gyro_vmu_device_properties_dialog.hpp
+    ../../../app/qt/include/ElysianVMU/gyro_vmu_device_properties_dialog.hpp \
+    ../../../evmu-core/wrappers/cpp/include/evmu-core-cpp/evmu_device.hpp \
+    ../../../evmu-core/wrappers/cpp/include/evmu-core-cpp/evmu_flash.hpp \
+    ../../../app/qt/include/ElysianVMU/qevmu_device.hpp \
+    ../../../app/qt/include/ElysianVMU/qevmu_flash.hpp
 
 !raspberrypi {
 

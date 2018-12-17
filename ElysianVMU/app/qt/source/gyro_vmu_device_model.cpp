@@ -1,4 +1,5 @@
 #include <ElysianVMU/gyro_vmu_device_model.hpp>
+#include <ElysianVMU/qevmu_flash.hpp>
 #include <QESTkUtils/tk_menu_stack.h>
 #include <QApplication>
 #include <QFontDatabase>
@@ -196,7 +197,7 @@ bool VmuDeviceTableModel::insertRows(int row, int count, const QModelIndex &pare
 bool VmuDeviceTableModel::removeRows(int row, int count, const QModelIndex &parent) {
     bool success = true;
 
-    std::vector<EVmuFlashDirEntry> entries;
+    std::vector<QtVmuFlashDirEntry> entries;
     for(int r = 0; r < count; ++r) {
         entries.push_back(_dev.getFileFlashDirEntry(row-r));
     }

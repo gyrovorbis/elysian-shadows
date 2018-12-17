@@ -3,7 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QTableView>
-#include <ElysianVMU/gyro_elysian_vmu_device.hpp>
+#include <ElysianVMU/qevmu_device.hpp>
 
 #define ADDRESS_SPACE_MODEL_BYTES_PER_ROW       2
 #define ADDRESS_SPACE_MODEL_HEADER_COL_COUNT    0
@@ -108,7 +108,7 @@ public:
 
 class VmuAddressSpaceModel: public QESTkUtils::AddressSpaceModel {
 protected:
-    EVmuDevice          _dev;
+    QtVmuDevice          _dev;
 public:
 
                         VmuAddressSpaceModel(VMUDevice* dev, uintptr_t baseAddress, uintptr_t addressRange, QObject* parent=nullptr);

@@ -52,6 +52,7 @@
 #include <ElysianVMU/gyro_vmu_qt_util.hpp>
 #include <ElysianVMU/gyro_vmu_device_model.hpp>
 #include <ElysianVMU/gyro_vmu_device_properties_dialog.hpp>
+#include <ElysianVMU/qevmu_flash.hpp>
 
 #define Q_CSTR(a) (a.toStdString().c_str())
 
@@ -714,7 +715,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
     VMUFlashDirEntry* rawDirEntry = nullptr;
     bool status = VmuQtUtils::loadVMUImage(_dev, filepath, &rawDirEntry, true);
 
-    EVmuFlashDirEntry   dirEntry(_dev, rawDirEntry);
+    QtVmuFlashDirEntry   dirEntry(_dev, rawDirEntry);
 
     if(status) {
 
@@ -732,7 +733,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
         }
 
         if(dirEntry) {
-            QString msg = QString("Loaded: %1 [%2]").arg(dirEntry.getFileName()).arg(dirEntry.getFileTypeStr());
+            QString msg = QString("Loaded: %1 [%2]").arg(dirEntry.getFileName()).arg(dirEntry.getFileTypeStr().c_str());
             _ui->statusbar->showMessage(msg, VMU_STATUS_TEMP_TIMEOUT);
             _statusBarChanged = true;
             _updateStatusbar();
@@ -790,7 +791,7 @@ void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 void VMUMainWindow::on_actionSave_State_triggered(void)
 {
     if(!_running) return;
-    if(_dev.saveState(_workingDir->absoluteFilePath(STATE_FILE))) {
+    if(_dev.saveState(_workingDir->absoluteFilePath(STATE_FILE).toStdString())) {
         _ui->statusbar->showMessage("State Saved.", VMU_STATUS_TEMP_TIMEOUT);
     }
 }
@@ -799,7 +800,7 @@ void VMUMainWindow::on_actionLoad_State_triggered(void)
 {
     if(!_running) return;
 
-    if(_dev.loadState(_workingDir->absoluteFilePath(STATE_FILE))) {
+    if(_dev.loadState(_workingDir->absoluteFilePath(STATE_FILE).toStdString())) {
         _ui->statusbar->showMessage("State Loaded.", VMU_STATUS_TEMP_TIMEOUT);
     }
     _gyPop(1);

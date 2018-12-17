@@ -21,6 +21,7 @@
 #include <QFontDatabase>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <ElysianVMU/qevmu_flash.hpp>
 
 VmuFileSystemTableModel::VmuFileSystemTableModel(VMUDevice* dev, QObject* parent):
     QAbstractTableModel(parent),
@@ -52,11 +53,11 @@ int VmuFileSystemTableModel::columnCount(const QModelIndex& parent) const {
 QVariant VmuFileSystemTableModel::data(const QModelIndex& index, int role) const {
     int row = index.row();
 
-    auto dirEntry   = _dev.getFileFlashDirEntry(row);
+    auto dirEntry   = QtVmuFlashDirEntry(_dev.getFileFlashDirEntry(row));
     if(!dirEntry) return QVariant();
 
-    auto vmsHeader  = dirEntry.getVmsHeader();
-    auto iconData   = dirEntry.getIconDataFileInfo();
+    auto vmsHeader  = QtVmuVmsHeader(dirEntry.getVmsHeader());
+    auto iconData   = QtVmuIconDataVmsFileInfo(dirEntry.getIconDataFileInfo());
     auto extraBgPvr = dirEntry.isExtraBgPvr();
     //if(!vmsHeader) return QVariant(); IconData has no VMS header!!!
 
@@ -83,10 +84,10 @@ QVariant VmuFileSystemTableModel::data(const QModelIndex& index, int role) const
 
         case COL_FILE_TYPE:
             if(iconData)  return "ICONDATA";
-            else return dirEntry.getFileTypeStr();
+            else return QString::fromStdString(dirEntry.getFileTypeStr());
 
         case COL_CREATED: //Mouse-over to give entire, full-detail (Century, day of week, second)
-            return dirEntry.getCreationDateStr();
+            return QString::fromStdString(dirEntry.getCreationDateStr());
 
         case COL_CRC:
             if(!iconData) return vmsHeader.getCrc();
@@ -145,10 +146,12 @@ QVariant VmuFileSystemTableModel::data(const QModelIndex& index, int role) const
 
         case COL_FILE_TYPE:
             if(iconData) return "Custom VMU Icon (Hidden File)";
-            else return dirEntry.getFileTypeStr();
+            else return QString::fromStdString(dirEntry.getFileTypeStr());
 
         case COL_CREATED: //Mouse-over to give entire, full-detail (Century, day of week, second)
-            return dirEntry.getCreationDateStr() + QString(" (") + dirEntry.getCreationDayOfWeekStr() + QString(")");
+            return QString::fromStdString(dirEntry.getCreationDateStr()) +
+                   QString(" (") + QString::fromStdString(dirEntry.getCreationDayOfWeekStr()) +
+                    QString(")");
 
         case COL_CRC:
             if(!iconData) {
@@ -399,7 +402,7 @@ bool VmuFileSystemTableModel::insertRows(int row, int count, const QModelIndex &
 bool VmuFileSystemTableModel::removeRows(int row, int count, const QModelIndex &parent) {
     bool success = true;
 
-    std::vector<EVmuFlashDirEntry> entries;
+    std::vector<QtVmuFlashDirEntry> entries;
     for(int r = 0; r < count; ++r) {
         entries.push_back(_dev.getFileFlashDirEntry(row-r));
     }
@@ -424,7 +427,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
     QESTkUtils::MenuStack stack("Flash Entry");
 
     VmuFileSystemTableModel*    fsModel     = static_cast<VmuFileSystemTableModel*>(model());
-    EVmuDevice                  dev         = fsModel->getDevice();
+    QtVmuDevice                 dev         = fsModel->getDevice();
     int                         row         = index.row();
     auto                        dirEntry    = dev.getFileFlashDirEntry(row);
     auto                        vmsHeader   = dirEntry.getVmsHeader();
@@ -610,7 +613,7 @@ void VmuFileSystemTableView::_contextMenuRequested(const QPoint& pos) {
                                                                 &defaultSelected);
                     if(path.isEmpty()) return;
 
-                    auto* entry = dirEntry.getPsoImgBankEntry();
+                    auto* entry = QtVmuFlashDirEntry(dirEntry).getPsoImgBankEntry();
                     if(entry) {
                         entry->exportImage(path);
                     }

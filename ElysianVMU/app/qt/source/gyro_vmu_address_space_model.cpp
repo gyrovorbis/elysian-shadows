@@ -7,7 +7,7 @@
 #include <QHeaderView>
 #include <QESTkUtils/tk_debug_log_stack.h>
 #include <libGyro/gyro_system_api.h>
-#include <ElysianVMU/gyro_elysian_vmu_flash.hpp>
+#include <ElysianVMU/qevmu_flash.hpp>
 
 
 const VmuModelAddrSegmentUIProperties VmuCurrentRamAddressSpaceModel::_addrSegProperties[VMU_MODEL_ADDR_SEGMENT_COUNT] {

@@ -6,7 +6,7 @@
 #include <QVector>
 #include <stdint.h>
 #include <libGyro/gyro_system_api.h>
-#include <ElysianVMU/gyro_elysian_vmu_device.hpp>
+#include <ElysianVMU/qevmu_device.hpp>
 #include <functional>
 
 #define VMU_FB_DEFAULT_WIDTH            48
@@ -206,7 +206,7 @@ private:
     QMenu*              _loadGameMenu       = nullptr;
     QMenu*              _saveGameMenu       = nullptr;
     QGraphicsPixmapItem* _pixmapItem        = nullptr;
-    EVmuDevice          _dev;
+    QtVmuDevice          _dev;
     QGifImage*          _animGif            = nullptr;
     int64_t             _prevAnimFrameTicks = 0;
     int64_t             _prevTicks          = 0;

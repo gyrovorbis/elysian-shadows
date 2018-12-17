@@ -3,6 +3,7 @@
 
 #include <evmu-core/gyro_vmu_vms.h>
 #include <evmu-core/gyro_vmu_flash.h>
+#include <QESTkUtils/tk_debug_log_stack.h>
 
 #include <QPixmap>
 #include <QMap>
@@ -14,7 +15,7 @@ struct VMSFileInfo;
 struct IconDataFileInfo;
 struct VmuExtraBgPvrFileInfo;
 
-class EVmuFlashDirEntry;
+class QtVmuFlashDirEntry;
 
 namespace QESTkUtils {
 
@@ -231,7 +232,7 @@ class VmuPsoImgBank:
                                      QMap>
 {
 private:
-    static QImage               createPsoImgImage(const EVmuFlashDirEntry& dirEntry, QStringList& charNamesList);
+    static QImage               createPsoImgImage(const QtVmuFlashDirEntry& dirEntry, QStringList& charNamesList);
 
 public:
     static VmuPsoImgBankKey     createKey(VMUDevice* device, const VMUFlashDirEntry* dirEntry);

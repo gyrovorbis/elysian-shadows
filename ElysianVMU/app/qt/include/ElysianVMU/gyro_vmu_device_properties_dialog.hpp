@@ -2,8 +2,7 @@
 #define GYRO_VMU_DEVICE_PROPERTIES_DIALOG_HPP
 
 #include <QDialog>
-#include <gyro_elysian_vmu_device.hpp>
-#include <evmu-core/gyro_vmu_flash.h>
+#include <ElysianVMU/qevmu_device.hpp>
 
 #define DC_VOLUME_ICONS_BUILTIN_BASE_PATH ":/volume_icons"
 
@@ -18,7 +17,7 @@ class VmuDevicePropertiesDialog : public QDialog {
     Q_OBJECT
 private:
     Ui::VmuDevicePropertiesDialog*  _ui = nullptr;
-    EVmuDevice                      _dev;
+    QtVmuDevice                     _dev;
 
     static QPixmap*                  _builtinVolIcons[VMU_FLASH_ROOT_BLOCK_ICON_SHAPE_MAX];
 
@@ -42,7 +41,7 @@ public:
     explicit            VmuDevicePropertiesDialog(QWidget* parent=nullptr);
 
 
-    void                setDevice(EVmuDevice dev);
+    void                setDevice(QtVmuDevice dev);
 
 
 
@@ -58,7 +57,7 @@ public Q_SLOTS:
 
 
 //====== INLINEZ =======
-inline void VmuDevicePropertiesDialog::setDevice(EVmuDevice dev) {
+inline void VmuDevicePropertiesDialog::setDevice(QtVmuDevice dev) {
     //if(_dev != dev) {
         _dev = dev;
         _updateAll();
