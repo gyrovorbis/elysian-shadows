@@ -224,9 +224,9 @@
 #	define GYRO_GLAL
 # define GYRO_GLAL_GL_ES2
 # define GYRO_NO_SPINE
-#	define GYRO_MATRIX4_ALIGNMENT           16
-#	define GYRO_VECTOR4_ALIGNMENT           16
-# define GYRO_QUATERNION_ALIGNMENT        16
+#	define GYRO_MATRIX4_ALIGNMENT
+#	define GYRO_VECTOR4_ALIGNMENT
+#   define GYRO_QUATERNION_ALIGNMENT
 
 
 //#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
