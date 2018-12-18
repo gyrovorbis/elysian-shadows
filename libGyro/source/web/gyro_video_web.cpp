@@ -10,7 +10,7 @@ int vidBpp;
 
 
 int gyVidInit(const GYVidInitParams *const params) {
-     SDL_Window* window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 400, SDL_WINDOW_OPENGL);
+     SDL_Window* window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 144, 96, SDL_WINDOW_OPENGL);
 
       if (!window) {
         _gyLog(GY_DEBUG_VERBOSE, "SDL_CreateWindow failed: v%s\n", SDL_GetError());
