@@ -60,6 +60,9 @@ namespace elysian {
         void            deactivate(void);
         bool            loadTileset(const char *const filename);
         bool            saveTileset(const char *const filename);
+
+
+        GYTexture*      getTileSheet(void) const;
     };
 
 
@@ -89,6 +92,10 @@ namespace elysian {
 
         inline const char *LevelBase::getPath(void) const {
             return path;
+        }
+
+        inline GYTexture* LevelBase::getTileSheet(void) const {
+            return tileSheet;
         }
 
 }

@@ -59,8 +59,8 @@ OOLUA_PROXY(Material)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(BlendMode)
-    OOLUA_MFUNC(getConstColor)
-    OOLUA_MFUNC(setConstColor)
+//    OOLUA_MFUNC(getConstColor)
+//    OOLUA_MFUNC(setConstColor)
     OOLUA_MFUNC_CONST(getSrcFactor)
     OOLUA_MFUNC(setSrcFactor)
     OOLUA_MFUNC_CONST(getDstFactor)

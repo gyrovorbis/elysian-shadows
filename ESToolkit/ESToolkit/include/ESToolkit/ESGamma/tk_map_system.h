@@ -129,7 +129,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
     gyVidRectPlaneType(planeType);
 
     if(_tileDecor != TILE_DECOR_NONE) {
-        gyVidDepthTest(false);
+        //gyVidDepthTest(false);
         gyVidAlphaLevel(GY_ALPHA_NONE);
         auto& twcen = getGuiSys()->pragmata18;
         twcen.setColor(255, 255, 255, 255);
@@ -185,9 +185,8 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidNormalMapBind(nullptr);
         gyVidSpecularMapBind(nullptr);
         gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        gyVidDepthTest(false);
-        gyVidDepthTest(false);
+        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
+        //gyVidDepthTest(false);
         gyVidMaterialBind(&_selMat[drawStyle]);
 
         const GYColor4& color = selectionDecorColors[drawStyle];

@@ -15,6 +15,7 @@
 #include <AssetIO/crtp/elysian_area.hpp>
 #include <AssetIO/crtp/elysian_level.hpp>
 #include <ESGamma/crtp/elysian_timer_system.hpp>
+#include <ESGamma/crtp/elysian_render_system.hpp>
 
 #include <libGyro/gyro_math_api.h>
 #include <libGyro/gyro_matrix_api.h>
@@ -79,10 +80,10 @@ namespace elysian {
         Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
         static const GYColor4		_tileColor;
         bool _renderLayer[4];
-        //animation
-        //toggles
         bool _animate;
-        //stats
+
+
+        RenderableObjectPipelineAttrib _pipelineAttrib;
 
         void updateAnimation(void);
 
@@ -117,6 +118,11 @@ namespace elysian {
             _mapCount = 0;
                 MapDepthBuffer<P, T, E>::render();
 #endif
+        }
+
+        void renderShadowPass(void) {
+            getRenderSystem()->setDepthMode(true, GY_VID_DEPTH_LESS);
+            render();
         }
 
         void        renderOverlay(void);
@@ -203,17 +209,27 @@ namespace elysian {
     inline void MapSystemCrtp<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
         if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
-         auto& elemArraySize  = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
-         auto* elemArray     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
+         auto& elemArraySize  = _curArea->elementsArraySize[gyVidShadowPass()];
+         auto* elemArray     = _curArea->elementsArray[gyVidShadowPass()];
 
-                    gyVidDepthTest(true);
-        if(!gyVidShadowPass()) {
+
+       // if(!gyVidShadowPass()) {
+
+            _pipelineAttrib.setTexture(getCurrentLevel()->getTileSheet());
+
+            if(getCurrentLevel()->getTile(entry.mapEntry.getIndex())->getTransparency())
+                _pipelineAttrib.setBlendMode(BLEND_MODE_NORMAL);
+            else
+                _pipelineAttrib.setBlendMode(BLEND_MODE_NONE);
+
+
+            getRenderSystem()->setPipelineStateFromAttrib(_pipelineAttrib);
+
+
             /*
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
-            const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
-                                                      _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
-                                                        GY_ALPHA_FULL : GY_ALPHA_NONE;
+
             const GY_BLEND_MODE           newBlend = (newAlpha == GY_ALPHA_FULL)? GY_BLEND_ONE_MINUS_SRC_ALPHA : GY_BLEND_ONE;
 */
             //Blending enabled state change
@@ -236,7 +252,7 @@ namespace elysian {
             //gyVidAlphaLevel(newAlpha);
             //gyVidRectPlaneType(newPlane);
             //gyVidRectTexOrient(newOrient);
-        }
+       // }
 
 #if 0
         const unsigned int indexBase = (entry.layer*getCurrentArea()->height*getCurrentArea()->width +
@@ -291,7 +307,6 @@ namespace elysian {
       //  assert(_curArea->elementsArraySize[_curArea->elementsCurSegment] == 0);
 
         gyVidMaterialBind(nullptr);
-        gyVidTexBind(_curLevel->tileSheet);
         gyVidNormalMapBind(_curLevel->normalSheet);
         gyVidSpecularMapBind(_curLevel->specularSheet);
 
@@ -352,6 +367,9 @@ break;
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
         glalVertexRenderCount += _curArea->elementsArraySize[0];
 #endif
+
+
+
 
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
@@ -453,14 +471,14 @@ break;
     inline void MapSystemCrtp<P, T, E>::enableDepthTest(void) {
         //if(gyVidShadowPass()) return;
       //  flushTileBuffer();
-        gyVidDepthTest(true);
+       // gyVidDepthTest(true);
       //  glDepthMask(GL_TRUE);
         //glEnable(GL_BLEND);
         //glDisable(GL_BLEND);
         // glDepthFunc(GL_LEQUAL);
-         gyVidAlphaLevel(GY_ALPHA_NONE);
+        // gyVidAlphaLevel(GY_ALPHA_NONE);
         //glDisable(GL_POLYGON_OFFSET_FILL);
-        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
+    //    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
       //  _blendPass = false;
     }
 
@@ -494,7 +512,8 @@ break;
 
     template<typename P, typename T, typename E>
     inline MapSystemCrtp<P, T, E>::MapSystemCrtp(void):
-        _animate(true) {
+        _animate(true)
+    {
         for(unsigned i = 0; i < 4; ++i) _renderLayer[i] = true;
         //for(unsigned int i = 0; i < 256; ++i) _currentTile[i] = _currentObject[i] = i;
     }

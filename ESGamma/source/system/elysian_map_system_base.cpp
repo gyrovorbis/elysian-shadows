@@ -12,11 +12,11 @@ int _mapCount = 0;
 
 void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
     if(value == DEPTH_Z_PREPASS) {
-        gyVidDepthTest(1);
+        //gyVidDepthTest(1);
         glDepthMask(1);
         glColorMask(0, 0, 0, 0);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
+        //glEnable(GL_DEPTH_TEST);
+        //glDepthFunc(GL_LESS);
 
         gyVidVertexBatchEnd();
         gyVidVertexBatchFlush();
@@ -30,16 +30,15 @@ void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
         gyVidSetDefaultShaderProgram();
         //glalDefaultShadersLoadUniforms();
         glalCurLightShader = &glalLightingShader;
-        gyVidDepthTest(0);
-        glDepthMask(0);
-        glColorMask(1, 1, 1, 1);
+        //glDepthMask(0);
+        //glColorMask(1, 1, 1, 1);
         glDepthFunc(GL_LEQUAL);
     } else if(value == POST_PASSES) {
-        gyVidDepthTest(1);
+        //gyVidDepthTest(1);
         gyVidVertexBatchEnd();
         gyVidVertexBatchFlush();
-        glDepthMask(1);
-        glDepthFunc(GL_LEQUAL);
+        //glDepthMask(1);
+       // glDepthFunc(GL_LEQUAL);
     }
     _depthPassState = value;
 
@@ -47,7 +46,7 @@ void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
 
 void GLMapSystemCrtp::_bindArrayVbo(int buffer) {
 #ifdef GYRO_GLAL
-//  /  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  //glBindBuffer(GL_ARRAY_BUFFER, buffer);
 #endif
 }
 

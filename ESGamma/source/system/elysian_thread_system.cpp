@@ -74,6 +74,7 @@ bool ThreadSystem::uninitialize(void) {
 unsigned ThreadSystem::findLeastBusyTaskQueueThread(void) const {
     size_t  smallestLoad    = std::numeric_limits<size_t>::max();
     int     smallestIndex   = -1;
+
     for(int t = 0; t < (int)getCpuCoreCount(); ++t) {
         auto size = getTaskQueueThread(t).getQueueSize();
         if(size < smallestLoad) {

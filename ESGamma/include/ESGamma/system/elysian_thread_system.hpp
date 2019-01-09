@@ -139,7 +139,7 @@ namespace elysian {
         TaskEntry               getFront(void) const;
     public:
                                 AsyncTaskQueueThread(const GYCpuAffinityMask affinity, const char* name);
-                                ~AsyncTaskQueueThread(void);
+        virtual                 ~AsyncTaskQueueThread(void) override;
         bool                    enqueueTask(AsyncTask* task, void* argData=nullptr);
 
         size_t                  getQueueSize(void) const;

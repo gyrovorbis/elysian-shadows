@@ -111,7 +111,8 @@ namespace elysian {
     inline void RenderableBase::render(void) {
 
 
-     //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        gyVidBlendMode(_spriteAttrib->getBlendMode().getSrcFactor(),
+                       _spriteAttrib->getBlendMode().getDstFactor());
 
        gyVidTexBind(_spriteAttrib? _spriteAttrib->_tex : nullptr);
        gyVidNormalMapBind(_spriteAttrib? _spriteAttrib->getNormalMap() : nullptr);
@@ -138,14 +139,14 @@ namespace elysian {
                 }
             }
 
-             gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+             //yVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
              //gyVidAlphaLevel(GY_ALPHA_NONE);
 
 
              //newZFactor = glalOrientNormalMapZFactor(_texOrient);
              //glalVidNormalMapZFactorUpdateUniform(newZFactor);
             gyVidQuadListBegin(&_spriteAttrib->_color);
-         //   gyVidAlphaLevel(GY_ALPHA_FULL);
+            gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidColorArray(&_spriteAttrib->_color);
             if(_spriteAttrib->_tex) {
                 if(_frame != -1)

@@ -154,7 +154,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const int level, const 
     const int depth = gyAtomicGet(&_stackDepth);
 
 	//Add tabs for each stack layer
-    /*if(source != LUA)*/ for(unsigned int i = 0; i < depth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
+    /*if(source != LUA)*/ for(int i = 0; i < depth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
 
 	//Add prefixes for error types
 	switch(level) {

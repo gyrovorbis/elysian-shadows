@@ -21,6 +21,8 @@ GLuint _glParticleVao           = 0;
 GLuint _glParticleVbo           = 0;
 GLuint _glParticleIndirectBuff  = 0;
 
+const constexpr RenderableObjectPipelineAttrib::BlendModeFactors RenderableObjectPipelineAttrib::_blendFactors[BLEND_MODE_COUNT];
+
 
 
 #if 0
@@ -633,6 +635,15 @@ void RenderSystemBase::renderScene(void) {
     }
 #endif
 }
+
+
+#ifdef GY_VIDEO_DEBUG
+
+bool RenderSystemBase::dumpStats(void) const {
+    return gyVidDebugStatsDump();
+}
+
+#endif
 
 
 

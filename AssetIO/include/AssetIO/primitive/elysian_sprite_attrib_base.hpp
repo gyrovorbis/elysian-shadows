@@ -22,7 +22,7 @@ namespace elysian {
         friend class RenderableBase;
 	protected:
         GYTexCoord2	_texCoords[4];
-        BlendMode   _blendMode      = BlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA); //"additive" by default
+        BlendMode   _blendMode      = BlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE); //"additive" by default
         GYTexture*	_tex			= nullptr;
         GYTexture*	_normalMap		= nullptr;
         GYTexture*	_specularMap	= nullptr;

@@ -940,8 +940,15 @@ void ESToolkit::on_actionConnectEVMUTcp_toggled(bool arg1)
     }
 }
 
-void ESToolkit::on_actionTexture_Dump_triggered()
+void ESToolkit::on_actionTexture_Dump_triggered(void)
 {
+#ifndef GY_VIDEO_DEBUG
+    QMessageBox::warning(nullptr, "Video Dump Failed!", "This build of ESTk was not compiled with libGyro Video debugging (GY_VID_DEBUG) enabled, so certain stats may be unavailable!");
+
+#else
+    _assets.getEngine()->getRenderSystem()->dumpStats();
+#endif
+
     gyVidTexWalkthrough();
 }
 

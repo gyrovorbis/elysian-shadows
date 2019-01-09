@@ -177,7 +177,7 @@ void LightSystem::shadowRenderPasses(void) {
                 gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
                 getCameraSys()->setCurrentCamera(it->getCameraState());
                 //_renderShadowVolumes();
-                if(_shadowPassEnabled) getMapSys()->render();
+                if(_shadowPassEnabled) getMapSys()->renderShadowPass();
             }
             _addToLightMap(it);
             break;
@@ -194,7 +194,7 @@ void LightSystem::shadowRenderPasses(void) {
 
                         getCameraSys()->setCurrentCamera(it->getCameraState());
                         //_renderShadowVolumes();
-                        if(_shadowPassEnabled) getMapSys()->render();
+                        if(_shadowPassEnabled) getMapSys()->renderShadowPass();
 
                     }
 

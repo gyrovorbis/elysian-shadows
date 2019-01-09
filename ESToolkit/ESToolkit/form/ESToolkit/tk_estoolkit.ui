@@ -1594,7 +1594,7 @@
   </action>
   <action name="actionTexture_Dump">
    <property name="text">
-    <string>Texture Dump</string>
+    <string>Video Debug Dump</string>
    </property>
   </action>
   <action name="actionAudio_Dump">

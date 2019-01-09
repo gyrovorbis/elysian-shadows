@@ -6,8 +6,49 @@
 namespace elysian {
 
     template<typename T>
-    struct BitMask {
+    struct BitMask;
 
+    //Base parent implementation (const shit used by const and non const)
+    template<typename T, class B = BitMask<T>>
+    class BitMaskBitRefBase {
+        B*      _parent = nullptr;
+        int     _index    = -1;
+    public:
+
+        constexpr                   BitMaskBitRefBase(B* parent, int index):
+                                    _parent(parent),
+                                    _index(index) {}
+
+        const BitMaskBitRefBase*    operator&(void) const = delete;
+        constexpr                   operator bool(void) const {
+                return _parent->getBit(_index);
+         }
+    };
+
+    //SFINAEd const base template
+    template<typename T,
+             class B = BitMask<T>,
+             class Enable = void>
+    class BitMaskBitRef:
+            public BitMaskBitRefBase<B> {};
+
+    //Non-const specialization
+    template<typename T, class B>
+    class BitMaskBitRef<T,
+                        B,
+                        typename std::enable_if<std::is_const<B>::value, int>::type>:
+            public BitMaskBitRefBase<BitMask<T>>
+    {
+
+        BitMaskBitRef<BitMask<T>>*  operator&(void) = delete;
+        bool                        operator=(bool val) {
+            BitMaskBitRefBase<T, BitMask<T>>::_parent->setBit(BitMaskBitRefBase<T, BitMask<T>>::_index, val);
+        }
+    };
+
+
+    template<typename T>
+    struct BitMask {
         T                   _value   = 0;
 
         constexpr           BitMask(void) = default;
@@ -18,15 +59,24 @@ namespace elysian {
 
         BitMask<T>          getSubvalue(const unsigned pos, const unsigned bitCount) const;
 
+        constexpr T         getSubMaskValue(const T pos, const T mask) const;
+        void                setSubMaskValue(const T pos, const T mask, const T value);
+        void                clearSubMaskBits(const T mask);
+
         //constexpr           operator T(void);
 
         constexpr unsigned  getBitCount(void) const;
-        bool                getBit(const unsigned index) const;
+        constexpr bool                getBit(const unsigned index) const;
         void                setBit(const unsigned index, const bool val);
 
-       // operator            T(void);
+
+        constexpr auto      operator[](int index) const -> BitMaskBitRef<T, const BitMask>;
+        constexpr auto      operator[](int index) ->  BitMaskBitRef<T, BitMask>;
 
     };
+
+
+
 
     template<typename T>
     struct LuaBitMask:
@@ -48,12 +98,23 @@ namespace elysian {
     using BitMask32 = LuaBitMask<uint32_t>;
     using BitMask64 = LuaBitMask<uint64_t>;
 
+
     template<typename T>
     inline constexpr BitMask<T>::BitMask(const T value): _value(value) {}
 
     template<typename T>
     inline constexpr T BitMask<T>::getValue(void) const {
         return _value;
+    }
+
+    template<typename T>
+    constexpr auto BitMask<T>::operator[](int index) const -> BitMaskBitRef<T, const BitMask> {
+        return BitMaskBitRef<T, const BitMask>(this, index);
+    }
+
+    template<typename T>
+    constexpr auto BitMask<T>::operator[](int index) -> BitMaskBitRef<T, BitMask> {
+        return BitMaskBitRef<T, BitMask>(this, index);
     }
 
 #if 0
@@ -68,6 +129,21 @@ namespace elysian {
 #endif
 
 
+    template<typename T>
+    inline constexpr T BitMask<T>::getSubMaskValue(const T pos, const T mask) const {
+        return ((_value & mask) >> pos);
+    }
+
+    template<typename T>
+    inline void BitMask<T>::setSubMaskValue(const T pos, const T mask, const T value) {
+        clearSubMaskBits(mask);
+        _value |= (((value) << pos) & mask);
+    }
+
+    template<typename T>
+    inline void BitMask<T>::clearSubMaskBits(const T mask) {
+        _value &= ~mask;
+    }
 
     template<typename T>
     inline void BitMask<T>::setValue(const T value) {
@@ -80,10 +156,9 @@ namespace elysian {
     }
 
     template<typename T>
-    inline bool BitMask<T>::getBit(const unsigned index) const {
+    inline constexpr bool BitMask<T>::getBit(const unsigned index) const {
         T one = 1;
         return (_value&(one<<index));
-
     }
 
     template<typename T>
