@@ -54,7 +54,7 @@ QVariant VmuFileSystemTableModel::data(const QModelIndex& index, int role) const
     int row = index.row();
 
     auto dirEntry   = QtVmuFlashDirEntry(_dev.getFileFlashDirEntry(row));
-    if(!dirEntry) return QVariant();
+    if(!dirEntry || !dirEntry.isValid()) return QVariant();
 
     auto vmsHeader  = QtVmuVmsHeader(dirEntry.getVmsHeader());
     auto iconData   = QtVmuIconDataVmsFileInfo(dirEntry.getIconDataFileInfo());

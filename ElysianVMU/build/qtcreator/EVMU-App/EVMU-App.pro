@@ -163,7 +163,8 @@ FORMS += \
     $${SOURCE_ROOT}/ui/gyro_vmu_com_dialog.ui \
     $${SOURCE_ROOT}/ui/gyro_vmu_buzzer_dialog.ui \
     ../../../app/qt/ui/jet_set_radio_graffiti_tool.ui \
-    ../../../app/qt/ui/gyro_vmu_device_properties_dialog.ui
+    ../../../app/qt/ui/gyro_vmu_device_properties_dialog.ui \
+    ../../../app/qt/ui/gyro_vmu_address_space_browser_widget.ui
 
 
 EVMU_CORE_PATH      = ../../../evmu-core

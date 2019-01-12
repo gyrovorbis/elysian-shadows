@@ -401,15 +401,23 @@ VMUMainWindow::~VMUMainWindow(void)
 void VMUMainWindow::_setupAboutMsgBox(void) {
     connect(_ui->actionAbout, &QAction::triggered, [this]{
         QMessageBox::about(this, "About ElysianVMU",
-        QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
-        QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
-        QString("<a href=\"http://evmu.elysianshadows.com\">evmu.elysianshadows.com</a><br>") +
-        QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
-        QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Tulio Goncalves, Deunan Knute, Marcus Comstedt, Inolen, Dmitry Grinberg, RinMaru, and all of the Elysian Shadows Kickstarter backers and supporters  :)</br</br>") +
-        QString("</table><br><br>") +
-        QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
-        QString("<i>ElysianVMU Copyright 2017-2018 Elysian Shadows</i><br>") +
+        QString("ElysianVMU is a Software emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
+        QString("Version ")+QString(GYRO_VMU_VERSION_STRING) +
+
+        QString("<p style='font-size: 12pt;'><u>ElysianVMU Credits</u>") +
+        QString("<table><tr><td>Emulator Core: </td><td> Falco Girgis</td></tr>") +
+        QString("<tr><td>Desktop App:</td><td>Falco Girgis</td></tr>") +
+        QString("<tr><td>Web App:</td><td>Sam Hellawell</td></tr>") +
+        QString("<tr><td>PSP App:</td><td>Axiom</td></tr>") +
+        QString("<tr><td>Graphics:</td><td>Patrick Kowalik</td></tr>") +
+        QString("<tr><td>Assembler:</td><td>Walter Tetzner</td></tr>") +
+        QString("<tr><td>VMU Code:</td><td>Kresna Susila</td></tr></table></p>") +
+
+        QString("<p style='font-size: 12pt;'><u>Special Thanks</u><br>") +
+        QString("Tulio Goncalves, Deunan Knute, Marcus Comstedt, Inolen, Dmitry Grinberg, RinMaru, UltimaNumber, Joseph-Eugene Winzer, and all of the Elysian Shadows Kickstarter backers and supporters  :)</p>") +
+
+        QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")") +
+        QString("<span style='text-align: center'><p style='font-size: 10pt;'><i>ElysianVMU Copyright 2017-2019 Elysian Shadows</i><br>") +
         QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
     });
 }
@@ -513,7 +521,12 @@ void VMUMainWindow::update(void) {
 
 #ifndef VMU_DEBUG
         #if 1
-          ranThisFrame = _dev.update((float)deltaTicks/1000000000.0f);
+          float deltaTime = (float)deltaTicks/1000000000.0f;
+          if(deltaTime > VMU_MAX_FRAME_DELTA_TIME) {
+              deltaTime = VMU_MAX_FRAME_DELTA_TIME;
+          }
+
+          ranThisFrame = _dev.update(deltaTime);
 #else
                     ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/10000000.0f);
 #endif
@@ -749,6 +762,8 @@ bool VMUMainWindow::loadRom(QString filepath) {
         if(!dirEntry || (dirEntry && !dirEntry.isGame())) {
             if(!_fileSysTable->isVisible()) on_actionFilesystem_triggered();
         }
+
+        _prevTicks = gyTimerTicks();
 
     }
     return true;
@@ -1118,6 +1133,7 @@ void VMUMainWindow::on_actionView_Log_triggered(void)
 {
     _gyLog(GY_DEBUG_VERBOSE, "View Log Requested - Dumping Filesystem State for Additional Info!");
     _gyPush();
+    gyVmuFlashRootBlockPrint(_dev);
     gyVmuFlashPrintFilesystem(_dev);
     _gyPop(1);
     _flushLog();
