@@ -97,6 +97,7 @@ typedef struct GYGLInfo {
 } GYGLInfo;
 
 
+extern GYVidPipelineState           _glState;
 extern const struct GYCamera*       glalCurCamera;
 extern GYMatrix4                    glalViewMatrix;
 extern float                        glalViewZOrient;
@@ -104,7 +105,7 @@ extern float                        glalViewScale;
 extern GYVector3                    glalCamWorldPos;
 extern const GYVector3*             glalTangentVector;
 extern const GYVector3*             glalNormalVector;
-extern const struct GYTexture*      glalCurTex;
+//extern const struct GYTexture*      glalCurTex;
 extern unsigned                     glalCurStripSize;
 extern GYVector4                    glalModelViewVertices[];
 extern GYTexCoord2                  glalStripTexCoords[];
@@ -117,7 +118,7 @@ extern unsigned                     glalPrevUniformChangeCount;
 extern unsigned                     glalTextureChangeCount;
 extern unsigned                     glalPrevTextureChangeCount;
 extern GY_ALPHA_LEVEL               glalAlphaLevel;
-extern GY_BLEND_MODE                glalBlendMode;
+extern GY_BLEND_FACTOR              glalBlendMode;
 extern int                          glalDepthTest;
 extern int                          glalVersionMajor;
 extern int                          glalVersionMinor;
@@ -135,6 +136,8 @@ void glalVidTangentUpdateUniform(const GYVector3*const tangent);
 void glalVidNormalUpdateUniform(const GYVector3*const normal);
 void glalVidBindDefaultFbo(void);
 int  glalVidDefaultFbo(void);
+
+void gyVidPipelineInvalidate(void);
 
 static inline float glalOrientNormalMapZFactor(const GY_RECT_TEX_ORIENT orient) {
     switch(orient) {
