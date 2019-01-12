@@ -124,7 +124,7 @@ typedef struct LightSourceUniforms {
     float           spotCutoffAngle;
     GY_LIGHT_TYPE   type;
     int             valid;
-    GLuint           texture;
+    GLuint          texture;
 } LightSourceUniforms;
 
 extern GYShaderProgram*				glalCurShaderProg;

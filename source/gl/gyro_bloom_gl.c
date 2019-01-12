@@ -65,9 +65,30 @@ static GLuint               _horizontalConvFbo;
 static GLuint               _horizontalConvTex;
 static GLuint               _finalConvTex;
 
-
-
 static int                  _bloomInitialized = 0;
+
+static GYTexture            _bloomTempTex;
+
+static GYVidPipelineState   _bloomState = {
+    0,
+    &_bloomTempTex,
+    0,
+    0,
+    GY_ALPHA_NONE,
+    GY_BLEND_SRC_ALPHA,
+    GY_BLEND_ONE,
+    0,
+    GY_VID_DEPTH_LESS
+};
+
+static void _gyBloomSetPipelineTex(GLuint id) {
+    if(!id) {
+        _bloomState.texture = NULL;
+    } else {
+        _bloomState.texture = &_bloomTempTex;
+        _bloomState.texture->_data = id;
+    }
+}
 
 
 int gyVidBloomResizeFramebuffer(unsigned width, unsigned height) {
@@ -245,6 +266,7 @@ int glalVidUninitializeBloom(void) {
 void gyVidApplyBloom(void) {
     if(!_bloomInitialized) return;
 
+
     GYTexCoord2 texCoords[4] = {
         { 0.0f, 1.0f },
         { 1.0f, 1.0f },
@@ -255,12 +277,12 @@ void gyVidApplyBloom(void) {
     unsigned int scrWidth, scrHeight;
     gyVidResolution(&scrWidth, &scrHeight);
 
-    //1 - Copy backbuffer to texture.
-    gyVidVertexBatchFlush();
-
+    //1 - Copy backbuffer to texture
     gyVidSetCurrentShaderProgram(_downscaleShader.program);
     glBindFramebuffer(GL_FRAMEBUFFER, _bloomBuffFbo);
-    glBindTexture(GL_TEXTURE_2D, _downscaleTex);
+
+    _gyBloomSetPipelineTex(_downscaleTex);
+    gyVidPipelineState(&_bloomState);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                            GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D,
@@ -273,11 +295,12 @@ void gyVidApplyBloom(void) {
          _gyLog(GY_DEBUG_ERROR, "Binding GLAL horizontal bloom texture to frame buffer has reested - %d!", status);
          return;
      }
+
      //Render fullscreen quad
-     glBindTexture(GL_TEXTURE_2D, _glalGlowTex);
+     _gyBloomSetPipelineTex(_glalGlowTex);
+     gyVidPipelineState(&_bloomState);
      gyVidVertexArrayBind(_bloomVao);
      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-         gyVidVertexBatchFlush();
 
 #if 1
 #if 0
@@ -299,7 +322,10 @@ void gyVidApplyBloom(void) {
     gyVidSetCurrentShaderProgram(_bloomShader.program);
     glUniform1i(_bloomShader.uniformLoc[BLOOM_SHADER_CONV_DIR], 0);
     glBindFramebuffer(GL_FRAMEBUFFER, _horizontalConvFbo);
-    glBindTexture(GL_TEXTURE_2D, _horizontalConvTex);
+
+    _gyBloomSetPipelineTex(_horizontalConvTex);
+    gyVidPipelineState(&_bloomState);
+
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                            GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_2D,
@@ -315,10 +341,10 @@ void gyVidApplyBloom(void) {
      }
 
     //Render fullscreen quad
-    glBindTexture(GL_TEXTURE_2D, _downscaleTex);
+     _gyBloomSetPipelineTex(_downscaleTex);
+     gyVidPipelineState(&_bloomState);
     gyVidVertexArrayBind(_bloomVao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        gyVidVertexBatchFlush();
 
 
     //===== 3 - Perform vertical convolution on horizontal convolution texture =====
@@ -335,10 +361,11 @@ void gyVidApplyBloom(void) {
     }
 
     //Render fullscreen quad
-    glBindTexture(GL_TEXTURE_2D, _horizontalConvTex);
+    _gyBloomSetPipelineTex(_horizontalConvTex);
+    gyVidPipelineState(&_bloomState);
     gyVidVertexArrayBind(_bloomVao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    gyVidVertexBatchFlush();
+
     //===== 4 - Additively blend blurred bloom texture over backbuffer as a fullscreen quad.  =====
 #endif
     gyVidSetDefaultShaderProgram();
@@ -346,20 +373,10 @@ void gyVidApplyBloom(void) {
     glalVidBindDefaultFbo();
     glViewport(0.0f, 0.0f, scrWidth, scrHeight);
 
-#if 0
-    gyVidAlphaLevel(GY_ALPHA_FULL);
 
-#else
-    gyVidDepthTest(0);
-   // gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-    //gyVidAlphaLevel(GY_ALPHA_FULL);
-#endif
-        GYColor4 col = { 0, 0, 0, 255 };
-    gyVidTexBind(NULL);
-
-            glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 0);
-   gyVidNormalMapBind(NULL);
-    gyVidSpecularMapBind(NULL);
+    GYColor4 col = { 0, 0, 0, 255 };
+    _gyBloomSetPipelineTex(NULL);
+    gyVidPipelineState(&_bloomState);
     //Render fullscreen quad.
     gyMatPush();
     gyMatLoadIdentity();
@@ -372,21 +389,15 @@ void gyVidApplyBloom(void) {
     //gyVidVertexBatchEnd();
     gyMatPop();
 
-    gyVidVertexBatchFlush();
 
   //  gyVidAlphaLevel(GY_ALPHA_FULL);
-                glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
   //  gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
         GYColor4 color = { 255, 255, 255, 255 };
-    static GYTexture tex;
-    tex._data = _glalColorTex;
-    gyVidTexBind(NULL);
-    gyVidTexBind(&tex);
-            glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
-   gyVidNormalMapBind(NULL);
-    gyVidSpecularMapBind(NULL);
-    //Render fullscreen quad.
+    _gyBloomSetPipelineTex(_glalColorTex);
+    gyVidPipelineState(&_bloomState);
+
+
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
@@ -397,20 +408,16 @@ void gyVidApplyBloom(void) {
     //gyVidQuadListEnd();
     //gyVidVertexBatchEnd();
     gyMatPop();
-        gyVidVertexBatchFlush();
 
-#if 1
-    gyVidAlphaLevel(GY_ALPHA_FULL);
         GYColor4 color2 = { 255, 255, 255, 255 };
 gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);    
 
-    tex._data = _finalConvTex;
-    gyVidTexBind(NULL);
-    gyVidTexBind(&tex);
-    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], 1);
+
     //Render fullscreen quad.
+    _gyBloomSetPipelineTex(_finalConvTex);
+    gyVidPipelineState(&_bloomState);
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
@@ -420,11 +427,8 @@ gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
     gyVidRect(-1);
    // gyVidVertexBatchEnd();
     gyMatPop();
+        gyVidVertexArrayBind(0);
 
-#endif
-
-    gyVidVertexBatchFlush();
-    gyVidAlphaLevel(GY_ALPHA_NONE);
 
 }
 

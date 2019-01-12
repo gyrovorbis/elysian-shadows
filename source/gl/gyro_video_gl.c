@@ -171,7 +171,7 @@ const GYVector3*			glalNormalVector			= &glalPlaneNormalMapNormals[0][0];
 //GYVector4					viewPosition			= { 0.0f, 0.0f, 0.0f, 0.0f };
 float						glalViewZOrient				= 0.0f;
 float						glalViewScale				= 0.0f;
-const GYTexture*			glalCurTex					= 0;
+//const GYTexture*			glalCurTex					= 0;
 const GYCamera*				glalCurCamera				= &_defaultCamera;
 GY_RECT_TEX_ORIENT          glalRectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 GY_RECT_PLANE_TYPE          glalPlaneType				= GY_RECT_PLANE_BOTTOM;
@@ -183,7 +183,7 @@ unsigned                    glalPrevUniformChangeCount  = 0;
 unsigned                    glalTextureChangeCount      = 0;
 unsigned                    glalPrevTextureChangeCount  = 0;
 GY_ALPHA_LEVEL              glalAlphaLevel              = GY_ALPHA_NONE;
-GY_BLEND_MODE               glalBlendMode               = GY_BLEND_ONE_MINUS_SRC_ALPHA;
+GY_BLEND_FACTOR             glalBlendMode               = GY_BLEND_ONE_MINUS_SRC_ALPHA;
 int                         glalDepthTest               = 0;
 int                         glalVertexArray             = 0;
 void                        (*glalFlushCallback)(void*) = NULL;
@@ -212,9 +212,39 @@ GLuint                      _glalGlowTex                = 0;
 GLuint                      _glalDepthBuffer            = 0;
 
 
+typedef struct _PipelineStateDirty {
+    uint8_t                 shader;
+    uint8_t                 texture;
+    uint8_t                 normalMap;
+    uint8_t                 alphaLevel;
+    uint8_t                 blendMode;
+    uint8_t					depthTestEnabled;
+    uint8_t 				depthTestMode;
+} _PipelineStateDirty;
 
-static inline int _glBlendModeFromGyroBlendMode(GY_BLEND_MODE gyMode) {
-    switch(gyMode) {
+
+GYVidPipelineState   _glState;
+static _PipelineStateDirty  _glStateDirty;
+
+
+#ifdef GY_VIDEO_DEBUG
+GYVidDebugInfo _dbgInfo;
+#endif
+
+void gyVidPipelineInvalidate(void) {
+    memset(&_glStateDirty, 1, sizeof(_PipelineStateDirty));
+    _glState.texture = NULL;
+}
+
+int _glIsLightShaderActive(void) {
+    return glalCurShaderProg->program == glalLightingShader.program->program ||
+            glalCurShaderProg->program == glalShadowMapShader.program->program;
+
+}
+
+
+static inline unsigned _glBlendFactorFromGyroBlendFactor(unsigned gyFactor) {
+    switch(gyFactor) {
     case GY_BLEND_ZERO:                         return GL_ZERO;
     case GY_BLEND_ONE:                          return GL_ONE;
     case GY_BLEND_SRC_COLOR:                    return GL_SRC_COLOR;
@@ -255,10 +285,17 @@ void gyVidCpuFrustumCulling(int value) {
 
 
 void gyVidSceneBegin(void) {
+
+#ifdef GY_VIDEO_DEBUG
+    memset(&_dbgInfo.frameStats, 0, sizeof(GYVidFrameStats));
+#endif
+
     glalFrameStats.primCullCount    = glalCpuPrimCullCount;
     glalCpuPrimCullCount            = 0;
 
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 
 #if 1
     GY_GL_CHECK_ERROR();
@@ -469,6 +506,10 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing OpenGL.");
         _gyPush();
 
+#ifdef GY_VIDEO_DEBUG
+        memset(&_dbgInfo, 0, sizeof(GYVidDebugInfo));
+#endif
+
         success &= glalVidGlewInit();
         if(!success) {
             return 0;
@@ -487,6 +528,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             success &= glalVidInitializeBloom();
             success &= glalVidInitializeRadialBlur();
             success &= glalVidInitializeChromaticAberration();
+            gyVidPipelineInvalidate();
         }
 
         //Fail the fuck out before we fuck something up with GL in a shitty state.
@@ -723,7 +765,7 @@ void gyVidNormalArray(const GYVector3 *const ptr) {
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
     glalNormalVector = ptr;
 }
-
+#if 0
 void gyVidTexBind(const GYTexture *const tex) {
     static int wasActive = 0;
     static int wasShadow = 0;
@@ -758,6 +800,7 @@ void gyVidTexBind(const GYTexture *const tex) {
     }
     wasShadow = gyVidShadowPass();
 }
+#endif
 
 #if 0
 switch(mode) {
@@ -773,63 +816,6 @@ case GY_BLEND_ADDITIVE:
 #endif
 
 
-
-
-void gyVidBlendMode(const GY_BLEND_MODE src, const GY_BLEND_MODE dst) {
-    int glSrcMode = _glBlendModeFromGyroBlendMode(src);
-    int glDstMode = _glBlendModeFromGyroBlendMode(dst);
-    //if(gyVidShadowPass()) return;
-    //if(mode != glalBlendMode) {
-        gyVidVertexBatchFlush();
-       glBlendFunc(glSrcMode, glDstMode);
-      //  glalBlendMode = mode;
-  //  }
-}
-
-void gyVidDepthTest(const int enable) {
-#if 1
-    GY_GL_CHECK_ERROR();
-    if(gyVidShadowPass()) return;
-    static int wasShadow = 0;
-    int passChange = wasShadow != gyVidShadowPass();
-    if(enable != glalDepthTest || passChange) {
-        gyVidVertexBatchFlush();
-       if(!enable) glDisable(GL_DEPTH_TEST);
-        else
-           glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LEQUAL);
-        glalDepthTest = enable;
-        wasShadow = gyVidShadowPass();
-    }
-GY_GL_CHECK_ERROR();
-#else
-    glEnable(GL_DEPTH_TEST);
-     glDepthFunc(GL_LEQUAL);
-#endif
-}
-
-void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
-    if(gyVidShadowPass()) return;
-    //static int wasShadow = 0;
-   // int passChange = (wasShadow != gyVidShadowPass());
-
-    //Does this even do anything now that we're shader based?
-
-   // if(lev != glalAlphaLevel) {
-        gyVidVertexBatchFlush();
-        switch(lev) {
-        case GY_ALPHA_NONE:
-        case GY_ALPHA_PUNCHTHRU:
-            glDisable(GL_BLEND);
-            break;
-        default:
-            glEnable(GL_BLEND);
-            break;
-        }
-        glalAlphaLevel = lev;
-      //  wasShadow = gyVidShadowPass();
-  //  }
-}
 
 
 void gyVidQuadListBegin(const GYColor4 *const color) {
@@ -893,8 +879,66 @@ void gyVidTriangleStripVertices(const GYVertex* vertex, unsigned count) {
         glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
     }
 
-
 }
+
+
+void gyVidBlendMode(const GY_BLEND_FACTOR src, const GY_BLEND_FACTOR dst) {
+    int glSrcMode = _glBlendFactorFromGyroBlendFactor(src);
+    int glDstMode = _glBlendFactorFromGyroBlendFactor(dst);
+    //if(gyVidShadowPass()) return;
+    //if(mode != glalBlendMode) {
+        gyVidVertexBatchFlush();
+       glBlendFunc(glSrcMode, glDstMode);
+      //  glalBlendMode = mode;
+  //  }
+}
+
+void gyVidDepthTest(const int enable) {
+#if 1
+    GY_GL_CHECK_ERROR();
+    if(gyVidShadowPass()) return;
+    static int wasShadow = 0;
+    int passChange = wasShadow != gyVidShadowPass();
+   // if(enable != glalDepthTest || passChange) {
+        gyVidVertexBatchFlush();
+       if(!enable) glDisable(GL_DEPTH_TEST);
+        else
+           glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+        glalDepthTest = enable;
+        wasShadow = gyVidShadowPass();
+    //}
+GY_GL_CHECK_ERROR();
+#else
+    glEnable(GL_DEPTH_TEST);
+     glDepthFunc(GL_LEQUAL);
+#endif
+}
+
+void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
+    if(gyVidShadowPass()) return;
+    //static int wasShadow = 0;
+   // int passChange = (wasShadow != gyVidShadowPass());
+
+    //Does this even do anything now that we're shader based?
+
+   // if(lev != glalAlphaLevel) {
+        gyVidVertexBatchFlush();
+        switch(lev) {
+        case GY_ALPHA_NONE:
+        case GY_ALPHA_PUNCHTHRU:
+            glDisable(GL_BLEND);
+            break;
+        default:
+            glEnable(GL_BLEND);
+            break;
+        }
+        glalAlphaLevel = lev;
+      //  wasShadow = gyVidShadowPass();
+  //  }
+}
+
+
 
 void gyVidQuad(const GYVector4 *const verts, const int frame) {
     GYVector4           worldVerts[4];
@@ -944,8 +988,8 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 
    // }
 
-    if(glalCurTex) {
-        coord = (frame != -1)? gyVidTexCoordArrayFromFrame(&glalCurTex->_coord->texCoord[frame], glalRectTexOrient) :
+    if(_glState.texture) {
+        coord = (frame != -1)? gyVidTexCoordArrayFromFrame(&_glState.texture->_coord->texCoord[frame], glalRectTexOrient) :
                                _curTexCoordPtr;
 
         for(unsigned i = 0; i < 4; ++i) {
@@ -999,13 +1043,23 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
     const float                 zEpsilon = 0.0f;
     float                       zOffset;
 
+    static GYVidPipelineState state = {
+        0,
+        NULL,
+        0,
+        0,
+        GY_ALPHA_FULL,
+        GY_BLEND_SRC_ALPHA,
+        GY_BLEND_ONE,
+        0,
+        GY_VID_DEPTH_LEQUAL
+    };
+
     gyVidNormalMapBind(NULL);
     gyVidSpecularMapBind(NULL);
     gyVidMaterialBind(NULL);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    //gyVidDepthTest(0);
 
     gyVidVertexBatchFlush();
     gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
@@ -1047,9 +1101,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
             gyVidSpecularMapBind(NULL);
             gyVidMaterialBind(NULL);
             gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-            gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-            gyVidDepthTest(0);
+            //gyVidDepthTest(0);
             continue;
         }
 
@@ -1211,16 +1264,27 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
             }
         }
 
+        state.texture = texture;
+
         if(texture) {
 
            // if(slot->data->additiveBlending != lastAdditive) {
-            if(slot->data->blendMode == SP_BLEND_MODE_ADDITIVE) {
-                gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
-            } else {
-                gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            if(vertex->color.a == 255) { //opaque
+                state.alphaLevel = GY_ALPHA_PUNCHTHRU;
+
+            } else { //transparent
+                state.alphaLevel = GY_ALPHA_FULL;
+
+                if(slot->data->blendMode == SP_BLEND_MODE_ADDITIVE) {
+                    state.srcBlendFactor = GY_BLEND_SRC_ALPHA;
+                    state.dstBlendFactor = GY_BLEND_ONE;
+                } else {
+                    state.srcBlendFactor = GY_BLEND_SRC_ALPHA;
+                    state.dstBlendFactor = GY_BLEND_ONE_MINUS_SRC_ALPHA;
+                }
             }
 
-            gyVidTexBind(texture);
+            gyVidPipelineState(&state);
 
             /*
             glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
@@ -1262,4 +1326,209 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
     _glPrimitiveType = GL_TRIANGLE_STRIP;
 #endif
    // target.draw(*vertexArray, states);
+}
+
+
+
+unsigned _gyToGlDepthMode(unsigned gyMode) {
+    switch(gyMode) {
+    case GY_VID_DEPTH_NEVER:    return GL_LEQUAL;
+    case GY_VID_DEPTH_LESS:     return GL_LESS;
+    case GY_VID_DEPTH_EQUAL:    return GL_EQUAL;
+    case GY_VID_DEPTH_LEQUAL:   return GL_LEQUAL;
+    case GY_VID_DEPTH_GREATER:  return GL_GREATER;
+    case GY_VID_DEPTH_NOTEQUAL: return GL_NOTEQUAL;
+    case GY_VID_DEPTH_GEQUAL:   return GL_GEQUAL;
+    case GY_VID_DEPTH_ALWAYS:   return GL_ALWAYS;
+    default: assert(0);
+    }
+    return 0;
+}
+
+
+
+void gyVidPipelineState(const GYVidPipelineState* state) {
+    GY_GL_CHECK_ERROR();
+
+#ifdef GY_VIDEO_DEBUG
+    int pipelineChanged = 0;
+#endif
+
+    if(state->alphaLevel != _glState.alphaLevel || _glStateDirty.alphaLevel) {
+        gyVidVertexBatchFlush();
+
+        switch(state->alphaLevel) {
+
+        GY_GL_CHECK_ERROR();
+        case GY_ALPHA_NONE:
+        case GY_ALPHA_PUNCHTHRU:
+            glDisable(GL_BLEND);
+            break;
+        default:
+            glEnable(GL_BLEND);
+            break;
+        }
+        GY_GL_CHECK_ERROR();
+
+        _glState.alphaLevel = state->alphaLevel;
+        _glStateDirty.alphaLevel = 0;
+#ifdef GY_VIDEO_DEBUG
+        ++_dbgInfo.frameStats.alphaChangeCount;
+        pipelineChanged = 1;
+#endif
+    }
+
+    if(_glState.alphaLevel == GY_ALPHA_FULL) {
+        if(state->srcBlendFactor != _glState.srcBlendFactor ||
+           state->dstBlendFactor != _glState.dstBlendFactor || _glStateDirty.blendMode)
+        {
+            gyVidVertexBatchFlush();
+
+            unsigned glSrcFactor = _glBlendFactorFromGyroBlendFactor(state->srcBlendFactor);
+            unsigned glDstFactor = _glBlendFactorFromGyroBlendFactor(state->dstBlendFactor);
+
+            GY_GL_CHECK_ERROR();
+            glBlendFunc(glSrcFactor, glDstFactor);
+            GY_GL_CHECK_ERROR();
+
+            _glState.srcBlendFactor = state->srcBlendFactor;
+            _glState.dstBlendFactor = state->dstBlendFactor;
+            _glStateDirty.blendMode = 0;
+
+#ifdef GY_VIDEO_DEBUG
+            ++_dbgInfo.frameStats.blendChangeCount;
+            pipelineChanged = 1;
+#endif
+        }
+    }
+
+    if(state->depthTestEnabled != _glState.depthTestEnabled || _glStateDirty.depthTestEnabled) {
+        gyVidVertexBatchFlush();
+
+        GY_GL_CHECK_ERROR();
+        if(state->depthTestEnabled) {
+            glEnable(GL_DEPTH_TEST);
+        } else {
+            glDisable(GL_DEPTH_TEST);
+        }
+        GY_GL_CHECK_ERROR();
+
+        _glState.depthTestEnabled = state->depthTestEnabled;
+        _glStateDirty.depthTestEnabled = 0;
+#ifdef GY_VIDEO_DEBUG
+        ++_dbgInfo.frameStats.depthTestChangeCount;
+        pipelineChanged = 1;
+#endif
+    }
+
+    if(_glState.depthTestEnabled) {
+        if(state->depthTestMode != _glState.depthTestMode || _glStateDirty.depthTestMode) {
+             gyVidVertexBatchFlush();
+
+             GY_GL_CHECK_ERROR();
+            glDepthFunc(_gyToGlDepthMode(state->depthTestMode));
+            GY_GL_CHECK_ERROR();
+
+            _glState.depthTestMode = state->depthTestMode;
+            _glStateDirty.depthTestMode = 0;
+#ifdef GY_VIDEO_DEBUG
+            ++_dbgInfo.frameStats.depthModeChangeCount;
+            pipelineChanged = 1;
+#endif
+        }
+    }
+
+    gyVidTexBind(state->texture);
+
+#ifdef GY_VIDEO_DEBUG
+    if(pipelineChanged) ++_dbgInfo.frameStats.pipelineStateChangeCount;
+#endif
+}
+
+
+
+void gyVidTexBind(const GYTexture *const texture) {
+
+    if(texture != _glState.texture || _glStateDirty.texture) {
+        gyVidVertexBatchFlush();
+
+        GY_GL_CHECK_ERROR();
+        glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+        GY_GL_CHECK_ERROR();
+
+        int active = texture && texture->_data;
+
+        GY_GL_CHECK_ERROR();
+        if(active) glBindTexture(GL_TEXTURE_2D, (GLuint)texture->_data);
+        GY_GL_CHECK_ERROR();
+        if(_glIsLightShaderActive()) glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], active);
+        GY_GL_CHECK_ERROR();
+
+        _glState.texture = texture;
+        _glStateDirty.texture = 0;
+#ifdef GY_VIDEO_DEBUG
+            ++_dbgInfo.frameStats.textureChangeCount;
+            //pipelineChanged = 1;
+#endif
+
+    }
+}
+
+
+
+int gyVidDebugStatsDump(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "[GYRO_VIDEO_API]: Dumping Debug Stats");
+    _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "Frame Stats");
+    _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "Geometry");
+    _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Primitives",           _dbgInfo.frameStats.primCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Vertices",             _dbgInfo.frameStats.vertCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Culled Primitives",    _dbgInfo.frameStats.primCullCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Quads",                _dbgInfo.frameStats.quadCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Strips",               _dbgInfo.frameStats.stripCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Batches",              _dbgInfo.frameStats.batchCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Avg Batch Size",       _dbgInfo.frameStats.avgBatchSize);
+
+    _gyPop(1);
+
+    _gyLog(GY_DEBUG_VERBOSE, "State Changes");
+    _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Pipeline",     _dbgInfo.frameStats.pipelineStateChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Shader",       _dbgInfo.frameStats.shaderChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Texture",      _dbgInfo.frameStats.textureChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Alpha",        _dbgInfo.frameStats.alphaChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Blend Mode",   _dbgInfo.frameStats.blendChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Depth Test",   _dbgInfo.frameStats.depthTestChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Depth Mode",   _dbgInfo.frameStats.depthModeChangeCount);
+    _gyPop(2);
+
+
+    _gyLog(GY_DEBUG_VERBOSE, "Video RAM");
+    _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Bytes Used",           _dbgInfo.vramUsedBytes);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Bytes Free",           _dbgInfo.vramFreeBytes);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Bytes Used Watermark", _dbgInfo.vramUsedWatermark);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Total Bytes Used",     _dbgInfo.totalVramUsedBytes);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Total Bytes Freed",    _dbgInfo.totalVramFreedBytes);
+
+    _gyPop(1);
+
+    _gyLog(GY_DEBUG_VERBOSE, "Textures");
+    _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Texture Count",                _dbgInfo.allocatedTextureCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Total Texture Alloc Count",    _dbgInfo.totalTextureAllocatedCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-30s: %50d", "Total Texture Freed Count",    _dbgInfo.totalTextureFreedCount);
+
+    _gyPop(2);
+
+   return 1;
+
 }

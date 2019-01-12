@@ -127,7 +127,7 @@ static inline const char* gyThreadPriorityString(GY_THREAD_PRIORITY priority) {
 }
 
 int gyThreadInit(const GYThreadInitParams *params) {
-    if(_initialized) return 0;
+    if(_initialized) return 1;
     (void)params;
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_THREAD_API: Initializing SDL Thread Back-End.");
     memset(&_context, 0, sizeof(struct SDLThreadContext));
@@ -136,7 +136,8 @@ int gyThreadInit(const GYThreadInitParams *params) {
 }
 
 int gyThreadUninit(void) {
-    if(!_initialized) return 0;
+    if(!_initialized) return 1;
+    _initialized = 0;
     int success = 1;
     _gyLog(GY_DEBUG_VERBOSE, "GYRO_THREAD_API: Uninitializing SDL Thread Back-End.");
     _gyPush();

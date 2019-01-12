@@ -48,6 +48,7 @@ static inline void gyMatMultMat(GYMatrix4 dMat, const GYMatrix4 sMat1, const GYM
 #endif
 }
 
+
 static inline void gyMatApply(GYMatrix4 mat) {
   GYMatrix4 result;
     gyMatMultMat(result, (const float (*)[4])_curMat, (const float (*)[4])mat);
@@ -431,6 +432,50 @@ static inline int gyMat4Compare(const GYMatrix4 m1, const GYMatrix4 m2) {
 
 static inline float gyVec4Magnitude(const void*const v) {
     return gySqrt( (VEC4(v)->x * VEC4(v)->x) + (VEC4(v)->y * VEC4(v)->y) + (VEC4(v)->z * VEC4(v)->z) + (VEC4(v)->w * VEC4(v)->w) );
+}
+
+
+static inline float gyMatDeterminant(GYMatrix4 m) {
+    return  m[3][0]*m[2][1]*m[1][2]*m[0][3] - m[2][0]*m[3][1]*m[1][2]*m[0][3] - m[3][0]*m[1][1]*m[2][2]*m[0][3] + m[1][0]*m[3][1]*m[2][2]*m[0][3] +
+            m[2][0]*m[1][1]*m[3][2]*m[0][3] - m[1][0]*m[2][1]*m[3][2]*m[0][3] - m[3][0]*m[2][1]*m[0][2]*m[1][3] + m[2][0]*m[3][1]*m[0][2]*m[1][3] +
+            m[3][0]*m[0][1]*m[2][2]*m[1][3] - m[0][0]*m[3][1]*m[2][2]*m[1][3] - m[2][0]*m[0][1]*m[3][2]*m[1][3] + m[0][0]*m[2][1]*m[3][2]*m[1][3] +
+            m[3][0]*m[1][1]*m[0][2]*m[2][3] - m[1][0]*m[3][1]*m[0][2]*m[2][3] - m[3][0]*m[0][1]*m[1][2]*m[2][3] + m[0][0]*m[3][1]*m[1][2]*m[2][3] +
+            m[1][0]*m[0][1]*m[3][2]*m[2][3] - m[0][0]*m[1][1]*m[3][2]*m[2][3] - m[2][0]*m[1][1]*m[0][2]*m[3][3] + m[1][0]*m[2][1]*m[0][2]*m[3][3] +
+            m[2][0]*m[0][1]*m[1][2]*m[3][3] - m[0][0]*m[2][1]*m[1][2]*m[3][3] - m[1][0]*m[0][1]*m[2][2]*m[3][3] + m[0][0]*m[1][1]*m[2][2]*m[3][3];
+}
+
+static inline int gyMatInverse(GYMatrix4* dst, GYMatrix4 src) {
+    assert(0);
+
+    float det;
+
+    if((det = gyMatDeterminant(src)) == 0.0f) {
+        return 0;
+    } else {
+#if 0
+        m00 = m12*m23*m31 - m13*m22*m31 + m13*m21*m32 - m11*m23*m32 - m12*m21*m33 + m11*m22*m33;
+        m01 = m03*m22*m31 - m02*m23*m31 - m03*m21*m32 + m01*m23*m32 + m02*m21*m33 - m01*m22*m33;
+        m02 = m02*m13*m31 - m03*m12*m31 + m03*m11*m32 - m01*m13*m32 - m02*m11*m33 + m01*m12*m33;
+        m03 = m03*m12*m21 - m02*m13*m21 - m03*m11*m22 + m01*m13*m22 + m02*m11*m23 - m01*m12*m23;
+        m10 = m13*m22*m30 - m12*m23*m30 - m13*m20*m32 + m10*m23*m32 + m12*m20*m33 - m10*m22*m33;
+        m11 = m02*m23*m30 - m03*m22*m30 + m03*m20*m32 - m00*m23*m32 - m02*m20*m33 + m00*m22*m33;
+        m12 = m03*m12*m30 - m02*m13*m30 - m03*m10*m32 + m00*m13*m32 + m02*m10*m33 - m00*m12*m33;
+        m13 = m02*m13*m20 - m03*m12*m20 + m03*m10*m22 - m00*m13*m22 - m02*m10*m23 + m00*m12*m23;
+        m20 = m11*m23*m30 - m13*m21*m30 + m13*m20*m31 - m10*m23*m31 - m11*m20*m33 + m10*m21*m33;
+        m21 = m03*m21*m30 - m01*m23*m30 - m03*m20*m31 + m00*m23*m31 + m01*m20*m33 - m00*m21*m33;
+        m22 = m01*m13*m30 - m03*m11*m30 + m03*m10*m31 - m00*m13*m31 - m01*m10*m33 + m00*m11*m33;
+        m23 = m03*m11*m20 - m01*m13*m20 - m03*m10*m21 + m00*m13*m21 + m01*m10*m23 - m00*m11*m23;
+        m30 = m12*m21*m30 - m11*m22*m30 - m12*m20*m31 + m10*m22*m31 + m11*m20*m32 - m10*m21*m32;
+        m31 = m01*m22*m30 - m02*m21*m30 + m02*m20*m31 - m00*m22*m31 - m01*m20*m32 + m00*m21*m32;
+        m32 = m02*m11*m30 - m01*m12*m30 - m02*m10*m31 + m00*m12*m31 + m01*m10*m32 - m00*m11*m32;
+        m33 = m01*m12*m20 - m02*m11*m20 + m02*m10*m21 - m00*m12*m21 - m01*m10*m22 + m00*m11*m22;
+        scale(1/m1.determinant());
+
+#else
+
+#endif
+        return 1;
+    }
 }
 
 /*

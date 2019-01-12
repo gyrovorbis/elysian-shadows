@@ -348,6 +348,8 @@ void gyVidTexWalkthrough(void) {
 
     count = 0;
     _gyLog(GY_DEBUG_VERBOSE, "Texture Bank Walkthrough (%d items, %fMB total)", gyVidTexAmount(), (float)gyVidTexBytes()/(1024.0f*1024.0f));
+
+    _gyPush();
     for(entry = _texBank._head; entry; entry = entry->_next) {
         tex = entry->_payload;
         if(!tex) {

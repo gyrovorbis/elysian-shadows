@@ -111,8 +111,11 @@ int                         glalSpotShadowMapArrayCount                     = 0;
 // ====== PUBLIC LIGHTING API =======
 
 void gyVidSetCurrentShaderProgram(struct GYShaderProgram*const program) {
+    gyVidVertexBatchFlush();
+
     glalCurShaderProg = program;
     if(program) glUseProgram(program->program);
+    gyVidPipelineInvalidate();
 }
 
 void gyVidSetDefaultShaderProgram(void) {
@@ -163,7 +166,7 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
 
             if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] == glalTextureMapUniforms[GLAL_NORMAL_MAP]) {
                 glalTextureMapActive = glalNormalMapActive;
-                glalCurTex = tex;
+                _glState.texture = tex;
                 glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalNormalMapActive);
                 ++glalUniformChangeCount;
             }
@@ -207,7 +210,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
             ++glalUniformChangeCount;
             if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] == glalTextureMapUniforms[GLAL_SPECULAR_MAP]) {
                 glalTextureMapActive = glalSpecularMapActive;
-                glalCurTex = tex;
+                _glState.texture = tex;
                 glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalSpecularMapActive);
                 ++glalUniformChangeCount;
             }
