@@ -57,7 +57,7 @@ namespace elysian {
         constexpr T         getValue(void) const;
         void                setValue(const T val);
 
-        BitMask<T>          getSubvalue(const unsigned pos, const unsigned bitCount) const;
+        T                   getSubvalue(const unsigned pos, const unsigned bitCount) const;
 
         constexpr T         getSubMaskValue(const T pos, const T mask) const;
         void                setSubMaskValue(const T pos, const T mask, const T value);

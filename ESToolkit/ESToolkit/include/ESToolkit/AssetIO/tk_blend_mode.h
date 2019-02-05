@@ -8,7 +8,7 @@ class TkBlendMode: public elysian::BlendModeBase {
 public:
 
                 TkBlendMode(void) = default;
-                TkBlendMode(GY_BLEND_MODE srcFactor, GY_BLEND_MODE dstFactor, Color4 constColor=Color4());
+                TkBlendMode(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor, Color4 constColor=Color4());
 
     static void initializeDelegates(void);
 
@@ -17,7 +17,7 @@ public:
 
 //====== INLINEZ ========
 
-inline TkBlendMode::TkBlendMode(GY_BLEND_MODE srcFactor, GY_BLEND_MODE dstFactor, Color4 constColor):
+inline TkBlendMode::TkBlendMode(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor, Color4 constColor):
     elysian::BlendModeBase(srcFactor, dstFactor, constColor) {}
 
 

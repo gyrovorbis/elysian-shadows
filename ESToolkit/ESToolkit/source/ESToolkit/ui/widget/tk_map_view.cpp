@@ -96,9 +96,9 @@ void MapView::onEngineInitialize(void) {
     auto* render = _cursorEntity->addRenderable();
     auto sprAttrib = std::make_shared<elysian::SpriteAttrib>();
     auto* mat = new elysian::Material;
-    mat->setEmissiveColor(GYVector4 {4.0f, 0.0f, 0.0f, 0.0f});
-    sprAttrib->setMaterial(mat);
-    sprAttrib->setColor(GYColor4{ 255, 0, 0, 255});
+    mat->setEmissiveColor(GYVector4 {0.0f, 120.0f, 0.0f, 0.0f});
+    //sprAttrib->setMaterial(mat);
+    sprAttrib->setColor(GYColor4{ 255, 0, 255, 255});
     render->setSpriteAttrib(sprAttrib);
     colAttrib->getFlags()->setType(0);
     colAttrib->getFlags()->getType().setValue(elysian::CollisionFlags::CURSOR);
@@ -303,6 +303,9 @@ void MapView::_externalSelectionCreate(void) {
     if(startY < 0) startY = 0;
     if(endX >= getAssets()->getCurrentArea()->width) endX = getAssets()->getCurrentArea()->width;
     if(endY >= getAssets()->getCurrentArea()->height) endY = getAssets()->getCurrentArea()->height;
+    if(endX < startX || endY < startY) {
+   //     return; //JESUS FUCKING CHRIST, QT!!!
+    }
 
     TileSelectable *selection = new TileSelectable(QRect(startX, startY, endX-startX+1, endY-startY+1), _tileSelectionArray, getCurrentArea(), getCurrentLevel(), getAssets()->getCurrentLayer());
     setCurrentSelection(selection);

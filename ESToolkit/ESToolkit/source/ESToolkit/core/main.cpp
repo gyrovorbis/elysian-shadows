@@ -103,6 +103,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     fmt.setVersion( 4, 1 );
    // fmt.setStencilBufferSize(0);
     fmt.setDepthBufferSize(32);
+    fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     //fmt.setOption(QSurfaceFormat::DebugContext);
     // Set the default GL format to OpenGL 3.2 Core
@@ -115,11 +116,12 @@ static GYAppCbRet Init(int argc, char **argv) {
     glfmt.setSwapInterval(0);
     glfmt.setDepthBufferSize(32);
     glfmt.setStencilBufferSize(0);
+    glfmt.setDoubleBuffer(true);
     glfmt.setAlphaBufferSize(0);
     glfmt.setStereo(false);
     glfmt.setVersion(4, 1);
     glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
-    // Set the default GL format to OpenGL 3.2 Core
+    // Set the default GL format to OpenGL 3.2 Coåre
     QGLFormat::setDefaultFormat(glfmt);
 
     QApplication a(argc, argv);

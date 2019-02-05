@@ -1,5 +1,4 @@
 #include <ESGamma/crtp/elysian_lua_manager.hpp>
-#include <ESGamma/lua/elysian_lua_script.hpp>
 #include <AssetIO/crtp/elysian_behavior.hpp>
 #include <ESGamma/crtp/elysian_debug.hpp>
 #include <AssetIO/utility/elysian_lua_variant_base.hpp>

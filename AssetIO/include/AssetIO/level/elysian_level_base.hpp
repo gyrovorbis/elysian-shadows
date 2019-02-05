@@ -63,6 +63,8 @@ namespace elysian {
 
 
         GYTexture*      getTileSheet(void) const;
+        GYTexture*      getNormalSheet(void) const;
+        GYTexture*      getEmissiveSheet(void) const;
     };
 
 
@@ -96,6 +98,14 @@ namespace elysian {
 
         inline GYTexture* LevelBase::getTileSheet(void) const {
             return tileSheet;
+        }
+
+        inline GYTexture* LevelBase::getNormalSheet(void) const {
+            return normalSheet;
+        }
+
+        inline GYTexture* LevelBase::getEmissiveSheet(void) const {
+            return specularSheet;
         }
 
 }

@@ -175,9 +175,6 @@ void GuiSystem::renderBackground(void) {
 }
 
 void GuiSystem::renderForeground(void) {
-
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
     //gyVidDepthTest(false);
     _renderExamineEntity();
     _renderDebugOverlay();
@@ -214,6 +211,7 @@ void GuiSystem::_renderDebugOverlay(void) {
         return;
 
     pragmata18.setColor(0, 255, 100, 255);
+    //pragmata18.getBlendMode().setConstColor(Color4(255, 0, 255, 255));
     pragmata18._transform._pos.y = 75.0f;
     pragmata18._transform._pos.z = 50.0f;
 
@@ -283,10 +281,6 @@ void GuiSystem::_renderCombatText(void) {
 }
 
 void GuiSystem::render(void) {
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
-    //gyVidDepthTest(false);
-
     _renderCombatText();
     for(auto it = _combatStatIndicator.begin(); it < _combatStatIndicator.end(); ++it) {
         if((*it).getEntity()) (*it).render();

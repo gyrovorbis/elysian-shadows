@@ -782,4 +782,28 @@ Behavior* EntityBase::getBehaviorByIndex(const unsigned index) const {
     return _behaviors[index];
 }
 
+
+const BlendMode* EntityBase::getBlendMode(void) const {
+
+}
+
+uint8_t EntityBase::getShader(void) const {
+    return 0;
+}
+uint16_t EntityBase::getTexture(void) const {
+    if(getRenderable()) {
+        getRenderable()->getSpriteAttrib()->getTexture();
+    }
+}
+
+void EntityBase::updateBoundingVolume(void)  {
+    getAABB().setMinVert(Vector4(_transform.getPos().x - 0.5f * _transform.getSize().y * _transform.getScale().y,
+                                 _transform.getPos().y - 0.5f * _transform.getSize().y * _transform.getScale().y,
+                                 _transform.getPos().z - 0.5f * _transform.getSize().z * _transform.getScale().z, 1.0f));
+
+    getAABB().setMaxVert(Vector4(_transform.getPos().x + 0.5f * _transform.getSize().y * _transform.getScale().y,
+                                 _transform.getPos().y + 0.5f * _transform.getSize().y * _transform.getScale().y,
+                                 _transform.getPos().z + 0.5f * _transform.getSize().z * _transform.getScale().z, 1.0f));
+}
+
 }

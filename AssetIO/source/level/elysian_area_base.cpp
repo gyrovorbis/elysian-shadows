@@ -12,7 +12,7 @@
 #endif
 #include <libGyro/gyro_file_api.h>
 #include <ESGamma/system/elysian_audio_system.hpp>
-
+#include <stdlib.h>
 
 using namespace std;
 
@@ -185,7 +185,9 @@ void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry 
     const GY_RECT_TEX_ORIENT texOrient = tileEntry->getOrient();
     //const Tile* tile = &level->tileset[tileEntry->getIndex()];
 
-    const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
+    const uint16_t index = tileEntry->getIndex();
+
+    const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[index],
                                                                        texOrient);
     const GYVector4*const localVerts = glalRectVerts[planeType];
     GYVector4 worldVerts[4];
@@ -196,19 +198,34 @@ void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry 
 
     gyMatPush();
     gyMatLoadIdentity();
-    gyMatTranslateScale(x*32.0f, y*32.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f/*+0.001f*(float)l*/, 32.0f, 32.0f, 32.0f);
+    gyMatTranslateScale(x*32.0f, y*32.0f + tileEntry->getElev()*32.0f+l*ELYSIAN_AREA_LAYER_DEPTH_EPSILON, tileEntry->getElev()*32.0f+l*ELYSIAN_AREA_LAYER_DEPTH_EPSILON, 32.0f, 32.0f, 32.0f);
     gyMatMultVec(localVerts, worldVerts, 4);
     gyMatPop();
 
     for(unsigned i = 0; i < 4; ++i) {
+#if 0
         vboEntry[i] = {
             worldVerts[i],
             coords[i],
-            GYColor4 { 255, 255, 255, 255 },
-            *normal,
-            *tangent,
-            glalOrientNormalMapZFactor(texOrient)
+            GYColor4 { 1, 2, 3, 4 },
+                        66.0f,
+            {1.0f, 2.0, 3.0f },//*normal,
+            { 11.0f, 12.0f, 13.0f }//*tangent,
+            //index != 0? glalOrientNormalMapZFactor(texOrient) : 0.0f //normal factor of 0.0f is secret sentinal to compute that this is a blank tiles
         };
+#else
+
+        uint8_t color = index? 255 : 0;
+        vboEntry[i] = {
+            worldVerts[i],
+            coords[i],
+            GYColor4 { color, color, color, color },
+            index? glalOrientNormalMapZFactor(texOrient) : -2.0f,
+            *normal,
+            *tangent
+        };
+#endif
+
     }
 #endif
 }
@@ -368,7 +385,8 @@ void AreaBase::populateVbo(void) {
 
     glGenBuffers(1, &vertexVbo);
 
-    GYVertex* data = (GYVertex*)malloc(sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
+    GYVertex* data =  //(GYVertex*)std::aligned_alloc(64, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);//
+    (GYVertex*)malloc(sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
     GYVertex* curPtr = data;
 //	const GYTexCoord2* coords;
 
@@ -397,6 +415,17 @@ void AreaBase::populateVbo(void) {
         &glalShadowMapShader
     };
 
+#if 0
+    typedef struct GYVertex {
+        GYVector4   pos;        //16 bytes      16
+        GYTexCoord2 texCoord;   //8 bytes       24
+        GYColor4    color;      //4 bytes       28
+        GYVector3   normal;     //12 bytes      44  32
+        float       normalZ;    //4 bytes       45  36
+        GYVector3   tangent;    //12 bytes      46  48
+    } GYVertex;                 //68 bytes
+#endif
+
     for(unsigned j = 0; j < 2; ++j) {
         glGenVertexArrays(1, &vao[j]);
         gyVidVertexArrayBind(vao[j]);
@@ -410,9 +439,10 @@ void AreaBase::populateVbo(void) {
     glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_POS]);
     glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_TEX_COORD]);
 
-    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), 0);
-    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
-
+    assert(offsetof(GYVertex, pos) == 0);
+    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)offsetof(GYVertex, pos));
+    assert(offsetof(GYVertex, texCoord) == 16);
+    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(offsetof(GYVertex, texCoord)));
 
     if(j == 0) { //light VAO
         glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_COLOR]);
@@ -420,10 +450,19 @@ void AreaBase::populateVbo(void) {
         glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_TANGENT]);
         glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_NORMAL_Z]);
 
-        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
-        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
-        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
-        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
+        assert(offsetof(GYVertex, color) == 24);
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, color));
+
+        assert(offsetof(GYVertex, normalZ) == 28);
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, normalZ));
+
+        assert(offsetof(GYVertex, normal) == 32);
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, normal));
+
+        assert(offsetof(GYVertex, tangent) == 48 && offsetof(GYVertex, tangent) % 16 == 0);
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(offsetof(GYVertex, tangent)));
+
+        assert(sizeof(GYVertex) == 64);
     }
         }
 
@@ -462,7 +501,7 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
 
 #ifdef GYRO_GLAL
     GYVertex entry[4];
-    if(e.getValue() == 0) return;
+    //if(e.getValue() == 0) return;
     vboEntryFromTileEntry(entry, &e, x, y, l);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);

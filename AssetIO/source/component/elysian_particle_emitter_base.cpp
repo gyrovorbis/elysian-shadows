@@ -227,16 +227,25 @@ void ParticleEmitterInternals::render(void) {
     //internal matrix stack!
 
     if(_pool.size() > 0) {
-        gyVidTexBind(_attrib->getTexture());
 
-        gyVidNormalMapBind(_attrib->_normalMap);
-        gyVidSpecularMapBind(_attrib->_specularMap);
+        auto pipelineState = getAttrib()?
+                    getAttrib()->getGyVidPipelineState() :
+                    GYVidPipelineState {
+                        0,
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        GY_ALPHA_NONE,
+                        GY_BLEND_ONE,
+                        GY_BLEND_ONE,
+                        true,
+                        GY_VID_DEPTH_LESS,
+                        { 0, 0, 0, 0 }
+                    };
 
-        gyVidMaterialBind(_attrib->_material);
-        gyVidAlphaLevel(GY_ALPHA_FULL);
+        gyVidPipelineState(&pipelineState);
+        gyVidMaterialBind(getAttrib()? getAttrib()->getMaterial() : nullptr);
         gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-
-        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
 
         //loop unroll my bitch ass
 
@@ -271,15 +280,24 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
         if((*it).zIndex != elev)  continue;
 
       //  if(!initialized) {
-            gyVidTexBind(_attrib->getTexture());
 
-            gyVidNormalMapBind(_attrib->_normalMap);
-            gyVidSpecularMapBind(_attrib->_specularMap);
+        auto pipelineState = getAttrib()?
+                    getAttrib()->getGyVidPipelineState() :
+                    GYVidPipelineState {
+                        0,
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        GY_ALPHA_NONE,
+                        GY_BLEND_ONE,
+                        GY_BLEND_ONE,
+                        true,
+                        GY_VID_DEPTH_LESS,
+                        { 0, 0, 0, 0 }
+                    };
 
-            gyVidMaterialBind(_attrib->_material);
-            gyVidAlphaLevel(GY_ALPHA_FULL);
-
-            gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
+            gyVidPipelineState(&pipelineState);
+            gyVidMaterialBind(getAttrib()? getAttrib()->getMaterial() : nullptr);
            // initialized = true;
 
         //}

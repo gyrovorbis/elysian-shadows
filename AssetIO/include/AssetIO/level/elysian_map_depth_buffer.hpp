@@ -233,7 +233,7 @@ namespace elysian {
         memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
         memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
         _enableDepthTest();
-        _processTiles();
+        //_processTiles();
         if(!_isShadowPass()) _renderCustomPassImmediate();
 
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ====
@@ -310,12 +310,12 @@ _enableDepthTest();
 
             if(_isShadowPass() || _isDepthPrePass()) {
 
-                _renderDepthBuffTileRow(i, NORMAL_FRONT);
+             //   _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
                 //_renderCustomPassAtElev(i, NORMAL_FRONT);
 
             } else {
-                _renderDepthBuffTileRow(i, NORMAL_FLAT);
+           //     _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
                 _renderCustomPassAtElev(i, NORMAL_FLAT);
             }
@@ -352,11 +352,11 @@ _enableDepthTest();
                 }
 
             if(_isShadowPass() || _isDepthPrePass()) {
-                _renderDepthBuffTileRow(i, NORMAL_FLAT);
+              //  _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
               //  _renderCustomPassAtElev(i, NORMAL_FLAT);
             } else {
-            _renderDepthBuffTileRow(i, NORMAL_FRONT);
+          //  _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
              _renderCustomPassAtElev(i, NORMAL_FRONT);
             }

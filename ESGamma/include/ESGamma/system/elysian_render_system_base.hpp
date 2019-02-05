@@ -23,6 +23,9 @@
 
 namespace elysian {
 
+    class PopulateMapIboComputeTask;
+    class Camera;
+
     enum BLEND_MODE {
         BLEND_MODE_NONE,
         BLEND_MODE_NORMAL,
@@ -96,9 +99,22 @@ namespace elysian {
        uint32_t  baseInstance;
     };
 
+    struct DrawElementsIndirectBuffer {
+        uint32_t    count;
+        uint32_t    instanceCount;
+        uint32_t    firstIndex;
+        uint32_t    baseVertex;
+        uint32_t    baseInstance;
+    };
+
     class ParticleComputeTask: public ComputeTask {
 
 
+    };
+
+    struct CLCamera {
+        float planes[4][6];
+        float viewProj[4][4];
     };
 
 
@@ -145,13 +161,21 @@ namespace elysian {
         ComputeBuffer*  _projViewMatBuff        = nullptr;
     };
 
-
     class RendererThread: public Thread {
 
     };
 
+    class RendererComputeGlobalDataManager {
+    protected:
+        static ComputeBuffer*   _cameraBuffer;
+        static const Camera*    _camera;
+      //  static ComputeBuffer* _frameUbo;
+      //  static ComputeBuffer* _mapVbo;
 
-    class RenderSystemBase: public System, public EventObserver {
+
+    };
+
+    class RenderSystemBase: public System, public EventObserver, public RendererComputeGlobalDataManager {
     private:
 
     #ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
@@ -194,6 +218,8 @@ namespace elysian {
 
         LightCullingComputeTask*    _lightCullComputeTask       = nullptr;
 
+        PopulateMapIboComputeTask*  _populateMapIboComputeTask  = nullptr;
+
         bool                    _depthTest                      = true;
         GY_VID_DEPTH_MODE       _depthMode                      = GY_VID_DEPTH_LESS;
         GYVidPipelineState      _pipelineState;
@@ -204,6 +230,9 @@ namespace elysian {
         bool                    _initializeAutomaticExposureKernel(void);
         bool                    _uninitializeAutomaticExposureKernel(void);
         void                    _onViewportSizeChange(void);
+        void                    _onAreaChange(void) const;
+        bool                    _initializeComputeGlobalData(void) const;
+        bool                    _uninitializeComputeGlobalData(void) const;
 
     public:
 
@@ -222,6 +251,8 @@ namespace elysian {
         void                    updateHDRExposure(void);
         bool                    populateParticleVbos(void);
         bool                    renderParticles(void);
+
+        bool                    updateCamera(const Camera* cam) const;
 
         //newfangled
 
@@ -342,13 +373,14 @@ namespace elysian {
         _pipelineState({
             0,
             nullptr,
-            0,
-            0,
+            nullptr,
+            nullptr,
             GY_ALPHA_NONE,
             GY_BLEND_NONE,
             GY_BLEND_NONE,
             1,
-            GY_VID_DEPTH_LEQUAL})
+            GY_VID_DEPTH_LEQUAL,
+            {0, 0, 0, 0}})
     {}
 
 

@@ -9,6 +9,7 @@
 #include <ESGamma/crtp/elysian_input_system.hpp>
 #include <ESGamma/system/elysian_event_system.hpp>
 #include <ESGamma/device/elysian_keyboard_device.hpp>
+#include <ESGamma/crtp/elysian_render_system.hpp>
 
 namespace elysian {
 
@@ -616,6 +617,7 @@ void CameraSystemBase::update(void) {
     //Update camera boundaries
    _curState->updateViewVolumeBoundingRegion();
    _curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
+   getRenderSystem()->updateCamera(_curState);
 }
 
 Vector3 CameraSystemBase::transformWorldToScreen(const Vector3& vec) {

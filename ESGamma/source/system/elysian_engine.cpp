@@ -315,7 +315,7 @@ void Engine::render(void) {
             _cameraSystem->update();
             gyVidSceneBegin();
             gyMatLoadIdentity();
-            _renderSystem->updateHDRExposure();
+            //_renderSystem->updateHDRExposure();
 
         /*	unsigned w, h;
             gyVidResolution(&w, &h);
@@ -336,7 +336,7 @@ void Engine::render(void) {
             gyVidProjectionCustomMatrix(projectionMatrix);
             //gyVidProjectionDefaultMatrix(); */
 
-            _guiSystem->renderBackground();
+            //_guiSystem->renderBackground();
             _cameraSystem->pushViewProjMatrix();
             shadowPassMonitor.start();
             _lightSystem->addLightSourcesToScene();
@@ -346,21 +346,21 @@ void Engine::render(void) {
 
             lightPassMonitor.start();
             _mapSystem->render();
-            _renderSystem->renderParticles();
+            //_renderSystem->renderParticles();
             lightPassMonitor.stop();
 
             //_lightSystem->render();
 
-             _collisionSystem->render();
-             _particleSystem->render();
-             _renderSystem->createLuminanceHistogram();
+             //_collisionSystem->render();
+             //_particleSystem->render();
+             //_renderSystem->createLuminanceHistogram();
           //  func();
            // _renderSystem->forwardPlusCullLights();
              _lightSystem->removeLightSourcesFromScene();
              //glalVidApplyRadialBlur();
             //glalVidApplyChromaticAberration();
              guiRenderMonitor.start();
-             _guiSystem->render();
+             //_guiSystem->render();
              guiRenderMonitor.stop();
 
             _cameraSystem->popViewProjMatrix();
@@ -372,8 +372,8 @@ void Engine::render(void) {
             //Begin rendering overlays
           //  func();
             guiRenderMonitor.resume();
-            _dialogSystem->render();
-            _warpSystem->render();
+           // _dialogSystem->render();
+           // _warpSystem->render();
             _guiSystem->renderForeground();
             guiRenderMonitor.stop();
 

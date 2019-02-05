@@ -12,7 +12,25 @@ namespace elysian {
 
     //inherit some libGyro shit
     class AxisAlignedBoundingBox {
-        GYVector4 						_sceneAABB[4];
+    public:
+        enum VERTEX_TYPE { VERTEX_MIN, VERTEX_MAX, VERTEX_COUNT };
+    protected:
+        Vector4         _verts[VERTEX_COUNT];
+    public:
+                        AxisAlignedBoundingBox(void) = default;
+                        AxisAlignedBoundingBox(Vector4 min, Vector4 max);
+
+        Vector4&        getMinVertex(void);
+        const Vector4&  getMinVertex(void) const;
+        Vector4&        getMaxVertex(void);
+        const Vector4&  getMaxVertex(void) const;
+
+        void            setMaxVert(const Vector4& val);
+        void            setMinVert(const Vector4& val);
+
+        Vector4&        operator[](size_t type);
+        const Vector4   operator[](size_t type) const;
+
     };
 
     struct RenderPriority: public BitMask<uint64_t> {
@@ -20,19 +38,19 @@ namespace elysian {
         const static constexpr uint64_t DepthMask           = 0xffffffff00000000;
         const static constexpr uint64_t ShaderBit           = 24;
         const static constexpr uint64_t ShaderMask          = 0x00000000ff000000;
-        const static constexpr uint64_t TextureBit          = 16;
-        const static constexpr uint64_t TextureMask         = 0x0000000000ff0000;
-        const static constexpr uint64_t BlendModeBit        = 6;
-        const static constexpr uint64_t BlendModeMask       = 0x000000000000ffc0;   //Both blend factors combined
-        const static constexpr uint64_t BlendFactorSrcBit   = 11;
-        const static constexpr uint64_t BlendFactorSrcMask  = 0x000000000000f800;   //5 bits per blend factor
-        const static constexpr uint64_t BlendFactorDstBit   = 6;
-        const static constexpr uint64_t BlendFactorDstMask  = 0x00000000000007c0;   //6 unused bits remaining
+        const static constexpr uint64_t TextureBit          = 15;
+        const static constexpr uint64_t TextureMask         = 0x0000000000ff8000;
+        const static constexpr uint64_t BlendModeBit        = 5;
+        const static constexpr uint64_t BlendModeMask       = 0x0000000000007fe0;   //Both blend factors combined
+        const static constexpr uint64_t BlendFactorSrcBit   = 10;
+        const static constexpr uint64_t BlendFactorSrcMask  = 0x0000000000007c00;   //5 bits per blend factor
+        const static constexpr uint64_t BlendFactorDstBit   = 5;
+        const static constexpr uint64_t BlendFactorDstMask  = 0x00000000000003e0;   //5 unused bits remaining
 
 
         float           getSceneDepth(void) const;
         uint8_t         getShader(void) const;
-        uint8_t         getTexture(void) const;
+        uint16_t        getTexture(void) const;
         BlendMode       getBlendMode(void) const;
         GY_BLEND_FACTOR getBlendFactorDst(void) const;
         GY_BLEND_FACTOR getBlendFactorSrc(void) const;
@@ -40,70 +58,58 @@ namespace elysian {
 
         void            setSceneDepth(float depth);
         void            setShader(uint8_t shader);
-        void            setTexture(uint8_t texture);
+        void            setTexture(uint16_t texture);
         void            setBlendFactors(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor);
+        void            setBlendFactorSrc(GY_BLEND_FACTOR factor);
+        void            setBlendFactorDst(GY_BLEND_FACTOR factor);
         void            setBlendMode(BlendMode mode);
 
         void            setValues(float sceneDepth, uint8_t shader, uint8_t texture, BlendMode mode);
         void            setValues(float sceneDepth, uint8_t shader, uint8_t texture, GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor);
-
     };
 
     class SceneObject {
-        AxisAlignedBoundingBox          _aabb;
-        RenderPriority  				_renderPriority;
-        float							_depthSquaredDist		= 0.0f;
-        bool							_isVisible 				= true;
-        bool							_sceneObjTransformDirty	= true;
+    public:
+    protected:
+        AxisAlignedBoundingBox  _aabb;
+        RenderPriority          _renderPriority;
+        float                   _depthSquaredDist		= 0.0f;
+        bool                    _isVisible 				= true;
+        bool                    _sceneObjTransformDirty	= true;
 
-        RenderPriority                  getRenderPriority(void);
-        bool							isVisible(void);
-        void							setVisible(bool val);
-        bool							isSceneObjTransformDirty(void) const;
-        void							setSceneObjTransformDirty(bool val=true);
+    public:
+        virtual                 ~SceneObject(void) = default;
+        RenderPriority          getRenderPriority(void) const;
+        bool                    isVisible(void) const;
+        void                    setVisible(bool val);
+        bool                    isTransparent(void) const;
+        AxisAlignedBoundingBox& getAABB(void);
+        const AxisAlignedBoundingBox getAABB(void) const;
+
+        bool                    isSceneObjTransformDirty(void) const;
+        void                    setSceneObjTransformDirty(bool val=true);
+        auto                    getSceneBoundingBox(void) const -> const AxisAlignedBoundingBox&;
 
         //Actual overridable polymorphic functionality used by the SceneManager
-        virtual void 					updateBoundingVolume(void); //WTF why argument? (const Vector3& origin, cosnt GYMatrix4& viewProjMat);
-        virtual void 	 				updateRenderPriority(void);
-        virtual void                    render(void);
+        virtual void            updateBoundingVolume(void); //WTF why argument? (const Vector3& origin, cosnt GYMatrix4& viewProjMat);
+        virtual void            updateRenderPriority(void);
+        virtual void            render(void);
     };
 
+    template<typename P>
+    class SceneObjectAdapter: public SceneObject {
+    protected:
 
-    class SceneObject {
-    private:
-        AxisAlignedBoundingBox          _aabb;
-        RenderPriority  				_renderPriority;
-        float							_depthSquaredDist		= 0.0f;
-        bool							_isVisible 				= true;
-        bool							_sceneObjTransformDirty	= true;
+        //CRTP overriddable within child implementation:
+        const BlendMode*    getBlendMode(void) const;
+        uint8_t             getShader(void) const;
+        uint16_t            getTexture(void) const;
+
     public:
-
-        RenderPriority                  getRenderPriority(void);
-        bool							isVisible(void);
-        void							setVisible(bool val);
-        bool							isSceneObjTransformDirty(void) const;
-        void							setSceneObjTransformDirty(bool val=true);
-
-    //==== OVERRIDABLE API ========
-
-        virtual void					render(void);
-        virtual const GYVector4*		getSceneBoundingBox(void) const;
-
-        //implement these via CRTP
-        virtual float					getSceneDepth(void) const;
-        virtual uint8_t					getShaderId(void) const;
-        virtual uint8_t					getTextureId(void) const;
-        virtual uint8_t					getBlendMode(void) const;
-        virtual bool					isTransparent(void) const;
-
-        //Overridable polymorphic methods
-
+        //virtual void updateBoundingVolume(void); //use some accessors to do this?
+        virtual void        updateRenderPriority(void) override;
     };
 
-
-    class OpaqueTilesSceneObject: public SceneObject {
-
-    };
 
     class TransparentTileSceneObject: public SceneObject {
 
@@ -146,6 +152,43 @@ namespace elysian {
 
 
     //================= INLINEZ ==================
+
+
+inline AxisAlignedBoundingBox::AxisAlignedBoundingBox(Vector4 min, Vector4 max) {
+        _verts[VERTEX_MIN] = min;
+        _verts[VERTEX_MAX] = max;
+}
+
+inline Vector4& AxisAlignedBoundingBox::getMinVertex(void) {
+    return _verts[VERTEX_MIN];
+}
+inline const Vector4& AxisAlignedBoundingBox::getMinVertex(void) const {
+    return _verts[VERTEX_MIN];
+}
+inline Vector4& AxisAlignedBoundingBox::getMaxVertex(void) {
+    return _verts[VERTEX_MAX];
+}
+inline const Vector4& AxisAlignedBoundingBox::getMaxVertex(void) const {
+    return _verts[VERTEX_MAX];
+}
+
+inline void AxisAlignedBoundingBox::setMaxVert(const Vector4& val) {
+    _verts[VERTEX_MAX] = val;
+}
+inline void AxisAlignedBoundingBox::setMinVert(const Vector4& val) {
+    _verts[VERTEX_MIN] = val;
+}
+
+inline Vector4& AxisAlignedBoundingBox::operator[](size_t type) {
+    assert(type < VERTEX_COUNT);
+    return _verts[type];
+}
+inline const Vector4 AxisAlignedBoundingBox::operator[](size_t type) const {
+    assert(type < VERTEX_COUNT);
+    return _verts[type];
+}
+
+
     inline void RenderPriority::setValues(float sceneDepth, uint8_t shader, uint8_t texture, BlendMode mode) {
         setValues(sceneDepth, shader, texture, mode.getSrcFactor(), mode.getDstFactor());
     }
@@ -158,43 +201,82 @@ namespace elysian {
    }
 
    inline float RenderPriority::getSceneDepth(void) const {
-       return static_cast<float>(getSubMaskValue(DepthBit, DepthMask))
+       return static_cast<float>(getSubMaskValue(DepthBit, DepthMask));
    }
 
    inline uint8_t RenderPriority::getShader(void) const {
        return static_cast<uint8_t>(getSubMaskValue(ShaderBit, ShaderMask));
    }
 
-   inline uint8_t RenderPriority::getTexture(void) const;
-   inline BlendMode RenderPriority::getBlendMode(void) const;
-   inline GY_BLEND_FACTOR RenderPriority::getBlendFactorDst(void) const;
-   inline GY_BLEND_FACTOR RenderPriority::getBlendFactorSrc(void) const;
-   inline bool RenderPriority::isTransparent(void) const;
+   inline uint16_t RenderPriority::getTexture(void) const {
+        return static_cast<uint16_t>(getSubMaskValue(TextureBit, TextureMask));
+   }
+
+   inline BlendMode RenderPriority::getBlendMode(void) const {
+        return BlendMode(getBlendFactorSrc(), getBlendFactorDst());
+   }
+
+   inline GY_BLEND_FACTOR RenderPriority::getBlendFactorDst(void) const {
+        return static_cast<GY_BLEND_FACTOR>(getSubMaskValue(BlendFactorDstBit, BlendFactorDstMask));
+   }
+
+   inline GY_BLEND_FACTOR RenderPriority::getBlendFactorSrc(void) const {
+        return static_cast<GY_BLEND_FACTOR>(getSubMaskValue(BlendFactorSrcBit, BlendFactorSrcMask));
+   }
+
+   inline void RenderPriority::setBlendFactorSrc(GY_BLEND_FACTOR factor) {
+       setSubMaskValue(BlendFactorSrcBit, BlendFactorSrcMask, factor);
+   }
+
+   inline void RenderPriority::setBlendFactorDst(GY_BLEND_FACTOR factor) {
+       setSubMaskValue(BlendFactorDstBit, BlendFactorDstMask, factor);
+   }
+
+   inline bool RenderPriority::isTransparent(void) const {
+       return false;
+   }
 
    inline void RenderPriority::setSceneDepth(float depth) {
-       setSubMaskValue(DepthBit, DepthMask, depth);
+       setSubMaskValue(DepthBit, DepthMask, static_cast<uint32_t>(depth));
    }
 
    inline void RenderPriority::setShader(uint8_t shader) {
         setSubMaskValue(ShaderBit, ShaderMask, shader);
    }
-   inline void RenderPriority::setTexture(uint8_t texture);
-   inline void RenderPriority::setBlendFactors(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor);
+   inline void RenderPriority::setTexture(uint16_t texture) {
+        setSubMaskValue(TextureBit, TextureMask, texture);
+   }
 
+   inline void RenderPriority::setBlendFactors(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor) {
+        setBlendFactorSrc(srcFactor);
+        setBlendFactorDst(dstFactor);
+   }
 
-    inline RenderPriority SceneObject::getRenderPriority(void) const { return _renderPriority; }
-    inline bool	SceneObject::isVisible(void) const { return _isVisible; }
+    inline RenderPriority SceneObject::getRenderPriority(void) const {
+        return _renderPriority;
+    }
+
+    inline bool	SceneObject::isVisible(void) const {
+        return _isVisible;
+    }
+
+    inline AxisAlignedBoundingBox& SceneObject::getAABB(void) {
+        return _aabb;
+    }
+    inline const AxisAlignedBoundingBox SceneObject::getAABB(void) const {
+        return _aabb;
+    }
+
     inline void	SceneObject::setVisible(bool val) { _isVisible = val; }
 
-    inline void SceneObject::updateRenderPriority(void) {
-           _renderPriority = (uint64_t)(((uint64_t)getSceneDepth()  << 32)
-                               |    (uint64_t)(getShaderId()        << 24)
-                               |    (uint64_t)(getTextureId()       << 16)
-                               |	(uint64_t)(getBlendMode()));
-       }
+    inline void SceneObject::updateRenderPriority(void) {}
+
+    inline void SceneObject::updateBoundingVolume(void) {}
+
+    inline void SceneObject::render(void) {}
 
 
-    void EntitySceneObject::updateBoundingVolume(const Vector3& origin) {
+    inline void EntitySceneObject::updateBoundingVolume(const Vector3& origin) {
 #if 0
         if(_sceneObjTransformDirty) {
             pushViewTransform();
@@ -212,15 +294,14 @@ namespace elysian {
     }
 
 
-    inline void SceneObject::render(void) {}
-    inline const GYVector4* SceneObject::getSceneBoundingBox(void) const { return nullptr; }
-    inline  float SceneObject::getSceneDepth(void) const { return FLT_MAX; }
-    inline  uint8_t	SceneObject::getShaderId(void) const { return 0; }
-    inline uint8_t	SceneObject::getTextureId(void) const { return 0; }
-    inline uint8_t	SceneObject::getBlendMode(void) const { return 0; }
-    inline bool	SceneObject::isTransparent(void) const { return 0; }
-    inline void SceneObject::updateBoundingVolume(const Vector3&) {}
-
+    template<typename P>
+    inline void SceneObjectAdapter<P>::updateRenderPriority(void) {
+#if 0
+        _renderPriority.setShader(static_cast<P*>(this)->getShader());
+        _renderPriority.setTexture(static_cast<P*>(this)->getTexture());
+        _renderPriority.setBlendMode(static_cast<P*>(this)->getBlendMode());
+#endif //not ready yet
+    }
 
 }
 

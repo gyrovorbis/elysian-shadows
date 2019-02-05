@@ -12,8 +12,11 @@
 #include <functional>
 #include <AssetIO/utility/elysian_cstr_map.hpp>
 
+#define ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_DEFAULT   "/assets/opencl"
+#define ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX       3
+
 #ifndef ELYSIAN_COMPUTE_PROFILING_ENABLED
-#   define ELYSIAN_COMPUTE_PROFILING_ENABLED   1
+#   define ELYSIAN_COMPUTE_PROFILING_ENABLED        1
 #endif
 
 #ifdef ELYSIAN_COMPUTE_PROFILING_ENABLED
@@ -21,18 +24,14 @@
 #endif
 
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
-#   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES 5
+#   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES      5
 #else
-#   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES 1
+#   define ELYSIAN_COMPUTE_CONTEXT_MAX_DEVICES      1
 #endif
 
-#define ELYSIAN_COMPUTE_CONTEXTS_PER_DEVICE    2
-#define ELYSIAN_COMPUTE_PLATFORM_INVALID       -1
-#define ELYSIAN_COMPUTE_DEVICE_INVALID         -1
-
-#define ELYSIAN_COMPUTE_HEADER_FILES_MAX       3
-
-
+#define ELYSIAN_COMPUTE_CONTEXTS_PER_DEVICE         2
+#define ELYSIAN_COMPUTE_PLATFORM_INVALID            -1
+#define ELYSIAN_COMPUTE_DEVICE_INVALID              -1
 
 
 struct GYComputeDevice;
@@ -83,7 +82,7 @@ namespace elysian {
         std::vector<ComputeEvent*> _list;
     public:
         bool        wait(void);//?
-        unsigned    getSize(void) const;
+        size_t      getSize(void) const;
     };
 
 
@@ -134,7 +133,7 @@ public:
         ComputeCommandQueue(GYComputeCommandQueue* queue, ComputeDevice* device);
     public:
         //int                             gyComputeCommandQueueEnqueueBufferWrite(GYComputeCommandQueue* queue, const GYComputeBuffer* buffer, int blocking, size_t offset, size_t cb, const void* data, unsigned eventCount, void* eventList, void* event);
-        bool enqueueBufferWrite(ComputeBuffer* buffer, size_t offset, size_t size, void* data, bool blocking=true);
+        bool enqueueBufferWrite(ComputeBuffer* buffer, size_t offset, size_t size, const void* data, bool blocking=true);
         bool enqueueBufferRead(ComputeBuffer* buffer, size_t offset, size_t size, void* ptr, bool blocking=true, const ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
         bool enqueueKernel(ComputeKernel* kernel, unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
         bool enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer** buffers);
@@ -186,8 +185,14 @@ public:
 
     public:
         ~ComputeKernel(void);
+
         bool setArg(unsigned index, size_t size, void* data) const;
         bool setArg(unsigned index, const ComputeBuffer* buffer) const;
+
+        template<typename T,
+                 typename std::enable_if_t<std::is_integral<T>::value, T*> = nullptr>
+        bool setArg(unsigned index, T value) const;
+
         int findArgIndexFromName(const char* const name);
       //  bool setArg(const char* name, );
         GYComputeKernel* getGyKernel(void) const;
@@ -228,9 +233,9 @@ public:
 
     protected:
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
-        PerformanceMonitor          _perfMonitor;
-        ComputeEvent                _profilerEvent;
-        bool                        _profilerEventPending = false;
+        mutable PerformanceMonitor   _perfMonitor;
+        mutable ComputeEvent         _profilerEvent;
+        mutable bool                 _profilerEventPending = false;
 #endif
         DeviceCategoryPriorityList  _categoryPriorityList;
         DevicePriorityList          _devicePriorityList;
@@ -241,7 +246,7 @@ public:
         ComputeCommandQueue*        _cmdQueue               = nullptr;
         ComputeContext*             _context                = nullptr;
         bool                        _useNative              = false;
-        bool                        _isValid                = false;
+        mutable bool                _isValid                = false;
 
         bool                        _resolvePrioritizedDevices(bool requirerenderSharedContext);
         bool                        _initializeResources(const char* kernelName,
@@ -273,18 +278,23 @@ public:
         PerformanceMonitor*     getPerfMonitor(void);
 #endif
 
+        bool                    enqueueBufferWrite(ComputeBuffer* buffer, size_t offset, size_t size, const void* data, bool blocking=true) const;
+        bool                    enqueueBufferRead(ComputeBuffer* buffer, size_t offset, size_t size, void* ptr, bool blocking=true, const ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr) const;
 
-        bool                    enqueueKernel(size_t globalSize);
-        bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY);
-        bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY, size_t globalSizeZ);
-        bool                    enqueueKernel(unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr);
+        bool                    enqueueKernel(size_t globalSize) const;
+        bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY) const;
+        bool                    enqueueKernel(size_t globalSizeX, size_t globalSizeY, size_t globalSizeZ) const;
+        bool                    enqueueKernel(unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr) const;
 
-        bool                    finish(void);
+        bool                    enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer** buffers) const;
+        bool                    enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer** buffers, const ComputeEventList* eventList=nullptr, ComputeEvent* event=nullptr) const;
 
-        void                    optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localSize);
+        bool                    finish(void) const;
+
+        void                    optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localSize) const;
 
         bool                    isValid(void) const; //can call kernel in any form
-        void                    setValid(bool val=true);
+        void                    setValid(bool val=true) const;
         bool                    isAccelerationAvailable(void) const;
         bool                    isAccelerated(void) const;
         void                    setAccelerated(bool val=true);
@@ -298,11 +308,14 @@ public:
 
         const constexpr static int InvalidPlatform = ELYSIAN_COMPUTE_PLATFORM_INVALID;
 
-
-        static const char*      _deviceCategoryStrings[(int)ComputeDeviceCategory::HardwareDeviceCount];
+        static const char*      _includeDirs[ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX];
+        static const char*      _deviceCategoryStrings[static_cast<int>(ComputeDeviceCategory::HardwareDeviceCount)];
 
         static const char*      getDeviceTypeString(ComputeDeviceCategory category);
         static bool             isRendererSharedContextDeviceCategory(ComputeDeviceCategory category);
+
+                                ComputeSystem(void);
+                                ~ComputeSystem(void);
 
         bool                    initialize(void);
         bool                    uninitialize(void);
@@ -334,10 +347,13 @@ public:
         bool                    isRendererInteropSupported(void) const;
         bool                    queryEnvironmentInfo(void) const;
 
+        static unsigned         getGlobalIncludeDirCount(void);
+        static const char*      getGlobalIncludeDir(unsigned index);
+        static bool             addGlobalIncludeDir(const char* path);
+
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
         PerformanceMonitor*     getPerfMonitor(void);
 #endif
-
 
     private:
 
@@ -360,7 +376,7 @@ public:
         ComputeDevice**			_devices;
 
         std::vector<ComputeDevice*>
-                                _categorizedDevices[(int)ComputeDeviceCategory::HardwareDeviceCount];
+                                _categorizedDevices[static_cast<int>(ComputeDeviceCategory::HardwareDeviceCount)];
 
         std::map<const char*, ComputeTask*, cstr_map>
                                 _computeTasks;
@@ -465,15 +481,29 @@ public:
     inline PerformanceMonitor* ComputeTask::getPerfMonitor(void) { return &_perfMonitor; }
 #endif
 
-    inline void ComputeTask::setValid(bool val) { _isValid = val; }
+    inline void ComputeTask::setValid(bool val) const { _isValid = val; }
     inline bool ComputeTask::isValid(void) const { return _isValid; }
     inline bool ComputeTask::isAccelerated(void) const { return !_useNative; }
     inline void ComputeTask::setAccelerated(bool val) {
         if(_nativeFallback) {
             _useNative = true;
         } else {
-            _isValid = false;
+            setValid(false);
         }
+    }
+
+    inline bool ComputeTask::enqueueAcquireRendererSharedObject(unsigned count, ComputeBuffer** buffers) const {
+        assert(getCommandQueue());
+        bool success = getCommandQueue()->enqueueAcquireRendererSharedObject(count, buffers);
+        if(!success) setValid(false);
+        return success;
+    }
+
+    inline bool ComputeTask::enqueueReleaseRendererSharedObject(unsigned count, ComputeBuffer** buffers, const ComputeEventList* eventList, ComputeEvent* event) const {
+        assert(getCommandQueue());
+        bool success = getCommandQueue()->enqueueReleaseRendererSharedObject(count, buffers, eventList, event);
+        if(!success) setValid(false);
+        return success;
     }
 
     inline ComputeContext* ComputeDevice::getContext(void) const { return _context; }
@@ -505,6 +535,12 @@ public:
         assert(kernel);
     }
 
+    template<typename T,
+             typename std::enable_if_t<std::is_integral<T>::value, T*>>
+    inline bool ComputeKernel::setArg(unsigned index, T value) const {
+        return setArg(index, sizeof(T), &value);
+    }
+
     inline ComputeEvent::ComputeEvent(void):
         _gyEvent(gyComputeEventCreate()) {
 
@@ -516,7 +552,7 @@ public:
 
     inline GYComputeEvent* ComputeEvent::getGyEvent(void) const { return _gyEvent; }
 
-    inline unsigned ComputeEventList::getSize(void) const { return _list.size(); }
+    inline size_t ComputeEventList::getSize(void) const { return _list.size(); }
 
     inline GYComputeBuffer* ComputeBuffer::getGyBuffer(void) const {
         return _gyBuffer;

@@ -93,7 +93,7 @@ namespace tktest {
 
     inline void Vector2Test::luaGetX(void) {
         elysian::Vector2 vec;
-        elysian::LuaVariant ref(&vec);
+        //elysian::NTLuaVariant ref(&vec);
 
 
     }

@@ -200,6 +200,7 @@ SOURCES += \
     ../../AssetIO/source/proxy/elysian_bit_mask_proxy.cpp \
     ../../AssetIO/source/utility/elysian_bit_mask.cpp \
     ../../ESGamma/source/utility/elysian_lua_table_ref.cpp \
+    ../../AssetIO/source/level/elysian_opaque_map_scene_object.cpp \
     ../../ESGamma/source/utility/elysian_lua_variant.cpp \
     ../../AssetIO/source/proxy/elysian_dialog_proxy.cpp \
     ../../AssetIO/source/level/elysian_dialog_base.cpp \
@@ -239,7 +240,6 @@ SOURCES += \
     ../../ESGamma/source/gui/elysian_item_delegate.cpp \
     ../../ESGamma/source/system/elysian_thread_system.cpp \
     ../../AssetIO/source/primitive/elysian_blend_mode_base.cpp \
-    source/AssetIO/tk_blend_mode.cpp \
     ../../ESGamma/source/device/elysian_controller_device.cpp \
     ../../ESGamma/source/device/elysian_keyboard_device.cpp \
     ../../ESGamma/source/device/elysian_mouse_device.cpp \
@@ -248,6 +248,7 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_compute_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_thread_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_render_system_proxy.cpp
+
 
 !ios: !dreamcast: !android {
 
@@ -276,6 +277,7 @@ SOURCES += \
         source/AssetIO/tk_dialog.cpp \
         source/AssetIO/tk_color.cpp \
         source/AssetIO/tk_dialog_screen.cpp \
+        source/AssetIO/tk_blend_mode.cpp \
         source/ESToolkit/ui/dock/tk_camera_dock_widget.cpp \
         source/ESToolkit/core/main.cpp \
         source/ESToolkit/core/tk_debug.cpp \
@@ -449,6 +451,7 @@ HEADERS += \
     ../../AssetIO/include/AssetIO/primitive/elysian_rect.hpp \
     ../../AssetIO/include/AssetIO/level/elysian_event.hpp \
     ../../AssetIO/include/AssetIO/proxy/elysian_event_proxy.hpp \
+    ../../AssetIO/include/AssetIO/level/elysian_opaque_map_scene_object.hpp \
     ../../AssetIO/include/AssetIO/level/elysian_scene_object.hpp \
     ../../ESGamma/include/ESGamma/gui/elysian_sprite.hpp \
     ../../ESGamma/include/ESGamma/crtp/elysian_debug.hpp \
@@ -542,7 +545,6 @@ HEADERS += \
     ../../game/include/game/pause_menu/es_inventory_menu.hpp \
     ../../game/include/game/behavior/elysian_state_machine_behavior.hpp \
     ../../game/include/game/behavior/elysian_playable_behavior.hpp \
-    include/ESToolkit/AssetIO/tk_blend_mode.h \
     ../../AssetIO/include/AssetIO/crtp/elysian_blend_mode.hpp \
     ../../AssetIO/include/AssetIO/primitive/elysian_blend_mode_base.hpp \
     ../../ESGamma/include/ESGamma/device/elysian_controller_device.hpp \
@@ -555,7 +557,12 @@ HEADERS += \
     ../../ESGamma/include/ESGamma/proxy/elysian_compute_system_proxy.hpp \
     ../../ESGamma/include/ESGamma/proxy/elysian_thread_system_proxy.hpp \
     ../../ESGamma/include/ESGamma/proxy/elysian_render_system_proxy.hpp \
-    ../../ElysianVMU/QESTkUtils/include/QESTkUtils/tk_debug_log_stack.h
+    ../../AssetIO/include/AssetIO/utility/elysian_string.hpp \
+    ../../AssetIO/include/AssetIO/primitive/elysian_mesh_attrib.hpp
+
+
+
+
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -589,6 +596,7 @@ HEADERS += \
         include/ESToolkit/AssetIO/tk_dialog.h \
         include/ESToolkit/AssetIO/tk_color.h \
         include/ESToolkit/AssetIO/tk_lua_variant.h \
+        include/ESToolkit/AssetIO/tk_blend_mode.h \
         include/ESToolkit/ui/item/tk_checkered_alpha_rect_graphics_item.h \
         include/ESToolkit/core/tk_debug.h \
         include/ESToolkit/core/tk_file_utilities.h \

@@ -5,6 +5,8 @@
 #include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
 #include <AssetIO/crtp/elysian_color.hpp>
 #include <AssetIO/crtp/elysian_blend_mode.hpp>
+#include <libGyro/gyro_shader_api.h>
+#include <libGyro/gyro_video_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Renderable)
 ELYSIAN_ASSET_TYPEDEF(SpriteAttrib)
@@ -80,6 +82,7 @@ namespace elysian {
 
         void setAlpha(const unsigned char a);
         unsigned char getAlpha(void) const;
+        virtual bool hasAlpha(void) const;
 
         PrimAttrib::TYPE getType(void) const;
 
@@ -98,6 +101,7 @@ namespace elysian {
         void loadSheet(const char* filename, const unsigned sheetWidth, const unsigned sheetHeight);
         void setFrame(const unsigned fr);
         int getFrame(void) const;
+        GYVidPipelineState getGyVidPipelineState(void) const;
 
 	};
 
@@ -109,6 +113,8 @@ namespace elysian {
 
 
     //====== INLINEZ =======
+
+    inline bool SpriteAttribBase::hasAlpha(void) const { return getAlpha() != 255 && getAlpha() != 0; }
 
     inline void SpriteAttribBase::setNormalMapPath(const char * const path) {
         if(_normalMap) gyVidTexDestroy(_normalMap);
@@ -151,12 +157,28 @@ namespace elysian {
         gyVidTexDestroy(_specularMap);
     }
 
+    inline GYVidPipelineState SpriteAttribBase::getGyVidPipelineState(void) const {
+        bool alpha = hasAlpha();
+
+        const GYVidPipelineState pipelineState = {
+            0,
+            _tex,
+            _normalMap,
+            _specularMap,
+            (alpha)? GY_ALPHA_FULL : GY_ALPHA_NONE,
+            _blendMode.getSrcFactor(),
+            _blendMode.getDstFactor(),
+            !alpha,
+            GY_VID_DEPTH_LEQUAL,
+            _blendMode.getConstColor()
+        };
+        return pipelineState;
+    }
+
     inline void SpriteAttribBase::submitHeader(void) {
-        if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
-        else gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(_blendMode.getSrcFactor(), _blendMode.getDstFactor());
-        //gyVidMaterialBind(nullptr);
-        gyVidTexBind(_tex);
+        auto pipelineState = getGyVidPipelineState();
+        gyVidPipelineState(&pipelineState);
+        gyVidMaterialBind(nullptr);
         gyVidQuadListBegin(&_color);
         if(_frame == -1) gyVidTexCoordArray(_texCoords);
 

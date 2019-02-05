@@ -86,9 +86,20 @@ void CollidableBase::render(void) {
     const static GYColor4 color = {0, 0, 255, 128};
     const static GYColor4 colColor = {255, 0, 0, 128};
 
-    gyVidNormalMapBind(nullptr);
-    gyVidSpecularMapBind(nullptr);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
+    GYVidPipelineState pipelineState = {
+        0,
+        nullptr,
+        nullptr,
+        nullptr,
+        GY_ALPHA_FULL,
+        GY_BLEND_SRC_ALPHA,
+        GY_BLEND_ONE_MINUS_SRC_ALPHA,
+        false,
+        GY_VID_DEPTH_ALWAYS,
+        { 0, 0, 0, 0 }
+    };
+
+    gyVidMaterialBind(nullptr);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 
     gyMatPush();
@@ -99,16 +110,17 @@ void CollidableBase::render(void) {
     getEntity()->pushViewTransform();
 
     if(_attrib->_type == GY_COLLIDER_CIR) {
-        gyVidTexBind(CollisionSystem::getCircleColliderTex());
+        pipelineState.texture = CollisionSystem::getCircleColliderTex();;
         const float texScale = _entity->_transform._size.x / (float)ELYSIAN_COLLISION_CIRCLE_COLLIDER_DECORATION_DIAMETER;
         gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f,
                       texScale * _attrib->_relSize.x, texScale * _attrib->_relSize.y, 1.0f);
 
     } else {
-        gyVidTexBind(nullptr);
         gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f,
                       _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
     }
+
+    gyVidPipelineState(&pipelineState);
 
     //gyVidQuad(_collider.box.worldVert, 0);
     gyVidRect(0);

@@ -7,6 +7,33 @@
 
 namespace elysian {
 
+const char* ComputeSystem::_includeDirs[ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX] = { nullptr };
+
+unsigned ComputeSystem::getGlobalIncludeDirCount(void) {
+    unsigned count = 0;
+    for(unsigned d = 0; d < ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX; ++d) {
+        if(_includeDirs[d]) ++count;
+    }
+    return count;
+}
+
+const char* ComputeSystem::getGlobalIncludeDir(unsigned index) {
+    return (index >= ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX)? nullptr : _includeDirs[index];
+}
+
+bool ComputeSystem::addGlobalIncludeDir(const char* path) {
+    assert(path);
+    for(unsigned d = 0; d < ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX; ++d) {
+        if(!_includeDirs[d]) {
+            char* str = new char[strlen(path)+1];
+            strcpy(str, path);
+            _includeDirs[d] = str;
+            return true;
+        }
+    }
+    return false;
+}
+
 const char* ComputeSystem::_deviceCategoryStrings[(int)ComputeDeviceCategory::HardwareDeviceCount] = {
     "DEVICE_GPU_RENDERER_ONLINE",
     "DEVICE_GPU_RENDERER_OFFLINE",
@@ -15,6 +42,17 @@ const char* ComputeSystem::_deviceCategoryStrings[(int)ComputeDeviceCategory::Ha
     "DEVICE_CPU_AUXILIARY",
     "DEVICE_ACCELERATOR"
 };
+
+ComputeSystem::ComputeSystem(void) {
+    addGlobalIncludeDir(ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_DEFAULT);
+}
+
+ComputeSystem::~ComputeSystem(void) {
+    for(unsigned d = 0; d < ELYSIAN_COMPUTE_INCLUDE_DIRECTORY_MAX; ++d) {
+        if(_includeDirs[d]) delete _includeDirs[d];
+    }
+
+}
 
 const char* ComputeSystem::getDeviceTypeString(ComputeDeviceCategory type) {
     assert((int)type >= 0 && (int)type < (int)ComputeDeviceCategory::HardwareDeviceCount);
@@ -546,9 +584,33 @@ const GYComputeKernelWorkgroupInfo* ComputeDevice::getKernelWorkGroupInfo(const 
 
 bool ComputeProgram::compile(ComputeDevice* devices, unsigned deviceCount, const GYComputeProgramBuildOptions* options, GYComputeBuildInfo* info) {
     assert(deviceCount);
+
+    //Build Device list
     std::vector<GYComputeDevice> gyDevices;
     for(unsigned d = 0; d < deviceCount; ++d) gyDevices.push_back(*devices[d].getGyDevice());
-    _compiled = gyComputeProgramCompile(_gyProgram, &gyDevices.front(), deviceCount, options, nullptr);
+
+    //Assemble Build Options
+    GYComputeProgramBuildOptions opts;
+    const size_t globalIncCount = ComputeSystem::getGlobalIncludeDirCount();
+
+    if(options) memcpy(&opts, options, sizeof(GYComputeProgramBuildOptions));
+    else memset(&opts, 0, sizeof(GYComputeProgramBuildOptions));
+
+    opts.includeDirCount = globalIncCount + (options? options->includeDirCount : 0);
+    const char* includeDirs[opts.includeDirCount];
+    opts.includeDirs = includeDirs;
+
+    for(unsigned i = 0; i < globalIncCount; ++i) {
+        includeDirs[i] = ComputeSystem::getGlobalIncludeDir(i);
+    }
+
+    if(options) {
+        for(unsigned i = 0; i < options->includeDirCount; ++i) {
+            includeDirs[globalIncCount + i] = options->includeDirs[i];
+        }
+    }
+
+    _compiled = gyComputeProgramCompile(_gyProgram, &gyDevices.front(), deviceCount, &opts, info);
     if(_compiled) {
         for(unsigned d = 0; d < deviceCount; ++d)
             _compiledDevices.push_back(&devices[d]);
@@ -576,7 +638,7 @@ bool ComputeCommandQueue::enqueueBufferRead(ComputeBuffer *buffer, size_t offset
     return gyComputeCommandQueueEnqueueBufferRead(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, ptr, eventList? eventList->getSize() : 0, nullptr, event? event->getGyEvent() : nullptr);
 }
 
-bool ComputeCommandQueue::enqueueBufferWrite(ComputeBuffer *buffer, size_t offset, size_t size, void *data, bool blocking) {
+bool ComputeCommandQueue::enqueueBufferWrite(ComputeBuffer *buffer, size_t offset, size_t size, const void *data, bool blocking) {
     assert(buffer && size && data);
     return gyComputeCommandQueueEnqueueBufferWrite(_gyCmdQueue, buffer->getGyBuffer(), blocking, offset, size, data, 0, nullptr, nullptr);
 }
@@ -817,28 +879,51 @@ ComputeTask* ComputeSystem::createComputeTask(const char*                       
     return task;
 }
 
-bool ComputeTask::enqueueKernel(size_t globalSize) {
-    assert(_isValid);
+
+bool ComputeTask::enqueueBufferWrite(ComputeBuffer* buffer, size_t offset, size_t size, const void* data, bool blocking) const {
+    if(!isValid()) return false;
+
+    bool success = getCommandQueue()->enqueueBufferWrite(buffer, offset, size, data, blocking);
+    if(!success) setValid(false);
+    return success;
+}
+
+bool ComputeTask::enqueueBufferRead(ComputeBuffer* buffer, size_t offset, size_t size, void* ptr, bool blocking, const ComputeEventList* eventList, ComputeEvent* event) const {
+    if(!isValid()) return false;
+
+    bool success = getCommandQueue()->enqueueBufferRead(buffer, offset, size, ptr, blocking, eventList, event);
+    if(!success) setValid(false);
+    return success;
+}
+
+bool ComputeTask::enqueueKernel(size_t globalSize) const {
+    if(!isValid()) return false;
     size_t globalOffsets = 0;
     size_t paddedGlobalSize;
     size_t localWorkSize;
     optimizeWorkSize(globalSize, paddedGlobalSize, localWorkSize);
+    //dbgprintf("GLOBAL - %u, Optimal Global - %u, local - %u", globalSize, paddedGlobalSize, localWorkSize);
     const bool retVal = enqueueKernel(1, &globalOffsets, &paddedGlobalSize, &localWorkSize);
-    if(!retVal) _isValid = false;
+    if(!retVal) setValid(false);
     return retVal;
 }
 
-bool ComputeTask::enqueueKernel(unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList, ComputeEvent* event) {
+bool ComputeTask::enqueueKernel(unsigned workDimensions, const size_t* globalWorkOffset, const size_t* globalWorkSize, const size_t* localWorkSize, ComputeEventList* eventList, ComputeEvent* event) const {
+    bool success = true;
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
     if(!event && !_profilerEventPending) {
         event = &_profilerEvent;
         _profilerEventPending = true;
     }
 #endif
-    return getCommandQueue()->enqueueKernel(getKernel(), workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, eventList, event);
+    success =  getCommandQueue()->enqueueKernel(getKernel(), workDimensions, globalWorkOffset, globalWorkSize, localWorkSize, eventList, event);
+    if(!success) setValid(false);
+    return success;
 }
 
-bool ComputeTask::finish(void) {
+bool ComputeTask::finish(void) const {
+    if(!isValid()) return false;
+
     bool success = getCommandQueue()->finish();
 #if ELYSIAN_COMPUTE_PROFILING_ENABLED == 1
     if(_profilerEventPending) {
@@ -848,6 +933,7 @@ bool ComputeTask::finish(void) {
         _profilerEventPending = false;
     }
 #endif
+    if(!success) setValid(false);
     return success;
 }
 
@@ -868,7 +954,7 @@ size_t gcd(size_t a, size_t b)
     return gcd(a, b-a);
 }
 
-void ComputeTask::optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localWorkSize) {
+void ComputeTask::optimizeWorkSize(size_t globalSize, size_t& paddedGlobalSize, size_t& localWorkSize) const {
     assert(_isValid);
     const GYComputeKernelWorkgroupInfo* info = getDevice()->getKernelWorkGroupInfo(getKernel());
 

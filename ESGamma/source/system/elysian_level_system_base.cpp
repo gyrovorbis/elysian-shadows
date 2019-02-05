@@ -129,6 +129,7 @@ bool LevelSystemBase::switchLevel(const char *const path) {
 
     level->activate();
     _curLevel = level;
+    getEventSys()->broadcastEvent(Event(EVENT_LEVEL_CHANGED));
     return true;
 }
 
@@ -172,6 +173,7 @@ bool LevelSystemBase::switchArea(const char *const path) {
 
     _curArea = area;
     _curArea->activate();
+    getEventSys()->broadcastEvent(Event(EVENT_AREA_CHANGED));
 
     Vector3 pos;
     if(getWarpSys()->getState() == WarpSystem::WARP) {

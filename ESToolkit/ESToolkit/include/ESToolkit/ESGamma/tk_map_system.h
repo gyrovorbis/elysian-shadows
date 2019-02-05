@@ -129,16 +129,29 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
     gyVidRectPlaneType(planeType);
 
     if(_tileDecor != TILE_DECOR_NONE) {
-        //gyVidDepthTest(false);
-        gyVidAlphaLevel(GY_ALPHA_NONE);
+#if 0
+        GYVidPipelineState pipelineState = {
+            0,
+            nullptr,
+            nullptr,
+            nullptr,
+            GY_ALPHA_NONE,
+            GY_BLEND_SRC_ALPHA,
+            GY_BLEND_ONE,
+            false,
+            GY_VID_DEPTH_ALWAYS,
+            { 255, 255, 255, 0 }
+        };
+        gyVidPipelineState(&pipelineState);
+#endif
         auto& twcen = getGuiSys()->pragmata18;
         twcen.setColor(255, 255, 255, 255);
         twcen._transform.setSize(16.0f, 32.0f, 32.0f);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
             if(!entry.mapEntry.getIndex() || entry.mapEntry.getPlane() != planeType || entry.layer != getAssets()->getCurrentLayer()) continue;
-            if(normalType == elysian::NORMAL_FLAT) twcen._transform.setPos(entry.x*32.0f/*+16.0*/, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f/*+8.0f*/, entry.mapEntry.getElev()*32.0f+1.0f);
-            else twcen._transform.setPos(entry.x*32.0f/*+16.0*/, entry.y*32.0f + entry.mapEntry.getElev()*32.0f/*+16.0f*/, entry.mapEntry.getElev()*32.0f-8.0f);
+            if(normalType == elysian::NORMAL_FLAT) twcen._transform.setPos(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f + entry.layer*ELYSIAN_AREA_LAYER_DEPTH_EPSILON, entry.mapEntry.getElev()*32.0f+entry.layer*ELYSIAN_AREA_LAYER_DEPTH_EPSILON);
+            else twcen._transform.setPos(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f + entry.layer*ELYSIAN_AREA_LAYER_DEPTH_EPSILON, entry.mapEntry.getElev()*32.0f*entry.layer*ELYSIAN_AREA_LAYER_DEPTH_EPSILON-8.0f);
 
             switch(_tileDecor) {
 
@@ -181,12 +194,19 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
     //Tile selection decoration
     auto drawStyle = _getTileDrawState();
     if(drawStyle != DRAW_NORMAL) {
-        gyVidTexBind(nullptr);
-        gyVidNormalMapBind(nullptr);
-        gyVidSpecularMapBind(nullptr);
-        gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
-        //gyVidDepthTest(false);
+        GYVidPipelineState pipelineState = {
+            0,
+            nullptr,
+            nullptr,
+            nullptr,
+            GY_ALPHA_FULL,
+            GY_BLEND_SRC_ALPHA,
+            GY_BLEND_ONE,
+            0,
+            GY_VID_DEPTH_ALWAYS,
+            { 0, 0, 0, 0 }
+        };
+        gyVidPipelineState(&pipelineState);
         gyVidMaterialBind(&_selMat[drawStyle]);
 
         const GYColor4& color = selectionDecorColors[drawStyle];
@@ -202,18 +222,19 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();
             gyMatLoadIdentity();
-            if(normalType == elysian::NORMAL_FLAT)
+;
+           // if(normalType == elysian::NORMAL_FLAT)
                 //Had to add the offset of +3.0f to get the decoration above tiles. Could be potentially reested.
-                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f+10.0, 32.0f, 32.0f, 32.0f);
-            else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f+10.0, 32.0f, 32.0f, 32.0f);
+                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+entry.layer*ELYSIAN_AREA_LAYER_DEPTH_EPSILON, entry.mapEntry.getElev()*32.0f+entry.layer*ELYSIAN_AREA_LAYER_DEPTH_EPSILON, 32.0f, 32.0f, 32.0f);
+          //  else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f+10.0, 32.0f, 32.0f, 32.0f);
             gyVidRect(-1);
             gyMatPop();
 
         }
         gyVidQuadListEnd();
-        gyVidVertexBatchFlush();
-        gyVidVertexBatchEnd();
-        gyVidMaterialBind(nullptr);
+//        gyVidVertexBatchFlush();
+//        gyVidVertexBatchEnd();
+//        gyVidMaterialBind(nullptr);
     }
 }
 

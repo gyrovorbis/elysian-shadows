@@ -223,12 +223,23 @@ void CollisionSystem::renderTileColliders(void) const {
     unsigned playerElev = getPartySys()->getPartyLeader()->getElev();
     //Collidable &col = *getPartySys()->getPartyLeader()->getCollidable();
 
+
+    const GYVidPipelineState pipelineState = {
+        0,
+        nullptr,
+        nullptr,
+        nullptr,
+        GY_ALPHA_FULL,
+        GY_BLEND_SRC_ALPHA,
+        GY_BLEND_ONE_MINUS_SRC_ALPHA,
+        false,
+        GY_VID_DEPTH_ALWAYS,
+        { 0, 0, 0, 0 }
+    };
+
+    gyVidPipelineState(&pipelineState);
     gyVidMaterialBind(nullptr);
-    gyVidSpecularMapBind(nullptr);
-    gyVidNormalMapBind(nullptr);
-    gyVidTexBind(nullptr);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidQuadListBegin(boxColors);
     getMapSys()->getOnscreenTileRegion(startX, startY, endX, endY);
     for(int y = startY; y <= endY; ++y) {

@@ -116,12 +116,13 @@ namespace elysian {
             }
 #else
             _mapCount = 0;
-                MapDepthBuffer<P, T, E>::render();
+            getRenderSystem()->renderScene();
+             MapDepthBuffer<P, T, E>::render();
 #endif
         }
 
         void renderShadowPass(void) {
-            getRenderSystem()->setDepthMode(true, GY_VID_DEPTH_LESS);
+            //getRenderSystem()->setDepthMode(true, GY_VID_DEPTH_LESS);
             render();
         }
 

@@ -7,23 +7,6 @@
 #include <type_traits>
 
 
-
-#define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
-#define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
-
-#define ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(_1, _2, _3, NAME, ...) NAME
-#define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
-
-#define ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(f) { #f, nullptr, nullptr, nullptr, LuaTableFieldProxy::FLAG_VTABLE_BEGIN },
-#define ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END() { nullptr, nullptr, nullptr, nullptr, LuaTableFieldProxy::FLAG_VTABLE_END },
-
-#define ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_WRITE(f, g, s, c) { #f, #g, #s, #c, LuaTableFieldProxy::FLAG_ARRAY },
-#define ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_ONLY(f, g, c) { #f, #g, nullptr, #c, LuaTableFieldProxy::FLAG_ARRAY },
-
-#define ELYSIAN_LUA_PROXY_ARRAY_FIELD_GET_MACRO(_1, _2, _3, _4, NAME, ...) NAME
-#define ELYSIAN_LUA_PROXY_ARRAY_FIELD(...) ELYSIAN_LUA_PROXY_ARRAY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_ONLY)(__VA_ARGS__)
-
-
 #define ELYSIAN_EVENT_HANDLER_DECL_BEGIN(...)
 
 
@@ -99,6 +82,7 @@ namespace elysian {
         EVENT_SCALE_REMOVED,
         EVENT_COLLISION_ENTER,
         EVENT_COLLISION_EXIT,
+        EVENT_LEVEL_CHANGED,
         EVENT_AREA_ENTER,
         EVENT_AREA_EXIT,
         EVENT_AREA_CHANGED,

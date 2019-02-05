@@ -110,16 +110,23 @@ namespace elysian {
 
     inline void RenderableBase::render(void) {
 
+        auto pipelineState = _spriteAttrib?
+                    _spriteAttrib->getGyVidPipelineState() :
+                    GYVidPipelineState {
+                        0,
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        GY_ALPHA_NONE,
+                        GY_BLEND_ONE,
+                        GY_BLEND_ONE,
+                        true,
+                        GY_VID_DEPTH_LESS,
+                        { 0, 0, 0, 0 }
+                    };
 
-        gyVidBlendMode(_spriteAttrib->getBlendMode().getSrcFactor(),
-                       _spriteAttrib->getBlendMode().getDstFactor());
-
-       gyVidTexBind(_spriteAttrib? _spriteAttrib->_tex : nullptr);
-       gyVidNormalMapBind(_spriteAttrib? _spriteAttrib->getNormalMap() : nullptr);
-       gyVidSpecularMapBind(_spriteAttrib? _spriteAttrib->getSpecularMap() : nullptr);
-       gyVidMaterialBind(_spriteAttrib? _spriteAttrib->getMaterial() : nullptr);
-
-        //gyMatTranslate(_offset.x, _offset.y, 0.0f);
+        gyVidPipelineState(&pipelineState);
+        gyVidMaterialBind(getSpriteAttrib()? getSpriteAttrib()->getMaterial() : nullptr);
 
         //branch assumes shit will usually be depth buffered
 
@@ -132,22 +139,7 @@ namespace elysian {
         switch(_spriteAttrib->getType()) {
         case PrimAttrib::QUAD_SPRITE:
 
-            for(unsigned i = 0; i < 4; ++i) {
-                if(std::static_pointer_cast<QuadSpriteAttrib>(_spriteAttrib)->getVertexAlpha(i) != 255) {
-                    alpha = true;
-                    break;
-                }
-            }
-
-             //yVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-             //gyVidAlphaLevel(GY_ALPHA_NONE);
-
-
-             //newZFactor = glalOrientNormalMapZFactor(_texOrient);
-             //glalVidNormalMapZFactorUpdateUniform(newZFactor);
             gyVidQuadListBegin(&_spriteAttrib->_color);
-            gyVidAlphaLevel(GY_ALPHA_FULL);
-            gyVidColorArray(&_spriteAttrib->_color);
             if(_spriteAttrib->_tex) {
                 if(_frame != -1)
                     gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
@@ -162,8 +154,7 @@ namespace elysian {
             gyVidQuadListEnd();
             break;
         case PrimAttrib::SPRITE:
-            if(_spriteAttrib->_color.a == 0.0f) return;
-            gyVidAlphaLevel((_spriteAttrib->_color.a < 255)? GY_ALPHA_FULL : GY_ALPHA_NONE);
+            if(_spriteAttrib->getAlpha() == 0.0f) return;
 
            // newZFactor = glalOrientNormalMapZFactor(_texOrient);
             //glalVidNormalMapZFactorUpdateUniform(newZFactor);

@@ -229,11 +229,7 @@ inline void LuaVariantTest::createFromPairsStdInitializerList(void) {
             false,
             LuaManager::exec("return function(s) return '%s: '..s end", "DYNAMIC_ASS_STRING")
         })},
-#if 0 //NEEDS TO BE FUCKING FIXED!!!!
-        {"constCharArg", [&](char*string) {
-            return string;
-        }},
-#endif
+
         { 1, "Weeeeell!!"},
         { 2, 8 },
         { &testUd, "Arbitrary userdata as an index... because I can!"},
@@ -245,11 +241,17 @@ inline void LuaVariantTest::createFromPairsStdInitializerList(void) {
     QVERIFY((*v["LOLOLOL"]["twoLayersDeepTable"]["randomAssLambdaClosure"])(-17.77f).getValue<float>() == -17.77f);
     QVERIFY(v["LOLOLOL"]["twoLayersDeepTable"]["randomAssUserdata"]["x"]->getValue<float>() == -17.77f);
     QVERIFY((*v["array"][5])("randomString") == "DYNAMIC_ASS_STRING: randomString");
+}
+
+
+#if 0 //NEEDS TO BE FUCKING FIXED!!!!
+        {"constCharArg", [&](char*string) {
+            return string;
+        }},
+#endif
 #if 0
     QVERIFY((*v["constCharArg"])("textz0r") == "textz0r");
 #endif
-}
-
 
 inline void LuaVariantTest::createFromStack(void) {
     lua_pushinteger(*_mainState, 3);

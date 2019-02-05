@@ -125,9 +125,21 @@ void LightSystem::renderCube(float x, float y, float z,
 
 void LightSystem::_renderShadowVolumes(void) {
 
-    gyVidTexBind(nullptr);
+    GYVidPipelineState pipelineState = {
+        0,
+        nullptr,
+        nullptr,
+        nullptr,
+        GY_ALPHA_NONE,
+        GY_BLEND_ONE,
+        GY_BLEND_ONE,
+        true,
+        GY_VID_DEPTH_LEQUAL,
+        { 0, 0, 0, 0 }
+    };
+
+    gyVidPipelineState(&pipelineState);
     gyVidMaterialBind(nullptr);
-    gyVidNormalMapBind(nullptr);
 
     const auto entities = _curArea->entities;
     for(auto it : entities) {
@@ -221,6 +233,8 @@ void LightSystem::addLightSourcesToScene(void) {
 }
 
 void LightSystem::removeLightSourcesFromScene(void) {
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
     if(gyVidShadowPass() || !_enabled) return;
     const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f };
     gyVidSetGlobalAmbience(&fullAmbience);

@@ -1,13 +1,15 @@
 #include <ESGamma/crtp/elysian_render_system.hpp>
 #include <ESGamma/crtp/elysian_debug.hpp>
 #include <libGyro/gyro_video_api.h>
-#include <AssetIO/level/elysian_scene_object.hpp>
+#include <AssetIO/level/elysian_opaque_map_scene_object.hpp>
 #include <AssetIO/crtp/elysian_area.hpp>
 #include <AssetIO/crtp/elysian_particle_emitter.hpp>
 #include <ESGamma/crtp/elysian_camera_system.hpp>
+#include <AssetIO/crtp/elysian_level.hpp>
 #include <gl/gyro_video_gl.h>
 #include <gl/gyro_gl.h>
 #include <gl/gyro_shaders_gl.h>
+#include <gl/gyro_gl_utils.h>
 
 extern int glalVertexArray;
 extern GLuint                      _streamVao[2];
@@ -22,7 +24,8 @@ GLuint _glParticleVbo           = 0;
 GLuint _glParticleIndirectBuff  = 0;
 
 const constexpr RenderableObjectPipelineAttrib::BlendModeFactors RenderableObjectPipelineAttrib::_blendFactors[BLEND_MODE_COUNT];
-
+ComputeBuffer* RendererComputeGlobalDataManager::_cameraBuffer  = nullptr;
+const Camera* RendererComputeGlobalDataManager::_camera         = nullptr;
 
 
 #if 0
@@ -45,12 +48,15 @@ void RenderSystemBase::_setParticleAccelerationAvailable(bool val) {
 
 bool RenderSystemBase::initialize(void) {
   //  getEventSys()->addEventObserver(this, EVENT_VIEWPORT_SIZE_CHANGED);
+    getEventSys()->addEventObserver(this, EVENT_AREA_CHANGED);
     bool success = true;
 
     dbgprintf("RenderSystem::initialize()");
     dbgpush();
 
     if(getComputeSystem()->isComputeSupported() && getComputeSystem()->isRendererInteropSupported()) {
+
+        success &= _initializeComputeGlobalData();
 
         glGenBuffers(1, &_glParticleVbo);
         glBindBuffer(GL_ARRAY_BUFFER, _glParticleVbo);
@@ -77,8 +83,8 @@ bool RenderSystemBase::initialize(void) {
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
         glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
-        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
-        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(11*sizeof(float)));
+        glVertexAttribPointer(glalLightingShader.attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
 
       _particleComputeTask = getComputeSystem()->createComputeTask(ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_NAME,
                                                                    {
@@ -89,10 +95,10 @@ bool RenderSystemBase::initialize(void) {
                                                                        ComputeDeviceCategory::GpuRendererOffline,
                                                                        ComputeDeviceCategory::CpuRenderer
                                                                    },
-                                                                   NULL,
+                                                                   nullptr,
                                                                    true);
 
-        if(_particleComputeTask->isAccelerated()) {
+        if(_particleComputeTask->isAccelerated() && _particleComputeTask->isValid()) {
             _particleInBuffer = _particleComputeTask->getContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(GYVertex)*ELYSIAN_RENDER_SYSTEM_PARTICLE_VBO_KERNEL_VERTEX_MAX, nullptr);
             _particleVboOutBuffer = _particleComputeTask->getContext()->createBufferFromRendererBuffer(_glParticleVbo, GY_COMPUTE_MEMORY_TYPE_WRITE_ONLY);
             _particleDrawIndirectOutBuffer = _particleComputeTask->getContext()->createBufferFromRendererBuffer(_glParticleIndirectBuff, GY_COMPUTE_MEMORY_TYPE_READ_WRITE);
@@ -109,11 +115,15 @@ bool RenderSystemBase::initialize(void) {
         }
 
         _luminanceComputeTask = new LuminanceHistogramComputeTask(_glalColorTex);
-        getComputeSystem()->addComputeTask(_luminanceComputeTask);
-        dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
+        if(_luminanceComputeTask->isValid()) {
+            getComputeSystem()->addComputeTask(_luminanceComputeTask);
+            dbgprintf("HISTOGRAMZZZZZ - <%d, %d>", _luminanceComputeTask->getDevice()->getPlatformIdx(), _luminanceComputeTask->getDevice()->getDeviceIdx());
+        }
 
         //_lightCullComputeTask = new LightCullingComputeTask(_glalDepthBuffer,
           //                                                  glalLightingUBO);
+
+        _populateMapIboComputeTask = new PopulateMapIboComputeTask();
 
     }
 
@@ -131,9 +141,12 @@ bool RenderSystemBase::initialize(void) {
 }
 
 bool RenderSystemBase::uninitialize(void) {
+    bool success = true;
+    success &= _uninitializeComputeGlobalData();
     getEventSys()->removeEventObserver(this, EVENT_VIEWPORT_SIZE_CHANGED);
+    getEventSys()->removeEventObserver(this, EVENT_AREA_CHANGED);
     delete _particleVboOutBuffer;
-    return true;
+    return success;
 }
 
 bool RenderSystemBase::populateParticleVbos(void) {
@@ -221,14 +234,20 @@ bool RenderSystemBase::renderParticles(void) {
             success &= _particleComputeTask->finish();
             renderParticlesMonitor.stop();
 
-            gyVidTexBind(nullptr);
-
-            gyVidNormalMapBind(nullptr);
-            gyVidSpecularMapBind(nullptr);
+            const GYVidPipelineState pipelineState = {
+                0,
+                nullptr,
+                nullptr,
+                nullptr,
+                GY_ALPHA_FULL,
+                GY_BLEND_SRC_ALPHA,
+                GY_BLEND_ONE_MINUS_SRC_ALPHA,
+                false,
+                GY_VID_DEPTH_ALWAYS,
+                { 0, 0, 0, 0 }
+            };
+            gyVidPipelineState(&pipelineState);
             gyVidMaterialBind(nullptr);
-
-            gyVidAlphaLevel(GY_ALPHA_FULL);
-            gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
             glBindVertexArray(_glParticleVao);
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, _glParticleIndirectBuff);
@@ -250,7 +269,7 @@ void RenderSystemBase::createLuminanceHistogram(void) {
     unsigned width, height;
     std::tie(width, height) = getCameraSys()->getViewportSize();
 
-    if(_luminanceComputeTask->isAccelerated()) {
+    if(_luminanceComputeTask->isAccelerated() && _luminanceComputeTask->isValid()) {
         success &= _luminanceComputeTask->getCommandQueue()->enqueueAcquireRendererSharedObject(1, &_luminanceComputeTask->_fboBuffer);
         success &= _luminanceComputeTask->enqueueKernel(width*height);
         success &= _luminanceComputeTask->getCommandQueue()->enqueueReleaseRendererSharedObject(1, &_luminanceComputeTask->_fboBuffer);
@@ -525,8 +544,12 @@ bool RenderSystemBase::isTransparentGeometryEnabled(void) const {
 
 void RenderSystemBase::onObserveEvent(Event* event, EventTarget*) {
     switch(event->getEventType()) {
+    case EVENT_AREA_CHANGED:
+        _onAreaChange();
+        break;
     case EVENT_VIEWPORT_SIZE_CHANGED:
         _onViewportSizeChange();
+        break;
     default:
         break;
     }
@@ -540,6 +563,68 @@ void RenderSystemBase::_onViewportSizeChange() {
 //Don't recalculate world-space geometric shit if it's the same shit used again later
 //Do all of the opaque shit in parallel with all of the transparent shit
 void RenderSystemBase::renderScene(void) {
+    if(gyVidShadowPass()) return;
+#if 1
+bool success = _populateMapIboComputeTask->populateIbo();
+
+
+    success &= _populateMapIboComputeTask->waitForIboFilled();
+
+    assert(success);
+
+    if(success) {
+
+        gyVidVertexBatchFlush();
+        gyVidVertexBatchEnd();
+
+        GYVidPipelineState state = {
+            0,
+            getCurrentLevel()->getTileSheet(),
+            getCurrentLevel()->getNormalSheet(),
+            getCurrentLevel()->getEmissiveSheet(),
+            GY_ALPHA_NONE,
+            GY_BLEND_ONE,
+            GY_BLEND_ONE,
+            true,
+            GY_VID_DEPTH_LEQUAL,
+            { 0, 0, 0, 0 }
+        };
+
+        gyVidPipelineState(&state);
+        gyVidMaterialBind(nullptr);
+        GY_GL_CHECK_ERROR();
+
+        gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
+        GY_GL_CHECK_ERROR();
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo[0]);
+        GY_GL_CHECK_ERROR();
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, _populateMapIboComputeTask->getDrawIndirectBuffer());
+        GY_GL_CHECK_ERROR();
+        glDrawElementsIndirect(GL_TRIANGLE_STRIP, GL_UNSIGNED_INT, 0);
+
+        //glDrawElements(GL_TRIANGLE_STRIP, (_size-_lastSize), GL_UNSIGNED_INT, (const GLvoid*)_lastOffset);
+        GY_GL_CHECK_ERROR();
+#if 0
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, ELYSIAN_AREA_ELEMENT_ARRAY_VBO_TYPE);
+
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, ELYSIAN_AREA_ELEMENT_ARRAY_VBO_TYPE);
+                GY_GL_CHECK_ERROR();
+#endif
+
+        gyVidVertexArrayBind(0);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+
+    } else {
+        errprintf("FUCKED");
+    }
+
+
+#endif
+
+
+
+
 #if 0
 #ifdef ELYSIAN_RENDER_SYSTEM_DEBUG
     _curSceneStats.totalSceneObjs += _sceneObjs.size();
@@ -645,6 +730,34 @@ bool RenderSystemBase::dumpStats(void) const {
 
 #endif
 
+void RenderSystemBase::_onAreaChange(void) const {
+    _populateMapIboComputeTask->updateArea(getCurrentArea());
+}
 
+
+bool RenderSystemBase::updateCamera(const Camera* cam) const {
+    assert(cam);
+    _camera = cam;
+    return true;
+}
+
+bool RenderSystemBase::_initializeComputeGlobalData(void) const {
+    bool success = true;
+
+    _cameraBuffer = getComputeSystem()->getRendererContext()->createBuffer(GY_COMPUTE_MEMORY_TYPE_READ_ONLY, sizeof(CLCamera));
+
+    if(!_cameraBuffer) success = false;
+
+    return success;
+
+}
+bool RenderSystemBase::_uninitializeComputeGlobalData(void) const {
+    bool success = true;
+
+    delete _cameraBuffer;
+
+    return success;
+
+}
 
 }

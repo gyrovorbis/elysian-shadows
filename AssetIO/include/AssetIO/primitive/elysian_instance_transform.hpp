@@ -751,6 +751,7 @@ namespace elysian {
                       "Matrix<T, R, C> size does not match expected size!");
     }
 
+
 /*
     Essentially a thin, inlined-to-fuck, OO C++ wrapper around LibGyro's InstanceMat() operation.
 */

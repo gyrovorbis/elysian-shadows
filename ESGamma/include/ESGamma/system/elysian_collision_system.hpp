@@ -116,7 +116,7 @@ namespace elysian {
                                 ~CollisionSystem(void);
 #ifdef ELYSIAN_COLLISION_SYSTEM_DEBUG_ENABLED
         bool                    loadDebugAssets(void);
-        static const GYTexture* getCircleColliderTex(void);
+        static GYTexture*       getCircleColliderTex(void);
 #endif
 
         void                    prepareGeometry(void);
@@ -207,7 +207,7 @@ namespace elysian {
         _renderLayer = layer;
     }
 
-    inline const GYTexture* CollisionSystem::getCircleColliderTex(void) { return _circleColliderTex; }
+    inline GYTexture* CollisionSystem::getCircleColliderTex(void) { return _circleColliderTex; }
 
 }
 

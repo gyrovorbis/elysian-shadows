@@ -9,7 +9,6 @@
 
 namespace elysian {
 
-
     template <class T, class U>
     inline bool containerEraseOnMatch(const T needle, U& haystack) {
         /* A modified erase/remove idiom */
@@ -316,85 +315,202 @@ namespace elysian {
     }
 
 
+    template<typename T>
+    class ContiguousArrayIterator;
 
-#if 0
-    //STL-STYLE C++11 ITERATORS
+    template<typename T>
+    ContiguousArrayIterator<T> operator+(size_t val, const ContiguousArrayIterator<T>& it);
 
-    template<typename C, bool is_const_iterator=true>
-    class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaVariantBase>, public LuaManager {
-        friend class const_noconst_iterator<true>;
-        friend class LuaVariantBase;
+    template<typename T>
+    ContiguousArrayIterator<T> operator-(size_t val, const ContiguousArrayIterator<T>& it);
 
-        typedef typename std::conditional<is_const_iterator, const LuaVariantBase*, LuaVariantBase*>::type DataStructurePointerType;
-        typedef typename std::conditional<is_const_iterator, const LuaVariantBase&, LuaVariantBase&>::type ValueReferenceType;
-public:
-        const_noconst_iterator(const LuaFieldRef& fieldRef, const LuaVariant& funcRef):
-            _fieldRef(fieldRef),
-            _nextFuncRef(funcRef)
-        {}
+    // Templated STL-compatible random-access iterator for containers which can be
+    // accessed through the subscript operator and treated like contiguous arrays.
+    // The only requirement for T is that it has implements an overloaded []
+    // operator, which takes a size_t compatible argument and returns a single
+    // element. Fully compatible with std::reverse_iterator<>. Simply contains
+    // a pointer to a container and an index number.
+    template<typename T>
+    class ContiguousArrayIterator
+    {
+    protected:
+        T               m_pCont = nullptr;
+        size_t          m_index = 0;
 
-        /**
-        * Copy constructor. Allows for implicit conversion from a regular iterator to a const_iterator
-        */
-        const_noconst_iterator(const const_noconst_iterator<false>& other):
-            _fieldRef(other._fieldRef),
-            _nextFuncRef(other._nextFuncRef)
-        {}
+    public:
+        // Traits for STL and reverse_iterator support
+        using difference_type	= size_t;
+        using value_type		= decltype((*m_pCont)[m_index]);
+        using reference			= decltype((*m_pCont)[m_index]);
+        using pointer			= decltype(&(*m_pCont)[m_index]);
+        using iterator_category = std::random_access_iterator_tag;
 
-        /**
-        * Equals comparison operator
-        */
-        bool operator== (const const_noconst_iterator& other) const {
-            return _fieldRef == other._fieldRef;
-        }
+                        ContiguousArrayIterator(T cont, size_t index);
+                        ContiguousArrayIterator(const ContiguousArrayIterator<T>& rhs);
+                        ContiguousArrayIterator<T>& operator=(const ContiguousArrayIterator<T>& rhs);
 
-        /**
-        * Not-equals comparison operator
-        * @see operator==(const const_noconst_iterator&) const
-        */
-        bool operator!= (const const_noconst_iterator& other) const {
-        return !(*this == other);
-        }
+        bool            operator==(const ContiguousArrayIterator<T>& rhs) const;
+        bool            operator!=(const ContiguousArrayIterator<T>& rhs) const;
+        bool            operator<(const ContiguousArrayIterator<T>& rhs) const;
+        bool            operator>(const ContiguousArrayIterator<T>& rhs) const;
+        bool            operator<=(const ContiguousArrayIterator<T>& rhs) const;
+        bool            operator>=(const ContiguousArrayIterator<T>& rhs) const;
+        auto            operator++() -> ContiguousArrayIterator<T>&;
+        auto            operator--() -> ContiguousArrayIterator<T>&;
+        auto            operator++(int) -> ContiguousArrayIterator<T>&;
+        auto            operator--(int) -> ContiguousArrayIterator<T>&;
+        auto            operator+=(size_t val) -> ContiguousArrayIterator<T>&;
+        auto            operator-=(size_t val) -> ContiguousArrayIterator<T>&;
+        auto            operator+(size_t val) const -> ContiguousArrayIterator<T>;
+        auto            operator-(size_t val) const -> ContiguousArrayIterator<T>;
+        decltype(auto)  operator[](size_t offset) const;
+        decltype(auto)  operator*() const;
 
-        /**
-        * Dereference operator
-        * @return the value of the element this iterator is currently pointing at
-        */
-        LuaFieldRef& operator*(void) {
-            return _fieldRef;
-        }
-
-        LuaFieldRef* operator->(void) {
-            return &_fieldRef;
-        }
-
-        LuaVariantBase first(void) const {
-            return _fieldRef.getKey();
-        }
-
-        LuaVariantBase second(void) const {
-            return _fieldRef.getCachedVariant();
-        }
-
-        const_noconst_iterator operator++(void);
-        /**
-        * Postfix increment operator (e.g., it++)
-        */
-        const_noconst_iterator operator++(int){
-            // Use operator++()
-            const const_noconst_iterator old(*this);
-            ++(*this);
-            return old;
-        }
-
-    private:
-        LuaFieldRef                 _fieldRef;
-        LuaVariant                  _nextFuncRef;
+        friend auto     operator+(size_t val, const ContiguousArrayIterator<T>& it) -> ContiguousArrayIterator<T>;
+        friend auto     operator-(size_t val, const ContiguousArrayIterator<T>& it) -> ContiguousArrayIterator<T>;
     };
 
+    template<typename T>
+    inline ContiguousArrayIterator<T>::ContiguousArrayIterator(T cont, size_t index) :
+        m_pCont(cont),
+        m_index(index)
+    {
+    }
 
+    template<typename T>
+    inline ContiguousArrayIterator<T>::ContiguousArrayIterator(const ContiguousArrayIterator<T>& rhs) :
+        m_pCont(rhs.m_pCont),
+        m_index(rhs.m_index)
+    {
+    }
 
-#endif
+    template<typename T>
+    inline  ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator=(const ContiguousArrayIterator<T>& rhs)
+    {
+        m_pCont = rhs.m_pCont;
+        m_index = rhs.m_index;
+    }
+
+    template<typename T>
+    inline bool ContiguousArrayIterator<T>::operator==(const ContiguousArrayIterator<T>& rhs) const
+    {
+        if (m_pCont && rhs.m_pCont)
+        {
+            return (m_pCont == rhs.m_pCont && m_index == rhs.m_index);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template<typename T>
+    inline bool ContiguousArrayIterator<T>::operator!=(const ContiguousArrayIterator<T>& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
+    template<typename T>
+    inline bool ContiguousArrayIterator<T>::operator<(const ContiguousArrayIterator<T>& rhs) const
+    {
+        return m_index < rhs.m_index;
+    }
+
+    template<typename T>
+    inline bool ContiguousArrayIterator<T>::operator>(const ContiguousArrayIterator<T>& rhs) const
+    {
+        return m_index > rhs.m_index;
+    }
+    template<typename T>
+    inline bool ContiguousArrayIterator<T>::operator<=(const ContiguousArrayIterator<T>& rhs) const
+    {
+        return m_index <= rhs.m_index;
+    }
+
+    template<typename T>
+    bool ContiguousArrayIterator<T>::operator>=(const ContiguousArrayIterator<T>& rhs) const
+    {
+        return m_index >= rhs.m_index;
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator++()
+    {
+        ++m_index;
+        return *this;
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator--()
+    {
+        --m_index;
+        return *this;
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator++(int)
+    {
+        return ContiguousArrayIterator<T>(this, m_index++);
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator--(int)
+    {
+        return ContiguousArrayIterator<T>(this, m_index--);
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator+=(size_t val)
+    {
+        m_index += val;
+        return *this;
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T>& ContiguousArrayIterator<T>::operator-=(size_t val)
+    {
+        m_index -= val;
+        return *this;
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T> ContiguousArrayIterator<T>::operator+(size_t val) const
+    {
+        return ContiguousArrayIterator<T>(this, m_index + val);
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T> ContiguousArrayIterator<T>::operator-(size_t val) const
+    {
+        return ContiguousArrayIterator<T>(this, m_index - val);
+    }
+
+    template<typename T>
+    inline decltype(auto) ContiguousArrayIterator<T>::operator[](size_t offset) const
+    {
+        return (*m_pCont)[offset];
+    }
+
+    template<typename T>
+    inline decltype(auto) ContiguousArrayIterator<T>::operator*() const
+    {
+        return (*m_pCont)[m_index];
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T> operator+(size_t val, const ContiguousArrayIterator<T>& it)
+    {
+        return ContiguousArrayIterator<T>(it.m_pCont, it.m_index + val);
+    }
+
+    template<typename T>
+    inline ContiguousArrayIterator<T> operator-(size_t val, const ContiguousArrayIterator<T>& it)\
+    {
+        return ContiguousArrayIterator<T>(it.m_pCont, it.m_index - val);
+    }
+
+    template<typename T>
+    using ReverseContiguousArrayIterator = std::reverse_iterator<ContiguousArrayIterator<T>>;
 
 }
 

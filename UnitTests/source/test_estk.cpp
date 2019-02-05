@@ -13,10 +13,12 @@
 #include <test_lua_field_ref.h>
 #include <test_lua_variant.h>
 #include <test_dialog.h>
+#include <test_string.h>
 #include <test_functional.h>
 #include <test_cpp_lua_callback.h>
 #include <test_instance_transform.h>
 #include <test_associative_aggregate_array.h>
+#include <test_memory_mapped_byte_array.h>
 
 /*
  *
@@ -108,9 +110,12 @@ int main(QStringList args)
     qDebug() << "Using project directory supplied as command-line argument:" << project;
 
     ESTkTest::enqueueTest(new LibGyroFileApiTest);
+    //ESTkTest::enqueueTest(new LibGyroComputeApiTest);
     ESTkTest::enqueueTest(new tktest::InitializationTest(project));
-    ESTkTest::enqueueTest(new LibGyroComputeApiTest);
     if(!assetsTest) {
+        ESTkTest::enqueueTest(new tktest::MemoryMappedByteArrayTest);
+        ESTkTest::enqueueTest(new tktest::StringTest);
+#if 0
         ESTkTest::enqueueTest(new tktest::Vector2Test);
         ESTkTest::enqueueTest(new tktest::ESToolkitTest);
         ESTkTest::enqueueTest(new tktest::LevelTest);
@@ -119,6 +124,7 @@ int main(QStringList args)
         ESTkTest::enqueueTest(new tktest::CppLuaCallbackTest);
         ESTkTest::enqueueTest(new tktest::DialogLuaTest);
         ESTkTest::enqueueTest(new tktest::AssociativeAggregateArrayTest);
+#endif
     } else {
         ESTkTest::enqueueTest(new tktest::TestProjectAssets());
     }

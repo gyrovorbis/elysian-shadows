@@ -16,6 +16,14 @@ namespace elysian {
 
         const static GYVector4 _verts[4];
 
+        virtual bool hasAlpha(void) const override {
+            for(unsigned i = 0; i < 4; ++i) {
+                if(getVertexAlpha(i) != 255 && getVertexAlpha(i) != 0);
+                    return true;
+            }
+            return false;
+        }
+
         virtual void submit(void) override {
 
             submitVerts();
@@ -77,9 +85,11 @@ namespace elysian {
         virtual void submitVerts(GYVector4 *verts = nullptr) override {
             //We got some serious fucking design issues if this shit ain't true.
             GY_ASSERT((char *)&_vertColor == ((char*)&_color+4));
-            gyVidTexBind(_tex);
-            gyVidAlphaLevel(GY_ALPHA_FULL);
-            gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
+
+            auto pipelineState = getGyVidPipelineState();
+            gyVidPipelineState(&pipelineState);
+            gyVidMaterialBind(nullptr);
+
             gyVidQuadListBegin(&_color);
             gyVidColorArray(&_color);
             gyVidQuad((verts)? verts :_verts, _frame);

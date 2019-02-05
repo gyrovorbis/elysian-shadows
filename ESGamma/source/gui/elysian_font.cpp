@@ -112,13 +112,11 @@ void Font::drawString(const ALIGNMENT align, const char *const buffer) {
 
 	i = 0;
 
+    auto pipelineState = getGyVidPipelineState();
     //if(!_batching) {
-		gyVidTexBind(_tex);
-        gyVidNormalMapBind(nullptr);
+        gyVidPipelineState(&pipelineState);
         gyVidMaterialBind(nullptr);
-        gyVidSpecularMapBind(nullptr);
-		if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
-		else gyVidAlphaLevel(GY_ALPHA_FULL);
+
 		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
         gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
         //gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
@@ -131,7 +129,9 @@ void Font::drawString(const ALIGNMENT align, const char *const buffer) {
         _renderChar(currentX, currentY, buffer, i);
 	}
 
-    /*if(!_batching)*/ gyVidQuadListEnd();
+    gyVidQuadListEnd();
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
 }
 
 //	void RenderCharacter(FONT_FORMAT format, float &currentX, float &currentY, char *str, int &i);

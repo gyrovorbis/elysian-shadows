@@ -13,30 +13,31 @@ int _mapCount = 0;
 void GLMapSystemCrtp::_setDepthPrepassState(DEPTH_PASS_STATE value) {
     if(value == DEPTH_Z_PREPASS) {
         //gyVidDepthTest(1);
-        glDepthMask(1);
-        glColorMask(0, 0, 0, 0);
+        //glDepthMask(1);
+        //glColorMask(0, 0, 0, 0);
         //glEnable(GL_DEPTH_TEST);
         //glDepthFunc(GL_LESS);
 
-        gyVidVertexBatchEnd();
         gyVidVertexBatchFlush();
+        gyVidVertexBatchEnd();
         gyVidSetCurrentShaderProgram(glalShadowMapShader.program);
         glalCurLightShader = &glalShadowMapShader;
 
-        gyVidAlphaLevel(GY_ALPHA_NONE);
     } else if(value == LIGHTING_PASS){
-        gyVidVertexBatchEnd();
         gyVidVertexBatchFlush();
+        gyVidVertexBatchEnd();
+
         gyVidSetDefaultShaderProgram();
         //glalDefaultShadersLoadUniforms();
         glalCurLightShader = &glalLightingShader;
         //glDepthMask(0);
         //glColorMask(1, 1, 1, 1);
-        glDepthFunc(GL_LEQUAL);
+        //glDepthFunc(GL_LEQUAL);
     } else if(value == POST_PASSES) {
         //gyVidDepthTest(1);
-        gyVidVertexBatchEnd();
         gyVidVertexBatchFlush();
+        gyVidVertexBatchEnd();
+
         //glDepthMask(1);
        // glDepthFunc(GL_LEQUAL);
     }

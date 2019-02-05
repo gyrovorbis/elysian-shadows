@@ -60,9 +60,11 @@ namespace elysian {
 
 	inline void Font::startBatchRender(void) {
 		_batching = true;
-		gyVidTexBind(_tex);
-		if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
-		else gyVidAlphaLevel(GY_ALPHA_FULL);
+
+        auto pipelineState = getGyVidPipelineState();
+        gyVidPipelineState(&pipelineState);
+
+        gyVidMaterialBind(nullptr);
 		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 		gyVidQuadListBegin(&_color);
 	}
@@ -99,8 +101,8 @@ namespace elysian {
 
         //We have to end the current quad list and start another.
         gyVidQuadListEnd();
-        if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
-        else gyVidAlphaLevel(GY_ALPHA_FULL);
+        auto pipelineState = getGyVidPipelineState();
+        gyVidPipelineState(&pipelineState);
         gyVidQuadListBegin(&_color);
     }
 

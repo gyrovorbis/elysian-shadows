@@ -23,11 +23,12 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                         BlendModeBase(void) = default;
-                        BlendModeBase(GY_BLEND_MODE srcFactor, GY_BLEND_MODE dstFactor, Color4 constColor=Color4());
-        GY_BLEND_MODE   getSrcFactor(void) const;
-        GY_BLEND_MODE   getDstFactor(void) const;
-        void            setSrcFactor(GY_BLEND_MODE factor);
-        void            setDstFactor(GY_BLEND_MODE factor);
+                        BlendModeBase(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor, Color4 constColor=Color4());
+        GY_BLEND_FACTOR getSrcFactor(void) const;
+        GY_BLEND_FACTOR getDstFactor(void) const;
+        void            setSrcFactor(GY_BLEND_FACTOR factor);
+        void            setDstFactor(GY_BLEND_FACTOR factor);
+        const Color4 &  getConstColor(void) const;
         Color4          getConstColor(void);
         void            setConstColor(Color4 color);
 
@@ -37,17 +38,18 @@ namespace elysian {
 
     //===== INLINEZ ======
 
-    inline BlendModeBase::BlendModeBase(GY_BLEND_MODE srcFactor, GY_BLEND_MODE dstFactor, Color4 constColor):
+    inline BlendModeBase::BlendModeBase(GY_BLEND_FACTOR srcFactor, GY_BLEND_FACTOR dstFactor, Color4 constColor):
         _constColor(constColor),
         _srcFactor(srcFactor),
         _dstFactor(dstFactor)
     {}
 
-    inline GY_BLEND_MODE BlendModeBase::getSrcFactor(void) const { return (GY_BLEND_MODE)_srcFactor; }
-    inline GY_BLEND_MODE BlendModeBase::getDstFactor(void) const { return (GY_BLEND_MODE)_dstFactor; }
-    inline void BlendModeBase::setSrcFactor(GY_BLEND_MODE factor) { _srcFactor = factor; }
-    inline void BlendModeBase::setDstFactor(GY_BLEND_MODE factor) { _dstFactor = factor; }
+    inline GY_BLEND_FACTOR BlendModeBase::getSrcFactor(void) const { return (GY_BLEND_FACTOR)_srcFactor; }
+    inline GY_BLEND_FACTOR BlendModeBase::getDstFactor(void) const { return (GY_BLEND_FACTOR)_dstFactor; }
+    inline void BlendModeBase::setSrcFactor(GY_BLEND_FACTOR factor) { _srcFactor = factor; }
+    inline void BlendModeBase::setDstFactor(GY_BLEND_FACTOR factor) { _dstFactor = factor; }
     inline Color4 BlendModeBase::getConstColor(void) { return &_constColor; }
+    inline const Color4& BlendModeBase::getConstColor(void) const { return _constColor; }
     inline void BlendModeBase::setConstColor(Color4 color) { _constColor = std::move(color); }
 
 }

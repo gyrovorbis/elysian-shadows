@@ -10,6 +10,7 @@
 #include <AssetIO/utility/elysian_stl_algorithm.hpp>
 #include <AssetIO/crtp/elysian_component.hpp>
 #include <AssetIO/crtp/elysian_lua_table_proxy.hpp>
+#include <AssetIO/level/elysian_scene_object.hpp>
 #include <libGyro/gyro_video_api.h>
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
@@ -24,6 +25,7 @@ namespace elysian {
 
 	class EntityBase:
 			public RenderableObject,
+            public SceneObjectAdapter<Entity>,
             public LuaTableProxy<EntityBase, Entity>
 	{
 	public:
@@ -163,6 +165,12 @@ namespace elysian {
 		void					setSelfTable(const OOLUA::Lua_table_ref self);
         void                    pushViewTransform(void);
         void                    popViewTransform(void);
+
+        //Overridden from scene object
+        const BlendMode*        getBlendMode(void) const;
+        uint8_t                 getShader(void) const;
+        uint16_t                getTexture(void) const;
+        virtual void            updateBoundingVolume(void) override;
         
 	protected:
 		

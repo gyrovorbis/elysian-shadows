@@ -8,6 +8,9 @@
 
 QT       += widgets network opengl sql testlib
 
+CONFIG += c++14
+CONFIG -= exceptions rtti
+
 DEFINES += ELYSIAN_OPENCL_ACCELERATED
 
 DEPENDPATH += \
@@ -70,5 +73,7 @@ HEADERS += \
     include/UnitTests/test_functional.h \
     include/UnitTests/test_cpp_lua_callback.h \
     include/UnitTests/test_associative_aggregate_array.h \
-    include/UnitTests/test_libgyro_compute_api.h
+    include/UnitTests/test_libgyro_compute_api.h \
+    include/UnitTests/test_string.h \
+    include/UnitTests/test_memory_mapped_byte_array.h
 

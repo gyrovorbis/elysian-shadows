@@ -41,6 +41,7 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);
+            format().setDoubleBuffer(true);
             //setAutoBufferSwap(true);
 
     connect(this, SIGNAL(engineUpdated()), getAssets(), SIGNAL(engineUpdated()));
@@ -235,6 +236,7 @@ void EngineGLSceneWidget::paintGL(void) {
    // auto sec = (double)result/1000000000.0;
    //qDebug() << "nsec - " << result << "sec - " << sec << "hz - " << 1.0/sec;
 
+    if(!autoBufferSwap()) swapBuffers();
 
     Q_EMIT engineUpdated();
 }

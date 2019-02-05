@@ -35,13 +35,21 @@ void TkMapSystem::_renderMapBorders(void) const {
 
     //if(xSize <= 0.0f || ySize <= 0.0f) return;
 
-    gyVidTexBind(nullptr);
+    GYVidPipelineState state = {
+        0,
+        nullptr,
+        nullptr,
+        nullptr,
+        GY_ALPHA_FULL,
+        GY_BLEND_SRC_ALPHA,
+        GY_BLEND_ONE,
+        0,
+        GY_VID_DEPTH_ALWAYS,
+        { 0, 0, 0, 0 }
+    };
+
     gyVidMaterialBind(_bgMat);
-    gyVidNormalMapBind(nullptr);
-    gyVidSpecularMapBind(nullptr);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
-    //gyVidDepthTest(true);
+    gyVidPipelineState(&state);
 
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
     gyVidQuadListBegin(&color);
