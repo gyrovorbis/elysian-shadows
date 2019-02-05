@@ -3,10 +3,35 @@
 
 #include <assert.h>
 #include "gyro_kinetic_collider.h"
+#include <libGyro/gyro_matrix_api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+
+typedef GYVector4 GYPoint;
+
+typedef struct GYLineSegment {
+    GYPoint points[2];
+} GYLineSegment;
+
+typedef struct GYRay {
+    GYPoint     point;
+    GYVector3   dir;
+} GYRay;
+
+typedef struct GYSphere {
+    GYPoint     point;
+    float       radius;
+} GYSphere;
+
+typedef struct GYRectPrism {
+
+} GYRectPrism;
+
+
 
 
 

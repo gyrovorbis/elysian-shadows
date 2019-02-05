@@ -38,18 +38,12 @@ SOURCES += \
     source/gyro_kinetic_physics.c
 
 HEADERS += \
-    include/gyro_kinetic.h \
-    include/gyro_kinetic_collider.h \
-    include/gyro_kinetic_collision.h \
-    include/gyro_kinetic_contact.h \
-    include/gyro_kinetic_kinetic.h \
-    include/gyro_kinetic_physics.h \
-    include/gyro_kinetic_static.h \
+    api/libGyro-Kinetic/gyro_kinetic.h \
+    api/libGyro-Kinetic/gyro_kinetic_collider.h \
+    api/libGyro-Kinetic/gyro_kinetic_collision.h \
+    api/libGyro-Kinetic/gyro_kinetic_contact.h \
+    api/libGyro-Kinetic/gyro_kinetic_kinetic.h \
+    api/libGyro-Kinetic/gyro_kinetic_physics.h \
+    api/libGyro-Kinetic/gyro_kinetic_static.h \
     v2_api/gyro_physics_simulation.h \
-    api/gyro_kinetic.h \
-    api/gyro_kinetic_collider.h \
-    api/gyro_kinetic_collision.h \
-    api/gyro_kinetic_contact.h \
-    api/gyro_kinetic_kinetic.h \
-    api/gyro_kinetic_physics.h \
-    api/gyro_kinetic_static.h
+    v2_api/gyro_physics_primitives.h
