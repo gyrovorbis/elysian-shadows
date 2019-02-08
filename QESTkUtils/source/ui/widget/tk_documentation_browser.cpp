@@ -76,7 +76,7 @@ HelpDockWidget::HelpDockWidget(QWidget* parent,
 {
     move(qApp->desktop()->availableGeometry(this).center()-geometry().center());
 #ifndef QESTKUTILS_DOCUMENTATION_RESOURCES
-    warnprintf("This build was compiled without documentation resource files!");
+    Debug::log(Debug::LOG_WARNING, "This build was compiled without documentation resource files!");
 
 #else
     Debug::log(Debug::LOG_VERBOSE, "Expanding Documentation Database: [%s]", Q_CSTR(_dbName));
