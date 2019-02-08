@@ -355,7 +355,7 @@ namespace elysian {
             DimCount            = 1;
 
         static constexpr size_t getDimSize(size_t dim) {
-            static_assert(dim == DimCount, "Couldn't find dim index!");
+            assert(dim == DimCount);
             return dim == DimCount? ElemCount : 0;
         }
 
@@ -393,7 +393,7 @@ namespace elysian {
 
 
     template<typename T, size_t... Dims>
-    class alignas(GYRO_MATRIX4_ALIGNMENT) Matrix:
+    class /*alignas(GYRO_MATRIX4_ALIGNMENT)*/ Matrix:
             public MatrixDecayTypes<T, Dims...>,
             public SquareMatrixOps<T, Dims...>,
             public SpecializedMatrixOps<T, Dims...>
