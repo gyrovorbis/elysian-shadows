@@ -228,7 +228,6 @@ inline auto DynamicMemoryMappedByteArray::getMemoryRegion(size_t index) const ->
     return index < getRegionCount()? &_regions[index] : nullptr;
 }
 
-
 template<typename... Args>
 inline DynamicMemoryMappedByteArray::DynamicMemoryMappedByteArray(Args... args) {
     _appendRegions(args...);
@@ -259,8 +258,6 @@ struct MemoryMap: public DynamicMemoryMappedByteArray {
         })
     {}
 };
-
-
 
 
 namespace tktest {
