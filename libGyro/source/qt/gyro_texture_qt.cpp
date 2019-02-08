@@ -95,6 +95,8 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     return (int)(uintptr_t)tex->_data;
 }
 

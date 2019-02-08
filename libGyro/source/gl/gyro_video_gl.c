@@ -7,6 +7,7 @@
 #include <gl/gyro_radial_blur_gl.h>
 #include <gl/gyro_chromatic_aberration_gl.h>
 #include <gl/gyro_bloom_gl.h>
+#include <stddef.h>
 #include <gl/gyro_gl_utils.h>
 #include <common/gyro_spine_common.h>
 #ifndef GYRO_NO_SPINE
@@ -216,8 +217,10 @@ typedef struct _PipelineStateDirty {
     uint8_t                 shader;
     uint8_t                 texture;
     uint8_t                 normalMap;
+    uint8_t                 emissiveMap;
     uint8_t                 alphaLevel;
     uint8_t                 blendMode;
+    uint8_t                 blendColor;
     uint8_t					depthTestEnabled;
     uint8_t 				depthTestMode;
 } _PipelineStateDirty;
@@ -240,6 +243,17 @@ int _glIsLightShaderActive(void) {
     return glalCurShaderProg->program == glalLightingShader.program->program ||
             glalCurShaderProg->program == glalShadowMapShader.program->program;
 
+}
+
+void glalOrphanStreamingVbo(void) {
+    return;
+        gyVidVertexBatchFlush();
+
+    _vertexQueueSize = 0;
+    _vertexQueueLastSize = 0;
+    _vertexQueueLastOffset = 0;
+    gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
 }
 
 
@@ -335,9 +349,11 @@ void gyVidSceneBegin(void) {
 void gyVidSceneEnd(void) {
     GY_GL_CHECK_ERROR();
     gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
+//    glalOrphanStreamingVbo();
+
     GY_GL_CHECK_ERROR();
 }
-
 
 void gyVidClearColor(const GYColor4 color) {
     _clearColor.x = (float)color.r * 255.0f;
@@ -365,20 +381,26 @@ void gyVidVertexBatchFlush(void) {
     if(recursing) return;
     recursing = 1;
     if(glalFlushCallback) glalFlushCallback(glalFlushObject);
+    //gyVidVertexBatchEnd();
     recursing = 0;
     GY_GL_CHECK_ERROR();
 }
 
 void gyVidVertexArrayBind(int id) {
     GY_GL_CHECK_ERROR();
-    if(id != glalVertexArray) {
+    GLint currentVao;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &currentVao);
+    GY_GL_CHECK_ERROR();
+    if(id != currentVao) {
         gyVidVertexBatchFlush();
+        GY_GL_CHECK_ERROR();
 #ifndef GL_ES_VERSION_2_0
         glBindVertexArray(id);
 #endif
         glalVertexArray = id;
+        GY_GL_CHECK_ERROR();
     }
-    GY_GL_CHECK_ERROR();
+
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -422,6 +444,9 @@ int glalVidGlewInit(void) {
 
 
 int glalVidViewportResize(const int initialization, const int viewWidth, const int viewHeight) {
+    gyVidVertexBatchFlush();
+    gyVidPipelineInvalidate();
+
     GY_GL_CHECK_ERROR();
     if(!initialization) {
         //delete depth buffer render target
@@ -604,17 +629,6 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         //glCullFace(GL_FRONT);
         //glEnable(GL_CULL_FACE);
 
-        //gyVidDepthTest(0);
-        //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        //gyVidAlphaLevel(GY_ALPHA_NONE);
-    //    glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_DEPTH_TEST);   // glFlush();
-      //  glDepthFunc(GL_LESS);
-     //   glClearDepth(1.0f);
-    //    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
        // glGenFramebuffers(1, &fbo);
       //  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -653,10 +667,23 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
                 glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TANGENT]);
                 glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_NORMAL_Z]);
 
+
+                int j = i;
+
+                    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, color));
+
+                    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, normalZ));
+
+                    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, normal));
+
+                    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(offsetof(GYVertex, tangent)));
+
+#if 0
                 glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
                 glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
-                glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
-                glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
+                glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
+                glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(11*sizeof(float)));
+#endif
             }
         }
         gyVidVertexArrayBind(0);
@@ -677,13 +704,13 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 // ==== LOW-LEVEL API =====
 
 void gyVidCamUpdate(const GYCamera *const cam) {
+    gyVidVertexBatchFlush();
     GY_GL_CHECK_ERROR();
     if(cam) {
         glalCurCamera = cam;
     } else {
         glalCurCamera = &_defaultCamera;
     }
-    gyVidVertexBatchFlush();
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)glalCurCamera->projViewMat);
     ++glalUniformChangeCount;
     GY_GL_CHECK_ERROR();
@@ -835,6 +862,7 @@ void gyVidQuadListEnd(void) {
     //gyVidTangentArray(_stripTangents);
    // gyVidColorArray(_stripColors);
   //  _gyVidTriangleStrip(_modelViewVertices, 0, glalCurStripSize);
+    //gyVidVertexBatchFlush();
     _curTexCoordPtr = NULL;
     _curColorArrayPtr = NULL;
 }
@@ -881,7 +909,7 @@ void gyVidTriangleStripVertices(const GYVertex* vertex, unsigned count) {
 
 }
 
-
+#if 0
 void gyVidBlendMode(const GY_BLEND_FACTOR src, const GY_BLEND_FACTOR dst) {
     int glSrcMode = _glBlendFactorFromGyroBlendFactor(src);
     int glDstMode = _glBlendFactorFromGyroBlendFactor(dst);
@@ -892,7 +920,8 @@ void gyVidBlendMode(const GY_BLEND_FACTOR src, const GY_BLEND_FACTOR dst) {
       //  glalBlendMode = mode;
   //  }
 }
-
+#endif
+#if 0
 void gyVidDepthTest(const int enable) {
 #if 1
     GY_GL_CHECK_ERROR();
@@ -914,7 +943,10 @@ GY_GL_CHECK_ERROR();
      glDepthFunc(GL_LEQUAL);
 #endif
 }
+#endif
 
+
+#if 0
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
     //static int wasShadow = 0;
@@ -937,7 +969,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
       //  wasShadow = gyVidShadowPass();
   //  }
 }
-
+#endif
 
 
 void gyVidQuad(const GYVector4 *const verts, const int frame) {
@@ -950,10 +982,12 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 
         gyMatMultVec(verts, worldVerts, GYRO_VIDEO_QUAD_VERTEX_COUNT);
         //first check whether this bitch should be culled or not
+#if 0
         if(glalCpuFrustumCulling && gyVidFrustumCullVerts(glalCurCamera->viewProjVolume.planes, worldVerts, GYRO_VIDEO_QUAD_VERTEX_COUNT)) {
             ++glalCpuPrimCullCount;
             return;
         }
+#endif
 
         tangent = &glalRectTangents[glalRectTexOrient];
         normal = glalPlaneNormalVector(glalNormalMapActive, glalPlaneType, glalRectTexOrient);
@@ -981,6 +1015,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
             }
         }
 
+        assert(_curColorArrayPtr);
         _vertexQueue[_vertexQueueSize].color      = _curColorArrayPtr[0];
         _vertexQueue[_vertexQueueSize+1].color    = _curColorArrayPtr[1];
         _vertexQueue[_vertexQueueSize+2].color    = _curColorArrayPtr[2];
@@ -991,6 +1026,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
     if(_glState.texture) {
         coord = (frame != -1)? gyVidTexCoordArrayFromFrame(&_glState.texture->_coord->texCoord[frame], glalRectTexOrient) :
                                _curTexCoordPtr;
+        assert(coord);
 
         for(unsigned i = 0; i < 4; ++i) {
             _vertexQueue[_vertexQueueSize+i].texCoord = coord[i];
@@ -1030,6 +1066,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
     spSlot*                     slot                = NULL;
     spAttachment*               attachment          = NULL;
     GYTexture*                  texture             = NULL;
+    GYTexture*                  normalMap           = NULL;
+    GYTexture*                  emissiveMap         = NULL;
     spRegionAttachment*         regionAttachment    = NULL;
     spAtlasRegion*              atlasRegion         = NULL;
     spAtlasPage*                atlasPage           = NULL;
@@ -1046,8 +1084,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
     static GYVidPipelineState state = {
         0,
         NULL,
-        0,
-        0,
+        NULL,
+        NULL,
         GY_ALPHA_FULL,
         GY_BLEND_SRC_ALPHA,
         GY_BLEND_ONE,
@@ -1055,13 +1093,12 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
         GY_VID_DEPTH_LEQUAL
     };
 
-    gyVidNormalMapBind(NULL);
-    gyVidSpecularMapBind(NULL);
-    gyVidMaterialBind(NULL);
+        gyVidVertexBatchFlush();
+
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
+    gyVidMaterialBind(NULL);
 
-    gyVidVertexBatchFlush();
     gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
     GYVertex*                   startVertex = &_vertexQueue[_vertexQueueSize];
     GYVertex*                   vertex = startVertex;
@@ -1082,7 +1119,6 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
 
             //GYMatrix4 mat;
             gyVidVertexBatchFlush();
-            gyVidVertexBatchEnd();
             //gyMatStore(&mat);
             //gyMatPop();
             gyMatPush();
@@ -1097,9 +1133,6 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
             gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
             startVertex = &_vertexQueue[_vertexQueueSize];
             vertex = startVertex;
-            gyVidNormalMapBind(NULL);
-            gyVidSpecularMapBind(NULL);
-            gyVidMaterialBind(NULL);
             gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
             gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
             //gyVidDepthTest(0);
@@ -1111,6 +1144,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
             atlasRegion         = regionAttachment? regionAttachment->rendererObject : NULL;
             atlasPage           = atlasRegion? atlasRegion->page : NULL;
             texture             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->textureMap : NULL;
+            normalMap             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->normalMap : NULL;
+            emissiveMap             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->specularMap : NULL;
 
             spRegionAttachment_computeWorldVertices(regionAttachment, slot->bone, worldVertices);
 
@@ -1196,6 +1231,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
             atlasRegion         = mesh? mesh->rendererObject : NULL;
             atlasPage           = atlasRegion? atlasRegion->page : NULL;
             texture             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->textureMap : NULL;
+            normalMap             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->normalMap : NULL;
+            emissiveMap             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->specularMap : NULL;
 
 
             //if (mesh->verticesCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
@@ -1236,6 +1273,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
             atlasRegion         = skinnedMesh? skinnedMesh->rendererObject : NULL;
             atlasPage           = atlasRegion? atlasRegion->page : NULL;
             texture             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->textureMap : NULL;
+            normalMap             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->normalMap : NULL;
+            emissiveMap             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->specularMap : NULL;
 
             spSkinnedMeshAttachment_computeWorldVertices(skinnedMesh, slot, worldVertices);
 
@@ -1265,8 +1304,10 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
         }
 
         state.texture = texture;
+        state.normalMap = normalMap;
+        state.emissiveMap = emissiveMap;
 
-        if(texture) {
+       // if(texture) {
 
            // if(slot->data->additiveBlending != lastAdditive) {
             if(vertex->color.a == 255) { //opaque
@@ -1318,7 +1359,7 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton) {
                 glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
             }
 
-        }
+        //}
 
     }
 
@@ -1345,7 +1386,32 @@ unsigned _gyToGlDepthMode(unsigned gyMode) {
     return 0;
 }
 
+void gyVidTexBind(const GYTexture *const texture) {
 
+    if(texture != _glState.texture || _glStateDirty.texture) {
+        gyVidVertexBatchFlush();
+
+        GY_GL_CHECK_ERROR();
+        glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+        GY_GL_CHECK_ERROR();
+
+        int active = texture && texture->_data;
+
+        GY_GL_CHECK_ERROR();
+        if(active) glBindTexture(GL_TEXTURE_2D, (GLuint)texture->_data);
+        GY_GL_CHECK_ERROR();
+        if(_glIsLightShaderActive()) glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], active);
+        GY_GL_CHECK_ERROR();
+
+        _glState.texture = texture;
+        _glStateDirty.texture = 0;
+#ifdef GY_VIDEO_DEBUG
+        ++_dbgInfo.frameStats.textureChangeCount;
+        //pipelineChanged = 1;
+#endif
+
+    }
+}
 
 void gyVidPipelineState(const GYVidPipelineState* state) {
     GY_GL_CHECK_ERROR();
@@ -1400,6 +1466,24 @@ void gyVidPipelineState(const GYVidPipelineState* state) {
             pipelineChanged = 1;
 #endif
         }
+
+        if(memcmp(&state->blendColor, &_glState.blendColor, sizeof(GYColor4)) == 0 ||
+                _glStateDirty.blendColor)
+        {
+            glBlendColor((float)state->blendColor.r/255.0f,
+                         (float)state->blendColor.g/255.0f,
+                         (float)state->blendColor.b/255.0f,
+                         (float)state->blendColor.a/255.0f);
+
+            _glState.blendColor = state->blendColor;
+            _glStateDirty.blendColor = 0;
+
+
+#ifdef GY_VIDEO_DEBUG
+            ++_dbgInfo.frameStats.blendColorChangeCount;
+            pipelineChanged = 1;
+#endif
+        }
     }
 
     if(state->depthTestEnabled != _glState.depthTestEnabled || _glStateDirty.depthTestEnabled) {
@@ -1438,7 +1522,23 @@ void gyVidPipelineState(const GYVidPipelineState* state) {
         }
     }
 
+    size_t oldCount = _dbgInfo.frameStats.textureChangeCount;
     gyVidTexBind(state->texture);
+    if(oldCount != _dbgInfo.frameStats.textureChangeCount) {
+        pipelineChanged = 1;
+    }
+
+    oldCount = _dbgInfo.frameStats.textureChangeCount;
+    gyVidNormalMapBind(state->normalMap);
+    if(oldCount != _dbgInfo.frameStats.textureChangeCount) {
+        pipelineChanged = 1;
+    }
+
+    oldCount = _dbgInfo.frameStats.textureChangeCount;
+    gyVidSpecularMapBind(state->emissiveMap);
+    if(oldCount != _dbgInfo.frameStats.textureChangeCount) {
+        pipelineChanged = 1;
+    }
 
 #ifdef GY_VIDEO_DEBUG
     if(pipelineChanged) ++_dbgInfo.frameStats.pipelineStateChangeCount;
@@ -1446,14 +1546,14 @@ void gyVidPipelineState(const GYVidPipelineState* state) {
 }
 
 
+void gyVidNormalMapBind(const GYTexture * const texture) {
+     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
-void gyVidTexBind(const GYTexture *const texture) {
-
-    if(texture != _glState.texture || _glStateDirty.texture) {
+    if(texture != _glState.normalMap || _glStateDirty.normalMap) {
         gyVidVertexBatchFlush();
 
         GY_GL_CHECK_ERROR();
-        glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+        glActiveTexture(glalTextureMapTexUnits[GLAL_NORMAL_MAP]);
         GY_GL_CHECK_ERROR();
 
         int active = texture && texture->_data;
@@ -1461,14 +1561,47 @@ void gyVidTexBind(const GYTexture *const texture) {
         GY_GL_CHECK_ERROR();
         if(active) glBindTexture(GL_TEXTURE_2D, (GLuint)texture->_data);
         GY_GL_CHECK_ERROR();
-        if(_glIsLightShaderActive()) glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], active);
+        if(_glIsLightShaderActive()) glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED], active);
         GY_GL_CHECK_ERROR();
 
-        _glState.texture = texture;
-        _glStateDirty.texture = 0;
+        glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+
+        _glState.normalMap = texture;
+        _glStateDirty.normalMap = 0;
 #ifdef GY_VIDEO_DEBUG
-            ++_dbgInfo.frameStats.textureChangeCount;
-            //pipelineChanged = 1;
+        ++_dbgInfo.frameStats.textureChangeCount;
+        //pipelineChanged = 1;
+#endif
+
+    }
+}
+
+
+void gyVidSpecularMapBind(const GYTexture * const texture) {
+     if(!glalLightingEnabled || gyVidShadowPass()) return;
+
+    if(texture != _glState.emissiveMap || _glStateDirty.emissiveMap) {
+        gyVidVertexBatchFlush();
+
+        GY_GL_CHECK_ERROR();
+        glActiveTexture(glalTextureMapTexUnits[GLAL_SPECULAR_MAP]);
+        GY_GL_CHECK_ERROR();
+
+        int active = texture && texture->_data;
+
+        GY_GL_CHECK_ERROR();
+        if(active) glBindTexture(GL_TEXTURE_2D, (GLuint)texture->_data);
+        GY_GL_CHECK_ERROR();
+        if(_glIsLightShaderActive()) glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED], active);
+        GY_GL_CHECK_ERROR();
+
+        glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+
+        _glState.emissiveMap = texture;
+        _glStateDirty.emissiveMap = 0;
+#ifdef GY_VIDEO_DEBUG
+        ++_dbgInfo.frameStats.textureChangeCount;
+        //pipelineChanged = 1;
 #endif
 
     }
@@ -1504,6 +1637,7 @@ int gyVidDebugStatsDump(void) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Texture",      _dbgInfo.frameStats.textureChangeCount);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Alpha",        _dbgInfo.frameStats.alphaChangeCount);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Blend Mode",   _dbgInfo.frameStats.blendChangeCount);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Blend Color",  _dbgInfo.frameStats.blendColorChangeCount);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Depth Test",   _dbgInfo.frameStats.depthTestChangeCount);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %50d", "Depth Mode",   _dbgInfo.frameStats.depthModeChangeCount);
     _gyPop(2);

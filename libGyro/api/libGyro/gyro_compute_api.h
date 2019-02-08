@@ -128,7 +128,8 @@ typedef struct GYComputeProgram {
 } GYComputeProgram;
 
 typedef struct GYComputeProgramBuildOptions {
-  char fuckoff;
+    const char**    includeDirs;
+    size_t          includeDirCount;
 } GYComputeProgramBuildOptions;
 
 

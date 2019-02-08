@@ -72,13 +72,14 @@ static GYTexture            _bloomTempTex;
 static GYVidPipelineState   _bloomState = {
     0,
     &_bloomTempTex,
-    0,
-    0,
+    NULL,
+    NULL,
     GY_ALPHA_NONE,
     GY_BLEND_SRC_ALPHA,
     GY_BLEND_ONE,
     0,
-    GY_VID_DEPTH_LESS
+    GY_VID_DEPTH_LEQUAL,
+    { 0, 0, 0, 0}
 };
 
 static void _gyBloomSetPipelineTex(GLuint id) {
@@ -107,6 +108,8 @@ int gyVidBloomResizeFramebuffer(unsigned width, unsigned height) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width/4, height/4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     }
 
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     return 1;
 }
 
@@ -118,33 +121,34 @@ int glalVidInitializeBloom(void) {
             { -1.0f, -1.0f, 0.0f, 0.0f },
             { 0.0f, 0.0f },
             { 255, 255, 255, 255 },
+            1.0f,
             { 0.0f, 0.0f, 0.0f },
-            { 0.0f, 0.0f, 0.0f },
-            1.0f
+            { 0.0f, 0.0f, 0.0f }
+
         },
         {
             { 1.0f, -1.0f, 0.0f, 0.0f },
             { 1.0f, 0.0f },
             { 255, 255, 255, 255 },
+            1.0f,
             { 0.0f, 0.0f, 0.0f },
-            { 0.0f, 0.0f, 0.0f },
-            1.0f
+            { 0.0f, 0.0f, 0.0f }
         },
         {
             { -1.0f, 1.0f, 0.0f, 0.0f },
             { 0.0f, 1.0f },
             { 255, 255, 255, 255 },
+            1.0f,
             { 0.0f, 0.0f, 0.0f },
-            { 0.0f, 0.0f, 0.0f },
-            1.0f
+            { 0.0f, 0.0f, 0.0f }
         },
         {
             { 1.0f, 1.0f, 0.0f, 0.0f },
             { 1.0f, 1.0f },
             { 255, 255, 255, 255 },
+            1.0f,
             { 0.0f, 0.0f, 0.0f },
-            { 0.0f, 0.0f, 0.0f },
-            1.0f
+            { 0.0f, 0.0f, 0.0f }
         }
 
     };
@@ -369,12 +373,17 @@ void gyVidApplyBloom(void) {
     //===== 4 - Additively blend blurred bloom texture over backbuffer as a fullscreen quad.  =====
 #endif
     gyVidSetDefaultShaderProgram();
-   gyVidVertexArrayBind(0);
+    gyVidVertexArrayBind(0);
     glalVidBindDefaultFbo();
     glViewport(0.0f, 0.0f, scrWidth, scrHeight);
 
+    glClearDepth(1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glDepthRange(0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     GYColor4 col = { 0, 0, 0, 255 };
+    gyVidMaterialBind(NULL);
     _gyBloomSetPipelineTex(NULL);
     gyVidPipelineState(&_bloomState);
     //Render fullscreen quad.
@@ -385,7 +394,7 @@ void gyVidApplyBloom(void) {
     gyVidTexCoordArray(texCoords);
     gyVidQuadListBegin(&col);
     gyVidRect(-1);
-    //gyVidQuadListEnd();
+    gyVidQuadListEnd();
     //gyVidVertexBatchEnd();
     gyMatPop();
 
@@ -397,7 +406,6 @@ void gyVidApplyBloom(void) {
     _gyBloomSetPipelineTex(_glalColorTex);
     gyVidPipelineState(&_bloomState);
 
-
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
@@ -405,15 +413,14 @@ void gyVidApplyBloom(void) {
     gyVidTexCoordArray(texCoords);
     gyVidQuadListBegin(&color);
     gyVidRect(-1);
-    //gyVidQuadListEnd();
+    gyVidQuadListEnd();
     //gyVidVertexBatchEnd();
     gyMatPop();
 
         GYColor4 color2 = { 255, 255, 255, 255 };
-gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
+//gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);    
-
 
     //Render fullscreen quad.
     _gyBloomSetPipelineTex(_finalConvTex);
@@ -425,9 +432,11 @@ gyVidBlendMode(GY_BLEND_SRC_ALPHA, GY_BLEND_ONE);
     gyVidTexCoordArray(texCoords);
     gyVidQuadListBegin(&color2);
     gyVidRect(-1);
-   // gyVidVertexBatchEnd();
+    gyVidQuadListEnd();
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
     gyMatPop();
-        gyVidVertexArrayBind(0);
+    gyVidVertexArrayBind(0);
 
 
 }

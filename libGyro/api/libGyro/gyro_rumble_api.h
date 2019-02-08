@@ -11,11 +11,9 @@ extern "C" {
 
 #define GY_RUMBLE_EFFECT_DURATION_INFINITE -1.0f
 
-
 typedef struct GYRumbleInitParams {
     unsigned maxDevices;
 } GYRumbleInitParams;
-
 
 typedef enum GY_RUMBLE_EFFECT_TYPE {
     GY_RUMBLE_EFFECT_NONE,
@@ -85,9 +83,6 @@ typedef struct GYRumbleEffectPeriodic {
     float                       phaseShift;       //pos phase shift given by 1/100th of a degree
     float                       intensityPeak;    //negative value => 180 deg phase-shift
     float                       intensityOffset;  //mean value of wave
-
-
-
 } GYRumbleEffectPeriodic;
 
 typedef struct GYRumbleEffect {
@@ -110,8 +105,6 @@ typedef struct GYRumbleEffect {
 typedef struct GYRumble {
     unsigned                    featureFlags;
 } GYRumble;
-
-
 
 int                             gyRumbleInit(const struct GYRumbleInitParams* params);
 int                             gyRumbleUninit(void);

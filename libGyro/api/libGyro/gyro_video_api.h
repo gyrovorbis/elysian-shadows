@@ -18,14 +18,14 @@ typedef struct GYColor4 {
     unsigned char r, g, b, a;
 } GYColor4;
 
-typedef struct GYVertex {
+typedef struct GYVertex  {
     GYVector4   pos;        //16 bytes
     GYTexCoord2 texCoord;   //8 bytes
     GYColor4    color;      //16 bytes
+    float       normalZ;    //4 bytes
     GYVector3   normal;     //12 bytes
     GYVector3   tangent;    //12 bytes
-    float       normalZ;    //4 bytes
-} GYVertex;                 //68 bytes
+} GYVertex __attribute__ ((aligned(64)));                 //68 bytes
 
 
 typedef enum _GY_ALPHA_LEVEL {
@@ -81,17 +81,17 @@ typedef enum GY_VID_DEPTH_MODE {
     GY_VID_DEPTH_COUNT
 } GY_VID_DEPTH_MODE;
 
-
 typedef struct GYVidPipelineState {
     int 				shader;
     GYTexture*          texture;
-    int					normalMapId;
-    int					emissiveMapId;
+    GYTexture* 			normalMap;
+    GYTexture*			emissiveMap;
     GY_ALPHA_LEVEL      alphaLevel;
     GY_BLEND_FACTOR     srcBlendFactor;
     GY_BLEND_FACTOR     dstBlendFactor;
     int					depthTestEnabled;
     GY_VID_DEPTH_MODE   depthTestMode;
+    GYColor4            blendColor;     //constant blend color, oargb DC, glBendColor
 } GYVidPipelineState;
 
 typedef enum GY_VID_CULL_MODE {
@@ -133,10 +133,10 @@ typedef struct GYVidFrameStats {
     size_t textureChangeCount;
     size_t alphaChangeCount;
     size_t blendChangeCount;
+    size_t blendColorChangeCount;
     size_t depthTestChangeCount;
     size_t depthModeChangeCount;
 } GYVidFrameStats;
-
 
 typedef struct GYVidDebugInfo {
     GYVidFrameStats     frameStats;
@@ -153,16 +153,14 @@ typedef struct GYVidDebugInfo {
 
 #endif
 
-
 //Internal state
-void gyVidTexBind(const struct GYTexture *const tex);
-void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
-void gyVidBlendMode(const GY_BLEND_FACTOR src, const GY_BLEND_FACTOR dst);
+//void gyVidTexBind(const struct GYTexture *const tex);
+//void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
+//void gyVidBlendMode(const GY_BLEND_FACTOR src, const GY_BLEND_FACTOR dst);
 //void gyVidDepthTest(const int enable);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
 void gyVidClearColor(const GYColor4 color);
 void gyVidHighDynamicRangeExposure(float exposure);
-
 void gyVidCpuFrustumCulling(int value);
 
 //Camera API

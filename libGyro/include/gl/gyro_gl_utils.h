@@ -2,7 +2,7 @@
 #define GYRO_GL_UTILS_H
 
 #ifdef __cplusplus
-#extern "C" {
+extern "C" {
 #endif
 
 #include <gl/gyro_gl.h>

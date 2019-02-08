@@ -45,6 +45,9 @@ int gyFileQuit(void);
 int gyFileResolvePath(GYPathType path_type, const char* vpath, char **path, size_t *len);
 
 
+const char* gyFilePath(const char* relative);
+
+
 //size_t fwrite(const void *ptr, size_t size_of_elements, size_t number_of_elements, FILE *a_file);
 
 int gyFileOpen(const char *file_path, const char *mode, GYFile **fp);

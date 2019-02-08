@@ -30,7 +30,7 @@ typedef enum GY_PROJECTION_TYPE {
 //figure out how to make this represent ORTHO too
 typedef struct GYViewVolume {
     //static enum {OUTSIDE, INTERSECT, INSIDE};
-    GYPlane planes[6];
+    GYPlane planes[GY_FRUSTUM_PLANE_COUNT];
     GYVector3 ntl,ntr,nbl,nbr,ftl,ftr,fbl,fbr;
     float nearD, farD, ratio, angle, tang;
     float nw, nh, fw, fh;
@@ -47,6 +47,8 @@ typedef struct GYCamera {
 
 static inline void gyVidFrustumCalculatePlanes(GYPlane planes[], GYMatrix4 mat) {
     const float* clip = (const float*)mat;
+    float(*frustumPlanes)[4] = (float(*)[4])planes;
+#if 0
     const GYPlane localPlanes[GY_FRUSTUM_PLANE_COUNT] = {
         { clip[ 3] - clip[ 0], clip[ 7] - clip[ 4], clip[11] - clip[ 8], clip[15] - clip[12] }, //RIGHT
         { clip[ 3] + clip[ 0], clip[ 7] + clip[ 4], clip[11] + clip[ 8], clip[15] + clip[12] }, //LEFT
@@ -55,15 +57,53 @@ static inline void gyVidFrustumCalculatePlanes(GYPlane planes[], GYMatrix4 mat) 
         { clip[ 3] - clip[ 2], clip[ 7] - clip[ 6], clip[11] - clip[10], clip[15] - clip[14] }, //FAR
         { clip[ 3] + clip[ 2], clip[ 7] + clip[ 6], clip[11] + clip[10], clip[15] + clip[14] }  //NEAR
     };
+#else
+    frustumPlanes[0][0] = clip[ 3] - clip[ 0];
+           frustumPlanes[0][1] = clip[ 7] - clip[ 4];
+           frustumPlanes[0][2] = clip[11] - clip[ 8];
+           frustumPlanes[0][3] = clip[15] - clip[12];
+
+            //left
+            frustumPlanes[1][0] = clip[ 3] + clip[ 0];
+            frustumPlanes[1][1] = clip[ 7] + clip[ 4];
+            frustumPlanes[1][2] = clip[11] + clip[ 8];
+            frustumPlanes[1][3] = clip[15] + clip[12];
+
+            //bottom
+            frustumPlanes[2][0] = clip[ 3] + clip[ 1];
+            frustumPlanes[2][1] = clip[ 7] + clip[ 5];
+            frustumPlanes[2][2] = clip[11] + clip[ 9];
+            frustumPlanes[2][3] = clip[15] + clip[13];
+
+            //top
+            frustumPlanes[3][0] = clip[ 3] - clip[ 1];
+            frustumPlanes[3][1] = clip[ 7] - clip[ 5];
+            frustumPlanes[3][2] = clip[11] - clip[ 9];
+            frustumPlanes[3][3] = clip[15] - clip[13];
+
+            //far
+            frustumPlanes[4][0] = clip[ 3] - clip[ 2];
+            frustumPlanes[4][1] = clip[ 7] - clip[ 6];
+            frustumPlanes[4][2] = clip[11] - clip[10];
+            frustumPlanes[4][3] = clip[15] - clip[14];
+
+            //near
+            frustumPlanes[5][0] = clip[ 3] + clip[ 2];
+            frustumPlanes[5][1] = clip[ 7] + clip[ 6];
+            frustumPlanes[5][2] = clip[11] + clip[10];
+            frustumPlanes[5][3] = clip[15] + clip[14];
+
+
+#endif
 
     for(unsigned i = 0; i < GY_FRUSTUM_PLANE_COUNT; ++i) {
         //Normalize the normal vectors of the plane, does not include D distance,
         //although the D factor is normalized by the same factor afterwards.
-        const float len = gyVec3Magnitude((const GYVector3*)&planes[i]);
-        gyVec4ScaleAccum((void*)&localPlanes[i], 1.0f/len);
+        const float len = gyVec3Magnitude(frustumPlanes[i]);
+        gyVec4ScaleAccum(frustumPlanes[i], 1.0f/len);
     }
 
-    memcpy(planes, localPlanes, sizeof(localPlanes));
+    memcpy(planes, frustumPlanes, sizeof(float)*4*6);
 }
 
 //Signed Distance Between Plane and Point (Ax + By + Cz + D)
@@ -89,7 +129,7 @@ static inline int gyVidFrustumCullVerts(const GYPlane* planes, const GYVector4* 
         for(unsigned v = 0; v < vertCount; v++) {
 
             // If one of the tests fails, then there is no intersection
-            if (gyPlanePointDistance(&planes[j], &locs[v]) > 0.0) {
+            if (gyPlanePointDistance(&planes[j], &locs[v]) > 0.0f) {
                 ++visibleVerts;
             }
         }

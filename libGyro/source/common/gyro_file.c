@@ -10,6 +10,7 @@ int gyFileQuit(void)
 	return turfs_quit() == TURFS_RET_OK;
 }
 
+
 int gyFileResolvePath(GYPathType path_type, const char* vpath, char **path, size_t *len)
 {
 	if (path == NULL) {

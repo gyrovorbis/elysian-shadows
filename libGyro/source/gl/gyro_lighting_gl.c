@@ -556,6 +556,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 }
 
 void gyVidLightSourceAdd(GYLightSource* const light) {
+    gyVidVertexBatchFlush();
 //	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
@@ -611,8 +612,8 @@ void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const 
 
 void gyVidLightSourceClear(void) {
     //if(gyVidShadowPass()) return;
-    gyVidVertexBatchEnd();
     gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
    #if 1
     glalLightingUBOData.count = 0;
     glalDirectionalShadowMapArrayCount = 0;
@@ -635,12 +636,12 @@ void gyVidLightSourceClear(void) {
 
 
 void gyVidLightSourceBeginShadowPasses(void) {
-    gyVidVertexBatchEnd();
     gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
+        glalOrphanStreamingVbo();
     //glFlush();
     gyVidSetCurrentShaderProgram(glalShadowMapShader.program);
     glalCurLightShader = &glalShadowMapShader;
-    gyVidAlphaLevel(GY_ALPHA_NONE);
     _shadowPass = 1;
     _firstShadowPass = 1;
 
@@ -661,10 +662,10 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
          GY_GL_CHECK_ERROR();
     //if(!_firstShadowPass)
 
-
-         gyVidVertexBatchEnd();
          gyVidVertexBatchFlush();
-         glFlush();
+         gyVidVertexBatchEnd();
+
+         //glFlush();
              GY_GL_CHECK_ERROR();
 
 
@@ -843,13 +844,22 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 #endif
 
 
+         GYVidPipelineState pipelineState = {
+             0,
+             NULL,
+             NULL,
+             NULL,
+             GY_ALPHA_NONE,
+             GY_BLEND_ONE,
+             GY_BLEND_ONE,
+             1,
+             GY_VID_DEPTH_LEQUAL,
+             { 0, 0, 0, 0 }
+         };
 
-        glDisable(GL_BLEND);
-        gyVidDepthTest(1);
+        gyVidPipelineState(&pipelineState);
+        gyVidMaterialBind(NULL);
         glDepthMask(GL_TRUE);
-        glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_BLEND);
-        glDepthFunc(GL_LEQUAL);
         _firstShadowPass = 0;
     //}
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -869,7 +879,9 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 }
 
 void gyVidLightSourceEndShadowPasses(void) {
+    gyVidVertexBatchFlush();
     gyVidVertexBatchEnd();
+        glalOrphanStreamingVbo();
 //gyVidVertexBatchFlush();
     //glFlush();
    // glFlush();
@@ -883,7 +895,7 @@ void gyVidLightSourceEndShadowPasses(void) {
     //glBindFramebuffer(GL_FRAMEBUFFER, iosFramebuffer);
         glalVidBindDefaultFbo();
 #else
-    //glalVidBindDefaultFbo();
+
     glBindFramebuffer(GL_FRAMEBUFFER, _glalMainFbo);
     _updateLightingUBO();
 
@@ -900,7 +912,6 @@ void gyVidLightSourceEndShadowPasses(void) {
 #endif
     //gyVidDepthTest(0);
     //glDepthMask(GL_TRUE);
-    glDisable(GL_DEPTH_TEST);
     //glEnable(GL_BLEND);
     //glEnable(GL_BLEND);
   //  glDepthFunc(GL_LEQUAL);

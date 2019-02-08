@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <libGyro/gyro_file_api.h>
 
+#define GY_CL_BUILD_FLAGS_BUFFER_SIZE_MAX           1024
 #define GY_CL_BUILD_FLAGS                           "-cl-kernel-arg-info"
 #define GY_CL_ENQUEUE_ACQUIRE_RENDERER_OBJECTS_MAX  10
 #define CL_QUERY_INFO_STRING_BUFF_SIZE              200
@@ -1448,8 +1449,6 @@ int gyComputeProgramCompile(GYComputeProgram*                       program,
                             const GYComputeProgramBuildOptions*     options,
                             GYComputeBuildInfo*                     buildInfo)
 {
-    _gyLog(GY_DEBUG_VERBOSE, "GY_COMPUTE_PROGRAM_COMPILE");
-    (void)options;
 
     GY_ASSERT(program && devices && deviceCount);
     cl_device_id devIds[CL_MAX_NUMBER_OF_DEVICES_PER_CONTEXT];
@@ -1471,7 +1470,19 @@ int gyComputeProgramCompile(GYComputeProgram*                       program,
         if(buildInfo) buildInfo[d].buildStatus = GY_COMPUTE_BUILD_STATUS_NONE;
     }
 
-    if(GY_CL_CHECK_ERROR(clBuildProgram(pgm->program, deviceCount, devIds, GY_CL_BUILD_FLAGS, NULL, NULL))) {
+    static char gyClBuildFlags[GY_CL_BUILD_FLAGS_BUFFER_SIZE_MAX] = { '\0' };
+    strncpy(gyClBuildFlags, GY_CL_BUILD_FLAGS, GY_CL_BUILD_FLAGS_BUFFER_SIZE_MAX);
+
+    if(options && options->includeDirCount) {
+        for(unsigned i = 0; i < options->includeDirCount; ++i) {
+            strncat(gyClBuildFlags, " -I ", GY_CL_BUILD_FLAGS_BUFFER_SIZE_MAX);
+            strncat(gyClBuildFlags, gyFilePath(options->includeDirs[i]), GY_CL_BUILD_FLAGS_BUFFER_SIZE_MAX);
+        }
+    }
+
+    _gyLog(GY_DEBUG_VERBOSE, "Build Flags: %s", gyClBuildFlags);
+
+    if(GY_CL_CHECK_ERROR(clBuildProgram(pgm->program, deviceCount, devIds, gyClBuildFlags, NULL, NULL))) {
         success = 0;
         for(unsigned d = 0; d < deviceCount; ++d) {
             GY_CL_CHECK_ERROR(clGetProgramBuildInfo(pgm->program, devIds[d], CL_PROGRAM_BUILD_STATUS, sizeof(cl_build_status), &buildStatus, NULL));

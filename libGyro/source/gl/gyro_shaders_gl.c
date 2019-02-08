@@ -115,7 +115,7 @@ void gyVidSetCurrentShaderProgram(struct GYShaderProgram*const program) {
 
     glalCurShaderProg = program;
     if(program) glUseProgram(program->program);
-    gyVidPipelineInvalidate();
+   // gyVidPipelineInvalidate();
 }
 
 void gyVidSetDefaultShaderProgram(void) {
@@ -133,13 +133,14 @@ void gyVidDbgTexMapUniform(const int unit) {
 }
 
 void gyVidSetCamWorldPos(const GYVector3*const pos) {
-    if(pos->x == glalCamWorldPos.x && pos->y == glalCamWorldPos.y && pos->z == glalCamWorldPos.z) return;
+    //if(pos->x == glalCamWorldPos.x && pos->y == glalCamWorldPos.y && pos->z == glalCamWorldPos.z) return;
     gyVidVertexBatchFlush();
     glalCamWorldPos = *pos;
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
     ++glalUniformChangeCount;
 }
 
+#if 0
 void gyVidNormalMapBind(const GYTexture * const tex) {
     if(!glalLightingEnabled || gyVidShadowPass()) return;
     static int wasActive = 0;
@@ -222,7 +223,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
         wasActive = glalSpecularMapActive;
     }
 }
-
+#endif
 
 void glalLightingInit(void) {
 
@@ -408,12 +409,15 @@ void gyVidMaterialBind(const GYMaterial*const material) {
 }
 
 void gyVidSetGlobalAmbience(const GYVector4*const color) {
+    glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_AMBIENCE], 1, (float*)color);
+#if 0
     if(gyVidShadowPass()) return;
     if(!(color->x == _globalAmbience.x && color->y == _globalAmbience.y && color->z == _globalAmbience.z)) {
         _globalAmbience = *color;
         glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_AMBIENCE], 1, (float*)color);
         ++glalUniformChangeCount;
     }
+#endif
 }
 
 void gyVidHighDynamicRangeExposure(float exposure) {
@@ -528,6 +532,7 @@ int gyShadersReloadAll(void) {
     success &= gyShaderDestroy(glalLightingShader.program->fragShader);
     success &= gyShaderDestroy(glalShadowMapShader.program->vertShader);
     success &= gyShaderDestroy(glalShadowMapShader.program->fragShader);
+    gyVidPipelineInvalidate();
     glalLoadDefaultShaders();
     gyVidSetDefaultShaderProgram();
     glalDefaultShadersLoadUniforms();
