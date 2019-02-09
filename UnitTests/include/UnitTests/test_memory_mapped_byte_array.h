@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QtTest>
+#include <cassert>
 
 template<typename Derived>
 class MemoryMappedByteArray {
