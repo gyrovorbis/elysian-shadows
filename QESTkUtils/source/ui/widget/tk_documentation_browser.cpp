@@ -5,12 +5,12 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QESTkUtils/tk_debug_log_stack.h>
-#include <QHelpContentWidget>
-#include <QHelpIndexWidget>
 #include <QMessageBox>
 #include <QApplication>
 #include <QDesktopWidget>
 #ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
+#   include <QHelpContentWidget>
+#   include <QHelpIndexWidget>
 #   include <QHelpEngine>
 #   include <QHelpSearchEngine>
 #   include <QHelpSearchResultWidget>
