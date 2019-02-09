@@ -89,7 +89,8 @@ vmu_child_app {
     QT += serialport
 
     INCLUDEPATH += $${ESDEV_ROOT}/ElysianVMU/app/qt/include \
-                $${ESDEV_ROOT}/ElysianVMU/evmu-core/include
+                $${ESDEV_ROOT}/ElysianVMU/evmu-core/include \
+                $${ESDEV_ROOT}/ElysianVMU/evmu-core/wrappers/cpp/include
 
     DEPENDPATH += ../../ElysianVMU/app/qt/include \
         ../../ElysianVMU/build/qtcreator/ElysianVMU \
