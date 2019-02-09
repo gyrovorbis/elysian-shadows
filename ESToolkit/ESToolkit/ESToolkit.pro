@@ -757,7 +757,7 @@ docs {
 }
 
 macx {
-    #DESTDIR = ../../executable
+    DESTDIR = ../../executable
     #    CONFIG(release, debug|release):
     release: QMAKE_POST_LINK = "sh ./macdeployes.sh"
 }

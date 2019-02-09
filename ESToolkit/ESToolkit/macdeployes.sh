@@ -1,3 +1,4 @@
+cd ../../executable
 rm -rf ESToolkit.app/Contents/Frameworks/SDL2.framework
 rm -rf ESToolkit.app/Contents/Frameworks/SDL2_net.framework
 macdeployqt ESToolkit.app 
