@@ -459,7 +459,7 @@ void AreaBase::populateVbo(void) {
         assert(offsetof(GYVertex, normal) == 32);
         glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)offsetof(GYVertex, normal));
 
-        assert(offsetof(GYVertex, tangent) == 48 && offsetof(GYVertex, tangent) % 16 == 0);
+   //     assert(offsetof(GYVertex, tangent) == 48 && offsetof(GYVertex, tangent) % 16 == 0);
         glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(offsetof(GYVertex, tangent)));
 
         assert(sizeof(GYVertex) == 64);
