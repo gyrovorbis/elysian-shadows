@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
+#   include <QHelpEngine>
 #   include <QHelpSearchEngine>
 #   include <QHelpSearchResultWidget>
 #   include <QVBoxLayout>

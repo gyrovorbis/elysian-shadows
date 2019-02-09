@@ -2,7 +2,6 @@
 #define TK_DOCUMENTATION_BROWSER_H
 
 #include <QTextBrowser>
-#include <QHelpEngine>
 #include <QMainWindow>
 
 #define ESTK_USER_MANUAL_DB_NAME            "ESToolkit"
@@ -21,6 +20,7 @@
 
 #define QESTKUTILS_HELP_DB_EXPANDED_DIR     "doc"
 
+class QHelpEngine;
 class QHelpSearchResultWidget;
 class QPushButton;
 class QLineEdit;
