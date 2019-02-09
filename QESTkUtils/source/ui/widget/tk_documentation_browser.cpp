@@ -36,18 +36,6 @@ HelpBrowser::HelpBrowser(QHelpEngine* helpEngine,
     connect(this, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(onAnchorClicked(const QUrl&)));
 }
 
-#if 0
-if(ESToolkit::getInstance()->getAssets().getCurrentProject()) {
-    QString localFile = link.toLocalFile();
-    QString absPath = FileUtilities::getAbsoluteAssetPath(localFile);
-    auto* asset = ESToolkit::getInstance()->getAssetDockWidget()->getAssetFileSystemModel()->getCustomAssetFileType(absPath);
-    if(asset) asset->doubleClick(QModelIndex());
-    else
-} else {
-   QMessageBox::critical(this, "Cannot open link!", "A valid project must be loaded before you can follow this link!");
-}
-#endif
-
 void HelpBrowser::onAnchorClicked(const QUrl &link) {
     if(link.scheme() == "qthelp") {
         setSource(link);
@@ -56,10 +44,12 @@ void HelpBrowser::onAnchorClicked(const QUrl &link) {
     }
 }
 
-QVariant HelpBrowser::loadResource(int type, const QUrl& name){
+QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
+#ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
     if (name.scheme() == "qthelp")
         return QVariant(_helpEngine->fileData(name));
     else
+#endif
         return QTextBrowser::loadResource(type, name);
 }
 
@@ -261,8 +251,9 @@ void HelpDockWidget::onSearchFinished(int resultCount) {
         _searchResultWidget->show();
     } else {
         QMessageBox::critical(this, "No Results Found!", "Search query yielded no results.");
-
     }
+#else
+    (void)resultCount;
 #endif
 }
 
@@ -277,9 +268,13 @@ void HelpDockWidget::onIndexingFinished(void) {
 }
 
 void HelpDockWidget::onSearchResultsRequestShowLink(const QUrl &link) {
+#ifdef QESTKUTILS_DOCUMENTATION_RESOURCES
     _helpBrowser->onAnchorClicked(link);
     auto index = _helpBrowser->getHelpEngine()->contentWidget()->indexOf(link);
     _helpBrowser->getHelpEngine()->contentWidget()->setCurrentIndex(index);
+#else
+    (void)link;
+#endif
     show();
 }
 
