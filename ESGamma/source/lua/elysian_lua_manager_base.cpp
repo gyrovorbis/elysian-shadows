@@ -403,7 +403,11 @@ bool LuaManagerBase::unloadScript(LuaScript &script) {
                 //remove reference to script's ENV from Lua registry
                 luaL_unref(*_mainState, LUA_REGISTRYINDEX, it->second->getEnvironRef());
                 //delete script
-                delete it->second;
+
+                //FUCKING FIX ME!!!
+             //   delete it->second;
+                //FUCKING FIX ME!!!
+
                 //remove script from cache
                 _scripts.erase(it);
                 //do a gc sweep

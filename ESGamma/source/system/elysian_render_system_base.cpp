@@ -731,7 +731,7 @@ bool RenderSystemBase::dumpStats(void) const {
 #endif
 
 void RenderSystemBase::_onAreaChange(void) const {
-    _populateMapIboComputeTask->updateArea(getCurrentArea());
+    if(_populateMapIboComputeTask) _populateMapIboComputeTask->updateArea(getCurrentArea());
 }
 
 
