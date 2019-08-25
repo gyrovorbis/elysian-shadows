@@ -4,6 +4,7 @@
 #include <QVector>
 #include <functional>
 #include <initializer_list>
+#include <QStringList>
 
 class QMimeData;
 class QDropEvent;
