@@ -562,9 +562,6 @@ HEADERS += \
     ../../AssetIO/include/AssetIO/primitive/elysian_mesh_attrib.hpp
 
 
-
-
-
 !ios:!dreamcast: !android {
     HEADERS +=  \
         include/ESToolkit/ESGamma/tk_render_system.h \
@@ -917,6 +914,7 @@ tests {
 
 win32 {
     QMAKE_CFLAGS += -msse -std=c99
+    QMAKE_CXXFLAGS += -Wa,-mbig-obj
     INCLUDEPATH += ../../libGyro/lib/win32
     LIBS += -L../../lib/win32 \
         #-llua52 \
