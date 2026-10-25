@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <QESTkUtils/model/tk_lua_table_stack_model.h>
 #include <ESToolkit/AssetIO/tk_lua_table_proxy.h>
 #include <QVariant>

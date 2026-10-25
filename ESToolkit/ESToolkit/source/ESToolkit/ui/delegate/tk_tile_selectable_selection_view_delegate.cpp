@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <QComboBox>
 #include <QCheckBox>
 #include <ESToolkit/ui/delegate/tk_tile_selectable_selection_view_delegate.h>

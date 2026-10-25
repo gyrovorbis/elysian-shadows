@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <QESTkUtils/tk_lua_mime_drop_manager.h>
 #include <QESTkUtils/tk_mime_data.h>
 

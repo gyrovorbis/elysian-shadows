@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/gui/elysian_widget.hpp>
 #include <ESGamma/gui/elysian_layout.hpp>
 #include <libGyro/gyro_matrix_api.h>

@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/utility/elysian_force_generator.hpp>
 #include <AssetIO/crtp/elysian_rigid_body.hpp>
 #include <AssetIO/crtp/elysian_collidable.hpp>

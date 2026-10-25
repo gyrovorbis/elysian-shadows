@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef TEST_MEMORY_MAPPED_BYTE_ARRAY_H
 #define TEST_MEMORY_MAPPED_BYTE_ARRAY_H
 

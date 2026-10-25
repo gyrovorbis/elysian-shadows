@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/ui/dock/tk_camera_dock_widget.h>
 #include <ui_tk_camera_dock_widget.h>
 #include <ESGamma/system/elysian_engine.hpp>

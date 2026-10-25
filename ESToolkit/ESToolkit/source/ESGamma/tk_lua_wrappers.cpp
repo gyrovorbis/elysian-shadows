@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/ESGamma/tk_lua_wrappers.h>
 //#include <ESGamma/lua/elysian_lua_wrappers.hpp>
 #include <ESToolkit/ESGamma/tk_lua_manager.h>

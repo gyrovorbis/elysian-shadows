@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/sheet_manager/tk_sheet_manager_dest_view.h>
 #include <ESToolkit/sheet_manager/tk_sheet_manager_assets.h>
 #include <ESToolkit/sheet_manager/tk_sheet_manager_place_tile_group_undo_item.h>

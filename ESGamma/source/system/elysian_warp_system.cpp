@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/system/elysian_warp_system.hpp>
 #include <ESGamma/crtp/elysian_camera_system.hpp>
 #include <AssetIO/crtp/elysian_warp.hpp>

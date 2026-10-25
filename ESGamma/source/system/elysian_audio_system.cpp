@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/system/elysian_audio_system.hpp>
 #include <AssetIO/crtp/elysian_audio_source.hpp>
 #include <ESGamma/system/elysian_party_system.hpp>

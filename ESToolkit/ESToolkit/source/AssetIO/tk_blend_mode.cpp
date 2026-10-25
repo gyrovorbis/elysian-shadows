@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/AssetIO/tk_blend_mode.h>
 #include <AssetIO/proxy/elysian_primitive_proxy.hpp>
 #include <QESTkUtils/ui/delegate/tk_enum_dropdown_property_item_delegate.h>

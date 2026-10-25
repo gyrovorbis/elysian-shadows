@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/crtp/elysian_level_system.hpp>
 #include <ESGamma/system/elysian_combat_system.hpp>
 #include <AssetIO/crtp/elysian_level.hpp>

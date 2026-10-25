@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/AssetIO/tk_particle_emitter.h>
 #include <QESTkUtils/tk_menu_stack.h>
 #include <QESTkUtils/ui/delegate/tk_dynamic_content_property_item_delegate.h>

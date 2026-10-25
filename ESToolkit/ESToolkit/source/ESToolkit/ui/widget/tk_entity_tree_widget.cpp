@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/ui/widget/tk_entity_tree_widget.h>
 #include <ESToolkit/AssetIO/tk_area.h>
 #include <ESToolkit/AssetIO/tk_entity.h>

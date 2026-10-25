@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef TK_ENUM_DROPDOWN_PROPERTY_ITEM_DELEGATE_H
 #define TK_ENUM_DROPDOWN_PROPERTY_ITEM_DELEGATE_H
 

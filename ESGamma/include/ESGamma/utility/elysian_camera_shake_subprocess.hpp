@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef ELYSIAN_CAMERA_SHAKE_SUBPROCESS_HPP
 #define ELYSIAN_CAMERA_SHAKE_SUBPROCESS_HPP
 

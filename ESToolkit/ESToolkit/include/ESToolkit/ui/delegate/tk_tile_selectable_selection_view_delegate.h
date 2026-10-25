@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef TILE_SELECTABLE_SELECTION_VIEW_DELEGATE_H
 #define TILE_SELECTABLE_SELECTION_VIEW_DELEGATE_H
 

@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef ELYSIAN_OOLUA_STRING_TRAITS_HPP
 #define ELYSIAN_OOLUA_STRING_TRAITS_HPP
 

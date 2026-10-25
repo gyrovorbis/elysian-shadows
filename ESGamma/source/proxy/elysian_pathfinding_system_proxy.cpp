@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/proxy/elysian_pathfinding_system_proxy.hpp>
 
 OOLUA_EXPORT_FUNCTIONS(PathfindingSystemNode)

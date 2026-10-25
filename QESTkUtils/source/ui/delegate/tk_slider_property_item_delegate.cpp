@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <QESTkUtils/ui/delegate/tk_slider_property_item_delegate.h>
 #include <QSlider>
 #include <QCursor>

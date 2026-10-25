@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include "gyro_vmu_filesystem_utilization_bar.hpp"
 #include <QPainter>
 #include <evmu-core/gyro_vmu_flash.h>

@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <AssetIO/crtp/elysian_depth_buff_entry.hpp>
 #include <AssetIO/level/elysian_zcoords.hpp>
 #include <AssetIO/crtp/elysian_collidable.hpp>

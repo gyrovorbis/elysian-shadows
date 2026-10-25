@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ElysianVMU/jet_set_radio_graffiti_tool.hpp>
 #include <ElysianVMU/gyro_vmu_qt_util.hpp>
 #include <QImage>

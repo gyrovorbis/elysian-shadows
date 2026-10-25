@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESToolkit/ui/dialog/tk_engine_settings_dialog.h>
 #include <ESToolkit/ui/tk_estoolkit.h>
 #include "ui_tk_engine_settings.h"

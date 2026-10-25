@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h>
 #include <QESTkUtils/model/tk_property_stack_model.h>
 #include <QESTkUtils/model/tk_property_standard_item.h>

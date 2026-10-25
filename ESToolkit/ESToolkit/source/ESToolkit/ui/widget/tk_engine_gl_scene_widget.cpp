@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/crtp/elysian_camera_system.hpp>
 #include <libGyro/gyro_video_api.h>
 #include <ESToolkit/ui/widget/tk_engine_gl_scene_widget.h>

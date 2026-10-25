@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <QPainter>
 #include <ESToolkit/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h>
 #include <ESToolkit/AssetIO/tk_level.h>

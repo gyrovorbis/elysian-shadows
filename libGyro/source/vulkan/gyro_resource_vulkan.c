@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <vulkan/gyro_resource_vulkan.h>
 #include <vulkan/gyro_vulkan.h>
 #include <vulkan/gyro_query_vulkan.h>

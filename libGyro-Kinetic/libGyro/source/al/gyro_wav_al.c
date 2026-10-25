@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <al/gyro_al.h>
 #include <libGyro/gyro_audio_api.h>
 #include <libGyro/gyro_file_api.h>

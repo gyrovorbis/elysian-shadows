@@ -1,3 +1,7 @@
+# Copyright (c) 2013-2026 Elysian Shadows Team
+# SPDX-License-Identifier: MIT
+# Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+
 LIBGYRO_PATH=$1
 
 rm -rf ElysianVMU.app/Contents/Frameworks/SDL2.framework

@@ -1,4 +1,10 @@
-﻿#include <gyro_vmu_address_space_model.hpp>
+﻿/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
+#include <gyro_vmu_address_space_model.hpp>
 #include <gyro_vmu_device.h>
 #include <gyro_vmu_sfr.h>
 #include <gyro_vmu_flash.h>

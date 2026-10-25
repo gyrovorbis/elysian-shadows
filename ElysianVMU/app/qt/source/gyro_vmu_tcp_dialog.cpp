@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include "gyro_vmu_tcp_dialog.hpp"
 #include "ui_gyro_vmu_tcp_dialog.h"
 #include "gyro_vmu_serial.h"

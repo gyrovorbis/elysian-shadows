@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <AssetIO/crtp/elysian_character.hpp>
 #include <AssetIO/utility/elysian_generic.hpp>
 #include <AssetIO/crtp/elysian_rigid_body.hpp>

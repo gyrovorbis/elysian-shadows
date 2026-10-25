@@ -1,3 +1,7 @@
+# Copyright (c) 2013-2026 Elysian Shadows Team
+# SPDX-License-Identifier: MIT
+# Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+
 cd ../../executable
 rm -rf ESToolkit.app/Contents/Frameworks/SDL2.framework
 rm -rf ESToolkit.app/Contents/Frameworks/SDL2_net.framework

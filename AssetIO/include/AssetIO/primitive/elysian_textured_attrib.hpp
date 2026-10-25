@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef ELYSIAN_TEXTURED_ATTRIB_HPP
 #define ELYSIAN_TEXTURED_ATTRIB_HPP
 

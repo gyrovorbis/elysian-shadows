@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <evmu-core-cpp/evmu_flash.hpp>
 #include <evmu-core/gyro_vmu_icondata.h>
 #include <evmu-core/gyro_vmu_util.h>

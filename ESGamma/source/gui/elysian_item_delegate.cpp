@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <ESGamma/gui/elysian_item_delegate.hpp>
 #include <ESGamma/gui/elysian_item_model.hpp>
 #include <ESGamma/gui/elysian_label_widget.hpp>

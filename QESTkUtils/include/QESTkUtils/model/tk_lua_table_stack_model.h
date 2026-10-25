@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #ifndef ESTK_LUA_TABLE_STANDARD_ITEM_MODEL_HPP
 #define ESTK_LUA_TABLE_STANDARD_ITEM_MODEL_HPP
 

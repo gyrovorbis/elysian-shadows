@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013-2026 Elysian Shadows Team
+ * SPDX-License-Identifier: MIT
+ * Additional permission for Elysian Shadows Kickstarter backers: see LICENSE.
+ */
+
 #include <game/behavior/elysian_playable_behavior.hpp>
 #include <ESGamma/lua/elysian_lua_singleton.hpp>
 #include <ESGamma/crtp/elysian_timer_system.hpp>
