@@ -1,0 +1,21 @@
+Top-Level folder for the ElysianVMU project.
+
+
+================
+DIRECTORY LAYOUT
+================
+1) app - source directory for each front-end implementation of ElysianVMU emulator
+	a. qt - source directory for EVMU using the Qt front-end (Windows, Mac, Linux, Raspberry Pi)
+2) bin - Contains the BIOS image for testing/coding and a WIP analysis of everything we've figured out about the BIOS
+3) build - Directory containing projects for building the codebase with different IDEs
+	b. qtcreator - contains project file for building ElysianVMU using qtcreator
+4) evmu-core - submodule containing the vanilla C emulator back-end, built upon libGyro
+5) qtcreator - contains Qt project for building 
+
+============
+DEPENDENCIES
+============
+To build ElysianVMU, the following submodules must be checked out/initialized in the root directory:
+1) evmu-core: vanilla C emulator back-end.
+	a. libGyro - inner submodule within the evmu-core submodule that must also be initialized
+

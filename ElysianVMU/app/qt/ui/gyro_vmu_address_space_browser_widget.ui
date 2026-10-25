@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VmuAddressSpaceBrowser</class>
+ <widget class="QWidget" name="VmuAddressSpaceBrowser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>508</width>
+    <height>407</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="toolbarLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QComboBox" name="segmentDropdown">
+       <property name="toolTip">
+        <string>Memory Segment</string>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>RAM Space</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ROM Space</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>RAM Bank 0</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>RAM Bank 1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XRAM Bank 0</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XRAM Bank 1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XRAM Bank 2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>WRAM</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bios </string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="addressEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="findButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Find</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableView" name="tableView"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

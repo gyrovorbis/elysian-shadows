@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VMUMainWindow</class>
+ <widget class="QMainWindow" name="VMUMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>256</width>
+    <height>235</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>ElysianVMU v 0.0.1 Alpha</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../resource/evmu.qrc">
+    <normaloff>:/icons/images/vmu_icon.ico</normaloff>:/icons/images/vmu_icon.ico</iconset>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="sizeConstraint">
+     <enum>QLayout::SetMinAndMaxSize</enum>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sceneRect">
+       <rectf>
+        <x>0.000000000000000</x>
+        <y>0.000000000000000</y>
+        <width>0.000000000000000</width>
+        <height>0.000000000000000</height>
+       </rectf>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>256</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuLoad_Recent">
+     <property name="title">
+      <string>Open Recent</string>
+     </property>
+    </widget>
+    <addaction name="actionLoad_ROM"/>
+    <addaction name="menuLoad_Recent"/>
+    <addaction name="actionLoad_BIOS_Image"/>
+    <addaction name="separator"/>
+    <addaction name="actionNew_Flash_Image"/>
+    <addaction name="actionExport_Flash_Image"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_State"/>
+    <addaction name="actionLoad_State"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuEmulation">
+    <property name="title">
+     <string>Emulation</string>
+    </property>
+    <widget class="QMenu" name="menuSerial_Communications">
+     <property name="title">
+      <string>Serial Communications</string>
+     </property>
+     <addaction name="actionQuick_Connect"/>
+     <addaction name="actionTCP_Connection_Manager"/>
+    </widget>
+    <widget class="QMenu" name="menuPlayback">
+     <property name="title">
+      <string>Playback</string>
+     </property>
+     <addaction name="actionHalt"/>
+     <addaction name="actionAdvance_Frame"/>
+    </widget>
+    <addaction name="menuPlayback"/>
+    <addaction name="separator"/>
+    <addaction name="actionEmulate_Audio"/>
+    <addaction name="actionEnable_Pixel_Ghosting"/>
+    <addaction name="actionEnable_Low_Battery"/>
+    <addaction name="actionConfigure_Input_Devices"/>
+    <addaction name="menuSerial_Communications"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menuScreen_Capture">
+     <property name="title">
+      <string>Record Screen</string>
+     </property>
+     <addaction name="actionRecordAnim"/>
+    </widget>
+    <addaction name="actionScreenshot"/>
+    <addaction name="menuScreen_Capture"/>
+    <addaction name="actionDisassemble_ROM"/>
+    <addaction name="actionBIOS_Runtime_Disassembly"/>
+    <addaction name="actionBuzzer_Tool"/>
+    <addaction name="actionJet_Set_Radio_Graffiti_Tool"/>
+    <addaction name="actionView_Log"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionDocumentation"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuPixel_Perfect_Aspect_Zoom">
+     <property name="title">
+      <string>Pixel-Perfect Zoom</string>
+     </property>
+     <addaction name="action1x"/>
+     <addaction name="action2x"/>
+     <addaction name="action4x"/>
+     <addaction name="action8x"/>
+     <addaction name="action16x"/>
+     <addaction name="action32x"/>
+     <addaction name="action64x"/>
+    </widget>
+    <widget class="QMenu" name="menuDebugger">
+     <property name="title">
+      <string>Debugger</string>
+     </property>
+     <widget class="QMenu" name="menuMemory_Browser">
+      <property name="title">
+       <string>Memory Browser</string>
+      </property>
+      <addaction name="actionRAM_Address_Space"/>
+      <addaction name="actionFlash_Address_Space"/>
+     </widget>
+     <addaction name="menuMemory_Browser"/>
+    </widget>
+    <addaction name="actionPreserve_Aspect_Ratio"/>
+    <addaction name="menuPixel_Perfect_Aspect_Zoom"/>
+    <addaction name="separator"/>
+    <addaction name="actionDevice_Manager"/>
+    <addaction name="actionDevice_Properties"/>
+    <addaction name="actionFilesystem"/>
+    <addaction name="separator"/>
+    <addaction name="menuDebugger"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuEmulation"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLoad_ROM">
+   <property name="text">
+    <string>Open ROM</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSave_State">
+   <property name="text">
+    <string>Save State</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLoad_State">
+   <property name="text">
+    <string>Load State</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionScreenshot">
+   <property name="text">
+    <string>Screenshot</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionEmulate_Audio">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Audio</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionEnable_Low_Battery">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Low Battery</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionQuick_Connect">
+   <property name="text">
+    <string>Quick Connect</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionTCP_Connection_Manager">
+   <property name="text">
+    <string>TCP Connection Manager</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionConfigure_Input_Devices">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Configure Input Devices</string>
+   </property>
+   <property name="toolTip">
+    <string>Coming Soon...</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionView_Log">
+   <property name="text">
+    <string>View Log</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLoad_BIOS_Image">
+   <property name="text">
+    <string>Load BIOS Image</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionDisassemble_ROM">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Disassemble ROM</string>
+   </property>
+   <property name="toolTip">
+    <string>Under Development...</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionEnable_Pixel_Ghosting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Pixel Ghosting</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="action1x">
+   <property name="text">
+    <string>1x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="action2x">
+   <property name="text">
+    <string>2x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="action4x">
+   <property name="text">
+    <string>4x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="action8x">
+   <property name="text">
+    <string>8x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action16x">
+   <property name="text">
+    <string>16x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="action32x">
+   <property name="text">
+    <string>32x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
+   </property>
+  </action>
+  <action name="action64x">
+   <property name="text">
+    <string>64x</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionPreserve_Aspect_Ratio">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preserve Aspect Ratio</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSerial_COM_Connection_Manager">
+   <property name="text">
+    <string>Serial/COM Connection Manager</string>
+   </property>
+  </action>
+  <action name="actionHalt">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Halt</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAdvance_Frame">
+   <property name="text">
+    <string>Advance Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Advance Execution by a Frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionRecordAnim">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Record</string>
+   </property>
+   <property name="toolTip">
+    <string>Record to Animated GIF</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSave_Game">
+   <property name="text">
+    <string>Save Game</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLoad_Game">
+   <property name="text">
+    <string>Load Game</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
+   </property>
+  </action>
+  <action name="actionBIOS_Runtime_Disassembly">
+   <property name="text">
+    <string>BIOS Dynamic Disassembly</string>
+   </property>
+  </action>
+  <action name="actionBuzzer_Tool">
+   <property name="text">
+    <string>Buzzer Tool</string>
+   </property>
+  </action>
+  <action name="actionDebugger">
+   <property name="text">
+    <string>Debugger</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionJet_Set_Radio_Graffiti_Tool">
+   <property name="icon">
+    <iconset resource="../resource/evmu.qrc">
+     <normaloff>:/icons/images/jet_set_radio_logo.png</normaloff>:/icons/images/jet_set_radio_logo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Jet Set Radio Graffiti Tool</string>
+   </property>
+  </action>
+  <action name="actionFilesystem">
+   <property name="text">
+    <string>Filesystem Manager</string>
+   </property>
+  </action>
+  <action name="actionExport_Flash_Image">
+   <property name="text">
+    <string>Export Flash Image</string>
+   </property>
+  </action>
+  <action name="actionNew_Flash_Image">
+   <property name="text">
+    <string>New Flash Image</string>
+   </property>
+  </action>
+  <action name="actionDefrag_Flash_Image">
+   <property name="text">
+    <string>Defrag Flash Image</string>
+   </property>
+  </action>
+  <action name="actionRAM_Address_Space">
+   <property name="text">
+    <string>RAM Address Space</string>
+   </property>
+  </action>
+  <action name="actionFlash_Address_Space">
+   <property name="text">
+    <string>Flash Address Space</string>
+   </property>
+  </action>
+  <action name="actionDevice_Manager">
+   <property name="text">
+    <string>Device Manager</string>
+   </property>
+  </action>
+  <action name="actionDevice_Properties">
+   <property name="text">
+    <string>Device Properties</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resource/evmu.qrc"/>
+  <include location="../resource/evmu.qrc"/>
+ </resources>
+ <connections/>
+</ui>
