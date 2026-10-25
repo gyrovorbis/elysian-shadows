@@ -35,7 +35,6 @@ UNIT TESTS TO WRITE
 2) Initialize all of libGyro
 3) Load shaders
 4) Switch areas via tabs (currently broken)
-5) authenticate to Gitlab server
 6) LuaTableProxy? (serialize, deserialize, register, access complex types, etc)
 7) Setting up entities, adding and removing components, serialize, deserialize, etc.
 8) area/level load and save (fuck with attributes via lua first, basic map modification)

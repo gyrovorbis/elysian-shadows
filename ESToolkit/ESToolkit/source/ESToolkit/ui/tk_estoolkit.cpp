@@ -21,7 +21,6 @@
 #include <ESToolkit/sheet_manager/tk_sheet_manager.h>
 #include <ESToolkit/ui/dialog/tk_engine_dialog.h>
 #include <ESToolkit/ui/dialog/tk_engine_settings_dialog.h>
-#include <QESTkUtils/ui/widget/tk_gitlab_dialog.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>
 #include <ESToolkit/ui/dock/tk_history_dock_widget.h>
 #include <ESToolkit/ui/dock/tk_camera_dock_widget.h>
@@ -83,7 +82,6 @@ ESToolkit::ESToolkit(QWidget *parent):
     _sheetManager           = new SheetManager(/*this*/);
     _engineDialog           = new EngineDialog(/*this*/);
     _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
-    _gitlabDialog           = new GitlabDialog(/*this*/);
     _helpDockWidget         = new QESTkUtils::HelpDockWidget(nullptr, "ESToolkit", ":/manual/docs", "qthelp://elysianshadows.toolkit.help/doc/index.html");
     _lineChartWidget        = new QESTkUtils::LineChartView();
     connect(&_assets,                SIGNAL(engineUpdated()), _lineChartWidget, SLOT(onEngineUpdated()));
@@ -295,7 +293,6 @@ ESToolkit::~ESToolkit(void) {
     delete _assets.getEngine();
 
     delete _helpDockWidget;
-    delete _gitlabDialog;
     delete _sheetManager;
     delete _engineDialog;
     delete _engineSettingsDialog;
@@ -314,7 +311,6 @@ void ESToolkit::_libGyroInitialize(void) {
     strcat(verString, GYRO_LIB_VERSION);
 
     GYSysInitParams sysParams = {new std::function<void()>([&](void) {
-                        _gitlabDialog->show();
                   }),
                     [](void* /*ptr*/) {
                         if(_instance->isVisible()) { //Don't try to relaunch and shit if running in command-line mode!
@@ -466,13 +462,6 @@ void ESToolkit::WriteSettings()
     } else {
         settings.setValue("previousProject", _prevProjectPath);
     }
-    if(_gitlabDialog->isAuthenticated()) {
-        settings.setValue("gitLabHostName", _gitlabDialog->getHostName());
-        settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
-        settings.setValue("gitLabProjectId", _gitlabDialog->getProjectId());
-        settings.setValue("gitLabDefaultProject", _gitlabDialog->getProjectName());
-
-    }
 
     for(unsigned i = 0; i < TkDebug::SOURCE_MAX; ++i) {
         for(unsigned j = 0; j < TkDebug::LOG_OFF; ++j) {
@@ -569,13 +558,6 @@ void ESToolkit::ReadSettings()
     _ui->actionManual_Camera->setChecked(manualCamera);
     _ui->actionEnable_Audio->setChecked(audioEnabled);
     _ui->actionHidden_Levels->setChecked(showHiddenLevels);
-    if(!settings.value("gitLabPrivateToken").isNull()) {
-        _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
-        _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
-        _gitlabDialog->setDefaultProject(settings.value("gitLabDefaultProject").toString());
-        //_gitlabDialog->authenticate(true);
-        _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
-    }
 
     toggleProjectActions(false);
 }
@@ -1239,11 +1221,6 @@ bool ESToolkit::verifySingleArea(const QString verifyPath) {
     return true;
 }
 
-
-void ESToolkit::showGitlabBugReportTab(void) const {
-    _gitlabDialog->setTab(GitlabDialog::TAB_CREATE_REPORT);
-    _gitlabDialog->show();
-}
 
 void ESToolkit::setIndexHiddenLevels(const bool val) {
     on_actionHidden_Levels_toggled(val);

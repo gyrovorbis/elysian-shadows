@@ -204,7 +204,6 @@ static GYAppCbRet Init(int argc, char **argv) {
             break;
         case TK_CRASH_BUG_REPORT:
             w.showMaximized();
-            w.showGitlabBugReportTab();
         }
 
         //Recover previous state

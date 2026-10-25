@@ -57,7 +57,6 @@ class SheetManager;
 class EngineSettingsDialog;
 class EngineGLSceneWidget;
 class CameraDockWidget;
-class GitlabDialog;
 class VMUMainWindow;
 class TkArea;
 
@@ -98,7 +97,6 @@ public:
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
     Assets&         getAssets(void);
-    void            showGitlabBugReportTab(void) const;
     void            setOutputDir(const QDir dir);
     QDir            getOutputDir(void) const;
     void            setIndexHiddenLevels(const bool val);
@@ -165,7 +163,6 @@ private:
     EngineDialog*           _engineDialog;
     EngineSettingsDialog*   _engineSettingsDialog;
     SheetManager*           _sheetManager;
-    GitlabDialog*           _gitlabDialog;
     QESTkUtils::HelpDockWidget*
                             _helpDockWidget;
 
@@ -291,7 +288,6 @@ private Q_SLOTS:
     void on_actionEnable_Audio_toggled(bool arg1);
     void on_actionReloadProject_triggered();
     void on_actionDocumentation_triggered();
-    void on_actionGitLab_Manager_triggered();
     void on_actionPerformance_Monitor_triggered();
     void on_actionSheet_Manager_triggered();
     void on_actionClear_triggered();

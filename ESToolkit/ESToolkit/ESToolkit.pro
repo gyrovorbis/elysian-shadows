@@ -331,7 +331,6 @@ SOURCES += \
         ../../QESTkUtils/source/tile_engine/tk_source_view.cpp \
         ../../QESTkUtils/source/ui/widget/tk_documentation_browser.cpp \
         ../../QESTkUtils/source/tk_network_access_manager.cpp \
-        ../../QESTkUtils/source/ui/widget/tk_gitlab_dialog.cpp \
         ../../QESTkUtils/source/tk_lua_qt_utils.cpp \
         ../../QESTkUtils/source/tk_mime_data.cpp \
         ../../QESTkUtils/source/tk_mime_drop_manager.cpp \
@@ -668,7 +667,6 @@ HEADERS += \
         ../../QESTkUtils/include/QESTkUtils/tile_engine/tk_dest_view_impl.h \
         ../../QESTkUtils/include/QESTkUtils/tk_lua_qt_utils.h \
         ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_documentation_browser.h \
-        ../../QESTkUtils/include/QESTkUtils/ui/widget/tk_gitlab_dialog.h \
         ../../QESTkUtils/include/QESTkUtils//tk_network_access_manager.h \
         ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_property_item_delegate.h \
         ../../QESTkUtils/include/QESTkUtils/ui/delegate/tk_spinbox_property_item_delegate.h \
@@ -699,7 +697,6 @@ FORMS += form/ESToolkit/dock/tk_sheet_dock_widget.ui \
     form/ESToolkit/dock/tk_history_dock_widget.ui \
     form/ESToolkit/tk_engine_settings.ui \
     form/ESToolkit/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
-    form/QESTkUtils/tk_gitlab_dialog.ui \
     form/ESToolkit/dock/tk_camera_dock_widget.ui
 
 #docs.target = ESToolkit.qhc

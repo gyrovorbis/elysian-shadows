@@ -317,7 +317,6 @@
      <string>Tools</string>
     </property>
     <addaction name="actionSheet_Manager"/>
-    <addaction name="actionGitLab_Manager"/>
     <addaction name="actionPerformance_Monitor"/>
     <addaction name="actionDocumentation"/>
     <addaction name="actionGenerate_VMU_Icons"/>
@@ -1328,11 +1327,6 @@
   <action name="actionDocumentation">
    <property name="text">
     <string>User Manual</string>
-   </property>
-  </action>
-  <action name="actionGitLab_Manager">
-   <property name="text">
-    <string>GitLab Manager</string>
    </property>
   </action>
   <action name="actionSheet_Manager">

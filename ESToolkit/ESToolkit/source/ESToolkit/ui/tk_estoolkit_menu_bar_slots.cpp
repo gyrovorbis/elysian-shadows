@@ -20,7 +20,6 @@
 #include <ESGamma/crtp/elysian_input_system.hpp>
 #include <ESGamma/device/elysian_visual_memory_device.hpp>
 
-#include <QESTkUtils/ui/widget/tk_gitlab_dialog.h>
 #include <QESTkUtils/ui/widget/tk_documentation_browser.h>
 
 #include <ESToolkit/ui/tk_estoolkit.h>
@@ -707,11 +706,6 @@ void ESToolkit::on_actionReloadProject_triggered(void)
 void ESToolkit::on_actionDocumentation_triggered()
 {
     _helpDockWidget->show();
-}
-
-void ESToolkit::on_actionGitLab_Manager_triggered()
-{
-    _gitlabDialog->show();
 }
 
 void ESToolkit::on_actionPerformance_Monitor_triggered()
