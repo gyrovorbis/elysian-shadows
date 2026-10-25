@@ -11,7 +11,7 @@ All sub-projects contain Qt .pro files which are converted into Makefiles by qma
 
 The MAIN project file is located in qtcreator/ESDev/ESDev.pro. That's the only file you should open in QtCreator, and it'll load all subprojects.
 
-Here are the directions for building the projects from the QtCreator IDE. To build them from the command-line, just look at the Jenkins jobs on the build-server. It's compiling them through the bash shell via SSH.
+Here are the directions for building the projects from the QtCreator IDE. From the command line, run qmake on qtcreator/ESDev/ESDev.pro with the same CONFIG+= arguments, then make.
 
 ==================
 BUILDING ESTOOLKIT
